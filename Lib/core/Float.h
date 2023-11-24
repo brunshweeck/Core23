@@ -627,11 +627,7 @@ namespace core {
          *
          * @see Float.toIntBits(gfloat)
          */
-        gbool equals(const Object &object) const override {
-            if (Class<Float>::hasInstance(object))
-                return compareTo((const Float &) object) == 0;
-            return false;
-        }
+        gbool equals(const Object &object) const override;
 
         /**
          * Compares two Float objects numerically.
@@ -663,9 +659,7 @@ namespace core {
          * @param other
          *          The Float to be compared.
          */
-        gint compareTo(const Float &other) const override {
-            return compare(value, other.value);
-        }
+        gint compareTo(const Float &other) const override;
 
         /**
          * Compares the two specified float values.

@@ -26,7 +26,7 @@ namespace core {
          * Constructs a new runtime exception with empty String as its
          * detail message.  The cause is not initialized.
          */
-        RuntimeException() CORE_NOTHROW {}
+        RuntimeException() CORE_NOTHROW = default;
 
         /**
          * Constructs a new runtime exception with the specified detail message.
@@ -36,8 +36,7 @@ namespace core {
          *           The detail message. The detail message is saved for
          *           later retrieval by the message() method.
          */
-        CORE_EXPLICIT RuntimeException(String message) CORE_NOTHROW
-                : Exception(message) {}
+        CORE_EXPLICIT RuntimeException(String message) CORE_NOTHROW;
 
         /**
          * Constructs a new runtime exception with the specified detail message and
@@ -49,8 +48,7 @@ namespace core {
          * @param  cause
          *          The cause (which is saved for later retrieval by the cause() method.
          */
-        CORE_EXPLICIT RuntimeException(String message, const Throwable &cause) CORE_NOTHROW
-                : Exception(message, cause) {}
+        CORE_EXPLICIT RuntimeException(String message, const Throwable &cause) CORE_NOTHROW;
 
         /**
          * Return sharable copy of this exception.
@@ -60,7 +58,7 @@ namespace core {
         /**
          * Thrown this exception.
          */
-        void raise() && override;
+        CORE_NORETURN void raise() && override;
     };
 
 } // core

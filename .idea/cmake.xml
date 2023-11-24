@@ -2,7 +2,9 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug-MinGW" ENABLED="true" GENERATION_DIR="$USER_HOME$/.cmake/$PROJECT_NAME$/Debug-MinGW" CONFIG_NAME="Debug" TOOLCHAIN_NAME="MinGW" GENERATION_OPTIONS="-G Ninja" />
+      <configuration PROFILE_NAME="Debug-VS2019" ENABLED="true" GENERATION_DIR="$USER_HOME$/.cmake/Core23/Debug-VS2019" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio 2019" GENERATION_OPTIONS="-G Ninja" />
+      <configuration PROFILE_NAME="Debug-GCC" ENABLED="false" GENERATION_DIR="$USER_HOME$/.cmake/Core23/Debug-GCC" CONFIG_NAME="Debug" TOOLCHAIN_NAME="WSL Ubuntu" GENERATION_OPTIONS="-G Ninja" />
+      <configuration PROFILE_NAME="Debug-MinGW" ENABLED="false" GENERATION_DIR="$USER_HOME$/.cmake/Core23/Debug-MinGW" CONFIG_NAME="Debug" TOOLCHAIN_NAME="MinGW" GENERATION_OPTIONS="-G Ninja" />
     </configurations>
   </component>
 </project>

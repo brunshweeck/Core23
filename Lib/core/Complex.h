@@ -107,51 +107,65 @@ namespace core {
         }
 
         /**
-         * Return the reverse form of this Complex
+         * Return the reverse form of this Complex.
+         * @example <pre>(2 + 3i).reverse() = 3 + 2i</pre>
          */
-        Complex reverse() const;
+        CORE_FAST Complex reverse() const {
+            return Complex(imag(), real());
+        }
 
         /**
          * Return the conjugate of this Complex
          */
-        Complex conjugate() const;
+        CORE_FAST Complex conjugate() const {
+            return Complex(real(), -imag());
+        }
 
         /**
          * Return the negation of this Complex
          */
-        Complex negate() const;
+        CORE_FAST Complex negate() const {
+            return Complex(-real(), -imag());
+        }
 
         /**
          * Return the sum between this Complex and another.
          *
-         * @param cplex
-         *          The Other complex
+         * @param z The Other complex
          */
-        Complex plus(const Complex &cplex) const;
+        Complex plus(const Complex &z) const {
+            return Complex(real() + z.real(), imag() + z.imag());
+        }
 
         /**
          * Return the subtraction between this Complex and another.
          *
-         * @param cplex
-         *          The Other complex
+         * @param z The Other complex
          */
-        Complex minus(const Complex &cplex) const;
+        Complex minus(const Complex &z) const {
+            return Complex(real() - z.real(), imag() - z.imag());
+        }
 
         /**
          * Return the multiplication between this Complex and another.
          *
-         * @param cplex
-         *          The Other complex
+         * @param z The Other complex
          */
-        Complex mult(const Complex &cplex) const;
+        CORE_FAST Complex mult(const Complex &z) const {
+            return Complex(
+                    real() * z.real() - imag() * z.imag(),
+                    imag() * z.real() + real() * z.imag()
+                    );
+        }
 
         /**
          * Return the multiplication between this Complex and another.
          *
-         * @param cplex
-         *          The Other complex
+         * @param z The Other complex
          */
-        Complex div(const Complex &cplex) const;
+        Complex div(const Complex &z) const {
+            return mult(z).div(z.norm());
+        }
 
         /**
          * Return the division between this Complex and another.
@@ -159,13 +173,15 @@ namespace core {
          * @param cplex
          *          The Other complex
          */
-        Complex div(gdouble d) const;
+        CORE_FAST Complex div(gdouble d) const {
+            return Complex(real()/d, imag()/d);
+        }
 
         /**
          * Return the value of this Complex as byte
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED gbyte byteValue() const;
@@ -174,7 +190,7 @@ namespace core {
          * Return the value of this Complex as short
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED gshort shortValue() const;
@@ -183,7 +199,7 @@ namespace core {
          * Return the value of this Complex as int
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED gint intValue() const;
@@ -192,7 +208,7 @@ namespace core {
          * Return the value of this Complex as long
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED glong longValue() const;
@@ -201,7 +217,7 @@ namespace core {
          * Return the value of this Complex as float
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED gfloat floatValue() const;
@@ -210,7 +226,7 @@ namespace core {
          * Return the value of this Complex as double
          * after narrowing primitive conversion.
          *
-         * @throws InternalError
+         * @throws ArithmeticException
          *              Iff this Complex is not real pure.
          */
         CORE_DEPRECATED gdouble doubleValue() const;
@@ -284,7 +300,18 @@ namespace core {
         static Complex valueOf(gdouble d);
 
         /**
-         * Return Complex representing by specified String
+         * Return Complex representing by specified String.
+         * The given string must respect the following syntax:
+         * <ol>
+         * <li> No space between complex members
+         * <li> If the imaginary part is infinite or not a number:
+         * <ul>
+         *      <li> Use parentheses (eg: (inf)i, (NaN)i, (infinity)i)
+         *      <li> Not include sign between parentheses (eg: -(inf)i) </ul>
+         * <li> Don't use parentheses on real part.
+         * @example
+         *      <pre> Complex::valueOf("23+15i") => 23 + 15i </pre><br>
+         *      <pre> Complex::valueOf("(23)+15i") => 23 + 15i </pre><br>
          */
         static Complex valueOf(const String &str);
 

@@ -5,16 +5,19 @@
 #ifndef CORE23_STRING_H
 #define CORE23_STRING_H
 
-#include <core/Private/Null.h>
 #include <core/Comparable.h>
 #include <core/Primitive/ByteArray.h>
 #include <core/Primitive/CharArray.h>
 #include <core/Primitive/IntArray.h>
+#include <core/Private/Null.h>
 
 namespace core {
 
     class StringBuffer;
-    class Locale;
+
+    namespace util {
+        class Locale;
+    }
 
     class String final: public Comparable<String> {
     private:

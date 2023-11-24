@@ -104,7 +104,7 @@ namespace core {
          * The flag to indicate if this throwable
          * was delete after throwing. is always false
          */
-        gbool temporal;
+        gbool isTemporary;
 
         /**
          * The number of execution point on stack trace
@@ -255,6 +255,7 @@ namespace core {
          */
         CORE_NORETURN void throws(const Trace &trace) const;
 
+    private:
         /**
          * Thrown this throwable basically
          * This method is used to preserve instance.
@@ -263,6 +264,7 @@ namespace core {
          */
         CORE_NORETURN virtual void raise() && = 0;
 
+    public:
         /**
          * Destroy this throwable
          */

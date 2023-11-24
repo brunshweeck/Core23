@@ -15,7 +15,7 @@ namespace core {
         /**
          * Constructs an InternalError with no detail message.
          */
-        InternalError() CORE_NOTHROW {}
+        InternalError() CORE_NOTHROW = default;
 
         /**
          * Constructs an InternalError with the specified

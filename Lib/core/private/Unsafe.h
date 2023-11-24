@@ -1578,7 +1578,7 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            CORE_FAST T &&forwardInstance(typename Class<T>::NRef &var) CORE_NOTHROW { return (T &&) var; }
+            static CORE_FAST T &&forwardInstance(typename Class<T>::NRef &var) CORE_NOTHROW { return (T &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1586,7 +1586,7 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            CORE_FAST T &&forwardInstance(typename Class<T>::NRef &&var) CORE_NOTHROW {
+            static CORE_FAST T &&forwardInstance(typename Class<T>::NRef &&var) CORE_NOTHROW {
                 CORE_STATIC_ASSERT(Class<T>::isLvalueReference(), "Forwarding is supported by lvalue reference");
                 return (T &&) var;
             }
@@ -1678,7 +1678,7 @@ namespace core {
             class CopyImpl<T, true, false> {
             public:
                 static T &copy(const T &x) {
-                    Object &clone = CORE_DYN_CAST(Object &, x).clone();
+                    Object &clone = CORE_DYN_CAST(const Object &, x).clone();
                     T &t = CORE_DYN_CAST(T &, clone);
                     return t;
                 }

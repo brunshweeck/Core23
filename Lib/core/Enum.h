@@ -6,6 +6,7 @@
 #define CORE23_ENUM_H
 
 #include <core/String.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
 
@@ -40,7 +41,10 @@ namespace core {
          *         in the enum declaration, where the initial constant is assigned
          *         an ordinal of zero).
          */
-        CORE_EXPLICIT Enum(String name, gint ordinal);
+        CORE_EXPLICIT Enum(String name, gint ordinal) {
+            value = (E) ordinal;
+            CORE_IGNORE(name);
+        }
 
     public:
 
@@ -96,7 +100,9 @@ namespace core {
         /**
          * Return shadow copy of this enum constant
          */
-        Object &clone() const override;
+        Object &clone() const override {
+            return native::Unsafe::U.createInstance<Enum>(*this);
+        }
 
         /**
          * Compares this enum with the specified object for order.  Returns a

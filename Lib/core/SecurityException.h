@@ -18,7 +18,7 @@ namespace core {
         /**
          * Constructs a <b> SecurityException</b> with no detail message.
          */
-        SecurityException() CORE_NOTHROW {}
+        SecurityException() CORE_NOTHROW = default;
 
         /**
          * Constructs a <b> SecurityException</b> with the specified
@@ -41,7 +41,7 @@ namespace core {
 
         Object &clone() const override;
 
-        void raise() && override;
+        CORE_NORETURN void raise() && override;
     };
 
 } // core

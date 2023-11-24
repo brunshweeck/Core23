@@ -20,7 +20,7 @@ namespace core {
         /**
          * Constructs an MemoryError with no detail message.
          */
-        MemoryError() CORE_NOTHROW {}
+        MemoryError() CORE_NOTHROW = default;
 
         /**
          * Constructs an MemoryError with the specified

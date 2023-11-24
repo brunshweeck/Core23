@@ -22,7 +22,7 @@ namespace core {
         /**
          * Constructs a NumberFormatException with no detail message.
          */
-        NumberFormatException() CORE_NOTHROW {}
+        NumberFormatException() CORE_NOTHROW = default;
 
         /**
          * Constructs a NumberFormatException with the specified detail message.

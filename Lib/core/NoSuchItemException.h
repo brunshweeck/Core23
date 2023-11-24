@@ -21,7 +21,7 @@ namespace core {
          * Constructs a <b> NoSuchItemException</b> with empty String
          * as its error message string.
          */
-        NoSuchItemException() CORE_NOTHROW {}
+        NoSuchItemException() CORE_NOTHROW = default;
 
         /**
          * Constructs a <b> NoSuchItemException</b> with the specified detail

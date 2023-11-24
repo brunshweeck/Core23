@@ -21,7 +21,7 @@ namespace core {
         /**
          * Constructs an IndexException with no detail message.
          */
-        IndexException() CORE_NOTHROW {}
+        IndexException() CORE_NOTHROW = default;
 
         /**
          * Constructs an IndexException with the specified detail

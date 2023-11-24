@@ -27,7 +27,7 @@ namespace core {
          * Constructs a new error with empty String as its detail message.
          * The cause is not initialized.
          */
-        Error() CORE_NOTHROW {}
+        Error() CORE_NOTHROW = default;
 
         /**
          * Constructs a new error with the specified detail message.  The
@@ -56,7 +56,7 @@ namespace core {
          * Return sharable copy of this error
          */
         Object &clone() const override;
-
+    private:
         /**
          * Thrown this instance of Error
          */

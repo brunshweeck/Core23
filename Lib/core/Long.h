@@ -6,6 +6,7 @@
 #define CORE23_LONG_H
 
 #include <core/Comparable.h>
+#include "Math.h"
 
 namespace core {
 
@@ -694,7 +695,9 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST glong max(glong x, glong y);
+        static CORE_FAST glong max(glong x, glong y) {
+            return Math::max(x, y);
+        }
 
         /**
          * Returns the smaller of two glong values
@@ -704,7 +707,9 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST glong min(glong x, glong y);
+        static CORE_FAST glong min(glong x, glong y) {
+            return Math::min(x, y);
+        }
 
         /**
          * Return sharable copy of this Long instance

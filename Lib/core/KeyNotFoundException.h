@@ -14,7 +14,7 @@ namespace core {
      */
     class KeyNotFoundException: public ArgumentException {
     public:
-        KeyNotFoundException() CORE_NOTHROW {}
+        KeyNotFoundException() CORE_NOTHROW = default;
 
         CORE_EXPLICIT KeyNotFoundException(String message) CORE_NOTHROW;
 

@@ -3,16 +3,23 @@
 //
 
 #include "NoSuchItemException.h"
-
-#include <utility>
+#include <core/private/Unsafe.h>
 
 namespace core {
-    NoSuchItemException::NoSuchItemException(String message, const Throwable &cause) CORE_NOTHROW:
-        RuntimeException(std::move(message), cause) {}
 
-    NoSuchItemException::NoSuchItemException(String message) CORE_NOTHROW: RuntimeException(std::move(message)) {}
+    using native::Unsafe;
+
+    NoSuchItemException::NoSuchItemException(String message, const Throwable &cause) CORE_NOTHROW:
+            RuntimeException(Unsafe::moveInstance(message), cause) {}
+
+    NoSuchItemException::NoSuchItemException(String message) CORE_NOTHROW:
+            RuntimeException(Unsafe::moveInstance(message)) {}
 
     void NoSuchItemException::raise() &&{
         throw *this;
+    }
+
+    Object &NoSuchItemException::clone() const {
+        return native::Unsafe::U.createInstance<NoSuchItemException>(*this);
     }
 } // core

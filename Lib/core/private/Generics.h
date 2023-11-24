@@ -143,7 +143,7 @@ namespace core {
 #endif //CORE_XCOMPILER_UDL
 
 #ifndef CORE_ASSERT
-#define CORE_ASSERT(expr, class) if(!(expr)) AssertionError(false).throws(__ftrace(class)) else {}
+#define CORE_ASSERT(expr, class) if(!(expr)) AssertionError(false).throws(__trace(class)); else CORE_IGNORE(0)
 #endif //CORE_ASSERT
 
 #ifndef CORE_FEATURE

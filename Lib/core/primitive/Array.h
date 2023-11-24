@@ -6,8 +6,14 @@
 #define CORE23_ARRAY_H
 
 #include <core/Object.h>
+#include <core/private/Null.h>
 
 namespace core {
+
+    namespace util {
+        class ArraysSupport;
+    }
+
     namespace primitive {
 
         /**
@@ -24,14 +30,17 @@ namespace core {
          * @see LongArray
          */
         template<class E>
-        interface Array : public Object {
+        class Array : public Object {
 
             CORE_STATIC_ASSERT(
+                    Class<E>::template isSimilar<Boolean>() || // -> BoolArray
                     Class<E>::template isSimilar<Byte>() || // -> ByteArray
                     Class<E>::template isSimilar<Short>() || // -> ShortArray
                     Class<E>::template isSimilar<Character>() || // -> CharArray
                     Class<E>::template isSimilar<Integer>() || // -> IntArray
                     Class<E>::template isSimilar<Long>() || // LongArray
+                    Class<E>::template isSimilar<Float>() || // FloatArray
+                    Class<E>::template isSimilar<Double>() || // DoubleArray
                     Class<E>::template isSimilar<Object>(), "Template is not permitted");
 
         private:
@@ -43,6 +52,7 @@ namespace core {
             CORE_ALIAS(Es, typename Class<E>::Primitive);
 
         public:
+
             /**
              * Construct new Array with specified length
              *
@@ -114,7 +124,7 @@ namespace core {
                     return true;
                 if (!Class<Array>::hasInstance(object))
                     return false;
-                const Array &a = CORE_DYN_CAST(Array &, object);
+                const Array &a = CORE_DYN_CAST(const Array &, object);
                 if (len != a.len)
                     return false;
                 else
@@ -150,6 +160,8 @@ namespace core {
             virtual const Es operator[](gint index) const {
                 return get(index);
             }
+
+            virtual ~Array() = default;
 
         private:
             /**

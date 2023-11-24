@@ -9,8 +9,6 @@
 
 namespace core {
 
-    class ClassInfo;
-
     /**
      * The Object class represent the base of the
      * class hierarchy in this framework.
@@ -23,7 +21,7 @@ namespace core {
         /**
          * Construct new Object instance.
          */
-        CORE_FAST Object() {}
+        CORE_FAST Object() CORE_NOTHROW = default;
 
         /**
          * Return true if this Object instance equals to

@@ -293,5 +293,9 @@ ADD_LIBRARY(Core23 SHARED
         ../Lib/core/foreign/UnicodeTable.h
         ../Lib/core/foreign/UnicodeTableP.cpp
         ../Lib/core/foreign/UnicodeTableD.cpp
+        ../Lib/core/private/Preconditions.cpp
+        ../Lib/core/private/Preconditions.h
+        ../Lib/core/private/ArraysSupport.cpp
+        ../Lib/core/private/ArraysSupport.h
 )
 INCLUDE_DIRECTORIES("../Lib")

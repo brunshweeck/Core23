@@ -1367,6 +1367,11 @@ CORE_WARNING_DISABLE_MSVC(4530) /* C++ exception handler used, but unwind semant
 #define CORE_OFFSETOF(class, field) ((glong) (&(((class *) 0)->field)));
 #endif
 
+#ifndef elif
+#define elif else if
+#pragma push_macro("elif")
+#endif
+
 #endif // offsetof
 
 

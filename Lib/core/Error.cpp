@@ -4,14 +4,25 @@
 
 #include "Error.h"
 
-#include <utility>
+#include <core/private/Unsafe.h>
 
 namespace core {
-    Error::Error(String message) CORE_NOTHROW: Throwable(std::move(message)) {}
 
-    Error::Error(String message, const Throwable &cause) CORE_NOTHROW: Throwable(std::move(message), cause) {}
+    using native::Unsafe;
+
+
+    Error::Error(String message) CORE_NOTHROW:
+            Throwable(Unsafe::moveInstance(message)) {}
+
+    Error::Error(String message, const Throwable &cause) CORE_NOTHROW:
+            Throwable(Unsafe::moveInstance(message), cause) {}
 
     void Error::raise() &&{
         throw *this;
     }
+
+    Object &Error::clone() const {
+        return Unsafe::U.createInstance<Error>(*this);
+    }
+
 } // core

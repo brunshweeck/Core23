@@ -28,7 +28,7 @@ namespace core {
          * Constructs a new exception with empty String as its detail message.
          * The cause is not initialized.
          */
-        Exception() CORE_NOTHROW {}
+        Exception() CORE_NOTHROW = default;
 
         /**
          * Constructs a new exception with the specified detail message.  The

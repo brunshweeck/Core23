@@ -19,7 +19,66 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a33b91f6-c6fe-4f22-b703-dcfef58b06eb" name="Changes" comment="" />
+    <list default="true" id="a33b91f6-c6fe-4f22-b703-dcfef58b06eb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/private/Preconditions.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/private/Preconditions.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/cmake.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cmake.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Complex.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Complex.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Double.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Double.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Enum.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Enum.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Error.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Error.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Error.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Error.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Exception.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Exception.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Float.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Float.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/IndexException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IndexException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/IndexException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IndexException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Integer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Integer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/InternalError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/InternalError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/InternalError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/InternalError.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Long.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Long.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Math.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MemoryError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/MemoryError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MemoryError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/MemoryError.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NoSuchItemException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchItemException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NoSuchItemException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchItemException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NumberFormatException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NumberFormatException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NumberFormatException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NumberFormatException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Object.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/RuntimeException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/RuntimeException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/RuntimeException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/RuntimeException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SecurityException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SecurityException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SecurityException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SecurityException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Short.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Short.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Short.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Short.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StateException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StateException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StateException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StateException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/String.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/String.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/primitive/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/primitive/Array.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/primitive/BoolArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/primitive/BoolArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/primitive/BoolArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/primitive/BoolArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Compiler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Compiler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Generics.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Generics.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WinLib/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/CMakeLists.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,7 +87,20 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-MinGW" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-VS2019" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
     <option name="majorVersion" value="2023" />
@@ -43,26 +115,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "structure.view.defaults.are.configured": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/T.N.Brunshweeck/.cmake/Core23/Debug-MinGW&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\UnixLib" />
@@ -77,17 +150,17 @@
     </option>
   </component>
   <component name="RunManager" selected="CMake Application.Main23">
-    <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-MinGW">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-VS2019">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-MinGW" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-VS2019" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -113,6 +186,10 @@
       <workItem from="1700356298884" duration="44705000" />
       <workItem from="1700454164824" duration="14274000" />
       <workItem from="1700515462119" duration="18637000" />
+      <workItem from="1700659655944" duration="952000" />
+      <workItem from="1700705618611" duration="21691000" />
+      <workItem from="1700781278406" duration="25054000" />
+      <workItem from="1700843607866" duration="10414000" />
     </task>
     <servers />
   </component>
@@ -124,5 +201,16 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

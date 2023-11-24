@@ -839,7 +839,7 @@ namespace core {
          *
          * @param d the value to hash
          */
-        static gint hash(gdouble d) ;
+        static gint hash(gdouble d);
 
         /**
          * Compares this object against the specified object.  The result
@@ -860,11 +860,7 @@ namespace core {
          *
          * @see Double.doubleToLongBits(double)
          */
-        gbool equals(const Object &object) const override {
-            if (Class<Double>::hasInstance(object))
-                return compareTo((const Double &) object) == 0;
-            return false;
-        }
+        gbool equals(const Object &object) const override;
 
         /**
          * Compares two <b>Double</b> objects numerically.
@@ -893,9 +889,7 @@ namespace core {
          *
          * @param other   the <b>Double</b> to be compared.
          */
-        gint compareTo(const Double &other) const override {
-            return compare(value, other.value);
-        }
+        gint compareTo(const Double &other) const override;
 
         /**
          * Compares the two specified <b>double</b> values. The sign
@@ -932,8 +926,9 @@ namespace core {
          * <p>If the argument is negative infinity, the result is
          * <b>0xfff0000000000000L</b>.
          *
-         * <p>If the argument is NaN, the result is
-         * <b>0x7ff8000000000000L</b>.
+         * <p>If the argument is NaN, the result is in the range
+         * <b>0x7ff0000000000001L</b> through <b>0x7fffffffffffffffL</b> or in the range
+         * <b>0xfff0000000000001L</b> through <b>0xffffffffffffffffL</b>.
          *
          * <p>In all cases, the result is a <b>long</b> integer that, when
          * given to the <b>longBitsToDouble(long)</b> method, will produce a
@@ -1003,8 +998,6 @@ namespace core {
          * @param bits   any <b>long</b> integer.
          */
         static gdouble fromLongBits(glong bits);
-
-#undef RAW_BITS
 
         /**
          * Return sharable copy of this Double

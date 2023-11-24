@@ -96,9 +96,10 @@ namespace core {
     class Math final: public Object {
 
     private:
-        /** Don't let anyone instantiate this class.
+        /**
+         * Don't let anyone instantiate this class.
          */
-        CORE_FAST Math() {}
+        CORE_FAST Math() = default;
 
         /** Constant by which to multiply an angular value in degrees to obtain an
          * angular value in radians.

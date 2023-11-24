@@ -4,7 +4,42 @@
 
 #include "Object.h"
 #include <core/String.h>
+#include "UnsupportedMethodException.h"
 #include <core/Integer.h>
+#include <core/Long.h>
+#include <typeinfo>
+#if __has_include(<cxxabi.h>)
+#include <cxxabi.h>
+#endif
+
+namespace {
+    using namespace core;
+
+    String classname0(const Object& o) {
+        const type_info& t = typeid(o);
+#if __has_include(<cxxabi.h>)
+        // GCC
+        const char* rawName = t.name();
+        char name0[256] = {};
+        size_t len = 256;
+        gint status = 0;
+        const char* name1 = __cxxabiv1::__cxa_demangle(rawName, name0, &len, &status);
+        String name = status != 0 ? "?" : name1;
+#elif defined(CORE_COMPILER_MSVC)
+        // MSVC
+        const char* rawName = t.raw_name();
+        String name = rawName;
+        if(name.startsWith("class") || name.startsWith("union"))
+            name = name.subString(5);
+        elif(name.startsWith("struct"))
+            name = name.subString(6);
+        else
+            name = "<?>";
+        name = name.replace("?", "");
+#endif
+        return name;
+    }
+}
 
 namespace core {
     gbool Object::equals(const Object &o) const {
@@ -20,30 +55,20 @@ namespace core {
     }
 
     Object &Object::clone() const {
-        // try {
-        //      Object& o Unsafe::allocateInstance<Object>();
-        //      gbyte *bytes1 = (gbyte *) this;
-        //      gbyte *bytes2 = (gbyte *) &o;
-        //      for (int i = 0; i < sizeof(Object); ++i) {
-        //          bytes2[i] = bytes1[i]
-        //      }
-        //      return o;
-        // } catch(const Throwable& thr) {
-        //     thr.throws(__trace("core::Object"));
-        // }
+        UnsupportedMethodException("clone").throws(__trace("core.Object"));
     }
 
     String Object::toString() const {
-        return classname() + Integer::toUnsignedString((gint)(((glong) this) & Integer::MAX_VALUE), 16);
+        return classname() + "@" + Integer::toUnsignedString((gint)(((glong) this) & Integer::MAX_VALUE), 16);
     }
 
 
     gint Object::hash() const {
-        return 0;
+        return Long::hash((glong)typeid(*this).hash_code());
     }
 
     String Object::classname() const {
-        return "core.Object"_S;
+        return classname0(*this);
     }
 
 } // core

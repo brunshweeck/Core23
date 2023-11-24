@@ -6,6 +6,7 @@
 #define CORE23_INTEGER_H
 
 #include <core/Comparable.h>
+#include "Math.h"
 
 namespace core {
 
@@ -728,7 +729,9 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gint max(gint x, gint y);
+        static CORE_FAST gint max(gint x, gint y) {
+            return Math::max(x, y);
+        }
 
         /**
          * Returns the smaller of two int values
@@ -738,7 +741,9 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gint min(gint x, gint y);
+        static CORE_FAST gint min(gint x, gint y) {
+            return Math::min(x, y);
+        }
 
         /**
          * Return sharable copy of this Integer instance
