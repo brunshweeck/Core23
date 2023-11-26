@@ -5,10 +5,12 @@
 #ifndef CORE23_QUEUE_H
 #define CORE23_QUEUE_H
 
+#include "Collection.h"
+
 namespace core {
 
     template<class E>
-    class Queue {
+    class Queue: public Collection<E> {
 
     };
 

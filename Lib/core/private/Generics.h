@@ -19,12 +19,12 @@ namespace core {
     namespace text {}
     namespace time {}
     namespace function {}
-    namespace concurrent {}
+    namespace util {}
     namespace regex {}
     namespace random {}
     namespace gui {}
     namespace primitive {
-        class BoolArray;
+        class BooleanArray;
         class ByteArray;
         class ShortArray;
         class CharArray;

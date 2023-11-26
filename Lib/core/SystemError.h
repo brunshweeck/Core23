@@ -21,7 +21,7 @@ namespace core {
         /**
          * Constructs a <b> SystemError</b> with no detail message.
          */
-        SystemError() CORE_NOTHROW {}
+        SystemError() CORE_NOTHROW = default;
 
         /**
          * Constructs a <b> SystemError</b> with the specified
@@ -46,7 +46,7 @@ namespace core {
 
         Object &clone() const override;
 
-        void raise() && override;
+        CORE_NORETURN void raise() && override;
     };
 
 } // core

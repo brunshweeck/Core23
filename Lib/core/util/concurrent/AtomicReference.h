@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICREFERENCE_H
 #define CORE23_ATOMICREFERENCE_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicReference {
+namespace core {
+    namespace util {
+
+        class AtomicReference final: public Object {
 
         };
 

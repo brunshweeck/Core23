@@ -16,7 +16,7 @@ namespace core {
         try {
             i = Integer::parseInt(s, base);
         } catch (NumberFormatException& nfe) {
-            nfe.throws(__trace("core.Byte"_S));
+            nfe.throws(__trace("core.Byte"));
         }
         if(i < MIN_VALUE || i > MAX_VALUE)
             NumberFormatException(R"(Value out of range for input ")" + s + "\"").throws(__trace("core.Byte"));
@@ -27,7 +27,7 @@ namespace core {
         try {
             return parseByte(s, 10);
         } catch (NumberFormatException& nfe) {
-            nfe.throws(__trace("core.Byte"_S));
+            nfe.throws(__trace("core.Byte"));
         }
     }
 
@@ -35,7 +35,7 @@ namespace core {
         try {
             return valueOf(parseByte(s, base));
         } catch (NumberFormatException& nfe) {
-            nfe.throws(__trace("core.Byte"_S));
+            nfe.throws(__trace("core.Byte"));
         }
     }
 
@@ -43,7 +43,7 @@ namespace core {
         try {
             return valueOf(s, 10);
         } catch (NumberFormatException& nfe) {
-            nfe.throws(__trace("core.Byte"_S));
+            nfe.throws(__trace("core.Byte"));
         }
     }
 
@@ -52,7 +52,7 @@ namespace core {
         try {
             i = Integer::decode(s);
         } catch (NumberFormatException& nfe) {
-            nfe.throws(__trace("core.Byte"_S));
+            nfe.throws(__trace("core.Byte"));
         }
         if(i < MIN_VALUE || i > MAX_VALUE)
             NumberFormatException(R"(Value out of range for input ")" + s + "\"").throws(__trace("core.Byte"));

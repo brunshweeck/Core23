@@ -5,10 +5,12 @@
 #ifndef CORE23_READWRITELOCKER_H
 #define CORE23_READWRITELOCKER_H
 
-namespace core {
-    namespace Concurrent {
+#include "Locker.h"
 
-        class ReadWriteLocker {
+namespace core {
+    namespace util {
+
+        class ReadWriteLocker final: public Locker {
 
         };
 

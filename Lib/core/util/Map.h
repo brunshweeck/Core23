@@ -5,10 +5,12 @@
 #ifndef CORE23_MAP_H
 #define CORE23_MAP_H
 
+#include <core/Object.h>
+
 namespace core {
 
     template<class K, class V>
-    class Map {
+    class Map: public Object {
 
     };
 

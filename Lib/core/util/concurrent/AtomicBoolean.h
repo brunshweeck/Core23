@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICBOOLEAN_H
 #define CORE23_ATOMICBOOLEAN_H
 
-namespace core {
-    namespace concurrent {
+#include <core/Object.h>
 
-        class AtomicBoolean {
+namespace core {
+    namespace util {
+
+        class AtomicBoolean final: public Object {
 
         };
 

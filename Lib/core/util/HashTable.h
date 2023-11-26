@@ -5,9 +5,12 @@
 #ifndef CORE23_HASHTABLE_H
 #define CORE23_HASHTABLE_H
 
+#include "Map.h"
+
 namespace core {
 
-    class HashTable {
+    template<class K, class V>
+    class HashTable: public Map<K, V> {
 
     };
 

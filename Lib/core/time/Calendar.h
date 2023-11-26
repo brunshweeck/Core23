@@ -5,12 +5,15 @@
 #ifndef CORE23_CALENDAR_H
 #define CORE23_CALENDAR_H
 
-namespace time {
+#include <core/Object.h>
 
-    class Calendar {
+namespace core {
+    namespace time {
 
-    };
+        class Calendar : public Object {
 
-} // time
+        };
 
+    } // time
+}
 #endif //CORE23_CALENDAR_H

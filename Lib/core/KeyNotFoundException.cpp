@@ -25,6 +25,6 @@ namespace core {
     }
 
     Object &KeyNotFoundException::clone() const {
-        native::Unsafe::U.createInstance<KeyNotFoundException>(*this);
+        return Unsafe::U.createInstance<KeyNotFoundException>(*this);
     }
 } // core

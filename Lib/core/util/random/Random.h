@@ -5,10 +5,12 @@
 #ifndef CORE23_RANDOM_H
 #define CORE23_RANDOM_H
 
+#include <core/Object.h>
+
 namespace core {
     namespace random {
 
-        class Random {
+        class Random: public Object {
 
         };
 

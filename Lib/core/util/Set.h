@@ -5,10 +5,12 @@
 #ifndef CORE23_SET_H
 #define CORE23_SET_H
 
+#include "Collection.h"
+
 namespace core {
 
     template<class E>
-    class Set {
+    class Set: public Collection<E> {
 
     };
 

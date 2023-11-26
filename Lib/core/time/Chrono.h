@@ -5,10 +5,12 @@
 #ifndef CORE23_CHRONO_H
 #define CORE23_CHRONO_H
 
+#include "Temporal.h"
+
 namespace core {
     namespace time {
 
-        class Chrono {
+        class Chrono final: public Temporal {
 
         };
 

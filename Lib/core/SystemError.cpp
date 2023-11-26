@@ -2,16 +2,24 @@
 // Created by Brunshweeck on 13/09/2023.
 //
 
+#include <core/private/Unsafe.h>
 #include "SystemError.h"
 
-#include <utility>
-
 namespace core {
-    SystemError::SystemError(String message) CORE_NOTHROW: Error(std::move(message)) {}
 
-    SystemError::SystemError(String message, const Throwable &cause) CORE_NOTHROW: Error(std::move(message), cause) {}
+    using native::Unsafe;
+
+    SystemError::SystemError(String message) CORE_NOTHROW:
+            Error(Unsafe::moveInstance(message)) {}
+
+    SystemError::SystemError(String message, const Throwable &cause) CORE_NOTHROW:
+            Error(Unsafe::moveInstance(message), cause) {}
 
     void SystemError::raise() &&{
         throw *this;
+    }
+
+    Object &SystemError::clone() const {
+        return Unsafe::U.createInstance<SystemError>(*this);
     }
 } // core

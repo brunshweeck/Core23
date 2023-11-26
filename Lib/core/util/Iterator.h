@@ -7,6 +7,7 @@
 
 #include <core/Object.h>
 #include <core/UnsupportedMethodException.h>
+#include <core/util/function/Consumer.h>
 
 namespace core {
 

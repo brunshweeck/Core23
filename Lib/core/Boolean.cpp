@@ -25,7 +25,7 @@ namespace core {
     }
 
     String Boolean::toString(gbool b) {
-        return b ? "true"_S : "false"_S;
+        return b ? "true" : "false";
     }
 
     String Boolean::toString() const {
@@ -47,6 +47,6 @@ namespace core {
     }
 
     Object &Boolean::clone() const {
-        Unsafe::U.createInstance<Boolean>(*this);
+        return Unsafe::U.createInstance<Boolean>(*this);
     }
 } // core

@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICINTEGERARRAY_H
 #define CORE23_ATOMICINTEGERARRAY_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicIntegerArray {
+namespace core {
+    namespace util {
+
+        class AtomicIntegerArray final: public Object {
 
         };
 

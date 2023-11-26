@@ -3,7 +3,7 @@
 //
 
 #include "ArraysSupport.h"
-#include <core/primitive/BoolArray.h>
+#include <core/primitive/BooleanArray.h>
 #include <core/primitive/ByteArray.h>
 #include <core/primitive/ShortArray.h>
 #include <core/primitive/IntArray.h>
@@ -18,6 +18,7 @@
 #include <core/Long.h>
 #include <core/Float.h>
 #include <core/Double.h>
+#include <core/MemoryError.h>
 
 namespace core {
     namespace util {
@@ -69,8 +70,8 @@ namespace core {
 
             static glong getAddress(const Object &object) {
                 glong address = 0;
-                if (Class<BoolArray>::hasInstance(object)) {
-                    address = (glong) ((BoolArray &) object).value;
+                if (Class<BooleanArray>::hasInstance(object)) {
+                    address = (glong) ((BooleanArray &) object).value;
                 } else if (Class<ByteArray>::hasInstance(object)) {
                     address = (glong) ((ByteArray &) object).value;
                 } else if (Class<ShortArray>::hasInstance(object)) {
@@ -231,7 +232,7 @@ namespace core {
             }
         }
 
-        gint ArraysSupport::mismatch(const BoolArray &a, const BoolArray &b, gint length) {
+        gint ArraysSupport::mismatch(const BooleanArray &a, const BooleanArray &b, gint length) {
             gint i = 0;
             if (length > 7) {
                 if (a[0] != b[0])
@@ -252,7 +253,7 @@ namespace core {
             return -1;
         }
 
-        gint ArraysSupport::mismatch(const BoolArray &a, gint aFromIndex, const BoolArray &b, gint bFromIndex,
+        gint ArraysSupport::mismatch(const BooleanArray &a, gint aFromIndex, const BooleanArray &b, gint bFromIndex,
                                      gint length) {
             gint i = 0;
             if (length > 7) {

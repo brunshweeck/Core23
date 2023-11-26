@@ -543,7 +543,7 @@ namespace core {
                 return ch;
             }
             default:
-                return operator ""_S((gchar *) dec + 1, length);
+                return String((gchar *) dec, 1, length);
         }
     }
 } // core

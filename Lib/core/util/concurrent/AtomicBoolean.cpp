@@ -5,6 +5,6 @@
 #include "AtomicBoolean.h"
 
 namespace core {
-    namespace concurrent {
+    namespace util {
     } // core
 } // concurrent

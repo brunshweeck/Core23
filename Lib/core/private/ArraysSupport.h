@@ -87,9 +87,9 @@ namespace core {
             // Booleans
             // Each boolean element takes up one byte
 
-            static gint mismatch(const BoolArray &a, const BoolArray &b, gint length);
+            static gint mismatch(const BooleanArray &a, const BooleanArray &b, gint length);
 
-            static gint mismatch(const BoolArray &a, gint aFromIndex, const BoolArray &b, gint bFromIndex, gint length);
+            static gint mismatch(const BooleanArray &a, gint aFromIndex, const BooleanArray &b, gint bFromIndex, gint length);
 
 
             // Bytes

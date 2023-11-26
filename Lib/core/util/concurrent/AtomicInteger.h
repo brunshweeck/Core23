@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICINTEGER_H
 #define CORE23_ATOMICINTEGER_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicInteger {
+namespace core {
+    namespace util {
+
+        class AtomicInteger final: public Object {
 
         };
 

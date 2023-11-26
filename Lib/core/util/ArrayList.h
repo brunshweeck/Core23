@@ -5,10 +5,12 @@
 #ifndef CORE23_ARRAYLIST_H
 #define CORE23_ARRAYLIST_H
 
+#include "List.h"
+
 namespace core {
 
     template<class E>
-    class ArrayList {
+    class ArrayList: public List<E> {
 
     };
 

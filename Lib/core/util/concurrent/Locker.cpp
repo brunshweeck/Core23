@@ -5,6 +5,6 @@
 #include "Locker.h"
 
 namespace core {
-    namespace Concurrent {
+    namespace util {
     } // core
 } // concurrent

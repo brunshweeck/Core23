@@ -5,10 +5,12 @@
 #ifndef CORE23_HASHSET_H
 #define CORE23_HASHSET_H
 
+#include "Set.h"
+
 namespace core {
 
     template<class E>
-    class HashSet {
+    class HashSet: public Set<E> {
 
     };
 

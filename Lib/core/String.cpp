@@ -21,6 +21,7 @@ namespace core {
 
     using native::Unsafe;
     using util::Preconditions;
+    using util::Locale;
 
     namespace {
 
@@ -32,7 +33,7 @@ namespace core {
         CORE_ALIAS(PCBYTE4, typename Class<const gint>::Ptr);
 
         void putChar(PBYTE dst, glong idx, gint ch) {
-            if (dst == null || idx < 0)
+            if (!dst || idx < 0)
                 return;
             glong index = idx * 2LL;
             if (!Character::isValidCodePoint(ch)) {
@@ -49,7 +50,7 @@ namespace core {
         }
 
         gchar nextChar(PCBYTE src, glong idx) {
-            if (src == null || idx < 0)
+            if (!src || idx < 0)
                 return Character::MIN_VALUE;
             glong index = idx * 2LL;
             return Character::joinBytes(src[index], src[index + 1]);
@@ -127,7 +128,7 @@ namespace core {
         }
 
         void arraycopy(PCBYTE src, gint offset1, PBYTE dst, gint offset2, gint count) {
-            if (src == null || dst == null || count == 0 || offset1 < 0 || offset2 < 0) {
+            if (!src || !dst || count == 0 || offset1 < 0 || offset2 < 0) {
                 return;
             }
             glong maxCount = count * 2LL;
@@ -1010,7 +1011,7 @@ namespace core {
         return str;
     }
 
-    String String::toLowerCase(const Locale &locale) const {
+    String String::toLowerCase(const util::Locale &locale) const {
         String str;
         str.len = len;
         String lang = locale.language();
@@ -1674,8 +1675,7 @@ namespace core {
     }
 
     CharArray String::chars() const {
-        CharArray array;
-        array = CharArray(length());
+        CharArray array = CharArray(length());
         chars(0, length(), array, 0);
         return array;
     }
@@ -1710,7 +1710,7 @@ namespace core {
     }
 
     IntArray String::codePoints() const {
-        IntArray array;
+        IntArray array(0);
         try {
             gint count = 0;
             for (gint i = 0; i < len;) {
@@ -1754,7 +1754,7 @@ namespace core {
     ByteArray String::bytes() const {
         if (length() * 2LL > Integer::MAX_VALUE)
             MemoryError("Out of memory").throws(__trace("core.String"));
-        ByteArray array;
+        ByteArray array(0);
         try {
             array = ByteArray(len << 1);
             for (gint i = 0; i < len; i += 1) {
@@ -1863,6 +1863,10 @@ namespace core {
         len = 0;
         isHashed = false;
         hashcode = 0;
+    }
+
+    gint String::length() const {
+        return (value != null) && (len > 0) ? len : 0;
     }
 
 } // core

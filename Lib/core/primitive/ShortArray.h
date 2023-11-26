@@ -10,20 +10,35 @@
 namespace core {
     namespace primitive {
 
+        /**
+         * The ShortArray class wrap the static array of values from primitive type
+         * (generic) gshort in an object.
+         *
+         * <p>
+         * This class provide the instantaneous access from items
+         *
+         * <p>
+         * The class can be used as view for all buffer using this primitive type
+         * (such as ShortBuffer)
+         *
+         * @author
+         *      Brunshweeck Tazeussong
+         */
         class ShortArray: public Array<Short> {
         private:
+            /**
+             * gshort[*]
+             */
+            CORE_ALIAS(STORAGE, typename Class<gshort>::Ptr);
 
             /**
-             * The address used to store all shorts of this array
+             * The items storage
              */
-            glong addr = 0;
+            STORAGE value = null;
+
+            friend util::ArraysSupport;
 
         public:
-
-            /**
-             * Construct new empty array
-             */
-            CORE_FAST ShortArray(): Array<Short>(0) {}
 
             /**
              * Construct new ShortArray with specified number
@@ -32,8 +47,6 @@ namespace core {
              *
              * @param length
              *          The number of items
-             *
-             * @throws ArgumentException If length is negative.
              */
             CORE_EXPLICIT ShortArray(gint length);
 
@@ -45,9 +58,7 @@ namespace core {
              * @param length
              *          The number of items
              * @param initialValue
-             *          The value used to initialize all items after array creation.
-             *
-             * @throws ArgumentException If length is negative.
+             *          The value used to initialize all items after array creation
              */
             CORE_EXPLICIT ShortArray(gint length, gshort initialValue);
 
@@ -116,7 +127,7 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~ShortArray();
+            ~ShortArray() override;
         };
 
     } // core

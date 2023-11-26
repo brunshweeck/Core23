@@ -5,10 +5,12 @@
 #ifndef CORE23_TIMEZONE_H
 #define CORE23_TIMEZONE_H
 
+#include <core/Object.h>
+
 namespace core {
     namespace time {
 
-        class TimeZone {
+        class TimeZone final: public Object {
 
         };
 

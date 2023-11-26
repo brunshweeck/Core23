@@ -9,8 +9,11 @@
 
 namespace core {
 
-    class Void: public Object {
+    class Void: private Object {
+    private:
+        CORE_FAST Void() = default;
 
+        CORE_DISABLE_COPY_MOVE(Void);
     };
 
 } // core

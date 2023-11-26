@@ -5,6 +5,6 @@
 #include "AtomicReferenceArray.h"
 
 namespace core {
-    namespace Concurrent {
+    namespace util {
     } // core
 } // concurrent

@@ -33,7 +33,7 @@ namespace core {
                     NumberFormatException("Invalid number format for input \" " + str + "\".")
                             .throws(__trace("core.Double"));
                 ch = str.charAt(next);
-            default:
+            default: break;
         }
         switch (ch) {
             case '0':
@@ -93,7 +93,7 @@ namespace core {
                         return sign * Math::INF;
                 }
                 goto throwIllegalFormat;
-            default:
+            default: break;
         }
         switch (base) {
             case 2:
@@ -165,7 +165,7 @@ namespace core {
                                     next += 1;
                                     if (next == len)
                                         goto throwIllegalFormat;
-                                default:
+                                default: break;
                             }
                             while (next < len) {
                                 ch = str.charAt(next);
@@ -258,7 +258,7 @@ namespace core {
                                 rounded = (digit & 0x8) != 0;
                                 sticky = (digit & 0x7) != 0;
                                 break;
-                            default:
+                            default: break;
                         }
                         shift -= 4;
                     } else if (!sticky)
@@ -311,7 +311,7 @@ namespace core {
                                         rounded = (digit & 0x8) != 0;
                                         sticky = (digit & 0x7) != 0;
                                         break;
-                                    default:
+                                    default: break;
                                 }
                                 shift -= 4;
                             } else if (!sticky)
@@ -333,7 +333,7 @@ namespace core {
                                 next += 1;
                                 if (next == len)
                                     goto throwIllegalFormat;
-                            default:
+                            default: break;
                         }
                         while (next < len) {
                             ch = str.charAt(next);
@@ -642,4 +642,8 @@ namespace core {
     Object &Double::clone() const {
         return native::Unsafe::U.createInstance<Double>(*this);
     }
+
+    const gdouble Double::NaN = 0.0/0.0;
+    const gdouble Double::POSITIVE_INFINITY = 1.0/0.0;
+    const gdouble Double::NEGATIVE_INFINITY = -1.0/0.0;
 } // core

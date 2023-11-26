@@ -5,10 +5,12 @@
 #ifndef CORE23_CONDITION_H
 #define CORE23_CONDITION_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class Condition {
+namespace core {
+    namespace util {
+
+        class Condition: public Object {
 
         };
 

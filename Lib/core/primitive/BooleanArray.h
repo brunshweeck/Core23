@@ -2,8 +2,8 @@
 // Created by T.N.Brunshweeck on 19/11/2023.
 //
 
-#ifndef CORE23_BOOLARRAY_H
-#define CORE23_BOOLARRAY_H
+#ifndef CORE23_BOOLEANARRAY_H
+#define CORE23_BOOLEANARRAY_H
 
 #include <core/Boolean.h>
 #include "Array.h"
@@ -12,8 +12,8 @@ namespace core {
     namespace primitive {
 
         /**
-         * The BoolArray class wrap the static array of values from primitive type
-         * (generic) bool in an object.
+         * The BooleanArray class wrap the static array of values from primitive type
+         * (generic) gbool in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
@@ -25,7 +25,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class BoolArray: public Array<Boolean> {
+        class BooleanArray: public Array<Boolean> {
         private:
             /**
              * gbool[*]
@@ -42,17 +42,17 @@ namespace core {
         public:
 
             /**
-             * Construct new BoolArray with specified number
+             * Construct new BooleanArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.
              *
              * @param length
              *          The number of items
              */
-            CORE_EXPLICIT BoolArray(gint length);
+            CORE_EXPLICIT BooleanArray(gint length);
 
             /**
-             * Construct new BoolArray with specified number
+             * Construct new BooleanArray with specified number
              * of items. After creation all items value will be
              * initialized with specified initial value.
              *
@@ -61,23 +61,23 @@ namespace core {
              * @param initialValue
              *          The value used to initialize all items after array creation
              */
-            CORE_EXPLICIT BoolArray(gint length, gbool initialValue);
+            CORE_EXPLICIT BooleanArray(gint length, gbool initialValue);
 
             /**
-             * Initialize newly created BoolArray with items of another.
+             * Initialize newly created BooleanArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            BoolArray(const BoolArray &array);
+            BooleanArray(const BooleanArray &array);
 
             /**
-             * Initialize newly created BoolArray with items of another.
+             * Initialize newly created BooleanArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            BoolArray(BoolArray &&array) CORE_NOTHROW;
+            BooleanArray(BooleanArray &&array) CORE_NOTHROW;
 
             /**
              * Set with items of specified array, all items of this array.
@@ -85,7 +85,7 @@ namespace core {
              * @param array
              *          The array that items are used to set this array items
              */
-            BoolArray &operator=(const BoolArray &array);
+            BooleanArray &operator=(const BooleanArray &array);
 
             /**
              * Exchange with items of specified array, all items of this array.
@@ -93,7 +93,7 @@ namespace core {
              * @param array
              *          The array that items are  exchanged with items of this
              */
-            BoolArray &operator=(BoolArray &&array) CORE_NOTHROW;
+            BooleanArray &operator=(BooleanArray &&array) CORE_NOTHROW;
 
             /**
              * Return item at specified index
@@ -128,10 +128,10 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~BoolArray() override;
+            ~BooleanArray() override;
         };
 
     } // core
 } // primitive
 
-#endif //CORE23_BOOLARRAY_H
+#endif //CORE23_BOOLEANARRAY_H

@@ -5,10 +5,12 @@
 #ifndef CORE23_HASHMAP_H
 #define CORE23_HASHMAP_H
 
+#include "Map.h"
+
 namespace core {
 
     template<class K, class V>
-    class HashMap {
+    class HashMap: public Map<K, V>{
 
     };
 

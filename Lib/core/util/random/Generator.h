@@ -5,10 +5,12 @@
 #ifndef CORE23_GENERATOR_H
 #define CORE23_GENERATOR_H
 
+#include <core/Object.h>
+
 namespace core {
     namespace random {
 
-        class Generator {
+        class Generator: public Object {
 
         };
 

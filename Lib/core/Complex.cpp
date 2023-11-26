@@ -147,6 +147,7 @@ namespace core {
 
     Complex Complex::valueOf(const String &str) {
         static String pattern = R"(^[+-]?(p{\digit}+([eE]([+-]?)p{\digit}(p{\digit}*))|0[xX]p{\xdigit}+(.p{\digit}*[pP]([+-]?)p{\digit}+)?))";
+        return 0;
     }
 
     gint Complex::compareTo(const Complex &o) const {

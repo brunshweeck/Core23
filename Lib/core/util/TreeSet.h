@@ -5,10 +5,12 @@
 #ifndef CORE23_TREESET_H
 #define CORE23_TREESET_H
 
+#include "Set.h"
+
 namespace core {
 
     template<class E>
-    class TreeSet {
+    class TreeSet: public Set<E> {
 
     };
 

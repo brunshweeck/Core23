@@ -5,6 +5,6 @@
 #include "ReentrantLocker.h"
 
 namespace core {
-    namespace Concurrent {
+    namespace util {
     } // core
 } // concurrent

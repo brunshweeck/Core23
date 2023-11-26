@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICLONG_H
 #define CORE23_ATOMICLONG_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicLong {
+namespace core {
+    namespace util {
+
+        class AtomicLong final: public Object {
 
         };
 

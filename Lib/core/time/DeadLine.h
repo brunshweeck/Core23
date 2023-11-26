@@ -5,10 +5,12 @@
 #ifndef CORE23_DEADLINE_H
 #define CORE23_DEADLINE_H
 
+#include "Temporal.h"
+
 namespace core {
     namespace time {
 
-        class DeadLine {
+        class DeadLine final: public Temporal {
 
         };
 

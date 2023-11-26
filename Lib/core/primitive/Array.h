@@ -33,15 +33,14 @@ namespace core {
         class Array : public Object {
 
             CORE_STATIC_ASSERT(
-                    Class<E>::template isSimilar<Boolean>() || // -> BoolArray
+                    Class<E>::template isSimilar<Boolean>() || // -> BooleanArray
                     Class<E>::template isSimilar<Byte>() || // -> ByteArray
                     Class<E>::template isSimilar<Short>() || // -> ShortArray
                     Class<E>::template isSimilar<Character>() || // -> CharArray
                     Class<E>::template isSimilar<Integer>() || // -> IntArray
                     Class<E>::template isSimilar<Long>() || // LongArray
-                    Class<E>::template isSimilar<Float>() || // FloatArray
-                    Class<E>::template isSimilar<Double>() || // DoubleArray
-                    Class<E>::template isSimilar<Object>(), "Template is not permitted");
+                    Class<E>::template isSimilar<Float>() || // LongArray
+                    Class<E>::template isSimilar<Double>(), "Template is not permitted");
 
         private:
             /**
@@ -50,6 +49,15 @@ namespace core {
             gint len = 0;
 
             CORE_ALIAS(Es, typename Class<E>::Primitive);
+
+            friend BooleanArray;
+            friend ByteArray;
+            friend ShortArray;
+            friend CharArray;
+            friend IntArray;
+            friend LongArray;
+            friend FloatArray;
+            friend DoubleArray;
 
         public:
 
@@ -109,7 +117,9 @@ namespace core {
              *          If index out of bounds
              */
             virtual const Es set(gint index, Es newValue) {
+                Es es = get(index);
                 (*this)[index] = newValue;
+                return es;
             }
 
             /**
@@ -241,6 +251,100 @@ namespace core {
             Itr2 end() const {
                 return Itr2(*this, len);
             }
+        };
+
+        template<>
+        class Array<Object> : public Object {
+        public:
+
+            /**
+             * Return number of element in This array
+             */
+            virtual gint length() const = 0;
+
+            /**
+             * Test if this array has no element
+             */
+            gbool isEmpty() const {
+                return length() == 0;
+            }
+
+            /**
+             * Return item at specified index
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             *
+             * @throws StateException If the value is not set
+             */
+            virtual Object &get(gint index) = 0;
+
+            /**
+             * Return item at specified index iff it exist
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             * @throws StateException If the value is not set
+             */
+            virtual const Object &get(gint index) const {
+                return CORE_CAST(Array<Object> &, *this).get(index);
+            }
+
+            /**
+             * Set the value at specified index with specified new value
+             *
+             * @param index
+             *          The Position of desired value
+             * @param newValue
+             *          The replacement value
+             * @throws IndexException
+             *          If index out of bounds
+             */
+            virtual void set(gint index, const Object& newValue) = 0;
+
+            /**
+             * Return true if the reference at the given index exists (is not null)
+             */
+            virtual gbool isSet(gint index) const = 0;
+
+            /**
+             * mark the reference at the given index like not exist (null)
+             */
+            virtual void unset(gint index) = 0;
+
+            /**
+             * Return item at specified index
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             */
+            virtual Object &operator[](gint index) {
+                return get(index);
+            }
+
+            /**
+             * Return item at specified index
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             */
+            virtual const Object& operator[](gint index) const {
+                return get(index);
+            }
+
+            virtual ~Array() = default;
         };
 
     } // core

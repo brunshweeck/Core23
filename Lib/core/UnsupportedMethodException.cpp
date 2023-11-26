@@ -3,18 +3,23 @@
 //
 
 #include "UnsupportedMethodException.h"
-
-#include <utility>
+#include <core/private/Unsafe.h>
 
 namespace core {
+    using native::Unsafe;
+
     UnsupportedMethodException::UnsupportedMethodException(String message) CORE_NOTHROW:
-            RuntimeException(std::move(message)) {}
+            RuntimeException(Unsafe::moveInstance(message)) {}
 
     UnsupportedMethodException::UnsupportedMethodException(String message, const Throwable &cause) CORE_NOTHROW
-            : RuntimeException(std::move(message), cause) {}
+            : RuntimeException(Unsafe::moveInstance(message), cause) {}
 
 
     void UnsupportedMethodException::raise() &&{
         throw *this;
+    }
+
+    Object &UnsupportedMethodException::clone() const {
+        return native::Unsafe::U.createInstance<UnsupportedMethodException>(*this);
     }
 } // core

@@ -10,6 +10,8 @@
 #include "Math.h"
 
 namespace core {
+    using native::Unsafe;
+
     gint Integer::parseInt(const String &str, gint base) {
         if (base < 2 || base > 36)
             ArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
@@ -303,7 +305,7 @@ namespace core {
     }
 
     Object &Integer::clone() const {
-        native::Unsafe::U.createInstance<Integer>(*this);
+        return Unsafe::U.createInstance<Integer>(*this);
     }
 
     Integer Integer::valueOf(gint i) {

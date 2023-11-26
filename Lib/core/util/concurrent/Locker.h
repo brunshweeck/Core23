@@ -5,10 +5,12 @@
 #ifndef CORE23_LOCKER_H
 #define CORE23_LOCKER_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class Locker {
+namespace core {
+    namespace util {
+
+        class Locker: public Object {
 
         };
 

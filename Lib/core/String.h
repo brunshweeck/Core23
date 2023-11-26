@@ -6,10 +6,10 @@
 #define CORE23_STRING_H
 
 #include <core/Comparable.h>
-#include <core/Primitive/ByteArray.h>
-#include <core/Primitive/CharArray.h>
-#include <core/Primitive/IntArray.h>
-#include <core/Private/Null.h>
+#include <core/primitive/ByteArray.h>
+#include <core/primitive/CharArray.h>
+#include <core/primitive/IntArray.h>
+#include <core/private/Null.h>
 
 namespace core {
 
@@ -298,9 +298,7 @@ namespace core {
          * Returns the length of this string.
          * The length is equal to the number of Unicode code units in the string.
          */
-        gint length() const {
-            return (value != null) && (len > 0) ? len : 0;
-        }
+        gint length() const;
 
         /**
          * Returns true if, and only if, length() is 0.
@@ -836,7 +834,7 @@ namespace core {
          *
          * @param locale use the case transformation rules for this locale
          */
-        String toLowerCase(const Locale &locale) const;
+        String toLowerCase(const util::Locale &locale) const;
 
         /**
          * Converts all of the characters in this String to upper
@@ -885,7 +883,7 @@ namespace core {
          * </table>
          * @param locale use the case transformation rules for this locale
          */
-        String toUpperCase(const Locale &locale) const;
+        String toUpperCase(const util::Locale &locale) const;
 
         /**
          * Converts all of the characters in this String to upper

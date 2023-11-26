@@ -104,8 +104,8 @@ ADD_LIBRARY(Core23 SHARED
         ../Lib/core/primitive/IntArray.h
         ../Lib/core/primitive/LongArray.cpp
         ../Lib/core/primitive/LongArray.h
-        ../Lib/core/primitive/ObjectArray.cpp
-        ../Lib/core/primitive/ObjectArray.h
+        ../Lib/core/primitive/ReferenceArray.cpp
+        ../Lib/core/primitive/ReferenceArray.h
         ../Lib/core/util/function/Consumer.cpp
         ../Lib/core/util/function/Consumer.h
         ../Lib/core/util/function/Functional.cpp
@@ -281,8 +281,8 @@ ADD_LIBRARY(Core23 SHARED
         ../Lib/core/util/concurrent/AtomicBoolean.cpp
         ../Lib/core/util/concurrent/AtomicBoolean.h
         core/private/Unsafe.cpp
-        ../Lib/core/primitive/BoolArray.cpp
-        ../Lib/core/primitive/BoolArray.h
+        ../Lib/core/primitive/BooleanArray.cpp
+        ../Lib/core/primitive/BooleanArray.h
         ../Lib/core/primitive/FloatArray.cpp
         ../Lib/core/primitive/FloatArray.h
         ../Lib/core/primitive/DoubleArray.cpp
@@ -297,5 +297,9 @@ ADD_LIBRARY(Core23 SHARED
         ../Lib/core/private/Preconditions.h
         ../Lib/core/private/ArraysSupport.cpp
         ../Lib/core/private/ArraysSupport.h
+        ../Lib/core/util/concurrent/Semaphore.cpp
+        ../Lib/core/util/concurrent/Semaphore.h
+        ../Lib/core/time/Temporal.cpp
+        ../Lib/core/time/Temporal.h
 )
 INCLUDE_DIRECTORIES("../Lib")

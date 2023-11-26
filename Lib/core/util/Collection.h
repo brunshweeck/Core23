@@ -6,6 +6,9 @@
 #define CORE23_COLLECTION_H
 
 #include <core/String.h>
+#include <core/primitive/ReferenceArray.h>
+#include <core/util/function/Predicate.h>
+#include "Iterator.h"
 
 namespace core {
 
@@ -290,19 +293,18 @@ namespace core {
          *
          * @note
          * This method acts as a bridge between array-based and collection-based APIs.
-         * It returns an array whose runtime type is <b> ObjectArray </b>.
+         * It returns an array whose runtime type is <b> ReferenceArray </b>.
          *
          * @return an array, whose <b style="color: green;"> runtime component type</b>
          *          is <b> Object</b>, containing all of the elements in this collection
          */
-        virtual ObjectArray toArray() const {
+        virtual ReferenceArray<E> toArray() const {
             try {
                 gint n = size();
-                ObjectArray a = ObjectArray(n);
+                ReferenceArray<E> a = ReferenceArray<E>(n);
                 Iterator<E> &it = iterator();
-                for (int i = 0; it.hasNext() && i < n; ++i) {
+                for (int i = 0; it.hasNext() && i < n; ++i)
                     a.set(i, it.next());
-                }
                 return a;
             } catch (const Throwable &thr) {
                 thr.throws(__trace("core::Collection"));
@@ -606,7 +608,7 @@ namespace core {
             for (;;) {
                 const E &e = it.next();
                 if (&(Object &) e == this) {
-                    sb.append("(this Collection)"_S);
+                    sb.append("(this Collection)");
                 } else {
                     sb.append(e);
                 }

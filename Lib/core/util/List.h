@@ -5,10 +5,12 @@
 #ifndef CORE23_LIST_H
 #define CORE23_LIST_H
 
+#include "Collection.h"
+
 namespace core {
 
     template<class E>
-    class List {
+    class List: public Collection<E> {
 
     };
 

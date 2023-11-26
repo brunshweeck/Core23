@@ -5,10 +5,12 @@
 #ifndef CORE23_REENTRANTLOCKER_H
 #define CORE23_REENTRANTLOCKER_H
 
-namespace core {
-    namespace Concurrent {
+#include "Locker.h"
 
-        class ReentrantLocker {
+namespace core {
+    namespace util {
+
+        class ReentrantLocker final: public Locker {
 
         };
 

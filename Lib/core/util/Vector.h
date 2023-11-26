@@ -5,10 +5,12 @@
 #ifndef CORE23_VECTOR_H
 #define CORE23_VECTOR_H
 
+#include "List.h"
+
 namespace core {
 
     template<class E>
-    class Vector {
+    class Vector: public List<E> {
 
     };
 

@@ -34,7 +34,7 @@ namespace core {
                     NumberFormatException("Invalid number format for input \" " + str + "\".")
                             .throws(__trace("core.Float"));
                 ch = str.charAt(next);
-            default:
+            default: break;
         }
         switch (ch) {
             case '0':
@@ -94,7 +94,7 @@ namespace core {
                         return (gfloat) (sign * Math::INF);
                 }
                 goto throwIllegalFormat;
-            default:
+            default: break;
         }
         switch (base) {
             case 2:
@@ -166,7 +166,7 @@ namespace core {
                                     next += 1;
                                     if (next == len)
                                         goto throwIllegalFormat;
-                                default:
+                                default: break;
                             }
                             while (next < len) {
                                 ch = str.charAt(next);
@@ -260,7 +260,7 @@ namespace core {
                                 rounded = (digit & 0x8) != 0;
                                 sticky = (digit & 0x7) != 0;
                                 break;
-                            default:
+                            default: break;
                         }
                         shift -= 4;
                     } else if (!sticky)
@@ -313,7 +313,7 @@ namespace core {
                                         rounded = (digit & 0x8) != 0;
                                         sticky = (digit & 0x7) != 0;
                                         break;
-                                    default:
+                                    default: break;
                                 }
                                 shift -= 4;
                             } else if (!sticky)
@@ -335,7 +335,7 @@ namespace core {
                                 next += 1;
                                 if (next == len)
                                     goto throwIllegalFormat;
-                            default:
+                            default: break;
                         }
                         while (next < len) {
                             ch = str.charAt(next);
@@ -738,4 +738,8 @@ namespace core {
         // Compute and combine result sign, exponent, and significand bits.
         return fromIntBits((bin16SignBit << 16) | floatExpBits | (bin16SignificandBits << SIGNIFICAND_SHIFT));
     }
+
+    const gfloat Float::NaN = 0.0/0.0f;
+    const gfloat Float::POSITIVE_INFINITY = 1.0f/0.0f;
+    const gfloat Float::NEGATIVE_INFINITY = -1.0f/0.0f;
 } // core

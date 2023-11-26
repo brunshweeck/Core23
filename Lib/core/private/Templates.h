@@ -732,7 +732,11 @@ namespace {
 
 
 #ifdef CORE_COMPILER_MSVC
+#ifdef _DComplex
     CORE_ALIAS(GENERIC_COMPLEX, _DComplex);
+#else
+    CORE_ALIAS(GENERIC_COMPLEX, struct _C_double_complex);
+#endif
 #else
     CORE_ALIAS(GENERIC_COMPLEX, _Complex double);
 #endif
@@ -741,8 +745,7 @@ namespace {
     CORE_STATIC_ASSERT(
             sizeof(gbyte) == sizeof(gbool) &&
             sizeof(glong) == sizeof(gdouble) &&
-            sizeof(glong) == (sizeof(gint) << 1) &&
-            sizeof(GENERIC_COMPLEX) == (sizeof(gdouble) << 1),
+            sizeof(glong) == (sizeof(gint) << 1),
             "This compiler not supported. On architecture:" CORE_ARCH);
 
 }
@@ -1077,7 +1080,7 @@ namespace core {
             interface MODIFY<30, gbool> : ALWAYS<Boolean> {
             };
             template<gint S>
-            interface MODIFY<30, gbool[S]> : ALWAYS<primitive::BoolArray> {
+            interface MODIFY<30, gbool[S]> : ALWAYS<primitive::BooleanArray> {
             };
             template<>
             interface MODIFY<30, gbyte> : ALWAYS<Byte> {

@@ -1,12 +1,12 @@
 //
-// Created by T.N.Brunshweeck on 16/11/2023.
+// Created by T.N.Brunshweeck on 19/11/2023.
 //
 
 #include <core/private/Unsafe.h>
 #include <core/ArgumentException.h>
-#include <core/private/Preconditions.h>
 #include <core/IndexException.h>
-#include "ByteArray.h"
+#include <core/private/Preconditions.h>
+#include "BooleanArray.h"
 
 namespace core {
     namespace primitive {
@@ -23,38 +23,38 @@ namespace core {
             }
         }
 
-        ByteArray::ByteArray(gint length) : ByteArray(length, false) {}
+        BooleanArray::BooleanArray(gint length) : BooleanArray(length, false) {}
 
-        ByteArray::ByteArray(gint length, gbyte initialValue) : Array<Byte>(length) {
+        BooleanArray::BooleanArray(gint length, gbool initialValue) : Array<Boolean>(length) {
             if (length < 0)
-                ArgumentException("Negative array length").throws(__trace("core.ByteArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BYTE_INDEX_SCALE);
+                ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
+            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
             len = length;
             for (int i = 0; i < length; ++i)
                 value[i] = initialValue;
         }
 
-        ByteArray::ByteArray(const ByteArray &array) : Array<Byte>(0) {
+        BooleanArray::BooleanArray(const BooleanArray &array) : Array<Boolean>(0) {
             gint length = array.length();
             if (len < 0)
-                ArgumentException("Negative array length").throws(__trace("core.ByteArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BYTE_INDEX_SCALE);
+                ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
+            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
             len = length;
             for (int i = 0; i < length; ++i)
                 value[i] = array.value[i];
         }
 
-        ByteArray::ByteArray(ByteArray &&array) CORE_NOTHROW: Array<Byte>(0) {
+        BooleanArray::BooleanArray(BooleanArray &&array) CORE_NOTHROW: Array<Boolean>(0) {
             permute(value, array.value);
             permute(len, array.len);
         }
 
-        ByteArray &ByteArray::operator=(const ByteArray &array) {
+        BooleanArray &BooleanArray::operator=(const BooleanArray &array) {
             if (this != &array) {
                 gint length = array.len;
                 if (len != length) {
                     value = (STORAGE) Unsafe::U.reallocateMemory((glong) value,
-                                                                 length * Unsafe::ARRAY_BYTE_INDEX_SCALE);
+                                                                 length * Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
                     len = length;
                 }
                 for (int i = 0; i < length; ++i)
@@ -63,7 +63,7 @@ namespace core {
             return *this;
         }
 
-        ByteArray &ByteArray::operator=(ByteArray &&array) CORE_NOTHROW {
+        BooleanArray &BooleanArray::operator=(BooleanArray &&array) CORE_NOTHROW {
             if (this != &array) {
                 permute(value, array.value);
                 permute(len, array.len);
@@ -71,29 +71,29 @@ namespace core {
             return *this;
         }
 
-        gbyte &ByteArray::get(gint index) {
+        gbool &BooleanArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Byte>::length());
+                Preconditions::checkIndex(index, Array<Boolean>::length());
                 return value[index];
             } catch (const IndexException &ie) {
-                ie.throws(__trace("core.ByteArray"));
+                ie.throws(__trace("core.BooleanArray"));
             }
         }
 
-        const gbyte ByteArray::get(gint index) const {
+        const gbool BooleanArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Byte>::length());
+                Preconditions::checkIndex(index, Array<Boolean>::length());
                 return value[index];
             } catch (const IndexException &ie) {
-                ie.throws(__trace("core.ByteArray"));
+                ie.throws(__trace("core.BooleanArray"));
             }
         }
 
-        Object &ByteArray::clone() const {
-            return Unsafe::U.createInstance<ByteArray>(*this);
+        Object &BooleanArray::clone() const {
+            return Unsafe::U.createInstance<BooleanArray>(*this);
         }
 
-        ByteArray::~ByteArray() {
+        BooleanArray::~BooleanArray() {
             Unsafe::U.freeMemory((glong) value);
             value = null;
         }

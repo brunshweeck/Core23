@@ -4,12 +4,10 @@
 //
 
 //using namespace core;
-#include <atomic>
-#include <Windows.h>
+#include <complex>
 
 int main() {
-    volatile LONG lg = 123;
-    auto a = InterlockedCompareExchange(&lg, 321, 123);
-    auto b = InterlockedCompareExchange(&lg, 213, 123);
+    auto a = _C_double_complex({1, 2});
+    auto b = 2j;
     return 0;
 }

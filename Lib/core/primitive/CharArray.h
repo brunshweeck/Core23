@@ -10,20 +10,35 @@
 namespace core {
     namespace primitive {
 
+        /**
+         * The CharArray class wrap the static array of values from primitive type
+         * (generic) gchar in an object.
+         *
+         * <p>
+         * This class provide the instantaneous access from items
+         *
+         * <p>
+         * The class can be used as view for all buffer using this primitive type
+         * (such as CharBuffer)
+         *
+         * @author
+         *      Brunshweeck Tazeussong
+         */
         class CharArray: public Array<Character> {
         private:
+            /**
+             * gchar[*]
+             */
+            CORE_ALIAS(STORAGE, typename Class<gchar>::Ptr);
 
             /**
-             * The address used to store all chars of this array
+             * The items storage
              */
-            glong addr = 0;
+            STORAGE value = null;
+
+            friend util::ArraysSupport;
 
         public:
-
-            /**
-             * Construct new empty array
-             */
-            CORE_FAST CharArray(): Array<Character>(0) {}
 
             /**
              * Construct new CharArray with specified number
@@ -32,8 +47,6 @@ namespace core {
              *
              * @param length
              *          The number of items
-             *
-             * @throws ArgumentException If length is negative.
              */
             CORE_EXPLICIT CharArray(gint length);
 
@@ -45,9 +58,7 @@ namespace core {
              * @param length
              *          The number of items
              * @param initialValue
-             *          The value used to initialize all items after array creation.
-             *
-             * @throws ArgumentException If length is negative.
+             *          The value used to initialize all items after array creation
              */
             CORE_EXPLICIT CharArray(gint length, gchar initialValue);
 
@@ -116,7 +127,7 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~CharArray();
+            ~CharArray() override;
         };
 
     } // core

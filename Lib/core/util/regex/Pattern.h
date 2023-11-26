@@ -5,10 +5,12 @@
 #ifndef CORE23_PATTERN_H
 #define CORE23_PATTERN_H
 
+#include <core/Object.h>
+
 namespace core {
     namespace regex {
 
-        class Pattern {
+        class Pattern: public Object {
 
         };
 

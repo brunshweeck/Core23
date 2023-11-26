@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICREFERENCEARRAY_H
 #define CORE23_ATOMICREFERENCEARRAY_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicReferenceArray {
+namespace core {
+    namespace util {
+
+        class AtomicReferenceArray final: public Object {
 
         };
 

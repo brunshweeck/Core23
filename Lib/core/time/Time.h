@@ -5,10 +5,12 @@
 #ifndef CORE23_TIME_H
 #define CORE23_TIME_H
 
+#include "Temporal.h"
+
 namespace core {
     namespace time {
 
-        class Time {
+        class Time final: public Temporal {
 
         };
 

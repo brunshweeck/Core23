@@ -10,7 +10,7 @@
 #include <core/Long.h>
 #include <core/Float.h>
 #include <core/Double.h>
-#include <core/primitive/BoolArray.h>
+#include <core/primitive/BooleanArray.h>
 #include <core/primitive/ByteArray.h>
 #include <core/primitive/CharArray.h>
 #include <core/primitive/ShortArray.h>

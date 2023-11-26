@@ -10,20 +10,35 @@
 namespace core {
     namespace primitive {
 
+        /**
+         * The ByteArray class wrap the static array of values from primitive type
+         * (generic) gbyte in an object.
+         *
+         * <p>
+         * This class provide the instantaneous access from items
+         *
+         * <p>
+         * The class can be used as view for all buffer using this primitive type
+         * (such as ByteBuffer)
+         *
+         * @author
+         *      Brunshweeck Tazeussong
+         */
         class ByteArray: public Array<Byte> {
         private:
+            /**
+             * gbyte[*]
+             */
+            CORE_ALIAS(STORAGE, typename Class<gbyte>::Ptr);
 
             /**
-             * The address used to store all bytes of this array
+             * The items storage
              */
-            glong addr = 0;
+            STORAGE value = null;
+
+            friend util::ArraysSupport;
 
         public:
-
-            /**
-             * Construct new empty array
-             */
-            CORE_FAST ByteArray(): Array<Byte>(0) {}
 
             /**
              * Construct new ByteArray with specified number
@@ -32,8 +47,6 @@ namespace core {
              *
              * @param length
              *          The number of items
-             *
-             * @throws ArgumentException If length is negative.
              */
             CORE_EXPLICIT ByteArray(gint length);
 
@@ -45,9 +58,7 @@ namespace core {
              * @param length
              *          The number of items
              * @param initialValue
-             *          The value used to initialize all items after array creation.
-             *
-             * @throws ArgumentException If length is negative.
+             *          The value used to initialize all items after array creation
              */
             CORE_EXPLICIT ByteArray(gint length, gbyte initialValue);
 
@@ -116,7 +127,7 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~ByteArray();
+            ~ByteArray() override;
         };
 
     } // core

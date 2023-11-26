@@ -5,10 +5,12 @@
 #ifndef CORE23_ATOMICLONGARRAY_H
 #define CORE23_ATOMICLONGARRAY_H
 
-namespace core {
-    namespace Concurrent {
+#include <core/Object.h>
 
-        class AtomicLongArray {
+namespace core {
+    namespace util {
+
+        class AtomicLongArray final: public Object {
 
         };
 

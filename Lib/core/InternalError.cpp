@@ -21,6 +21,6 @@ namespace core {
     }
 
     Object &InternalError::clone() const {
-        native::Unsafe::U.createInstance<InternalError>(*this);
+        return Unsafe::U.createInstance<InternalError>(*this);
     }
 } // core
