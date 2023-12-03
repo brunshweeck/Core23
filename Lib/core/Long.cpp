@@ -277,19 +277,18 @@ namespace core {
     String Long::toString(glong i, gint base) {
         if (base < 2 || base > 36)
             base = 10;
-        gchar digits[64 + 1]; // 64 chars max + 1 sign char
-        glong a = i < 0 ? i : -i;
+        gchar digits[64 + 1] = {0}; // 64 chars max + 1 sign char
+        glong a = Math::abs(i);
         gint j = 64;
-        while (a <= -base) {
-            gint r = (gint) -(a % base);
-            a = a / base;
-            digits[j--] = (gchar) ((r < 10) ? (48 + r) : (97 + r));
-        }
-        gint r = (gint) -a;
-        digits[j--] = (gchar) ((r < 10) ? (48 + r) : (97 + r));
+        do {
+            gint q = (gint) (a % base);
+            glong r = a / base;
+            a = r;
+            digits[j--] = q + (q < 10 ? 48 : 87);
+        } while (a > 0);
         if (i < 0)
             digits[j--] = u'-';
-        return String(digits, j + 1, 64 + 1);
+        return String(digits, j + 1, 65);
     }
 
     String Long::toUnsignedString(glong i, gint base) {
@@ -300,7 +299,7 @@ namespace core {
         gint r;
         while (i < 0) {
             r = (gint) ((i & 0xffffffffffffffff) % base); // auto convert to unsigned!
-            digits[j--] = (gchar) ((r < 10) ? (48 + r) : (97 + r));
+            digits[j--] = (gchar) ((r < 10) ? (48 + r) : (87 + r));
             i = i / base;
         }
         digits[j--] = '-';

@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Float Array
+             */
+            FloatArray(): FloatArray(0) {}
+
+            /**
              * Construct new FloatArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

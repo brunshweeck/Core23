@@ -64,7 +64,7 @@ namespace core {
         /**
          * Thrown this exception
          */
-        void raise() && override;
+        CORE_NORETURN void raise() && override;
     };
 
 } // core

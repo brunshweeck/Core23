@@ -42,6 +42,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Boolean Array
+             */
+            BooleanArray(): BooleanArray(0) {}
+
+            /**
              * Construct new BooleanArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

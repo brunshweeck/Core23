@@ -14,7 +14,6 @@ namespace core {
         class WindowsException: public Exception {
 
             gint error = 0;
-            String msg;
 
         public:
             CORE_EXPLICIT WindowsException(gint lastError);

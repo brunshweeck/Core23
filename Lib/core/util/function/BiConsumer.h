@@ -8,10 +8,10 @@
 #include "Functional.h"
 
 namespace core {
-    namespace Function {
+    namespace util {
 
         template<class T, class U>
-        class BiConsumer: public BinaryFunction<T, U, Void> {
+        class BiConsumer: public Functional {
 
         };
 

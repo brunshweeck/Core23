@@ -23,7 +23,7 @@ namespace core {
             }
         }
 
-        IntArray::IntArray(gint length) : IntArray(length, false) {}
+        IntArray::IntArray(gint length) : IntArray(length, 0) {}
 
         IntArray::IntArray(gint length, gint initialValue) : Array<Integer>(length) {
             if (length < 0)

@@ -42,6 +42,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Double Array
+             */
+            DoubleArray(): DoubleArray(0) {}
+
+            /**
              * Construct new DoubleArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

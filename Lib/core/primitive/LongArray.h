@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Long Array
+             */
+            LongArray(): LongArray(0) {}
+
+            /**
              * Construct new LongArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

@@ -5,8 +5,9 @@
 #ifndef CORE23_ARRAY_H
 #define CORE23_ARRAY_H
 
-#include <core/Object.h>
+#include <core/Integer.h>
 #include <core/private/Null.h>
+#include <core/Object.h>
 
 namespace core {
 
@@ -175,82 +176,59 @@ namespace core {
 
         private:
             /**
-             * The each operation
+             * The each operations
              */
-            class Itr : public Object {
+            template<class T>
+            class NativeArrayIterator : public Object {
             private:
-                Array &root;
-                gint next = 0;
-
-                CORE_FAST CORE_EXPLICIT Itr(Array &a, gint start) : root(a), next(start) {}
-
-                friend Array;
+                Array<E> &root;
+                gint cursor;
 
             public:
-                CORE_FAST CORE_EXPLICIT Itr(Array &a) : root(a) {}
+                /**
+                 * Construct new Native iterator instance
+                 */
+                NativeArrayIterator(Array<E> &root, gbool begin) :
+                        root(root), cursor(begin ? 0 : root.len) {}
 
-                Itr &operator++() {
-                    next += 1;
-                    return *this;
-                }
+                inline NativeArrayIterator &operator++() { return *this; }
 
-                Es &operator*() {
-                    return root[next - 1];
-                }
-
-                gbool equals(const Object &o) const override {
-                    if (!Class<Itr>::hasInstance(o))
-                        return false;
-                    const Itr &itr = CORE_DYN_CAST(Itr &, o);
-                    return &root == &itr.root && next == itr.next;
-                }
-            };
-
-            class Itr2 : public Object {
-            private:
-                const Array &root;
-                gint next = 0;
-
-                CORE_FAST CORE_EXPLICIT Itr2(const Array &a, gint start) : root(a), next(start) {}
-
-                friend Array;
-
-            public:
-                CORE_FAST CORE_EXPLICIT Itr2(const Array &a) : root(a) {}
-
-                Itr2 &operator++() {
-                    next += 1;
-                    return *this;
-                }
-
-                const Es operator*() {
-                    return root[next - 1];
-                }
+                inline T &operator*() { return root[cursor++]; }
 
                 gbool equals(const Object &o) const override {
-                    if (!Class<Itr>::hasInstance(o))
+                    if (this == &o)
+                        return true;
+                    if (!Class<NativeArrayIterator>::hasInstance(o))
                         return false;
-                    const Itr &itr = CORE_DYN_CAST(Itr &, o);
-                    return &root == &itr.root && next == itr.next;
+                    NativeArrayIterator &nitr = CORE_CAST(NativeArrayIterator &, o);
+                    return (&nitr.root == &root) &&
+                           ((nitr.cursor == cursor) || ((cursor >= root.len) && (nitr.cursor >= root.len)));
                 }
             };
 
         public:
-            Itr begin() {
-                return Itr(*this);
-            }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            NativeArrayIterator<Es> begin() { return NativeArrayIterator<Es>(*this, true); }
 
-            Itr2 begin() const {
-                return Itr2(*this);
-            }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            NativeArrayIterator<const Es> begin() const { return NativeArrayIterator<const Es>((Array &) *this, true); }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            NativeArrayIterator<Es> end() { return NativeArrayIterator<Es>(*this, false); }
 
-            Itr end() {
-                return Itr(*this, len);
-            }
-
-            Itr2 end() const {
-                return Itr2(*this, len);
-            }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            NativeArrayIterator<const Es> end() const { return NativeArrayIterator<const Es>((Array &) *this, false); }
         };
 
         template<>
@@ -297,18 +275,6 @@ namespace core {
             }
 
             /**
-             * Set the value at specified index with specified new value
-             *
-             * @param index
-             *          The Position of desired value
-             * @param newValue
-             *          The replacement value
-             * @throws IndexException
-             *          If index out of bounds
-             */
-            virtual void set(gint index, const Object& newValue) = 0;
-
-            /**
              * Return true if the reference at the given index exists (is not null)
              */
             virtual gbool isSet(gint index) const = 0;
@@ -340,11 +306,74 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual const Object& operator[](gint index) const {
+            virtual const Object &operator[](gint index) const {
                 return get(index);
             }
 
             virtual ~Array() = default;
+
+        private:
+
+            /**
+             * The each operations
+             */
+            template<class T>
+            class NativeArrayIterator : public Object {
+            private:
+                Array &root;
+                gint cursor;
+
+            public:
+                /**
+                 * Construct new Native iterator instance
+                 */
+                NativeArrayIterator(Array &root, gbool begin) :
+                        root(root), cursor(begin ? 0 : Integer::MAX_VALUE) {}
+
+                inline NativeArrayIterator &operator++() { return *this; }
+
+                inline T &operator*() {
+                    if (!root.isSet(cursor)){
+                        cursor++;
+                        return null;
+                    }
+                    return root[cursor++];
+                }
+
+                gbool equals(const Object &o) const override {
+                    if (this == &o)
+                        return true;
+                    if (!Class<NativeArrayIterator>::hasInstance(o))
+                        return false;
+                    NativeArrayIterator &nitr = CORE_CAST(NativeArrayIterator &, o);
+                    return (&nitr.root == &root) &&
+                           ((nitr.cursor == cursor) || (cursor >= root.length() && (nitr.cursor >= root.length())));
+                }
+            };
+
+        public:
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            NativeArrayIterator<Object> begin() { return NativeArrayIterator<Object>(*this, true); }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            NativeArrayIterator<const Object> begin() const { return NativeArrayIterator<const Object>((Array &) *this, true); }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            NativeArrayIterator<Object> end() { return NativeArrayIterator<Object>(*this, false); }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            NativeArrayIterator<const Object> end() const { return NativeArrayIterator<const Object>((Array &) *this, false); }
         };
 
     } // core

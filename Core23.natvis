@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+    <HResult Name="Core23">
+        <HRValue>2</HRValue>
+    </HResult>
+    <!--    namespace core -->
+    <Type Name="core::Boolean">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Byte">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Short">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Character">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Integer">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Long">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Float">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Double">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Enum&lt;*&gt;">
+        <DisplayString>{value}</DisplayString>
+    </Type>
+    <Type Name="core::Throwable" Inheritable="true">
+        <DisplayString>{msg}</DisplayString>
+    </Type>
+    <Type Name="core::Complex">
+        <DisplayString Condition="ivalue == 0">{rvalue}</DisplayString>
+        <DisplayString Condition="ivalue != ivalue">{rvalue}+({ivalue})i</DisplayString>
+        <DisplayString Condition="ivalue &gt; 0x1.fffffffffffffP+1023">{rvalue}+({ivalue})i</DisplayString>
+        <DisplayString Condition="ivalue &lt; -0x1.fffffffffffffP+1023">{rvalue}-({ivalue})i</DisplayString>
+        <DisplayString Condition="ivalue &lt; 0.0">{rvalue}{ivalue}i</DisplayString>
+        <DisplayString>{rvalue}+{ivalue}i</DisplayString>
+    </Type>
+    <Type Name="core::Trace">
+        <DisplayString>...</DisplayString>
+        <Expand>
+            <Item Name="File">{fName}</Item>
+            <Item Name="Line">{fLine}</Item>
+            <Item Name="Module" Condition="modVersion.len=0">{modName}</Item>
+            <Item Name="Module" Condition="">{modName}@{modVersion}</Item>
+            <Item Name="Class">{clsName}</Item>
+            <Item Name="Method">{metName}</Item>
+        </Expand>
+    </Type>
+    <Type Name="core::String">
+        <DisplayString Encoding="Ansi" Optional="true" Condition="len==0||value==0">{u""}</DisplayString>
+        <DisplayString Encoding="Ansi" Optional="true">{(char16_t*) value}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems Condition="len != 0 &amp;&amp; value!=0">
+                <Size>len * 2</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <!--    namespace core.primitive -->
+    <Type Name="core::primitive::Array&lt;*&gt;">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <DisplayString Optional="true">&lt;collection&gt;</DisplayString>
+    </Type>
+    <Type Name="core::primitive::BooleanArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::ByteArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::ShortArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::CharArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::IntArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::LongArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::FloatArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::primitive::DoubleArray">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems>
+                <Size>len</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <!--    namespace core.util -->
+    <Type Name="core::util::Iterator&lt;*&gt;" Inheritable="true">
+        <DisplayString Optional="true">cursor={cursor}</DisplayString>
+        <DisplayString Optional="true">&lt;iterator&gt;</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::Collection&lt;*&gt;">
+        <DisplayString Optional="true">&lt;collection&gt;</DisplayString>
+    </Type>
+    <Type Name="core::util::List&lt;*&gt;">
+        <DisplayString Optional="true">&lt;list&gt;</DisplayString>
+    </Type>
+    <Type Name="core::util::List&lt;*&gt;::SubList">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="root">root</Item>
+            <Item Name="parent" Condition="&amp;parent!=&amp;parent.parent" Optional="true">parent</Item>
+            <Item Name="offset">offset</Item>
+        </Expand>
+    </Type>
+    <Type Name="core::util::List&lt;*&gt;::ListItr&lt;*&gt;">
+        <DisplayString Optional="true">cursor={cursor}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="root">root</Item>
+        </Expand>
+    </Type>
+    <Type Name="core::util::ArrayList&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems Optional="true">
+                <Size>len</Size>
+                <ValuePointer>data</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::util::ArrayList&lt;*&gt;::SubList&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="root">root</Item>
+            <Item Name="parent" Condition="&amp;parent!=&amp;parent.parent" Optional="true">parent</Item>
+            <Item Name="offset">offset</Item>
+            <ArrayItems Optional="true">
+                <Size>len</Size>
+                <ValuePointer>root.data+offset</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::util::ArrayList&lt;*&gt;::ListItr&lt;*&gt;">
+        <DisplayString Optional="true">cursor={cursor}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="root">root</Item>
+        </Expand>
+    </Type>
+    <Type Name="core::util::LinkedList&lt;*&gt;">
+        <DisplayString>size={len}</DisplayString>
+        <Expand HideRawView="true">
+            <LinkedListItems>
+                <HeadPointer>first</HeadPointer>
+                <NextPointer>next</NextPointer>
+                <ValueNode>item[0]</ValueNode>
+                <Size>len</Size>
+            </LinkedListItems>
+        </Expand>
+    </Type>
+    <Type Name="core::util::LinkedList&lt;*&gt;::ListItr&lt;*&gt;">
+        <DisplayString Optional="true">cursor={index}</DisplayString>
+    </Type>
+    <!-- directory concurrent -->
+    <!-- directory function -->
+    <!-- directory random -->
+    <!-- directory regex -->
+
+
+</AutoVisualizer>

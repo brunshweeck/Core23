@@ -2,7 +2,7 @@
 // Created by T.N.Brunshweeck on 17/11/2023.
 //
 
-#include "Suplier.h"
+#include "Supplier.h"
 
 namespace core {
 

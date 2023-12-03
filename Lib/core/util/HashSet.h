@@ -8,12 +8,14 @@
 #include "Set.h"
 
 namespace core {
+    namespace util {
 
-    template<class E>
-    class HashSet: public Set<E> {
+        template<class E>
+        class HashSet : public Set<E> {
 
-    };
+        };
 
+    }
 } // core
 
 #endif //CORE23_HASHSET_H

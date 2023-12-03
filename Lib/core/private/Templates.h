@@ -45,131 +45,7 @@ namespace core {
 
             /////////////////////////////////[Similarity]/////////////////////////////////////
 
-            template<class T>
-            interface TEST<0, T, T> : ALWAYS_TRUE {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U &> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U &&> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U const> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &, U const volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U &> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U &&> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U const> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T &&, U const volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U &> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U &&> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U const> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const, U const volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U &> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U &&> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U const> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T volatile, U const volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U &> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U &&> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U const> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U volatile> : TEST<1, T, U> {
-            };
-
-            template<class T, class U>
-            interface TEST<1, T const volatile, U const volatile> : TEST<1, T, U> {
-            };
-
-#if __has_builtin(__is_same)
+#if __has_builtin(__is_same) || defined(__clang__)
             template<class T, class U>
             interface TEST<1, T, U>: CONSTANT<__is_same(T, U)> {};
 #else
@@ -1032,8 +908,6 @@ namespace core {
             interface TEST<27, T[Size]> : TEST<24, T> {
             };
 
-
-
             /////////////////////////////////[EQ]/////////////////////////////////////
             namespace {
                 template<class T, class = decltype(FALSE_DECLARATION<T>() == FALSE_DECLARATION<T>())>
@@ -1234,43 +1108,44 @@ namespace core {
 
             /////////////////////////////////[VarArgs Template]/////////////////////////////////////
             template<gint idx, class Fallback, class ...T>
-            interface VA_ARGS;
+            interface VA_ARGS : ALWAYS<Fallback> {
+            };
 
             template<gint idx, class Fallback>
             interface VA_ARGS<idx, Fallback> : ALWAYS<Fallback> {
             };
-            template<class Fallback, class T1>
-            interface VA_ARGS<1, Fallback, T1> : ALWAYS<T1> {
+            template<class Fallback, class T1, class ...TS>
+            interface VA_ARGS<1, Fallback, T1, TS...> : ALWAYS<T1> {
             };
-            template<class Fallback, class T1, class T2>
-            interface VA_ARGS<2, Fallback, T1, T2> : ALWAYS<T2> {
+            template<class Fallback, class T1, class T2, class ...TS>
+            interface VA_ARGS<2, Fallback, T1, T2, TS...> : ALWAYS<T2> {
             };
-            template<class Fallback, class T1, class T2, class T3>
-            interface VA_ARGS<3, Fallback, T1, T2, T3> : ALWAYS<T3> {
+            template<class Fallback, class T1, class T2, class T3, class ...TS>
+            interface VA_ARGS<3, Fallback, T1, T2, T3, TS...> : ALWAYS<T3> {
             };
-            template<class Fallback, class T1, class T2, class T3, class T4>
-            interface VA_ARGS<4, Fallback, T1, T2, T3, T4> : ALWAYS<T4> {
+            template<class Fallback, class T1, class T2, class T3, class T4, class ...TS>
+            interface VA_ARGS<4, Fallback, T1, T2, T3, T4, TS...> : ALWAYS<T4> {
             };
-            template<class Fallback, class T1, class T2, class T3, class T4, class T5>
-            interface VA_ARGS<5, Fallback, T1, T2, T3, T4, T5> : ALWAYS<T5> {
+            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class ...TS>
+            interface VA_ARGS<5, Fallback, T1, T2, T3, T4, T5, TS...> : ALWAYS<T5> {
             };
-            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6>
-            interface VA_ARGS<6, Fallback, T1, T2, T3, T4, T5, T6> : ALWAYS<T6> {
+            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6, class ...TS>
+            interface VA_ARGS<6, Fallback, T1, T2, T3, T4, T5, T6, TS...> : ALWAYS<T6> {
             };
-            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6, class T7>
-            interface VA_ARGS<7, Fallback, T1, T2, T3, T4, T5, T6, T7> : ALWAYS<T7> {
+            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class ...TS>
+            interface VA_ARGS<7, Fallback, T1, T2, T3, T4, T5, T6, T7, TS...> : ALWAYS<T7> {
             };
-            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
-            interface VA_ARGS<8, Fallback, T1, T2, T3, T4, T5, T6, T7, T8> : ALWAYS<T8> {
+            template<class Fallback, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class ...TS>
+            interface VA_ARGS<8, Fallback, T1, T2, T3, T4, T5, T6, T7, T8, TS...> : ALWAYS<T8> {
             };
-            template<gint idx, class F, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class...T>
-            interface VA_ARGS<idx, F, T1, T2, T3, T4, T5, T6, T7, T8, T...> : VA_ARGS<idx - 7, F, T...> {
+            template<gint idx, class F, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class...TS>
+            interface VA_ARGS<idx, F, T1, T2, T3, T4, T5, T6, T7, T8, TS...> : VA_ARGS<idx - 7, F, TS...> {
                 CORE_STATIC_ASSERT(idx > 8, "Index out of range");
             };
 
-            /////////////////////////////////[Resolved Callable]/////////////////////////////////////
-            // See
-            /////////////////////////////////[Resolved]//////////////////////////////////////////////
+            /////////////////////////////////[...]/////////////////////////////////////
+            /////////////////////////////////[...]/////////////////////////////////////
+            /////////////////////////////////[...]/////////////////////////////////////
         }
 
         CORE_WARNING_POP

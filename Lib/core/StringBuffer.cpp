@@ -37,8 +37,13 @@ namespace core {
             } else {
                 gbyte hb = Character::highByte(ch);
                 gbyte lb = Character::lowByte(ch);
-                dst[index] = hb;
-                dst[index + 1LL] = lb;
+                if (native::Unsafe::BIG_ENDIAN) {
+                    dst[index] = hb;
+                    dst[index + 1LL] = lb;
+                } else {
+                    dst[index] = lb;
+                    dst[index + 1LL] = hb;
+                }
             }
         }
 
@@ -46,13 +51,19 @@ namespace core {
             if (src == null || idx < 0)
                 return Character::MIN_VALUE;
             glong index = idx * 2LL;
-            return Character::joinBytes(src[index], src[index + 1]);
+            if (native::Unsafe::BIG_ENDIAN)
+                return Character::joinBytes(src[index], src[index + 1]);
+            else
+                return Character::joinBytes(src[index + 1], src[index]);
         }
 
         PBYTE generate(gint count) {
             if (count <= 0)
                 return null;
-            return (PBYTE) U.allocateMemory(count * 2LL);
+            PBYTE address = (PBYTE) U.allocateMemory(Integer::toUnsignedLong(count) * 2LL);
+            if(address == null) generate(count);
+            address[count * 2LL] = 0;
+            return address;
         }
 
 

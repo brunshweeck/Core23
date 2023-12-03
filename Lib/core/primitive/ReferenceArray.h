@@ -40,7 +40,17 @@ namespace core {
 
         private:
             CORE_ALIAS(REFERENCE, typename Class<E>::Ptr);
+
             CORE_ALIAS(STORAGE, typename Class<REFERENCE>::Ptr);
+
+            CORE_ALIAS(U, native::Unsafe);
+
+            /**
+             * Capture<T> represent all type T that extends this List element type E.
+             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             */
+            template<class T>
+            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
 
             /**
              * The array used to store references
@@ -52,11 +62,13 @@ namespace core {
              */
             gint len;
 
-            native::Unsafe &unsafe() {
-                return native::Unsafe::U;
-            }
-
         public:
+
+            /**
+             * Construct new empty Reference Array
+             */
+            CORE_FAST ReferenceArray() : value(null), len(0) {}
+
             /**
              * Construct new ReferenceArray with the given number of place
              *
@@ -65,52 +77,65 @@ namespace core {
              */
             CORE_EXPLICIT ReferenceArray(gint length) {
                 if (length < 0)
-                    ArgumentException("Negative array length").throws(__trace("core.ReferenceArray"));
-                value = unsafe().allocateMemory(1LL * length * unsafe().ARRAY_REFERENCE_INDEX_SCALE);
+                    ArgumentException("Negative array length").throws(__trace("core.primitive.ReferenceArray"));
+                value = (STORAGE) U::U.allocateMemory(1LL * length * U::ARRAY_REFERENCE_INDEX_SCALE);
                 len = length;
                 for (int i = 0; i < length; ++i) value[i] = null;
             }
 
+            /**
+             * Initialize newly created ReferenceArray with items of another.
+             *
+             * @param a The array that items are used to initialize this array
+             */
+            template<class T>
+            CORE_EXPLICIT ReferenceArray(const ReferenceArray<Capture<T>> &a) {
+                gint aSize = a.length();
+                if ((len = aSize) == 0)
+                    value = null;
+                else {
+                    value = (STORAGE) U::U.allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
+                    for (int i = 0; i < len; ++i) value[i] = a.value[i];
+                }
+            }
 
             /**
-             * Initialize newly created BooleanArray with items of another.
+             * Initialize newly created ReferenceArray with items of another.
              *
-             * @param array
-             *          The array that items are used to initialize this array
+             * @param a The array that items are used to initialize this array
              */
-            ReferenceArray(const ReferenceArray &array) {
-                value = unsafe().allocateMemory(1LL * (len = array.len) * unsafe().ARRAY_REFERENCE_INDEX_SCALE);
-                for (int i = 0; i < len; ++i)
-                    value[i] = !FORCE_COPY_ON_SET ? array.value[i] :
-                               array.isSet(i) ? &unsafe().copyInstance(array[i]) : null;
+            ReferenceArray(const ReferenceArray &a) {
+                gint aSize = a.length();
+                if ((len = aSize) == 0)
+                    value = null;
+                else {
+                    value = (STORAGE) U::U.allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
+                    for (int i = 0; i < len; ++i) value[i] = a.value[i];
+                }
             }
 
 
             /**
-             * Initialize newly created BooleanArray with items of another.
+             * Initialize newly created ReferenceArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            ReferenceArray(ReferenceArray &&array) CORE_NOTHROW {
+            ReferenceArray(ReferenceArray &&a) CORE_NOTHROW {
                 STORAGE oldValue = value;
                 gint oldLength = len;
-                value = array.value;
-                len = array.len;
-                array.value = oldValue;
-                array.len = oldLength;
+                value = a.value;
+                len = a.len;
+                a.value = oldValue;
+                a.len = oldLength;
             }
 
             ReferenceArray &operator=(const ReferenceArray &array) {
                 if (this != &array) {
                     if (len != array.len)
-                        value = unsafe().reallocateMemory(
-                                (glong) value,
-                                1LL * (len = array.len) * unsafe().ARRAY_REFERENCE_INDEX_SCALE);
-                    for (int i = 0; i < len; ++i)
-                        if (value[i] != array.value[i])
-                            value[i] = !FORCE_COPY_ON_SET ? array.value[i] :
-                                       array.isSet(i) ? &unsafe().copyInstance(array[i]) : null;
+                        value = (STORAGE) U::U.reallocateMemory((glong) value, 1LL * (len = array.len) *
+                                                                               U::ARRAY_REFERENCE_INDEX_SCALE);
+                    for (int i = 0; i < len; ++i) value[i] = array.value[i];
                 }
             }
 
@@ -141,168 +166,127 @@ namespace core {
                 return true;
             }
 
-            Object &clone() const override {
-                return unsafe().template createInstance<ReferenceArray>(*this);
-            }
+            Object &clone() const override { return U::U.template createInstance<ReferenceArray>(*this); }
 
             String toString() const override {
                 if (isEmpty()) return "[]";
                 StringBuffer sb = StringBuffer('[').append(get(0));
-                for (int i = 1; i < len; ++i) sb.append(',').append(' ').append(get(i));
+                for (int i = 1; i < len; ++i)
+                    sb.append(',').append(' ').append(isSet(i) ? (const Object &) get(i) : null);
                 return sb.append("]").toString();
             }
 
-            gint length() const override {
-                return len;
-            }
+            gint length() const override { return len; }
 
-            Object &get(gint index) override {
+            E &get(gint index) override {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) {
-                    ie.throws(__trace("core.ReferenceArray"));
-                }
-                if (!isSet(index))
-                    StateException("Null Reference").throws(__trace("core.ReferenceArray"));
-                return unsafe().getReference(unsafe().getAddress((glong) value));
+                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
+                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.primitive.ReferenceArray"));
+                return *value[index];
             }
 
-            void set(gint index, const Object &newValue) override {
+            const E &get(gint index) const override {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) {
-                    ie.throws(__trace("core.ReferenceArray"));
-                }
-                if (!Class<E>::hasInstance(newValue))
-                    CastException("Array type not support element of type " + newValue.classname())
-                            .throws(__trace("core.ReferenceArray"));
-                value[index] = !FORCE_COPY_ON_SET ? &(E &) newValue : &unsafe().copyInstance(newValue);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
+                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.primitive.ReferenceArray"));
+                return *value[index];
             }
 
-            void set(gint index, const E &newValue) override {
+            void set(gint index, const E &newValue) {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) {
-                    ie.throws(__trace("core.ReferenceArray"));
-                }
-                value[index] = !FORCE_COPY_ON_SET ? &(E &) newValue : &unsafe().copyInstance(newValue);
+                    value[index] = &U::U.copyInstance(newValue, true);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
             }
 
-            gbool isSet(gint index) const override {
-                return index >= 0 && index < len && value[index] != null;
-            }
+            gbool isSet(gint index) const override { return index >= 0 && index < len && value[index] != null; }
 
             void unset(gint index) override {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) {
-                    ie.throws(__trace("core.ReferenceArray"));
-                }
-                value[index] = null;
+                    value[index] = null;
+                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
             }
 
             ~ReferenceArray() override {
                 len = 0;
-                unsafe().freeMemory((glong) value);
-                value = 0;
+                U::U.freeMemory((glong) value);
+                value = null;
             }
 
-            /**
-             * Convert this array to reference array of sub-class or super-class
-             */
-            template<class T, Class<gbool>::
-            Iff<Class<T>::template isSuper<E>() || Class<E>::template isSuper<T>()> = true>
-            CORE_EXPLICIT operator ReferenceArray() const {}
+            inline E &operator[](gint index) override { return get(index); }
 
-            /**
-             * This property is true if the reference must be copied before place it
-             * on this array
-             */
-            static gbool FORCE_COPY_ON_SET;
+            inline const E &operator[](gint index) const override { return get(index); }
 
         private:
-
             /**
-             * The each operation
+             * The each operations
              */
-            class Itr : public Object {
+            template<class T>
+            class NativeArrayIterator : public Object {
             private:
-                ReferenceArray &root;
-                gint next = 0;
-
-                CORE_FAST CORE_EXPLICIT Itr(ReferenceArray &a, gint start) : root(a), next(start) {}
-
-                friend ReferenceArray;
+                ReferenceArray<E> &root;
+                gint cursor;
 
             public:
-                CORE_FAST CORE_EXPLICIT Itr(ReferenceArray &a) : root(a) {}
+                /**
+                 * Construct new Native iterator instance
+                 */
+                NativeArrayIterator(ReferenceArray<E> &root, gbool begin) :
+                        root(root), cursor(begin ? 0 : root.len) {}
 
-                Itr &operator++() {
-                    next += 1;
-                    return *this;
-                }
+                inline NativeArrayIterator &operator++() { return *this; }
 
-                Object &operator*() {
-                    return root[next - 1];
-                }
-
-                gbool equals(const Object &o) const override {
-                    if (!Class<Itr>::hasInstance(o))
-                        return false;
-                    const Itr &itr = CORE_DYN_CAST(Itr &, o);
-                    return &root == &itr.root && next == itr.next;
-                }
-            };
-
-            class Itr2 : public Object {
-            private:
-                const ReferenceArray &root;
-                gint next = 0;
-
-                CORE_FAST CORE_EXPLICIT Itr2(const ReferenceArray &a, gint start) : root(a), next(start) {}
-
-                friend ReferenceArray;
-
-            public:
-                CORE_FAST CORE_EXPLICIT Itr2(const ReferenceArray &a) : root(a) {}
-
-                Itr2 &operator++() {
-                    next += 1;
-                    return *this;
-                }
-
-                const Object& operator*() {
-                    return root[next - 1];
-                }
+                inline T &operator*() { return root[cursor++]; }
 
                 gbool equals(const Object &o) const override {
-                    if (!Class<Itr>::hasInstance(o))
+                    if (this == &o)
+                        return true;
+                    if (!Class<NativeArrayIterator>::hasInstance(o))
                         return false;
-                    const Itr &itr = CORE_DYN_CAST(Itr &, o);
-                    return &root == &itr.root && next == itr.next;
+                    NativeArrayIterator &nitr = CORE_CAST(NativeArrayIterator &, o);
+                    return (&nitr.root == &root) && ((nitr.cursor == cursor) ||
+                                                     ((cursor >= root.len) && (nitr.cursor >= root.len)));
                 }
             };
 
         public:
-            Itr begin() {
-                return Itr(*this);
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            inline NativeArrayIterator<E> begin() { return NativeArrayIterator<E>(*this, true); }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             */
+            inline NativeArrayIterator<const E> begin() const {
+                return NativeArrayIterator<const E>((ReferenceArray &) *this, true);
             }
 
-            Itr2 begin() const {
-                return Itr2(*this);
-            }
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            inline NativeArrayIterator<E> end() { return NativeArrayIterator<E>(*this, false); }
 
-            Itr end() {
-                return Itr(*this, len);
-            }
-
-            Itr2 end() const {
-                return Itr2(*this, len);
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            inline NativeArrayIterator<const E> end() const {
+                return NativeArrayIterator<const E>((ReferenceArray &) *this, false);
             }
         };
 
-        template<class E>
-        gbool ReferenceArray<E>::FORCE_COPY_ON_SET = true;
+#if CORE_TEMPLATE_TYPE_DEDUCTION
+        ReferenceArray() -> ReferenceArray<Object>;
+        ReferenceArray(gint) -> ReferenceArray<Object>;
+        template<class T> ReferenceArray(ReferenceArray<T>) -> ReferenceArray<T>;
+#endif
 
     } // core
 } // primitive

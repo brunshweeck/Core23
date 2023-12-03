@@ -8,12 +8,129 @@
 #include "Collection.h"
 
 namespace core {
+    namespace util {
 
-    template<class E>
-    class Queue: public Collection<E> {
+        /**
+         * A collection designed for holding elements prior to processing.
+         * Besides basic <b style="color:green;">Collection</b> operations, queues provide
+         * additional insertion, extraction, and inspection operations.  The
+         * latter form of the insert operation is designed specifically for
+         * use with capacity-restricted <b>Queue</b> implementations; in most
+         * implementations, insert operations cannot fail.
+         *
+         * <p>Queues typically, but do not necessarily, order elements in a
+         * FIFO (first-in-first-out) manner.  Among the exceptions are
+         * priority queues, which order elements according to a supplied
+         * comparator, or the elements' natural ordering, and LIFO queues (or
+         * stacks) which order the elements LIFO (last-in-first-out).
+         * Whatever the ordering used, the <em>head</em> of the queue is that
+         * element which would be removed by a call to <b style="color:green;">remove()</b> or
+         * <b style="color:green;">pop()</b>.  In a FIFO queue, all new elements are inserted at
+         * the <em>tail</em> of the queue. Other kinds of queues may use
+         * different placement rules.  Every <b>Queue</b> implementation
+         * must specify its ordering properties.
+         *
+         * <p>The <b style="color:green;">push</b> method inserts an element if possible,
+         * otherwise returning <b>false</b>.  This differs from the <b style="color:green;">
+         * Collection.add</b> method, which can fail to
+         * add an element only by throwing an unchecked exception.  The
+         * <b>push</b> method is designed for use when failure is a normal,
+         * rather than exceptional occurrence, for example, in fixed-capacity
+         * (or &quot;bounded&quot;) queues.
+         *
+         * <p>The <b style="color:green;">remove()</b> and <b style="color:green;">pop()</b> methods remove and
+         * return the head of the queue.
+         * Exactly which element is removed from the queue is a
+         * function of the queue's ordering policy, which differs from
+         * implementation to implementation. The <b>remove()</b> and
+         * <b>pop()</b> methods differ only in their behavior when the
+         * queue is empty: the <b>remove()</b> method throws an exception,
+         * while the <b>pop()</b> method returns <b>null</b>.
+         *
+         * <p>The <b style="color:green;">get()</b> method return, but do
+         * not remove, the head of the queue.
+         *
+         * <p><b>Queue</b> implementations generally do not define
+         * element-based versions of methods <b>equals</b> and
+         * but instead inherit the identity based versions
+         * from class <b>Object</b>, because element-based equality is not
+         * always well-defined for queues with the same elements but different
+         * ordering properties.
+         *
+         * @author Brunshweeck Tazeussong
+         * @param E the type of elements held in this queue
+         */
+        template<class E>
+        interface Queue : public Collection<E> {
+            
+            /**
+             * Inserts the specified element into this queue if it is possible to do so
+             * immediately without violating capacity restrictions, returning
+             * <b>true</b> upon success and throwing an <b>StateException</b>
+             * if no space is currently available.
+             *
+             * @param e the element to add
+             * @return <b>true</b> (as specified by <b style="color:green;">Collection.add</b>)
+             * @throws StateException if the element cannot be added at this
+             *         time due to capacity restrictions
+             * @throws CastException if the class of the specified element
+             *         prevents it from being added to this queue
+             * @throws ArgumentException if some property of this element
+             *         prevents it from being added to this queue
+             */
+            gbool add(const E & e) override = 0;
 
-    };
+            /**
+             * Inserts the specified element into this queue if it is possible to do
+             * so immediately without violating capacity restrictions.
+             * When using a capacity-restricted queue, this method is generally
+             * preferable to <b style="color:green;">add</b>, which can fail to insert an element only
+             * by throwing an exception.
+             *
+             * @param e the element to add
+             * @return <b>true</b> if the element was added to this queue, else
+             *         <b>false</b>
+             * @throws CastException if the class of the specified element
+             *         prevents it from being added to this queue
+             * @throws ArgumentException if some property of this element
+             *         prevents it from being added to this queue
+             */
+            virtual gbool push(const E & e) = 0;
 
+            /**
+             * Retrieves and removes the head of this queue.
+             *
+             * @return the head of this queue
+             * @throws NoSuchElementException if this queue is empty
+             */
+            virtual const E &remove() = 0;
+
+            /**
+             * Retrieves and removes the head of this queue.
+             *
+             * @return the head of this queue
+             * @throws NoSuchElementException if this queue is empty
+             */
+            virtual const E &pop() = 0;
+
+            /**
+             * Retrieves, but does not remove, the head of this queue.
+             *
+             * @return the head of this queue
+             * @throws NoSuchElementException if this queue is empty
+             */
+            virtual E &get() = 0;
+
+            /**
+             * Retrieves, but does not remove, the head of this queue.
+             *
+             * @return the head of this queue
+             * @throws NoSuchElementException if this queue is empty
+             */
+            virtual const E &get() const = 0;
+        };
+
+    }
 } // core
 
 #endif //CORE23_QUEUE_H

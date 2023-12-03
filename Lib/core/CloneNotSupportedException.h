@@ -21,14 +21,14 @@ namespace core {
      *
      * @see     Object.clone()
      */
-    class CloneNotSupportedException: public UnsupportedMethodException{
+    class CloneNotSupportedException : public UnsupportedMethodException {
 
     public:
         /**
          * Constructs a <b> CloneNotSupportedException</b> with no
          * detail message.
          */
-        CloneNotSupportedException() CORE_NOTHROW {}
+        CloneNotSupportedException() CORE_NOTHROW = default;
 
         /**
          * Constructs a <b> CloneNotSupportedException</b> with the
@@ -40,7 +40,8 @@ namespace core {
 
         Object &clone() const override;
 
-        void raise() && override;
+    private:
+        CORE_NORETURN void raise() && override;
     };
 
 } // core

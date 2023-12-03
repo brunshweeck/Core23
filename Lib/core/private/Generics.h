@@ -18,7 +18,6 @@ namespace core {
     namespace sql {}
     namespace text {}
     namespace time {}
-    namespace function {}
     namespace util {}
     namespace regex {}
     namespace random {}
@@ -32,6 +31,8 @@ namespace core {
         class LongArray;
         class FloatArray;
         class DoubleArray;
+        template <class T>
+        class ReferenceArray;
     }
 
     namespace CORE_DEPRECATED native {

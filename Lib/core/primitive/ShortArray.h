@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Short Array
+             */
+            ShortArray(): ShortArray(0) {}
+
+            /**
              * Construct new ShortArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

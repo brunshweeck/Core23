@@ -5,10 +5,11 @@
 #ifndef CORE23_CONSUMER_H
 #define CORE23_CONSUMER_H
 
-#include "Functional.h"
+#include <core/util/function/Functional.h>
+#include <core/ArgumentException.h>
 
 namespace core {
-    namespace Function {
+    namespace util {
 
         /**
          * Represents an operation that accepts a single input argument and returns no
@@ -21,164 +22,194 @@ namespace core {
          * @param T the type of the input to the operation
          */
         template<class T>
-        class Consumer : public UnaryFunction<T, Void> {
+        class Consumer : public Functional {
         private:
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "Consumer not accept void types as parameter");
+            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Illegal template type");
+            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "Illegal parameter type");
+
+            CORE_ALIAS(Param, Params < T >);
+
+            interface Launcher : Object {
+                virtual void launch(Param) const = 0;
+
+                template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
+                static Launcher &of(Fn &&fn) {
+                    static native::Unsafe &U = native::Unsafe::U;
+
+                    class _$ : public Launcher {
+                    private:
+                        Fn fn;
+
+                    public:
+                        CORE_EXPLICIT _$(Fn &&fn) : fn(fn) {}
+
+                        gbool equals(const Object &o) const {
+                            return !Class<_$>::hasInstance(o) ? false : CORE_CAST(_$ &, o).fn == fn;
+                        }
+
+                        Object &clone() const { return U.createInstance<_$>(*this); }
+
+                        void launch(Param p) const { CORE_IGNORE(fn(p)); }
+                    };
+
+                    return U.createInstance<_$>(U.forwardInstance<Fn>(fn));
+                }
+
+                template<class Callable, Class<gbool>::Iff<
+                        !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
+                static Launcher &of(Callable &&c) {
+
+                    static native::Unsafe &U = native::Unsafe::U;
+
+                    CORE_ALIAS(_Fn, UnarySign<Callable,, T, void >);
+                    CORE_ALIAS(Fn, UnarySign<Callable,, Param, void >);
+
+                    if (!Class<Fn>::template isSimilar<Callable>()) {
+                        // simple lambda functions
+                        return of(CORE_CAST(Fn, U.forwardInstance<Callable>(c)));
+                    }
+
+                    class _$ : public Launcher {
+                    private:
+                        Callable c;
+
+                    public:
+                        CORE_EXPLICIT _$(Callable &&c) : c(U.forwardInstance<Callable>(c)) {}
+
+                        gbool equals(const Object &o) const {
+                            return !Class<_$>::hasInstance(o) ? false : &CORE_CAST(_$ &, o).c == &c;
+                        }
+
+                        Object &clone() const { return U.createInstance<_$>(*this); }
+
+                        void launch(Param p) const { CORE_IGNORE(c(p)); }
+                    };
+
+                    return U.createInstance<_$>(U.forwardInstance<Callable>(c));
+                }
+            };
+
+            CORE_ALIAS(Action, typename Class<Launcher>::Ptr);
 
             /**
-             * The simplified parameter type
-             *
-             * @see UnaryFunction.TS
+             * The consumer action
              */
-            CORE_ALIAS(Arg, typename UnaryFunction<T,, Void > ::TS);
-
-            /**
-             * The simplified form of lambda function (ln -> fn)
-             *
-             * @see UnaryFunction.Fn
-             */
-            template<class Ln, class RS, class TS>
-            CORE_ALIAS(Lambda, typename UnaryFunction<T,, Void > ::template Fn<Ln, RS, Class<TS>::NCRef>);
-
-            interface Caller : public virtual Object {
-                virtual void call() const = 0;
-            };
-
-            template<class Fn>
-            class FnCaller : public virtual Caller {
-            };
-
-            template<class Ln>
-            class LnCaller : public virtual Caller {
-            };
-
-            template<class Mn, class X>
-            class MnCaller : public virtual Caller {
-            };
-
-            glong handle;
+            Action act;
 
         public:
-            template<class Callable,
-                    Class<gbool>::Iff<Class<Callable>::template isCallable<Arg>()> = 1,
-                    Class<gbool>::Iff<Class<Callable>::isFunctionMember()> = 0>
-            Consumer(Callable &&c) {
-                CORE_ALIAS(RS, typename Class<Callable>::template Return<Arg>);
-                CORE_ALIAS(Ln, Lambda<Callable,, RS, T >);
-                CORE_ALIAS(X, Lambda<Ln,, RS, Arg >);
-                CORE_ALIAS(XCaller, Class<LnCaller<X>>::template
-                        If<Class<X>::template isSimilar<Callable>(),, FnCaller<X>>);
-
-                if (Class<XCaller>::template isSimilar<FnCaller>()) {}
-
-                handle = (glong) new XCaller((Callable &&) c);
-            }
-
-        private:
             /**
-             * Construct new Consumer with method handle, and instance used
-             * to call given method.
+             * Construct new consumer with callable object (class instances or lambda functions)
              *
-             * @tparam Method The method signature
-             * @tparam X The type of object used to call given method
-             *
-             * @param m The method handle
-             * @param o The object reference used to call given method
+             * @param c The callable object
              */
-            template<class Method, class X>
-            CORE_EXPLICIT Consumer(Method &&m, X &&o) {
-                handle = (glong) new MnCaller<Method, X>();
+            template<class Callable, Class<gbool>::Iff<Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
+            CORE_IMPLICIT Consumer(Callable &&c) CORE_NOTHROW : act(0) {
+                CORE_STATIC_ASSERT(Class<Callable>::template isCallable<Param>(), "Invalid callable object");
+                act = &Launcher::of(native::Unsafe::forwardInstance<Callable>(c));
             }
 
-        public:
-
             /**
-             * Initialize new Consumer with another
+             * Construct new consumer with another
              *
              * @param c The other consumer
              */
-            Consumer(const Consumer &c) {
-                handle = 0;
+            Consumer(const Consumer<T> &c) : act(0) {
+                act = &native::Unsafe::U.copyInstance(*c.act);
             }
 
             /**
-             * Initialize new Consumer with another
+             * Construct new consumer with another
              *
              * @param c The other consumer
              */
-            Consumer(Consumer &&c) CORE_NOTHROW {
-                glong handle0 = handle;
-                handle = c.handle;
-                c.handle = handle0;
+            Consumer(Consumer<T> &&c) CORE_NOTHROW: act(0) {
+                act = c.act;
+                c.act = null;
             }
 
             /**
-             * Initialize new Consumer with another
+             * Set consumer action  with another consumer action
              *
-             * @param c The other consumer
+             * @param c The consumer that it action will be copied to set this consumer action
              */
-            Consumer &operator=(const Consumer &c) {
-                if(c.handle != handle) {
-//                    handle = &((Caller &) Unsafe.getObject(c.handle)).clone();
+            Consumer<T> &operator=(const Consumer<T> &c) {
+                if (this != &c) {
+                    Action act0 = &native::Unsafe::U.copyInstance(*c.act);
+                    native::Unsafe::U.destroyInstance(*act);
+                    act = act0;
                 }
                 return *this;
             }
 
             /**
-             * Initialize new Consumer with another
+             * Swap consumer action  with another consumer action
              *
-             * @param c The other consumer
+             * @param c The consumer that it action will be swapped to set this consumer action
              */
-            Consumer &operator=(Consumer &&c) CORE_NOTHROW {
-                glong handle0 = handle;
-                handle = c.handle;
-                c.handle = handle0;
+            Consumer<T> &operator=(Consumer<T> &&c) CORE_NOTHROW {
+                Action act0 = act;
+                act = c.act;
+                c.act = act0;
                 return *this;
             }
 
             /**
-             * Accept the given argument and execute action
-             * @param arg object to be accepted
+             * Performs this operation on the given argument.
+             *
+             * @param p the input argument
              */
-            virtual void accept(Arg arg) const {
-                // ((Caller &) Unsafe::getObject(handle)).call();
-            }
+            inline void accept(Param p) const { (*act).launch(p); }
 
             /**
-             * Return true iff specified object is a Consumer instance
-             * and has same properties as this Consumer.
+             * Test if this consumer has same action with the specified
+             * consumer.
              *
-             * @param object The object to be compared
+             * @param o The other consumer
              */
-            gbool equals(const Object &object) const override {
-                if(!Class<Consumer>::hasInstance(object))
+            gbool equals(const Object &o) const override {
+                if (!Class<Consumer>::hasInstance(o))
                     return false;
-//                return ((Caller &) Unsafe::getObject(handle)).equals(
-//                        ((Caller &) Unsafe::getObject(CORE_DYN_CAST(Consumer &, object))));
+                return (*act).equals(*CORE_CAST(const Consumer<T> &, o).act);
             }
 
             /**
-             * Construct new Consumer with method handle, and instance used
-             * to call given method.
-             *
-             * @tparam Method The method signature
-             * @tparam X The type of object used to call given method
-             *
-             * @param m The method handle
-             * @param o The object reference used to call given method
+             * Return shadow copy of this consumer
              */
-            template<class Method, class X>
-            static Consumer fromMethod(Method &&m, X &&obj) {
-                /**
-                 * Check If specified method is callable with this consumer parameter by the given object:
-                 * <code> obj.method(parameter) </code>
-                 */
-                CORE_STATIC_ASSERT((Class<Method>::template isCallable<X, T>()),
-                                   "Could not call given method with given object and consumer parameter");
-                return Consumer((Method &&) m, (X &&) obj);
+            Object &clone() const override {
+                return native::Unsafe::U.createInstance<Consumer<T>>(*this);
+            }
+
+            /**
+             * Returns a composed <b>Consumer</b> that performs, in sequence, this
+             * operation followed by the <b>after</b> operation. If performing either
+             * operation throws an exception, it is relayed to the caller of the
+             * composed operation.  If performing this operation throws an exception,
+             * the <b>after</b> operation will not be performed.
+             *
+             * @param after the operation to perform after this operation
+             */
+            Consumer<T> andThen(const Consumer<T> &after) {
+                return [after, *this](Param p) {
+                    accept(p);
+                    after.accept(p);
+                };
+            }
+
+            /**
+             * Destroy this consumer
+             */
+            virtual ~Consumer() {
+                native::Unsafe::U.destroyInstance(*act);
+                act = null;
             }
 
         };
+
+#if CORE_TEMPLATE_TYPE_DEDUCTION
+        Consumer() -> Consumer<Object>;
+        template<class Return, class Param, class ...Params>
+        Consumer(Return(Param, Params...)) -> Consumer<typename Class<Param>::Object>;
+#endif
 
     } // core
 } // Functor

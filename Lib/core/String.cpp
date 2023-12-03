@@ -44,8 +44,13 @@ namespace core {
             } else {
                 gbyte hb = Character::highByte(ch);
                 gbyte lb = Character::lowByte(ch);
-                dst[index] = hb;
-                dst[index + 1LL] = lb;
+                if (native::Unsafe::BIG_ENDIAN) {
+                    dst[index] = hb;
+                    dst[index + 1LL] = lb;
+                } else {
+                    dst[index] = lb;
+                    dst[index + 1LL] = hb;
+                }
             }
         }
 
@@ -53,13 +58,19 @@ namespace core {
             if (!src || idx < 0)
                 return Character::MIN_VALUE;
             glong index = idx * 2LL;
-            return Character::joinBytes(src[index], src[index + 1]);
+            if (native::Unsafe::BIG_ENDIAN)
+                return Character::joinBytes(src[index], src[index + 1]);
+            else
+                return Character::joinBytes(src[index + 1], src[index]);
         }
 
         PBYTE generate(gint count) {
             if (count <= 0)
                 return null;
-            return (PBYTE) U.allocateMemory(Integer::toUnsignedLong(count) << 1LL);
+            PBYTE address = (PBYTE) U.allocateMemory(Integer::toUnsignedLong(count) * 2LL);
+            if (address == null) generate(count);
+            ((gchar *) address)[Integer::toUnsignedLong(count)] = 0;
+            return address;
         }
 
         gint decodeUTF8_UTF16(PCBYTE in, PBYTE out, glong limit) {
@@ -626,7 +637,7 @@ namespace core {
         switch (bpc) {
             case 1: {
                 PCBYTE b = (PCBYTE) addr;
-                length = decodeUTF8_UTF16(b, null, count);
+                length = decodeUTF8_UTF16(b, null, count - offset);
                 value = generate(length);
                 len = length;
                 decodeUTF8_UTF16(b, value, count);
@@ -634,7 +645,7 @@ namespace core {
             }
             case 2: {
                 PCBYTE2 b = (PCBYTE2) addr;
-                length = (gint) count;
+                length = (gint) (count - offset);
                 value = generate(length);
                 len = length;
                 for (gint i = 0; i < length; ++i) {
@@ -646,7 +657,7 @@ namespace core {
             case 4: {
                 PCBYTE4 b = (PCBYTE4) addr;
                 gint count2 = 0;
-                count = (gint) Long::min(Integer::MAX_VALUE, count);
+                count = (gint) Long::min(Integer::MAX_VALUE, count - offset);
                 for (gint i = 0; i < count; ++i) {
                     count2 += charCount(b[i]);
                 }

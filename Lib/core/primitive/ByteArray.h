@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Byte Array
+             */
+            ByteArray(): ByteArray(0) {}
+
+            /**
              * Construct new ByteArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

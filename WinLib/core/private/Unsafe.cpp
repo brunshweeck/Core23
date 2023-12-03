@@ -39,7 +39,7 @@ namespace core {
                 return true;
             }
 
-            static gbool checkOffset(const Object &o, gint offset) {
+            static gbool checkOffset(const Object &o, glong offset) {
                 if (Unsafe::ADDRESS_SIZE == 4) {
                     // Note: this will also check for negative offsets
                     if (!is32Bits(offset)) {
@@ -76,15 +76,15 @@ namespace core {
 
 
         glong Unsafe::allocateMemoryImpl(glong sizeInBytes) {
-            return (glong) GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, sizeInBytes);
+            return (glong) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, sizeInBytes);
         }
 
         glong Unsafe::reallocateMemoryImpl(glong address, glong sizeInBytes) {
-            return (glong) GlobalReAlloc((HANDLE) address, sizeInBytes, GMEM_MOVEABLE);
+            return (glong) LocalReAlloc((HANDLE) address, sizeInBytes, LMEM_FIXED | LMEM_ZEROINIT);
         }
 
         void Unsafe::freeMemoryImpl(glong address) {
-            GlobalFree((HANDLE) address);
+            LocalFree((HANDLE) address);
             deleteInstance(address);
         }
 

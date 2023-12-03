@@ -8,12 +8,14 @@
 #include "Map.h"
 
 namespace core {
+    namespace util {
 
-    template<class K, class V>
-    class HashMap: public Map<K, V>{
+        template<class K, class V>
+        class HashMap : public Map<K, V> {
 
-    };
+        };
 
+    }
 } // core
 
 #endif //CORE23_HASHMAP_H

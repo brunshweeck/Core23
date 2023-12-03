@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Int Array
+             */
+            IntArray(): IntArray(0) {}
+
+            /**
              * Construct new IntArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

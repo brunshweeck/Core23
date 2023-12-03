@@ -1,18 +1,17 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.26)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.25)
 
 PROJECT(Core23 VERSION 2023.6.5 LANGUAGES CXX)
 
-SET(CMAKE_CXX_STANDARD 23)
+SET(CMAKE_CXX_STANDARD 20)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Adding compatible lib folder
 IF (WIN32)
-#    The Operating System is Windows (Vista, Windows X, ...)
+#    The Operating System is Windows (Vista, MS-DOS, MS-Windows, ...)
     ADD_SUBDIRECTORY(WinLib)
-    IF (MSVC)
-        ADD_COMPILE_OPTIONS("/utf8")
-    ENDIF ()
 ELSE ()
-#    The Operating System is Unix (Linux, Apple, Android, ...)
+#    The Operating System is Unix (Unix, Linux, Apple, Android, ...)
     ADD_SUBDIRECTORY(UnixLib)
 ENDIF ()
 

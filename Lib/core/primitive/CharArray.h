@@ -41,6 +41,11 @@ namespace core {
         public:
 
             /**
+             * Construct new empty Char Array
+             */
+            CharArray(): CharArray(0) {}
+
+            /**
              * Construct new CharArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.

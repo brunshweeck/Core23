@@ -25,7 +25,7 @@ namespace core {
     namespace native {
 
         const gint Unsafe::ADDRESS_SIZE = CORE_ADDRESS_SIZE;
-        const gbool Unsafe::BIG_ENDIAN = CORE_BYTE_ORDER == BIG_ENDIAN;
+        const gbool Unsafe::BIG_ENDIAN = CORE_BYTE_ORDER == CORE_BIG_ENDIAN;
         const gint Unsafe::ARRAY_BOOLEAN_BASE_OFFSET = 16;
         const gint Unsafe::ARRAY_BYTE_BASE_OFFSET = ARRAY_BOOLEAN_BASE_OFFSET;
         const gint Unsafe::ARRAY_CHAR_BASE_OFFSET = 16;
@@ -487,8 +487,8 @@ namespace core {
                             } else {
                                 if (heap == tail)
                                     tail = heap1;
+                                heap1->next = heap->next;
                             }
-                            heap1->next = heap->next;
                             heap->address = 0;
                             heap->next = null;
                             delete heap;

@@ -16,7 +16,7 @@ namespace core {
      * method to treat directly with class and instance.
      * For other class operations see header file <core/private/Unsafe.h>
      */
-    template <class T>
+    template<class T>
     class Class final {
     private:
 
@@ -808,7 +808,8 @@ namespace core {
             CORE_STATIC_ASSERT(Class<V8>::template isConvertible<_>(), "couldn't cast eighth argument to target type");
             CORE_STATIC_ASSERT(Class<V9>::template isConvertible<_>(), "couldn't cast ninth argument to target type");
             CORE_STATIC_ASSERT(Class<V10>::template isConvertible<_>(), "couldn't cast ninth argument to target type");
-            CORE_STATIC_ASSERT(allIsTrue(Class<V>::template isConvertible<_>()...), "couldn't cast arguments to target type");
+            CORE_STATIC_ASSERT(allIsTrue(Class<V>::template isConvertible<_>()...),
+                               "couldn't cast arguments to target type");
             return i <= 0 ? defaultValue :
                    i == 1 ? (_) (V1 &&) v1 :
                    i == 2 ? (_) (V2 &&) v2 :
@@ -824,7 +825,7 @@ namespace core {
         }
 
         template<gint i, class ...VarArgs>
-        CORE_ALIAS(TemplateParamters,, native::Templates::VA_ARGS<i, T, VarArgs...>);
+        CORE_ALIAS(TParams, , typename native::Templates::VA_ARGS<i, T, VarArgs...>::Type);
 
         CORE_WARNING_POP
 

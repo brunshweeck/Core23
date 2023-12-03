@@ -5,10 +5,11 @@
 #ifndef CORE23_FUNCTIONAL_H
 #define CORE23_FUNCTIONAL_H
 
+#include <core/private/Unsafe.h>
 #include <core/Object.h>
 
 namespace core {
-    namespace Function {
+    namespace util {
 
         /**
          * An informative interface type used to indicate that an interface
@@ -27,200 +28,90 @@ namespace core {
          *
          */
         interface Functional : Object {
-        protected:
             /**
-             * Construct new Functional Object
+             * Simplified form (signature) of function ( function(Params...) -> Return )
              */
-            CORE_FAST Functional() {};
+            template<class T>
+            CORE_ALIAS(Prim, typename Class<T>::Primitive);
+            // 1- Return type (R)
+            // objects types -> primitives type
+            // objects references -> objects references
+            // abstract object -> abstract object reference
+            // non-basic objects types -> objects type
+            template<class R>
+            CORE_ALIAS(Return, typename Class<Prim<R>>::template
+                    If<Class<Prim<R>>::isPrimitive() && !Class<R>::isReference(),, typename Class<Prim<R>>::Reference >);
+            // 2- Parameters types (P)
+            // non-reference type -> const reference type.
+            // reference type -> reference type
+            template<class P>
+            CORE_ALIAS(Params, typename Class<P>::template If<Class<P>::isReference(),, typename Class<P>::CRef >);
+            // 3- function signature (F)
+            // simple lambda function -> function
+            // high lambda function -> high lambda function
+            // callable object -> callable object
+            //
+            template<class F, class R>
+            CORE_ALIAS(Sign, typename Class<F>::template If<Class<F>::isFunction(),,
+                       typename Class<R()>::template If<Class<F>::template isConvertible<R()>() >>);
+
+            template<class F, class P, class R>
+            CORE_ALIAS(UnarySign, typename Class<F>::template If<Class<F>::isFunction(),, typename Class<R(P)>::template
+            If<Class<F>::template isConvertible<R(P)>(), typename Class<R(P & )>::template
+            If<Class<F>::template isConvertible<R(P & )>(), typename Class<R(P && )>::template
+            If<Class<F>::template isConvertible<R(P && )>(), typename Class<R(const P)>::template
+            If<Class<F>::template isConvertible<R(const P)>(), typename Class<R(const P &)>::template
+            If<Class<F>::template isConvertible<R(const P &)>(), typename Class<R(const P &&)>::template
+                    If < Class<F>::template isConvertible<R(const P &&)>(), F >> >>>>>);
+
+            template<class F, class P1, class P2, class R>
+            CORE_ALIAS(BinarySign, typename Class<F>::template If<Class<F>::isFunction(),,
+
+                           typename Class<R(P1, P2)>::template If<Class<F>::template isConvertible<R(P1, P2)>(),
+                           typename Class<R(P1, P2&)>::template If<Class<F>::template isConvertible<R(P1, P2&)>(),
+                           typename Class<R(P1, P2&&)>::template If<Class<F>::template isConvertible<R(P1, P2&&)>(),
+                           typename Class<R(P1, const P2)>::template If<Class<F>::template isConvertible<R(P1, const P2)>(),
+                           typename Class<R(P1, const P2&)>::template If<Class<F>::template isConvertible<R(P1, const P2&)>(),
+                           typename Class<R(P1, const P2&&)>::template If<Class<F>::template isConvertible<R(P1, const P2&&)>(),
+
+                           typename Class<R(P1&, P2)>::template If<Class<F>::template isConvertible<R(P1&, P2)>(),
+                           typename Class<R(P1&, P2&)>::template If<Class<F>::template isConvertible<R(P1&, P2&)>(),
+                           typename Class<R(P1&, P2&&)>::template If<Class<F>::template isConvertible<R(P1&, P2&&)>(),
+                           typename Class<R(P1&, const P2)>::template If<Class<F>::template isConvertible<R(P1&, const P2)>(),
+                           typename Class<R(P1&, const P2&)>::template If<Class<F>::template isConvertible<R(P1&, const P2&)>(),
+                           typename Class<R(P1&, const P2&&)>::template If<Class<F>::template isConvertible<R(P1&, const P2&&)>(),
+
+                           typename Class<R(P1&&, P2)>::template If<Class<F>::template isConvertible<R(P1&&, P2)>(),
+                           typename Class<R(P1&&, P2&)>::template If<Class<F>::template isConvertible<R(P1&&, P2&)>(),
+                           typename Class<R(P1&&, P2&&)>::template If<Class<F>::template isConvertible<R(P1&&, P2&&)>(),
+                           typename Class<R(P1&&, const P2)>::template If<Class<F>::template isConvertible<R(P1&&, const P2)>(),
+                           typename Class<R(P1&&, const P2&)>::template If<Class<F>::template isConvertible<R(P1&&, const P2&)>(),
+                           typename Class<R(P1&&, const P2&&)>::template If<Class<F>::template isConvertible<R(P1&&, const P2&&)>(),
+
+                           typename Class<R(const P1, P2)>::template If<Class<F>::template isConvertible<R(const P1, P2)>(),
+                           typename Class<R(const P1, P2&)>::template If<Class<F>::template isConvertible<R(const P1, P2&)>(),
+                           typename Class<R(const P1, P2&&)>::template If<Class<F>::template isConvertible<R(const P1, P2&&)>(),
+                           typename Class<R(const P1, const P2)>::template If<Class<F>::template isConvertible<R(const P1, const P2)>(),
+                           typename Class<R(const P1, const P2&)>::template If<Class<F>::template isConvertible<R(const P1, const P2&)>(),
+                           typename Class<R(const P1, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1, const P2&&)>(),
+
+                           typename Class<R(const P1&, P2)>::template If<Class<F>::template isConvertible<R(const P1&, P2)>(),
+                           typename Class<R(const P1&, P2&)>::template If<Class<F>::template isConvertible<R(const P1&, P2&)>(),
+                           typename Class<R(const P1&, P2&&)>::template If<Class<F>::template isConvertible<R(const P1&, P2&&)>(),
+                           typename Class<R(const P1&, const P2)>::template If<Class<F>::template isConvertible<R(const P1&, const P2)>(),
+                           typename Class<R(const P1&, const P2&)>::template If<Class<F>::template isConvertible<R(const P1&, const P2&)>(),
+                           typename Class<R(const P1&, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1&, const P2&&)>(),
+
+                           typename Class<R(const P1&&, P2)>::template If<Class<F>::template isConvertible<R(const P1&&, P2)>(),
+                           typename Class<R(const P1&&, P2&)>::template If<Class<F>::template isConvertible<R(const P1&&, P2&)>(),
+                           typename Class<R(const P1&&, P2&&)>::template If<Class<F>::template isConvertible<R(const P1&&, P2&&)>(),
+                           typename Class<R(const P1&&, const P2)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2)>(),
+                           typename Class<R(const P1&&, const P2&)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2&)>(),
+                           typename Class<R(const P1&&, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2&&)>(),
+
+                                   F >>>>>>> >>>>>> >>>>>> >>>>>> >>>>>> >>>>>>);
+
         };
-
-        template<class R>
-        interface ZeroFunction : Functional {
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<R>(), "Illegal Template type");
-            CORE_STATIC_ASSERT(!Class<R>::isConstant(), "Return type must be not const");
-            CORE_STATIC_ASSERT(!Class<R>::isVolatile(), "Return type must be not volatile");
-
-        protected:
-            /**
-             * Simplified form of Return type (R -> RS)
-             * Integer -> gint (non-reference to primitive)
-             * Integer& -> Integer& (no effect)
-             * AbstractClass -> AbstractClass&
-             */
-            CORE_ALIAS(RP, typename Class<R>::Primitive);
-            CORE_ALIAS(RS, Class<RP>::template If<Class<RP>::isPrimitive() && !Class<R>::isReference(),,
-                       Class<RP>::Reference >);
-
-            /**
-             * Simplified form of Lambda function
-             * R(*)() -> R(*)()
-             * []() -> R ==> R(*)()
-             * [...]() -> R ==> [...]() -> R
-             */
-            template<class Ln, class RS>
-            CORE_ALIAS(Fn, typename Class<Ln>::template If<Class<Ln>::isFunction(),,
-                       typename Class<RS()>::template If<Class<Ln>::template isConvertible<RS()>(), Ln>>);
-
-            CORE_FAST ZeroFunction() {}
-
-        public:
-            virtual RS operator()() const = 0;
-        };
-
-        template<class T, class R>
-        interface UnaryFunction : Functional {
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Illegal Parameter type");
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "Parameter type must be non-void");
-            CORE_STATIC_ASSERT(!Class<T>::isVolatile(), "Functional interface not Support volatile parameter");
-
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<R>(), "Illegal Return type");
-            CORE_STATIC_ASSERT(!Class<R>::isConstant(), "Return type must be explicitly not const");
-            CORE_STATIC_ASSERT(!Class<R>::isVolatile(), "Functional interface not Support volatile parameter");
-
-        protected:
-            /**
-             * Simplified form of Return type (R -> RS)
-             * Integer -> gint (non-reference to primitive)
-             * Integer& -> Integer& (no effect)
-             * AbstractClass -> AbstractClass&
-             */
-            CORE_ALIAS(RP, typename Class<R>::Primitive);
-            CORE_ALIAS(RS, Class<RP>::template If<Class<RP>::isPrimitive() && !Class<R>::isReference(),,
-                       Class<RP>::Reference >);
-
-            /**
-             * Simplified form of Lambda function (Ln -> Fn)
-             * R(*)(T) -> R(*)(T)
-             * [](T) -> R ==> R(*)(T)
-             * [...](T) -> R ==> [...](T) -> R
-             */
-            template<class Ln, class RS, class TS>
-            CORE_ALIAS(Fn, typename Class<Ln>::template If<Class<Ln>::isFunction(),, typename Class<RS(TS)>::template
-            If<Class<Ln>::template isConvertible<RS(TS)>(), typename Class<RS(TS & )>::template
-            If<Class<Ln>::template isConvertible<RS(TS & )>(), typename Class<RS(TS && )>::template
-            If<Class<Ln>::template isConvertible<RS(TS && )>(), typename Class<RS(const TS)>::template
-            If<Class<Ln>::template isConvertible<RS(const TS)>(), typename Class<RS(const TS &)>::template
-            If<Class<Ln>::template isConvertible<RS(const TS &)>(), typename Class<RS(const TS &&)>::template
-                    If < Class<Ln>::template isConvertible<RS(const TS &&)>(), Ln >> >>>>>);
-
-            /**
-             * Simplified form of Parameter type (T -> TS)
-             * Integer -> gint
-             * Integer -> Integer&
-             * AbstractClass -> const AbstractClass&
-             */
-            CORE_ALIAS(TP, typename Class<T>::Primitive);
-            CORE_ALIAS(TS, Class<TP>::template If<Class<TP>::isPrimitive() && !Class<T>::isReference(),,
-                       Class<TP>::Reference >);
-
-            CORE_FAST UnaryFunction() {}
-
-        public:
-            virtual RS operator()(TS t) const = 0;
-        };
-
-        template<class T, class U, class R>
-        interface BinaryFunction : Functional {
-
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Illegal First Parameter type");
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "First Parameter type must be non-void");
-            CORE_STATIC_ASSERT(!Class<T>::isVolatile(), "Functional interface not Support volatile parameter");
-
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<U>(), "Illegal Second Parameter type");
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<U>(), "Second Parameter type must be non-void");
-            CORE_STATIC_ASSERT(!Class<U>::isVolatile(), "Functional interface not Support volatile parameter");
-
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<R>(), "Illegal Return type");
-            CORE_STATIC_ASSERT(!Class<R>::isConstant(), "Return type must be explicitly not const");
-            CORE_STATIC_ASSERT(!Class<R>::isVolatile(), "Functional interface not Support volatile parameter");
-
-        protected:
-            /**
-             * Simplified form of Return type (R -> RS)
-             * Integer -> gint (non-reference to primitive)
-             * Integer& -> Integer& (no effect)
-             * AbstractClass -> AbstractClass&
-             */
-            CORE_ALIAS(RP, typename Class<R>::Primitive);
-            CORE_ALIAS(RS, Class<RP>::template If<Class<RP>::isPrimitive() && !Class<R>::isReference(),,
-                       Class<RP>::Reference >);
-
-            /**
-             * Simplified form of Lambda function (Ln -> Fn)
-             * R(*)(T) -> R(*)(T)
-             * [](T) -> R ==> R(*)(T)
-             * [...](T) -> R ==> [...](T) -> R
-             */
-            template<class Ln, class RS, class TS, class US>
-            CORE_ALIAS(Fn, typename Class<Ln>::template If<Class<Ln>::isFunction(),,
-                       
-                       typename Class<RS(TS, US)>::template If<Class<Ln>::template isConvertible<RS(TS, US)>(),
-                       typename Class<RS(TS, US&)>::template If<Class<Ln>::template isConvertible<RS(TS, US&)>(),
-                       typename Class<RS(TS, US&&)>::template If<Class<Ln>::template isConvertible<RS(TS, US&&)>(),
-                       typename Class<RS(TS, const US)>::template If<Class<Ln>::template isConvertible<RS(TS, const US)>(),
-                       typename Class<RS(TS, const US&)>::template If<Class<Ln>::template isConvertible<RS(TS, const US&)>(),
-                       typename Class<RS(TS, const US&&)>::template If<Class<Ln>::template isConvertible<RS(TS, const US&&)>(),
-
-                       typename Class<RS(TS&, US)>::template If<Class<Ln>::template isConvertible<RS(TS&, US)>(),
-                       typename Class<RS(TS&, US&)>::template If<Class<Ln>::template isConvertible<RS(TS&, US&)>(),
-                       typename Class<RS(TS&, US&&)>::template If<Class<Ln>::template isConvertible<RS(TS&, US&&)>(),
-                       typename Class<RS(TS&, const US)>::template If<Class<Ln>::template isConvertible<RS(TS&, const US)>(),
-                       typename Class<RS(TS&, const US&)>::template If<Class<Ln>::template isConvertible<RS(TS&, const US&)>(),
-                       typename Class<RS(TS&, const US&&)>::template If<Class<Ln>::template isConvertible<RS(TS&, const US&&)>(),
-
-                       typename Class<RS(TS&&, US)>::template If<Class<Ln>::template isConvertible<RS(TS&&, US)>(),
-                       typename Class<RS(TS&&, US&)>::template If<Class<Ln>::template isConvertible<RS(TS&&, US&)>(),
-                       typename Class<RS(TS&&, US&&)>::template If<Class<Ln>::template isConvertible<RS(TS&&, US&&)>(),
-                       typename Class<RS(TS&&, const US)>::template If<Class<Ln>::template isConvertible<RS(TS&&, const US)>(),
-                       typename Class<RS(TS&&, const US&)>::template If<Class<Ln>::template isConvertible<RS(TS&&, const US&)>(),
-                       typename Class<RS(TS&&, const US&&)>::template If<Class<Ln>::template isConvertible<RS(TS&&, const US&&)>(),
-                       
-                       typename Class<RS(const TS, US)>::template If<Class<Ln>::template isConvertible<RS(const TS, US)>(),
-                       typename Class<RS(const TS, US&)>::template If<Class<Ln>::template isConvertible<RS(const TS, US&)>(),
-                       typename Class<RS(const TS, US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS, US&&)>(),
-                       typename Class<RS(const TS, const US)>::template If<Class<Ln>::template isConvertible<RS(const TS, const US)>(),
-                       typename Class<RS(const TS, const US&)>::template If<Class<Ln>::template isConvertible<RS(const TS, const US&)>(),
-                       typename Class<RS(const TS, const US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS, const US&&)>(),
-
-                       typename Class<RS(const TS&, US)>::template If<Class<Ln>::template isConvertible<RS(const TS&, US)>(),
-                       typename Class<RS(const TS&, US&)>::template If<Class<Ln>::template isConvertible<RS(const TS&, US&)>(),
-                       typename Class<RS(const TS&, US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS&, US&&)>(),
-                       typename Class<RS(const TS&, const US)>::template If<Class<Ln>::template isConvertible<RS(const TS&, const US)>(),
-                       typename Class<RS(const TS&, const US&)>::template If<Class<Ln>::template isConvertible<RS(const TS&, const US&)>(),
-                       typename Class<RS(const TS&, const US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS&, const US&&)>(),
-
-                       typename Class<RS(const TS&&, US)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, US)>(),
-                       typename Class<RS(const TS&&, US&)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, US&)>(),
-                       typename Class<RS(const TS&&, US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, US&&)>(),
-                       typename Class<RS(const TS&&, const US)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, const US)>(),
-                       typename Class<RS(const TS&&, const US&)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, const US&)>(),
-                       typename Class<RS(const TS&&, const US&&)>::template If<Class<Ln>::template isConvertible<RS(const TS&&, const US&&)>(),
-
-                               Ln >>>>>>> >>>>>> >>>>>> >>>>>> >>>>>> >>>>>>);
-
-            /**
-             * Simplified form of Parameter type (T -> TS), (U -> US)
-             * Integer -> gint
-             * Integer -> Integer&
-             * AbstractClass -> const AbstractClass&
-             */
-            CORE_ALIAS(TP, typename Class<T>::Primitive);
-            CORE_ALIAS(TS, Class<TP>::template If<Class<TP>::isPrimitive() && !Class<T>::isReference(),,
-                       Class<TP>::Reference >);
-
-            CORE_ALIAS(UP, typename Class<U>::Primitive);
-            CORE_ALIAS(US, Class<UP>::template If<Class<UP>::isPrimitive() && !Class<U>::isReference(),,
-                       Class<UP>::Reference >);
-
-            CORE_FAST BinaryFunction() {}
-
-        public:
-            virtual RS operator()(TS t, US u) const = 0;
-        };
-
     } // core
-
-    using namespace Function;
-} // Functor
-
+} // util
 #endif //CORE23_FUNCTIONAL_H

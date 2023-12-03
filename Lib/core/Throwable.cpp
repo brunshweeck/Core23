@@ -12,111 +12,7 @@ namespace core {
 
     using native::Unsafe;
 
-    Throwable::Throwable() CORE_NOTHROW:
-            cse(null), stack(null), stackSize(0), isTemporary(false) {}
-
-    Throwable::Throwable(String message) CORE_NOTHROW:
-            msg(Unsafe::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {}
-
-    Throwable::Throwable(String message, const Throwable &cause) CORE_NOTHROW:
-            msg(Unsafe::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {
-        setCause(cause);
-    }
-
-    Throwable::Throwable(const Throwable &thr) CORE_NOTHROW: Throwable() {
-        if (thr.isTemporary) {
-            msg = Unsafe::moveInstance(thr.msg);
-            cse = thr.cse;
-            stack = thr.stack;
-            stackSize = thr.stackSize;
-            CORE_CAST(Throwable &, thr).cse = null;
-            CORE_CAST(Throwable &, thr).stack = null;
-            CORE_CAST(Throwable &, thr).stackSize = 0;
-            CORE_CAST(Throwable &, thr).isTemporary = false;
-            Unsafe::U.destroyInstance(thr);
-        } else {
-            msg = thr.msg;
-            if (thr.cse != null)
-                cse = &Unsafe::U.copyInstance(*thr.cse, true);
-            copyStack(thr);
-        }
-    }
-
-    Throwable::Throwable(Throwable &&thr) CORE_NOTHROW {
-        msg = Unsafe::moveInstance(thr.msg);
-        cse = thr.cse;
-        stack = thr.stack;
-        stackSize = thr.stackSize;
-        thr.cse = null;
-        thr.stack = null;
-        thr.stackSize = 0;
-        thr.isTemporary = false;
-    }
-
-    String Throwable::message() const {
-        return msg;
-    }
-
-    const Throwable &Throwable::cause() const {
-        return *(cse == null ? this : cse);
-    }
-
-    void Throwable::setCause(const Throwable &cause) {
-        if (&cause == this)
-            ArgumentException("Self-causation not authorized").throws(__trace("core.Throwable"));
-        cse = &Unsafe::U.copyInstance(cause, true);
-    }
-
-    String Throwable::toString() const {
-        String cln = classname();
-        if (msg.isEmpty())
-            return cln;
-        return cln + ": " + msg;
-    }
-
-    gbool Throwable::equals(const Object &object) const {
-        if (!Class<Throwable>::hasInstance(object))
-            return false;
-        if (this == &object)
-            return true;
-        const Throwable &th = (Throwable &) object;
-        if (stackSize != th.stackSize)
-            return false;
-        if (msg != th.msg)
-            return false;
-        if (classname() != th.classname())
-            return false;
-        if (cse == null && th.cse != null || cse != null && th.cse == null)
-            return false;
-        if (cse != null && th.cse != null)
-            if (*cse != *th.cse)
-                return false;
-        for (int i = 0; i < stackSize; ++i) {
-            if (*stack[i] != *th.stack[i])
-                return false;
-        }
-        return true;
-    }
-
-    void Throwable::throws(const Trace &trace) const {
-        Throwable &th = Unsafe::U.copyInstance(*this);
-        th.isTemporary = true;
-        th.updateStack(trace);
-        Unsafe::moveInstance(th).raise();
-    }
-
-    Throwable::~Throwable() CORE_NOTHROW {
-        isTemporary = false;
-        if (stackSize > 0) {
-            for (int i = 0; i < stackSize; ++i) {
-                Unsafe::U.destroyInstance(stack[i][0]);
-                stack[i] = null;
-            }
-            stackSize = 0;
-            stack = null;
-        }
-        cse = null;
-    }
+    CORE_ALIAS(U, Unsafe);
 
     namespace {
         gint putString(const String &str, gchar in[], gint offset, gint length) {
@@ -167,7 +63,140 @@ namespace core {
             return offset;
         }
 
+    }
 
+    namespace {
+        char basic_alloc[4096] = {};
+
+        const char *StrToCStr(const String &str) {
+            static gchar in[4096] = {};
+            static char out[8192] = {};
+            gint i = putString(str, in, 0, 4096);
+            in[i] = 0;
+            gint j = encodeUTF16_UTF8(in, 4096, out, 0, 8192);
+            out[j] = 0;
+            return out;
+        }
+
+    }
+
+    Throwable::Throwable() CORE_NOTHROW:
+#ifdef CORE_COMPILER_MSVC
+            native::GENERIC_THROWABLE("", 0),
+#endif
+            cse(null), stack(null), stackSize(0), isTemporary(false) {}
+
+    Throwable::Throwable(String message) CORE_NOTHROW:
+#ifdef CORE_COMPILER_MSVC
+            native::GENERIC_THROWABLE(StrToCStr(message), 0),
+#endif
+            msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {}
+
+    Throwable::Throwable(String message, const Throwable &cause) CORE_NOTHROW:
+#ifdef CORE_COMPILER_MSVC
+            native::GENERIC_THROWABLE(StrToCStr(message), 0),
+#endif
+            msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {
+        setCause(cause);
+    }
+
+    Throwable::Throwable(const Throwable &thr) CORE_NOTHROW: Throwable() {
+        if (thr.isTemporary) {
+            msg = U::moveInstance(thr.msg);
+            cse = thr.cse;
+            stack = thr.stack;
+            stackSize = thr.stackSize;
+            CORE_CAST(Throwable &, thr).cse = null;
+            CORE_CAST(Throwable &, thr).stack = null;
+            CORE_CAST(Throwable &, thr).stackSize = 0;
+            CORE_CAST(Throwable &, thr).isTemporary = false;
+            U::U.destroyInstance(thr);
+        } else {
+            msg = thr.msg;
+            if (thr.cse != null)
+                cse = &U::U.copyInstance(*thr.cse, true);
+            copyStack(thr);
+        }
+    }
+
+    Throwable::Throwable(Throwable &&thr) CORE_NOTHROW:
+#ifdef CORE_COMPILER_MSVC
+            native::GENERIC_THROWABLE(thr)
+#endif
+{
+        msg = U::moveInstance(thr.msg);
+        cse = thr.cse;
+        stack = thr.stack;
+        stackSize = thr.stackSize;
+        thr.cse = null;
+        thr.stack = null;
+        thr.stackSize = 0;
+        thr.isTemporary = false;
+    }
+
+    String Throwable::message() const {
+        return msg;
+    }
+
+    const Throwable &Throwable::cause() const {
+        return *(cse == null ? this : cse);
+    }
+
+    void Throwable::setCause(const Throwable &cause) {
+        if (&cause == this)
+            ArgumentException("Self-causation not authorized").throws(__trace("core.Throwable"));
+        cse = &U::U.copyInstance(cause, true);
+    }
+
+    String Throwable::toString() const {
+        String cln = classname();
+        if (msg.isEmpty())
+            return cln;
+        return cln + ": " + msg;
+    }
+
+    gbool Throwable::equals(const Object &object) const {
+        if (!Class<Throwable>::hasInstance(object))
+            return false;
+        if (this == &object)
+            return true;
+        const Throwable &th = (Throwable &) object;
+        if (stackSize != th.stackSize)
+            return false;
+        if (msg != th.msg)
+            return false;
+        if (classname() != th.classname())
+            return false;
+        if (cse == null && th.cse != null || cse != null && th.cse == null)
+            return false;
+        if (cse != null && th.cse != null)
+            if (*cse != *th.cse)
+                return false;
+        for (int i = 0; i < stackSize; ++i) {
+            if (*stack[i] != *th.stack[i])
+                return false;
+        }
+        return true;
+    }
+
+    void Throwable::throws(const Trace &trace) const {
+        Throwable &th = U::U.copyInstance(*this);
+        th.isTemporary = true;
+        th.updateStack(trace);
+        U::moveInstance(th).raise();
+    }
+
+    Throwable::~Throwable() CORE_NOTHROW {
+        isTemporary = false;
+        if (stackSize > 0) {
+            for (int i = 0; i < stackSize; ++i) {
+                U::U.destroyInstance(stack[i][0]);
+                stack[i] = null;
+            }
+            stackSize = 0;
+            stack = null;
+        }
+        cse = null;
     }
 
     Throwable::PRINTSTREAM Throwable::what() const CORE_NOTHROW {
@@ -182,7 +211,7 @@ namespace core {
             gint limit = putString(thr->toString(), in, 0, 4096);
             i = encodeUTF16_UTF8(in, limit, out, i, 8192);
             if (thr->stack != null && thr->stackSize > 0) {
-                for (gint j = stackSize-1; j >= 0; --j) {
+                for (gint j = stackSize - 1; j >= 0; --j) {
                     out[i++] = '\n';
                     out[i++] = '\t';
                     out[i++] = 'a';
@@ -216,6 +245,7 @@ namespace core {
             out[i++] = ' ';
             thr = thr->cse;
         }
+        out[i++] = 0;
         return out;
     }
 
@@ -225,7 +255,7 @@ namespace core {
             st[thr.stackSize + 1] = (STACKPOINT) 0x1;
             stackSize = 0;
             for (int i = 0; i < thr.stackSize; ++i) {
-                st[i] = &Unsafe::U.copyInstance(thr.stack[i][0], true);
+                st[i] = &U::U.copyInstance(thr.stack[i][0], true);
             }
             stack = st;
             stackSize = thr.stackSize;
@@ -243,10 +273,10 @@ namespace core {
             // removing of first trace
             for (int i = 1; i < 1000; ++i)
                 stack[i] = stack[i + 1];
-            stack[999] = &Unsafe::U.copyInstance(trace, true);
-        } elif (stack[stackSize] != (STACKPOINT) 0x1) {
+            stack[999] = &U::U.copyInstance(trace, true);
+        } elif (stackSize > 0 && stack[stackSize] != (STACKPOINT) 0x1) {
             newSize = stackSize + 1;
-            stack[stackSize] = &Unsafe::U.copyInstance(trace, true);
+            stack[stackSize] = &U::U.copyInstance(trace, true);
         } else {
             newSize = stackSize + Math::max(stackSize >> 3, 1);
             STACKTRACE st = new STACKPOINT[newSize + 1];
@@ -254,7 +284,7 @@ namespace core {
                 st[i] = stack[i];
                 stack[i] = null;
             }
-            st[stackSize] = &Unsafe::U.copyInstance(trace, true);
+            st[stackSize] = &U::U.copyInstance(trace, true);
             stack = st;
         }
         stackSize = newSize;
