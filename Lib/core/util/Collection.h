@@ -6,7 +6,7 @@
 #define CORE23_COLLECTION_H
 
 #include <core/String.h>
-#include <core/primitive/ReferenceArray.h>
+#include <core/native/ReferenceArray.h>
 #include <core/util/function/Predicate.h>
 #include "Iterator.h"
 
@@ -283,7 +283,10 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            virtual void forEach(const Consumer<const E> &action) const { iterator().forEach(action); }
+            virtual void forEach(const Consumer<E> &action) const {
+                Iterator<const E> &it = iterator();
+                while (it.hasNext()) action.accept(it.next());
+            }
 
             /**
              * Returns an array containing all of the elements in this collection.
@@ -308,11 +311,11 @@ namespace core {
                 // Estimate size of array; be prepared to see more or fewer elements
                 ReferenceArray<E> r = ReferenceArray<E>(size());
                 Iterator<const E> &it = iterator();
-                for (int i = 0; i < r.length(); i++) {
+                for (gint i = 0; i < r.length(); i++) {
                     if (!it.hasNext()) {
                         // fewer elements than expected
                         ReferenceArray<E> copy = ReferenceArray<E>(i);
-                        for (int j = 0; j < i; ++j) copy.set(j, r[j]);
+                        for (gint j = 0; j < i; ++j) copy.set(j, r[j]);
                         return copy;
                     }
                     r.set(i, it.next());
@@ -584,7 +587,7 @@ namespace core {
                 sb.append('[');
                 for (;;) {
                     const E &e = it.next();
-                    if (e == *this) sb.append("?"); else sb.append(e);
+                    if (Object::equals(e)) sb.append("?"); else sb.append(e);
                     if (!it.hasNext()) return sb.append(']').toString();
                     sb.append(',').append(' ');
                 }
@@ -661,6 +664,11 @@ namespace core {
              */
             virtual ~Collection() = default;
 
+            CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
+                               "The valid parameters type must be a class deriving from core.Object");
+
+            CORE_STATIC_ASSERT(!Class<E>::isReference() && !Class<E>::isConstant() && !Class<E>::isVolatile(),
+                               "The valid parameters type mustn't have qualifiers (const, volatile, &, &&, ...)");
         };
 
     }

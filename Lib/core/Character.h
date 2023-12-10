@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The <b> Character</b> class wraps a value of the primitive
+     * The <b> Character</b> class wraps a value of the native
      * type <b> gchar</b> in an object. An object of class
      * <b> Character</b> contains a single field whose type is
      * <b> gchar</b>.
@@ -97,7 +97,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Character: public Comparable<Character> {
+    class Character CORE_FINAL : public Object, public Comparable<Character> {
     private:
         /**
          * The value of Character
@@ -3275,7 +3275,7 @@ namespace core {
 
         /**
          * Returns the value of this <b> Character</b> object.
-         * @return  the primitive <b> gchar</b> value represented by
+         * @return  the native <b> gchar</b> value represented by
          *          this object.
          */
         CORE_FAST gchar charValue() const {
@@ -3314,7 +3314,7 @@ namespace core {
          *          Note that this is strictly a numerical comparison; it is not
          *          locale-dependent.
          */
-        gint compareTo(const Character &other) const override;
+        gint compareTo(const Character& other) const override;
 
         /**
          * Compares two <b> gchar</b> values numerically.
@@ -3348,7 +3348,7 @@ namespace core {
         /**
          * Returns a <b> String</b> object representing this
          * <b> Character</b>'s value.  The result is a string of
-         * length 1 whose sole component is the primitive
+         * length 1 whose sole component is the native
          * <b> gchar</b> value represented by this
          * <b> Character</b> object.
          *

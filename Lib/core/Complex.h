@@ -9,7 +9,7 @@
 
 namespace core {
 
-    class Complex: public Comparable<Complex> {
+    class Complex CORE_FINAL : public Object, public Comparable<Complex> {
 
     private:
         /**
@@ -35,7 +35,7 @@ namespace core {
         /**
          * Initialize newly Complex object with specified literal complex
          */
-        CORE_IMPLICIT Complex(GENERIC_COMPLEX);
+        CORE_IMPLICIT Complex(GENERIC_CPLEX);
 
         /**
          * Initialize newly Complex object with specified real and imaginary parts.
@@ -50,101 +50,77 @@ namespace core {
         /**
          * Return the real part of this Complex
          */
-        CORE_FAST gdouble real() const {
-            return rvalue;
-        }
+        CORE_FAST gdouble real() const { return rvalue; }
 
         /**
          * Return the imaginary part of this Complex
          */
-        CORE_FAST gdouble imag() const {
-            return ivalue;
-        }
+        CORE_FAST gdouble imag() const { return ivalue; }
 
         /**
          * Return true iff this Complex is real pure.
          * <p>
          * Note: Complex number is real pure iff imaginary part is zero
          */
-        CORE_FAST gbool isReal() const {
-            return ivalue == 0;
-        }
+        CORE_FAST gbool isReal() const { return ivalue == 0; }
 
         /**
          * Return true iff this Complex is imaginary pure.
          * <p>
          * Note: Complex number is imaginary pure iff real part is zero
          */
-        CORE_FAST gbool isImag() const {
-            return rvalue == 0;
-        }
+        CORE_FAST gbool isImag() const { return rvalue == 0; }
 
         /**
          * Return true if this Complex is NaN.
          * <p>
          * Note: Complex number is not-a-number if any complex part is not-a-number
          */
-        CORE_FAST gbool isNaN() const {
-            return Double::isNaN(rvalue) || Double::isNaN(ivalue);
-        }
+        CORE_FAST gbool isNaN() const { return Double::isNaN(rvalue) || Double::isNaN(ivalue); }
 
         /**
          * Return true if this Complex is infinite.
          * <p>
          * Note: Complex number is infinite if any complex part is infinite
          */
-        CORE_FAST gbool isInfinite() const {
-            return Double::isInfinite(rvalue) || Double::isInfinite(ivalue);
-        }
+        CORE_FAST gbool isInfinite() const { return Double::isInfinite(rvalue) || Double::isInfinite(ivalue); }
 
         /**
          * Return true if this Complex is finite.
          * <p>
          * Note: Complex number is finite if all complex parts are finite
          */
-        CORE_FAST gbool isFinite() const {
-            return Double::isFinite(rvalue) && Double::isFinite(ivalue);
-        }
+        CORE_FAST gbool isFinite() const { return Double::isFinite(rvalue) && Double::isFinite(ivalue);}
 
         /**
          * Return the reverse form of this Complex.
          * @example <pre>(2 + 3i).reverse() = 3 + 2i</pre>
          */
-        CORE_FAST Complex reverse() const {
-            return Complex(imag(), real());
-        }
+        CORE_FAST Complex reverse() const { return Complex(imag(), real()); }
 
         /**
          * Return the conjugate of this Complex
          */
-        CORE_FAST Complex conjugate() const {
-            return Complex(real(), -imag());
-        }
+        CORE_FAST Complex conjugate() const { return Complex(real(), -imag());}
 
         /**
          * Return the negation of this Complex
          */
-        CORE_FAST Complex negate() const {
-            return Complex(-real(), -imag());
-        }
+        CORE_FAST Complex negate() const { return Complex(-real(), -imag());}
 
         /**
          * Return the sum between this Complex and another.
          *
          * @param z The Other complex
          */
-        Complex plus(const Complex &z) const {
-            return Complex(real() + z.real(), imag() + z.imag());
-        }
+        CORE_FAST Complex plus(const Complex &z) const { return Complex(real() + z.real(), imag() + z.imag()); }
 
         /**
          * Return the subtraction between this Complex and another.
          *
          * @param z The Other complex
          */
-        Complex minus(const Complex &z) const {
-            return Complex(real() - z.real(), imag() - z.imag());
-        }
+        CORE_FAST Complex minus(const Complex &z) const { return Complex(real() - z.real(), imag() - z.imag()); }
 
         /**
          * Return the multiplication between this Complex and another.
@@ -152,10 +128,7 @@ namespace core {
          * @param z The Other complex
          */
         CORE_FAST Complex mult(const Complex &z) const {
-            return Complex(
-                    real() * z.real() - imag() * z.imag(),
-                    imag() * z.real() + real() * z.imag()
-                    );
+            return Complex(real() * z.real() - imag() * z.imag(), imag() * z.real() + real() * z.imag());
         }
 
         /**
@@ -163,8 +136,8 @@ namespace core {
          *
          * @param z The Other complex
          */
-        Complex div(const Complex &z) const {
-            return mult(z).div(z.norm());
+        CORE_FAST Complex div(const Complex &z) const {
+            return mult(z.conjugate()).div(z.real() * z.real() + z.imag() * z.imag());
         }
 
         /**
@@ -173,13 +146,11 @@ namespace core {
          * @param cplex
          *          The Other complex
          */
-        CORE_FAST Complex div(gdouble d) const {
-            return Complex(real()/d, imag()/d);
-        }
+        CORE_FAST Complex div(gdouble d) const { return Complex(real() / d, imag() / d); }
 
         /**
          * Return the value of this Complex as byte
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -188,7 +159,7 @@ namespace core {
 
         /**
          * Return the value of this Complex as short
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -197,7 +168,7 @@ namespace core {
 
         /**
          * Return the value of this Complex as int
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -206,7 +177,7 @@ namespace core {
 
         /**
          * Return the value of this Complex as long
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -215,7 +186,7 @@ namespace core {
 
         /**
          * Return the value of this Complex as float
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -224,7 +195,7 @@ namespace core {
 
         /**
          * Return the value of this Complex as double
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          *
          * @throws ArithmeticException
          *              Iff this Complex is not real pure.
@@ -315,7 +286,15 @@ namespace core {
          */
         static Complex valueOf(const String &str);
 
-        gint compareTo(const Complex &o) const override;
+        gint compareTo(const Complex &other) const override;
+
+        CORE_FAST friend Complex operator+(const Complex &z1, const Complex &z2) { return z1.plus(z2); }
+
+        CORE_FAST friend Complex operator-(const Complex &z1, const Complex &z2) { return z1.minus(z2); }
+
+        CORE_FAST friend Complex operator*(const Complex &z1, const Complex &z2) { return z1.mult(z2); }
+
+        CORE_FAST friend Complex operator/(const Complex &z1, const Complex &z2) { return z1.div(z2); }
     };
 
 } // core

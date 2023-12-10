@@ -7,8 +7,12 @@
 #include "ArgumentException.h"
 #include "Character.h"
 #include "Integer.h"
+#include "CastException.h"
 
 namespace core {
+
+    CORE_ALIAS(U, native::Unsafe);
+
     namespace {
 
         static gint findTemplateClosing(const String &str, gint start, gint limit) {
@@ -324,51 +328,37 @@ namespace core {
     }
 
     gbool Trace::equals(const Object &object) const {
-        if(!Class<Trace>::hasInstance(object))
+        if (!Class<Trace>::hasInstance(object))
             return false;
-        const Trace& trace = CORE_CAST(const Trace&, object);
-        if(trace.fLine != fLine)
+        const Trace &trace = (const Trace &) object;
+        if (trace.fLine != fLine)
             return false;
-        if(trace.fName != fName)
+        if (trace.fName != fName)
             return false;
-        if(trace.modName != modName)
+        if (trace.modName != modName)
             return false;
-        if(trace.modVersion != modVersion)
+        if (trace.modVersion != modVersion)
             return false;
-        if(trace.clsName != clsName)
+        if (trace.clsName != clsName)
             return false;
-        if(trace.metName != metName)
+        if (trace.metName != metName)
             return false;
         return true;
     }
 
-    String Trace::moduleName() const {
-        return modName;
-    }
+    String Trace::moduleName() const { return modName; }
 
-    String Trace::moduleVersion() const {
-        return modVersion;
-    }
+    String Trace::moduleVersion() const { return modVersion; }
 
-    String Trace::fileName() const {
-        return fName;
-    }
+    String Trace::fileName() const { return fName; }
 
-    String Trace::className() const {
-        return clsName;
-    }
+    String Trace::className() const { return clsName; }
 
-    String Trace::methodName() const {
-        return metName;
-    }
+    String Trace::methodName() const { return metName; }
 
-    gint Trace::lineNumber() const {
-        return fLine;
-    }
+    gint Trace::lineNumber() const { return fLine; }
 
-    Object &Trace::clone() const {
-        return native::Unsafe::U.createInstance<Trace>(*this);
-    }
+    Object &Trace::clone() const { return U::createInstance<Trace>(*this); }
 
     gint Trace::hash() const {
         return (((modName.hash()
@@ -376,6 +366,15 @@ namespace core {
                  * 7 + clsName.hash())
                 * 7 + metName.hash())
                * 7 + fLine;
+    }
+
+    gint Trace::compareTo(const Trace &other) const {
+        gint r = {};
+        return (r = modName.compareTo(other.modName)) != 0 ||
+               (r = modVersion.compareTo(other.modVersion)) != 0 ||
+               (r = clsName.compareTo(other.clsName)) != 0 ||
+               (r = metName.compareTo(other.metName)) != 0 ? r :
+               fLine - other.fLine;
     }
 
 } // core

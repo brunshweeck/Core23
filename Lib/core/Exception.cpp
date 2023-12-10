@@ -6,19 +6,15 @@
 #include "Exception.h"
 
 namespace core {
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
-    Exception::Exception(String message) CORE_NOTHROW:
-            Throwable(Unsafe::moveInstance(message)) {}
+    Exception::Exception(String message) CORE_NOTHROW: Throwable(U::moveInstance(message)) {}
 
-    Exception::Exception(String message, const Throwable &cause) CORE_NOTHROW:
-            Throwable(Unsafe::moveInstance(message), cause) {}
+    Exception::Exception(String message, const Throwable &cause) CORE_NOTHROW: Throwable(U::moveInstance(message),
+                                                                                         cause) {}
 
-    void Exception::raise() &&{
-        throw *this;
-    }
+    void Exception::raise() &&{ throw *this; }
 
-    Object &Exception::clone() const {
-        return Unsafe::U.createInstance<Exception>(*this);
-    }
+    Object &Exception::clone() const { return U::createInstance<Exception>(*this); }
+
 } // core

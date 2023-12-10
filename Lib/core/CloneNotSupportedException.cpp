@@ -7,18 +7,16 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     CloneNotSupportedException::CloneNotSupportedException(String message) CORE_NOTHROW:
-        UnsupportedMethodException(Unsafe::moveInstance(message)) {}
+            UnsupportedMethodException(U::moveInstance(message)) {}
 
 
-    void CloneNotSupportedException::raise() &&{
-        throw *this;
-    }
+    void CloneNotSupportedException::raise() &&{ throw *this; }
 
     Object &CloneNotSupportedException::clone() const {
-        return Unsafe::U.createInstance<CloneNotSupportedException>(*this);
+        return U::createInstance<CloneNotSupportedException>(*this);
     }
 
 } // core

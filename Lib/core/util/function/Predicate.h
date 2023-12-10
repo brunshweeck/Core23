@@ -32,7 +32,6 @@ namespace core {
 
                 template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
                 static Launcher &of(Fn &&fn) {
-                    static native::Unsafe &U = native::Unsafe::U;
 
                     class _$ : public Launcher {
                     private:
@@ -45,19 +44,17 @@ namespace core {
                             return Class<_$>::hasInstance(o) && CORE_CAST(_$ &, o).fn == fn;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         gbool test(Param p) const { return fn(p); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Fn>(fn));
+                    return U::createInstance<_$>(U::forwardInstance<Fn>(fn));
                 }
 
                 template<class Callable, Class<gbool>::Iff<
                         !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
                 static Launcher &of(Callable &&c) {
-
-                    static native::Unsafe &U = native::Unsafe::U;
 
                     CORE_ALIAS(_R, Class<Callable>::template Return<Param>);
                     CORE_ALIAS(_Fn, UnarySign<Callable,, T, _R >);
@@ -65,7 +62,7 @@ namespace core {
 
                     if (!Class<Fn>::template isSimilar<Callable>()) {
                         // simple lambda functions
-                        return of(CORE_CAST(Fn, U.forwardInstance<Callable>(c)));
+                        return of(CORE_CAST(Fn, U::forwardInstance<Callable>(c)));
                     }
 
                     class _$ : public Launcher {
@@ -73,18 +70,18 @@ namespace core {
                         Callable c;
 
                     public:
-                        CORE_EXPLICIT _$(Callable &&c) : c(U.forwardInstance<Callable>(c)) {}
+                        CORE_EXPLICIT _$(Callable &&c) : c(U::forwardInstance<Callable>(c)) {}
 
                         gbool equals(const Object &o) const {
                             return Class<_$>::hasInstance(o) && &CORE_CAST(_$ &, o).c == &c;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         gbool test(Param p) const { return c(p); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Callable>(c));
+                    return U::createInstance<_$>(U::forwardInstance<Callable>(c));
                 }
             };
 
@@ -106,7 +103,7 @@ namespace core {
                 CORE_STATIC_ASSERT(Class<Callable>::template isCallable<Param>(), "Invalid callable object");
                 CORE_ALIAS(R, typename Class<Callable>::template Return<Param>);
                 CORE_STATIC_ASSERT(Class<R>::template isConvertible<gbool>(), "Predicate require boolean callable");
-                tester = &Launcher::of(native::Unsafe::forwardInstance<Callable>(c));
+                tester = &Launcher::of(U::forwardInstance<Callable>(c));
             }
 
             /**
@@ -115,7 +112,7 @@ namespace core {
              * @param c The other predicate
              */
             Predicate(const Predicate<T> &c) : tester(0) {
-                tester = &native::Unsafe::U.copyInstance(*c.tester);
+                tester = &U::copyInstance(*c.tester);
             }
 
             /**
@@ -135,8 +132,8 @@ namespace core {
              */
             Predicate<T> &operator=(const Predicate<T> &c) {
                 if (this != &c) {
-                    Tester tester0 = &native::Unsafe::U.copyInstance(*c.tester);
-                    native::Unsafe::U.destroyInstance(*tester);
+                    Tester tester0 = &U::copyInstance(*c.tester);
+                    U::destroyInstance(*tester);
                     tester = tester0;
                 }
                 return *this;
@@ -180,7 +177,7 @@ namespace core {
              * Return shadow copy of this predicate
              */
             Object &clone() const override {
-                return native::Unsafe::U.createInstance<Predicate<T>>(*this);
+                return U::createInstance<Predicate<T>>(*this);
             }
 
             /**
@@ -295,8 +292,8 @@ namespace core {
             /**
              * Destroy this predicate
              */
-            virtual ~Predicate() {
-                native::Unsafe::U.destroyInstance(*tester);
+            ~Predicate() override {
+                U::destroyInstance(*tester);
                 tester = null;
             }
         };

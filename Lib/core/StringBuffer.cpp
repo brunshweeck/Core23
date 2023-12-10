@@ -4,40 +4,41 @@
 
 #include "StringBuffer.h"
 #include <core/private/Unsafe.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include <core/private/ArraysSupport.h>
-#include <core/primitive/CharArray.h>
-#include "ArgumentException.h"
+#include <core/native/CharArray.h>
 #include "IndexException.h"
+#include "ArgumentException.h"
 #include "Character.h"
 #include "Integer.h"
 #include "Math.h"
 
 namespace core {
 
-    using native::Unsafe;
     using util::Preconditions;
     using util::ArraysSupport;
+
+    CORE_ALIAS(U, native::Unsafe);
 
     CORE_ALIAS(PBYTE, typename Class<gbyte>::Ptr);
     CORE_ALIAS(PCBYTE, typename Class<const gbyte>::Ptr);
     namespace {
 
-        Unsafe &U = Unsafe::U;
+        CORE_FAST glong alignToHeapWordSize(glong bytes) {
+            return bytes >= 0 ? (bytes + U::ADDRESS_SIZE - 1) & ~(U::ADDRESS_SIZE - 1) : -1;
+        }
 
-        void putChar(PBYTE dst, gint idx, gint ch) {
-            if (dst == null || idx < 0)
-                return;
+        void putChar(PBYTE dst, glong idx, gint ch) {
+            if (dst == null || idx < 0) return;
             glong index = idx * 2LL;
-            if (!Character::isValidCodePoint(ch)) {
-                putChar(dst, idx, '?');
-            } else if (Character::isSupplementary(ch)) {
+            if (!Character::isValidCodePoint(ch)) putChar(dst, idx, '?');
+            else if (Character::isSupplementary(ch)) {
                 putChar(dst, idx, Character::highSurrogate(ch));
                 putChar(dst, idx + 1LL, Character::lowSurrogate(ch));
             } else {
                 gbyte hb = Character::highByte(ch);
                 gbyte lb = Character::lowByte(ch);
-                if (native::Unsafe::BIG_ENDIAN) {
+                if (U::BIG_ENDIAN) {
                     dst[index] = hb;
                     dst[index + 1LL] = lb;
                 } else {
@@ -51,18 +52,18 @@ namespace core {
             if (src == null || idx < 0)
                 return Character::MIN_VALUE;
             glong index = idx * 2LL;
-            if (native::Unsafe::BIG_ENDIAN)
+            if (U::BIG_ENDIAN)
                 return Character::joinBytes(src[index], src[index + 1]);
             else
                 return Character::joinBytes(src[index + 1], src[index]);
         }
 
         PBYTE generate(gint count) {
-            if (count <= 0)
-                return null;
-            PBYTE address = (PBYTE) U.allocateMemory(Integer::toUnsignedLong(count) * 2LL);
-            if(address == null) generate(count);
-            address[count * 2LL] = 0;
+            if (count <= 0) return null;
+            glong sizeInBytes = Integer::toUnsignedLong(count) << 1;
+            const glong heapSize = alignToHeapWordSize(sizeInBytes);
+            PBYTE address = (PBYTE) U::allocateMemory(sizeInBytes);
+            if (address != null) for (glong i = sizeInBytes; i < heapSize; ++i) address[i] = 0;
             return address;
         }
 
@@ -96,18 +97,10 @@ namespace core {
         }
     }
 
-    StringBuffer::StringBuffer() : StringBuffer(DEFAULT_CAPACITY) {}
-
     StringBuffer::StringBuffer(gint capacity) {
-        if (capacity < 0)
-            ArgumentException("Negative capacity").throws(__trace("core.StringBuffer"));
-        try {
-            value = generate(capacity);
-            len = 0;
-            cap = capacity;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        if (capacity < 0) ArgumentException("Negative capacity").throws(__trace("core.StringBuffer"));
+        value = generate(cap = capacity);
+        len = 0;
     }
 
     gint StringBuffer::newCapacity(gint minCapacity) const {
@@ -129,8 +122,7 @@ namespace core {
         append(str);
     }
 
-    StringBuffer::StringBuffer(const StringBuffer &sb)
-            : StringBuffer(Math::max(sb.length(), DEFAULT_CAPACITY)) {
+    StringBuffer::StringBuffer(const StringBuffer &sb) : StringBuffer(Math::max(sb.length(), DEFAULT_CAPACITY)) {
         append(sb);
     }
 
@@ -142,15 +134,13 @@ namespace core {
 
     StringBuffer &StringBuffer::operator=(const StringBuffer &sb) {
         if (this != &sb) {
-            if (cap >= sb.cap) {
+            gint sbSize = sb.length();
+            if (cap >= sbSize) {
                 // set all trailing characters to null (U+0000)
-                for (gint i = sb.length(); i < len; ++i)
-                    putChar(value, i, 0);
-                len = sb.length();
-            } else {
-                resize(sb.length());
-            }
-            arraycopy(sb.value, 0, value, 0, sb.length());
+                for (gint i = sbSize; i < len; ++i) putChar(value, i, 0);
+                len = sbSize;
+            } else resize(sbSize);
+            arraycopy(sb.value, 0, value, 0, sbSize);
         }
         return *this;
     }
@@ -172,269 +162,190 @@ namespace core {
                 gint newCapacity = StringBuffer::newCapacity(newLength);
                 PBYTE newValue = generate(newCapacity);
                 arraycopy(value, 0, newValue, 0, len);
-                U.freeMemory((glong) value);
+                U::freeMemory((glong) value);
                 cap = newLength;
                 value = newValue;
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("core.StringBuffer"));
-            }
+            } catch (const MemoryError &me) { me.throws(__trace("core.StringBuffer")); }
         }
         len = newLength;
     }
 
     void StringBuffer::truncate() {
         if (len < cap) {
-            try {
-                PBYTE newValue = generate(len);
-                arraycopy(value, 0, newValue, 0, len);
-                U.freeMemory((glong) value);
-                value = newValue;
-                cap = len;
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("core.StringBuffer"));
-            }
+            PBYTE newValue = generate(len);
+            arraycopy(value, 0, newValue, 0, len);
+            U::freeMemory((glong) value);
+            value = newValue;
+            cap = len;
         }
     }
 
     gchar StringBuffer::charAt(gint index) const {
         try {
             Preconditions::checkIndex(index, length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return nextChar(value, index);
+            return nextChar(value, index);
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     gint StringBuffer::codePointAt(gint index) const {
         try {
             Preconditions::checkIndex(index, length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        gchar ch1 = nextChar(value, index);
-        gchar ch2 = nextChar(value, index + 1);
-        return Character::isSurrogatePair(ch1, ch2) ? Character::joinSurrogates(ch1, ch2) : ch1;
+            gchar ch1 = nextChar(value, index);
+            gchar ch2 = nextChar(value, index + 1);
+            return Character::isSurrogatePair(ch1, ch2) ? Character::joinSurrogates(ch1, ch2) : ch1;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     void StringBuffer::set(gint index, gchar ch) {
         try {
             Preconditions::checkIndex(index, length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        putChar(value, index, ch);
+            putChar(value, index, ch);
+        } catch (const Throwable &thr) { thr.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::append(const Object &obj) {
         if (&null == &obj) {
             gint oldLen = len;
-            try {
-                resize(length() + 4);
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("core.StringBuffer"));
-            }
+            resize(length() + 4);
             putChar(value, oldLen + 0, 'n');
             putChar(value, oldLen + 1, 'u');
             putChar(value, oldLen + 2, 'l');
             putChar(value, oldLen + 3, 'l');
             return *this;
-        } else if (Class<String>::hasInstance(obj))
-            return append((const String &) obj);
-        else if (Class<StringBuffer>::hasInstance(obj))
-            return append((const StringBuffer &) obj);
-        else
-            return append(String::valueOf(obj));
+        } else if (Class<String>::hasInstance(obj)) return append((const String &) obj);
+        else if (Class<StringBuffer>::hasInstance(obj)) return append((const StringBuffer &) obj);
+        return append(String::valueOf(obj));
     }
 
     StringBuffer &StringBuffer::append(const String &str) {
         gint oldLen = len;
-        try {
-            resize(len + str.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        resize(len + str.length());
         arraycopy(str.value, 0, value, oldLen, str.length());
         return *this;
     }
 
     StringBuffer &StringBuffer::append(const StringBuffer &sb) {
         gint oldLen = len;
-        try {
-            resize(len + sb.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        resize(len + sb.length());
         arraycopy(sb.value, 0, value, oldLen, sb.length());
         return *this;
     }
 
     StringBuffer &StringBuffer::append(gbool b) {
         gint oldLen = len;
-        try {
-            if (b) {
-                resize(len + 4);
-                putChar(value, oldLen + 0, 't');
-                putChar(value, oldLen + 1, 'r');
-                putChar(value, oldLen + 2, 'u');
-                putChar(value, oldLen + 3, 'e');
-            } else {
-                resize(len + 5);
-                putChar(value, oldLen + 0, 'f');
-                putChar(value, oldLen + 1, 'a');
-                putChar(value, oldLen + 2, 'l');
-                putChar(value, oldLen + 3, 's');
-                putChar(value, oldLen + 4, 'e');
-            }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
+        if (b) {
+            resize(len + 4);
+            putChar(value, oldLen + 0, 't');
+            putChar(value, oldLen + 1, 'r');
+            putChar(value, oldLen + 2, 'u');
+            putChar(value, oldLen + 3, 'e');
+        } else {
+            resize(len + 5);
+            putChar(value, oldLen + 0, 'f');
+            putChar(value, oldLen + 1, 'a');
+            putChar(value, oldLen + 2, 'l');
+            putChar(value, oldLen + 3, 's');
+            putChar(value, oldLen + 4, 'e');
         }
         return *this;
     }
 
     StringBuffer &StringBuffer::append(gchar ch) {
         gint oldLen = len;
-        try {
-            resize(len + 1);
-            putChar(value, oldLen + 0, ch);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        resize(len + 1);
+        putChar(value, oldLen + 0, ch);
         return *this;
     }
 
     StringBuffer &StringBuffer::appendCodePoint(gint codePoint) {
         gint oldLen = len;
-        try {
-            resize(len + charCount(codePoint));
-            putChar(value, oldLen + 0, codePoint);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        resize(len + charCount(codePoint));
+        putChar(value, oldLen + 0, codePoint);
         return *this;
     }
 
     StringBuffer &StringBuffer::append(gint i) {
         gint oldLen = len;
-        try {
-            // check number of chars necessary
-            gint offset = i < 0 ? 1 : 0;
-            gint a = Math::abs(i);
-            while (a > 0) {
-                offset++;
-                a /= 10;
-            }
-            resize(len + offset);
-            a = Math::abs(i);
-            do {
-                offset -= 1;
-                putChar(value, oldLen + offset, (a % 10) + '0');
-                a /= 10;
-            } while (a > 0);
-            if (i < 0)
-                putChar(value, oldLen + 0, '-');
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
+        // check number of chars necessary
+        gint offset = i < 0 ? 1 : 0;
+        gint a = Math::abs(i);
+        while (a > 0) {
+            offset++;
+            a /= 10;
         }
+        resize(len + offset);
+        a = Math::abs(i);
+        do {
+            offset -= 1;
+            putChar(value, oldLen + offset, (a % 10) + '0');
+            a /= 10;
+        } while (a > 0);
+        if (i < 0)
+            putChar(value, oldLen + 0, '-');
         return *this;
     }
 
     StringBuffer &StringBuffer::append(glong l) {
         gint oldLen = len;
-        try {
-            // check number of chars necessary
-            gint offset = l < 0 ? 1 : 0;
-            glong a = Math::abs(l);
-            while (a > 0) {
-                offset++;
-                a /= 10;
-            }
-            resize(len + offset);
-            a = Math::abs(l);
-            do {
-                offset -= 1;
-                putChar(value, oldLen + offset, (gint) (a % 10) + '0');
-                a /= 10;
-            } while (a > 0);
-            if (l < 0)
-                putChar(value, oldLen + 0, '-');
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
+        // check number of chars necessary
+        gint offset = l < 0 ? 1 : 0;
+        glong a = Math::abs(l);
+        while (a > 0) {
+            offset++;
+            a /= 10;
         }
+        resize(len + offset);
+        a = Math::abs(l);
+        do {
+            offset -= 1;
+            putChar(value, oldLen + offset, (gint) (a % 10) + '0');
+            a /= 10;
+        } while (a > 0);
+        if (l < 0)
+            putChar(value, oldLen + 0, '-');
         return *this;
     }
 
     StringBuffer &StringBuffer::appendUnsigned(gint i) {
-        try {
-            if (i > 0)
-                return append(i);
-            return append(Integer::toUnsignedLong(i));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        return append(i > 0 ? i : Integer::toUnsignedLong(i));
     }
 
 #define CORE_AS_UNSIGNED_LONG(a) (a & 0xFFFFFFFFFFFFFFFFLL)
 
     StringBuffer &StringBuffer::appendUnsigned(glong l) {
         gint oldLen = len;
-        try {
-            if (l > 0)
-                return append(l);
-            gint offset = 0;
-            glong a = l;
-            while (a != 0) {
-                offset++;
-                a = CORE_AS_UNSIGNED_LONG(a) / 10;
-            }
-            resize(len + offset);
-            a = Math::abs(l);
-            do {
-                offset -= 1;
-                putChar(value, oldLen + offset, (gint) (CORE_AS_UNSIGNED_LONG(a) % 10) + '0');
-                a = CORE_AS_UNSIGNED_LONG(a) / 10;
-            } while (a > 0);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
+        if (l > 0) return append(l);
+        gint offset = 0;
+        glong a = l;
+        while (a != 0) {
+            offset++;
+            a = CORE_AS_UNSIGNED_LONG(a) / 10;
         }
+        resize(len + offset);
+        a = Math::abs(l);
+        do {
+            offset -= 1;
+            putChar(value, oldLen + offset, (gint) (CORE_AS_UNSIGNED_LONG(a) % 10) + '0');
+            a = CORE_AS_UNSIGNED_LONG(a) / 10;
+        } while (a > 0);
+
         return *this;
     }
 
-    StringBuffer &StringBuffer::append(gfloat f) {
-        try {
-            return append(String::valueOf(f));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-    }
+    StringBuffer &StringBuffer::append(gfloat f) { return append(String::valueOf(f)); }
 
-    StringBuffer &StringBuffer::append(gdouble d) {
-        try {
-            return append(String::valueOf(d));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-    }
+    StringBuffer &StringBuffer::append(gdouble d) { return append(String::valueOf(d)); }
 
-    StringBuffer &StringBuffer::append(const CharArray &chars) {
-        try {
-            return append(chars, 0, chars.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-    }
+    StringBuffer &StringBuffer::append(const CharArray &chars) { return append(chars, 0, chars.length()); }
 
     StringBuffer &StringBuffer::append(const CharArray &chars, gint offset, gint length) {
         gint oldLen = len;
         try {
             Preconditions::checkIndexFromRange(offset, offset + length, chars.length());
             resize(len + length);
-            for (gint i = 0; i < length; ++i) {
-                putChar(value, oldLen + i, chars[i + offset]);
-            }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            for (gint i = 0; i < length; ++i) putChar(value, oldLen + i, chars[i + offset]);
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::append(const String &str, gint startIndex, gint endIndex) {
@@ -444,10 +355,8 @@ namespace core {
             gint length = endIndex - startIndex;
             resize(len + length);
             arraycopy(str.value, startIndex, value, oldLen, length);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::append(const StringBuffer &sb, gint startIndex, gint endIndex) {
@@ -457,16 +366,13 @@ namespace core {
             gint length = endIndex - startIndex;
             resize(len + length);
             arraycopy(sb.value, 0, value, oldLen, length);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const Object &obj) {
+        if (offset == len) return append(obj);
         try {
-            if (offset == len)
-                return append(obj);
             Preconditions::checkIndex(offset, len);
             if (&null == &obj) {
                 resize(len + 4);
@@ -481,30 +387,24 @@ namespace core {
                 return insert(offset, (const String &) obj);
             else
                 return insert(offset, String::valueOf(obj));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
         return *this;
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const String &str) {
+        if (offset == len) return append(str);
         try {
-            if (offset == len)
-                return append(str);
             Preconditions::checkIndex(offset, len);
             resize(len + str.length());
             shift(offset, str.length());
             arraycopy(str.value, 0, value, offset, str.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
         return *this;
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const StringBuffer &sb) {
+        if (offset == len) return append(sb);
         try {
-            if (offset == len)
-                return append(sb);
             Preconditions::checkIndex(offset, len);
             gint oldLen = len;
             resize(len + sb.length());
@@ -515,16 +415,13 @@ namespace core {
             } else {
                 arraycopy(sb.value, 0, value, offset, sb.length());
             }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, gbool b) {
+        if (offset == len) return append(b);
         try {
-            if (offset == len)
-                return append(b);
             Preconditions::checkIndex(offset, len);
             if (b) {
                 resize(len + 4);
@@ -542,44 +439,35 @@ namespace core {
                 putChar(value, offset + 3, 's');
                 putChar(value, offset + 4, 'e');
             }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, gchar ch) {
+        if (offset == len) return append(ch);
         try {
-            if (offset == len)
-                return append(ch);
             Preconditions::checkIndex(offset, len);
             resize(len + 1);
             shift(offset, 1);
             putChar(value, offset + 0, ch);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insertCodePoint(gint offset, gint codePoint) {
+        if (offset == len) return appendCodePoint(codePoint);
         try {
-            if (offset == len)
-                return appendCodePoint(codePoint);
             Preconditions::checkIndex(offset, len);
             resize(len + charCount(codePoint));
             shift(offset, charCount(codePoint));
             putChar(value, offset + 0, codePoint);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, gint i) {
+        if (offset == len) return append(i);
         try {
-            if (offset == len)
-                return append(i);
             Preconditions::checkIndex(offset, len);
             // check number of chars necessary
             gint count = i < 0 ? 1 : 0;
@@ -598,16 +486,13 @@ namespace core {
             } while (a > 0);
             if (i < 0)
                 putChar(value, offset + 0, '-');
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, glong l) {
+        if (offset == len) return append(l);
         try {
-            if (offset == len)
-                return append(l);
             Preconditions::checkIndex(offset, len);
             // check number of chars necessary
             gint count = l < 0 ? 1 : 0;
@@ -626,21 +511,15 @@ namespace core {
             } while (a > 0);
             if (l < 0)
                 putChar(value, offset + 0, '-');
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insertUnsigned(gint offset, gint i) {
+        if (offset == len) return appendUnsigned(i);
         try {
-            if (offset == len)
-                return appendUnsigned(i);
             return insertUnsigned(offset, Integer::toUnsignedLong(i));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insertUnsigned(gint offset, glong l) {
@@ -665,85 +544,62 @@ namespace core {
                     a = CORE_AS_UNSIGNED_LONG(a) / 10;
                 } while (a > 0);
             }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, gfloat f) {
+        if (offset == len) return append(f);
         try {
-            if (offset == len)
-                return append(f);
             Preconditions::checkIndex(offset, len);
             return insert(offset, String::valueOf(f));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, gdouble d) {
+        if (offset == len) return append(d);
         try {
-            if (offset == len)
-                return append(d);
             Preconditions::checkIndex(offset, len);
             return insert(offset, String::valueOf(d));
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const CharArray &chars) {
+        if (offset == len) return append(chars);
         try {
-            if (offset == len)
-                return append(chars);
             Preconditions::checkIndex(offset, len);
             return insert(offset, chars, 0, chars.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint index, const CharArray &chars, gint offset, gint length) {
         try {
-            if (offset == len)
-                return append(chars, offset, length);
+            if (index == len) return append(chars, offset, length);
             Preconditions::checkIndex(index, len);
             Preconditions::checkIndexFromRange(offset, offset + length, chars.length());
             resize(len + length);
             shift(index, length);
-            for (gint i = 0; i < length; ++i) {
-                putChar(value, index + i, chars[i + offset]);
-            }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            for (gint i = 0; i < length; ++i) putChar(value, index + i, chars[i + offset]);
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const String &str, gint startIndex, gint endIndex) {
         try {
-            if (startIndex == len)
-                return append(str, startIndex, endIndex);
+            if (startIndex == len) return append(str, startIndex, endIndex);
             Preconditions::checkIndex(offset, len);
             Preconditions::checkIndexFromRange(startIndex, endIndex, str.length());
             gint length = endIndex - startIndex;
             resize(len + length);
             shift(offset, length);
             arraycopy(str.value, startIndex, value, offset, length);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::insert(gint offset, const StringBuffer &sb, gint startIndex, gint endIndex) {
         try {
-            if (startIndex == len)
-                return append(sb, startIndex, endIndex);
+            if (startIndex == len) return append(sb, startIndex, endIndex);
             Preconditions::checkIndex(offset, len);
             Preconditions::checkIndexFromRange(startIndex, endIndex, sb.length());
             gint length = endIndex - startIndex;
@@ -761,10 +617,8 @@ namespace core {
             } else {
                 arraycopy(sb.value, startIndex, value, offset, length);
             }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::replace(gint startIndex, gint endIndex, const String &str) {
@@ -775,10 +629,8 @@ namespace core {
             resize(len + n);
             shift(endIndex, n);
             arraycopy(str.value, 0, value, startIndex, str.length());
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     void StringBuffer::chars(gint srcBegin, gint srcEnd, CharArray &dst, gint dstBegin) const {
@@ -786,12 +638,8 @@ namespace core {
             Preconditions::checkIndexFromRange(srcBegin, srcEnd, len);
             Preconditions::checkIndexFromSize(dstBegin, srcEnd - srcBegin, dst.length());
             gint length = srcEnd - srcBegin;
-            for (gint i = 0; i < length; ++i) {
-                dst[i + dstBegin] = nextChar(value, i + srcBegin);
-            }
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+            for (gint i = 0; i < length; ++i) dst[i + dstBegin] = nextChar(value, i + srcBegin);
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     CharArray StringBuffer::chars() const {
@@ -799,9 +647,7 @@ namespace core {
             CharArray array = CharArray(len);
             chars(0, len, array, 0);
             return array;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     IntArray StringBuffer::codePoints() const {
@@ -813,52 +659,41 @@ namespace core {
             count += 1;
             i += Character::isSurrogatePair(ch1, ch2) && i + 1 < len ? 2 : 1;
         }
-        try {
-            IntArray array = IntArray(count);
-            gint j = 0;
-            for (gint i = 0; i < len;) {
-                gchar ch1 = nextChar(value, i);
-                gchar ch2 = nextChar(value, i + 1);
-                if (Character::isSurrogatePair(ch1, ch2) && i + 1 < len) {
-                    array[j++] = Character::joinSurrogates(ch1, ch2);
-                    i += 2;
-                } else {
-                    array[j++] = ch1;
-                    i += 1;
-                }
+        IntArray array = IntArray(count);
+        gint j = 0;
+        for (gint i = 0; i < len;) {
+            gchar ch1 = nextChar(value, i);
+            gchar ch2 = nextChar(value, i + 1);
+            if (Character::isSurrogatePair(ch1, ch2) && i + 1 < len) {
+                array[j++] = Character::joinSurrogates(ch1, ch2);
+                i += 2;
+            } else {
+                array[j++] = ch1;
+                i += 1;
             }
-            return array;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
         }
+        return array;
     }
 
     String StringBuffer::subString(gint startIndex) const {
         try {
             return subString(startIndex, len);
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     String StringBuffer::subString(gint startIndex, gint endIndex) const {
         try {
             Preconditions::checkIndexFromRange(startIndex, endIndex, len);
-            if (endIndex > len)
-                endIndex = len;
+            if (endIndex > len) endIndex = len;
             String str;
             str.value = generate(endIndex - startIndex);
             str.len = endIndex - startIndex;
             arraycopy(value, startIndex, str.value, 0, str.len);
             return str;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
-    gint StringBuffer::indexOf(const String &str) const {
-        return indexOf(str, 0);
-    }
+    gint StringBuffer::indexOf(const String &str) const { return indexOf(str, 0); }
 
     gint StringBuffer::indexOf(const String &str, gint begin) const {
         if (begin < 0 || begin + str.length() >= len || str.isEmpty() || len == 0)
@@ -926,6 +761,7 @@ namespace core {
     }
 
     gint StringBuffer::compareTo(const StringBuffer &other) const {
+        if (this == &other) return 0;
         gint limit = Math::min(len, other.len);
         if (limit < 7) {
             // bitwise comparing
@@ -945,7 +781,7 @@ namespace core {
     }
 
     Object &StringBuffer::clone() const {
-        return U.createInstance<StringBuffer>(*this);
+        return U::createInstance<StringBuffer>(*this);
     }
 
     StringBuffer &StringBuffer::removeAt(gint index) {
@@ -953,26 +789,18 @@ namespace core {
             Preconditions::checkIndex(index, len);
             shift(index, -1);
             len -= 1;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::remove(gint startIndex, gint endIndex) {
+        if (endIndex > len) endIndex = len;
         try {
-            if (endIndex > len)
-                endIndex = len;
             Preconditions::checkIndexFromRange(startIndex, endIndex, len);
             shift(endIndex, startIndex - endIndex);
             len -= endIndex - startIndex;
-        } catch (const Throwable &thr) {
-            thr.throws(__trace("core.StringBuffer"));
-        }
-        return *this;
+            return *this;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
 
-    void StringBuffer::synchronize(gbool tryLock) {
-        CORE_IGNORE(tryLock);
-    }
 } // core

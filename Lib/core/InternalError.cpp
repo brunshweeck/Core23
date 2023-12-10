@@ -8,19 +8,15 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     InternalError::InternalError(String message) CORE_NOTHROW:
-            SystemError(Unsafe::moveInstance(message)) {}
+            SystemError(U::moveInstance(message)) {}
 
     InternalError::InternalError(String message, const Throwable &cause) CORE_NOTHROW:
-            SystemError(Unsafe::moveInstance(message), cause) {}
+            SystemError(U::moveInstance(message), cause) {}
 
-    void InternalError::raise() &&{
-        throw *this;
-    }
+    void InternalError::raise() &&{ throw *this; }
 
-    Object &InternalError::clone() const {
-        return Unsafe::U.createInstance<InternalError>(*this);
-    }
+    Object &InternalError::clone() const { return U::createInstance<InternalError>(*this); }
 } // core

@@ -12,10 +12,11 @@ namespace core {
 
     namespace native {
 
-        CORE_WARNING_PUSH
-        CORE_WARNING_DISABLE_DEPRECATED
+        namespace CORE_DEPRECATED Templates {
 
-        namespace Templates {
+
+            CORE_WARNING_PUSH
+            CORE_WARNING_DISABLE_DEPRECATED
 
             template<gbool X>
             interface CONSTANT {
@@ -26,6 +27,9 @@ namespace core {
             interface ALWAYS {
                 CORE_ALIAS(Type, Alias);
             };
+
+            template<class ...>
+            CORE_ALIAS(IGNORED, void);
 
             CORE_ALIAS(ALWAYS_TRUE, CONSTANT<1>);
             CORE_ALIAS(ALWAYS_FALSE, CONSTANT<0>);
@@ -57,15 +61,19 @@ namespace core {
             /////////////////////////////////[Constant]/////////////////////////////////////
 
             template<class T>
-            interface TEST<2, T const> : ALWAYS_TRUE {
+            interface TEST<2, const T> : ALWAYS_TRUE {
+            };
+
+            template<>
+            interface MODIFY<2, void> : ALWAYS<void> {
             };
 
             template<class T>
-            interface MODIFY<2, T> : ALWAYS<T const> {
+            interface MODIFY<2, T> : ALWAYS<const T> {
             };
 
             template<class T>
-            interface MODIFY<-2, T const> : ALWAYS<T> {
+            interface MODIFY<-2, const T> : ALWAYS<T> {
             };
 
 
@@ -73,15 +81,19 @@ namespace core {
             /////////////////////////////////[Volatile]/////////////////////////////////////
 
             template<class T>
-            interface TEST<3, T volatile> : ALWAYS_TRUE {
+            interface TEST<3, volatile T> : ALWAYS_TRUE {
+            };
+
+            template<>
+            interface MODIFY<3, void> : ALWAYS<void> {
             };
 
             template<class T>
-            interface MODIFY<3, T> : ALWAYS<T volatile> {
+            interface MODIFY<3, T> : ALWAYS<volatile T> {
             };
 
             template<class T>
-            interface MODIFY<-3, T volatile> : ALWAYS<T> {
+            interface MODIFY<-3, volatile T> : ALWAYS<T> {
             };
 
 
@@ -104,20 +116,20 @@ namespace core {
             interface TEST<444, T &> : ALWAYS_TRUE {
             };
 
-            template<class T>
-            interface MODIFY<4, T> : ALWAYS<T &> {
-            };
-
             template<>
             interface MODIFY<4, void> : ALWAYS<void> {
             };
 
-            template<class T>
-            interface MODIFY<44, T> : ALWAYS<T &&> {
-            };
-
             template<>
             interface MODIFY<44, void> : ALWAYS<void> {
+            };
+
+            template<class T>
+            interface MODIFY<4, T> : ALWAYS<T &> {
+            };
+
+            template<class T>
+            interface MODIFY<44, T> : ALWAYS<T &&> {
             };
 
             template<class T>
@@ -132,12 +144,6 @@ namespace core {
             interface MODIFY<-44, T &&> : ALWAYS<T> {
             };
             /////////////////////////////////[Pointer]/////////////////////////////////////
-            template<class T>
-            interface TEST<5, T &> : TEST<5, T> {
-            };
-            template<class T>
-            interface TEST<5, T &&> : TEST<5, T> {
-            };
 
             template<class T>
             interface TEST<5, T *> : ALWAYS_TRUE {
@@ -148,211 +154,43 @@ namespace core {
             };
 
             template<class T>
-            interface MODIFY<5, T &> : MODIFY<5, T> {
+            interface MODIFY<5, T &> : ALWAYS<T *> {
             };
 
             template<class T>
-            interface MODIFY<5, T &&> : MODIFY<5, T> {
-            };
-
-            template<class T>
-            interface MODIFY<5, T[]> : ALWAYS<typename MODIFY<5, T>::Type *> {
-            };
-
-            template<class T, gint Size>
-            interface MODIFY<5, T[Size]> : ALWAYS<typename MODIFY<5, T>::Type *> {
+            interface MODIFY<5, T &&> : ALWAYS<T *> {
             };
 
             template<class T>
             interface MODIFY<-5, T *> : ALWAYS<T> {
             };
 
-            template<class T>
-            interface MODIFY<-5, T *&> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-5, T *&&> : ALWAYS<T> {
-            };
             /////////////////////////////////[ConstVol]/////////////////////////////////////
-            template<class T>
-            interface MODIFY<6, T> : ALWAYS<T const volatile> {
-            };
-
-            template<class T>
-            interface MODIFY<-6, T const> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-6, T volatile> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-6, T const volatile> : ALWAYS<T> {
-            };
-            /////////////////////////////////[ConstRef]/////////////////////////////////////
-            template<class T>
-            interface MODIFY<7, T> : ALWAYS<const T &> {
-            };
 
             template<>
-            interface MODIFY<7, void> : ALWAYS<void const> {
+            interface MODIFY<6, void> : ALWAYS<void> {
             };
 
             template<class T>
-            interface MODIFY<-7, T &> : MODIFY<-7, T> {
+            interface MODIFY<6, T> : ALWAYS<const volatile T> {
             };
 
             template<class T>
-            interface MODIFY<-7, T &&> : MODIFY<-7, T> {
+            interface MODIFY<-6, const T> : ALWAYS<T> {
             };
 
             template<class T>
-            interface MODIFY<-7, T const> : ALWAYS<T> {
+            interface MODIFY<-6, volatile T> : ALWAYS<T> {
             };
 
             template<class T>
-            interface MODIFY<77, T> : ALWAYS<const T &&> {
-            };
-
-            template<>
-            interface MODIFY<77, void> : ALWAYS<void const> {
-            };
-
-            template<class T>
-            interface MODIFY<-77, T &> : MODIFY<-77, T> {
-            };
-
-            template<class T>
-            interface MODIFY<-77, T &&> : MODIFY<-77, T> {
-            };
-
-            template<class T>
-            interface MODIFY<-77, T const> : ALWAYS<T> {
-            };
-
-            /////////////////////////////////[ConstVolRef]/////////////////////////////////////
-
-            template<>
-            interface MODIFY<8, void> : ALWAYS<void const volatile> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T &> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T &&> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T const> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T volatile> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<8, T const volatile> : ALWAYS<T const volatile &> {
-            };
-
-            template<class T>
-            interface MODIFY<-8, T &> : MODIFY<-8, T> {
-            };
-
-            template<class T>
-            interface MODIFY<-8, T &&> : MODIFY<-8, T> {
-            };
-
-            template<class T>
-            interface MODIFY<-8, T const> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-8, T volatile> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-8, T const volatile> : ALWAYS<T> {
-            };
-
-            template<>
-            interface MODIFY<88, void> : ALWAYS<void const volatile> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T &> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T &&> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T const> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T volatile> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<88, T const volatile> : ALWAYS<T const volatile &&> {
-            };
-
-            template<class T>
-            interface MODIFY<-88, T &> : ALWAYS<T &> {
-            };
-
-            template<class T>
-            interface MODIFY<-88, T &&> : MODIFY<-8, T> {
-            };
-
-            template<class T>
-            interface MODIFY<-88, T const> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-88, T volatile> : ALWAYS<T> {
-            };
-
-            template<class T>
-            interface MODIFY<-88, T const volatile> : ALWAYS<T> {
+            interface MODIFY<-6, const volatile T> : ALWAYS<T> {
             };
 
             /////////////////////////////////[Array]/////////////////////////////////////
 
             template<class T>
-            interface TEST<9, T &> : TEST<9, T> {
-            };
-            template<class T>
-            interface TEST<9, T &&> : TEST<9, T> {
-            };
-            template<class T>
-            interface TEST<9, T const> : TEST<9, T> {
-            };
-            template<class T>
-            interface TEST<9, T volatile> : TEST<9, T> {
-            };
-            template<class T>
-            interface TEST<9, T const volatile> : TEST<9, T> {
-            };
-
-            template<class T>
             interface TEST<9, T[]> : ALWAYS_TRUE {
-            };
-
-            template<class T>
-            interface TEST<9, T[0]> : ALWAYS_TRUE {
             };
 
             template<class T, gint Size>
@@ -360,11 +198,7 @@ namespace core {
             };
 
             template<class T, gint Size>
-            interface MODIFY<9, T, Size> : ALWAYS<T[Size & 0x7FFFFFFF]> {
-            };
-
-            template<class T>
-            interface MODIFY<9, T, 0> : ALWAYS<T[0]> {
+            interface MODIFY<9, T, Size> : ALWAYS<T[Size]> {
             };
 
             template<class T>
@@ -375,93 +209,121 @@ namespace core {
             interface MODIFY<-9, T[]> : ALWAYS<T> {
             };
 
-            template<class T>
-            interface MODIFY<-9, T[0]> : ALWAYS<T> {
-            };
-
             template<class T, gint Size>
             interface MODIFY<-9, T[Size]> : ALWAYS<T> {
             };
 
-            template<class T, gint Size>
-            interface MODIFY<-9, T(&)[Size]> : ALWAYS<T &> {
-            };
-
-            template<class T>
-            interface MODIFY<-9, T(&)[0]> : ALWAYS<T &> {
-            };
-
-            template<class T>
-            interface MODIFY<-9, T(&&)[0]> : ALWAYS<T &> {
-            };
-
-            template<class T, gint Size>
-            interface MODIFY<-9, T(&&)[Size]> : ALWAYS<T &&> {
-            };
-
             /////////////////////////////////[Template]/////////////////////////////////////
 
-            template<class T>
-            interface TEST<11, T &> : TEST<11, T> {
-            };
-            template<class T>
-            interface TEST<11, T &&> : TEST<11, T> {
-            };
-            template<class T>
-            interface TEST<11, T const> : TEST<11, T> {
-            };
-            template<class T>
-            interface TEST<11, T volatile> : TEST<11, T> {
-            };
-            template<class T>
-            interface TEST<11, T const volatile> : TEST<11, T> {
-            };
-            template<template<class ...> class T, class ...Aliases>
-            interface TEST<11, T<Aliases...>> : ALWAYS_TRUE {
+            template<template<class ...TParams> class T, class ...TParams>
+            interface TEST<11, T<TParams...>> : ALWAYS_TRUE {
             };
 
             /////////////////////////////////[function]/////////////////////////////////////
 
             template<class T>
-            interface TEST<12, T> : TEST<1, T, T const> {
+            interface TEST<12, T> : TEST<1, T, const T> {
             };
 
             template<class R>
-            interface TEST<12, R(*)(...)> : ALWAYS_TRUE {
+            interface TEST<12, R(...)> : ALWAYS_TRUE {
             };
 
-            template<class R>
-            interface TEST<12, R(*)()> : ALWAYS_TRUE {
-            };
-
-            template<class R, class...Aliases>
-            interface TEST<12, R(*)(Aliases...)> : ALWAYS_TRUE {
+            template<class R, class...Params>
+            interface TEST<12, R(Params...)> : ALWAYS_TRUE {
             };
 
             /////////////////////////////////[Class Member]/////////////////////////////////////
-
+#ifdef __clang__
+            template <class T>
+            interface TEST<13, T>: CONSTANT<__is_member_pointer(T)> {};
+#else
             template<class T, class U>
             interface TEST<13, T U::*> : ALWAYS_TRUE {
             };
-
+#endif
             /////////////////////////////////[function Member]/////////////////////////////////////
-
-            template<class T, class U>
-            interface TEST<14, T U::*> : TEST<12, T> {
+#ifdef __clang__
+            template <class T>
+            interface TEST<14, T>: CONSTANT<__is_member_function_pointer(T)> {};
+#else
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...)> : ALWAYS_TRUE {
             };
-
-            template<class T, class U, class ...Aliases>
-            interface TEST<14, T(U::*)(Aliases...)> : ALWAYS_TRUE {
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const> : ALWAYS_TRUE {
             };
-
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) &> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const &> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile &> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile &> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) &&> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const &&> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile &&> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile &&> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) &CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const &CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile &CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile &CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) &&CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const &&CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+            template<class T, class U, class ...Params>
+            interface TEST<14, T(U::*)(Params...) const volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
+            };
+#endif
             /////////////////////////////////[Abstract]/////////////////////////////////////
 
             template<class T>
             interface TEST<15, T> : CONSTANT<__is_abstract(T)> {
-            };
-
-            template<>
-            interface TEST<15, Void> : ALWAYS_FALSE {
             };
 
             /////////////////////////////////[Enum]/////////////////////////////////////
@@ -470,30 +332,22 @@ namespace core {
             interface TEST<16, T> : CONSTANT<__is_enum(T)> {
             };
 
-            template<>
-            interface TEST<16, Void> : ALWAYS_FALSE {
-            };
-
             /////////////////////////////////[Class]/////////////////////////////////////
 
             template<class T>
             interface TEST<17, T> : CONSTANT<__is_class(T)> {
             };
 
-            template<>
-            interface TEST<17, Void> : ALWAYS_TRUE {
-            };
-
             /////////////////////////////////[Constructible]/////////////////////////////////////
 
-            template<class T, class...Aliases>
-            interface TEST<18, T, Aliases...> : CONSTANT<__is_constructible(T, Aliases...)> {
+            template<class T, class...Params>
+            interface TEST<18, T, Params...> : CONSTANT<__is_constructible(T, Params...)> {
             };
 
             /////////////////////////////////[Assignable]/////////////////////////////////////
 
-            template<class T, class U>
-            interface TEST<19, T, U> : CONSTANT<__is_assignable(T, U)> {
+            template<class From, class To>
+            interface TEST<19, From, To> : CONSTANT<__is_assignable(To, From)> {
             };
 
             /////////////////////////////////[Super]/////////////////////////////////////
@@ -501,68 +355,6 @@ namespace core {
             template<class T, class U>
             interface TEST<20, T, U> : CONSTANT<__is_base_of(T, U)> {
             };
-
-            template<class T>
-            interface TEST<20, T, Void> : ALWAYS_FALSE {
-            };
-
-            template<class T>
-            interface TEST<20, Void, T> : ALWAYS_FALSE {
-            };
-
-            template<>
-            interface TEST<20, Void, Void> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Void> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Object> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Boolean> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Byte> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Integer> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Long> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Float> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Double> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Complex> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, String> : ALWAYS_TRUE {
-            };
-
-            template<>
-            interface TEST<20, Object, Character> : ALWAYS_TRUE {
-            };
-
-            template<class E>
-            interface TEST<20, Object, Enum<E>> : ALWAYS_TRUE {
-            };
-
-
 
             /////////////////////////////////[Conditional]/////////////////////////////////////
 
@@ -574,8 +366,8 @@ namespace core {
             interface CONDITIONAL_STRICT<T, true> : ALWAYS<T> {
             };
 
-            template<class T, gbool, class U>
-            interface CONDITIONAL : ALWAYS<U> {
+            template<class T, gbool, class Fallback>
+            interface CONDITIONAL : ALWAYS<Fallback> {
             };
 
             template<class T, class U>
@@ -590,22 +382,6 @@ namespace core {
 
 namespace {
 
-    CORE_ALIAS(gbyte,
-               typename core::native::Templates::CONDITIONAL<
-                       core::native::Generics::GENERIC_BYTE, ,
-               !core::native::Templates::TEST<0, char, signed char>::Value,
-               core::native::Generics::GENERIC_BYTE_ALT > ::Type);
-    CORE_ALIAS(glong,
-               typename core::native::Templates::CONDITIONAL<
-                       core::native::Generics::GENERIC_INT64, ,
-               sizeof(core::native::Generics::GENERIC_INT64) == 8,
-               core::native::Generics::GENERIC_INT64_ALT > ::Type);
-    CORE_ALIAS(gdouble,
-               typename core::native::Templates::CONDITIONAL<
-                       core::native::Generics::GENERIC_FLOAT64, ,
-               sizeof(core::native::Generics::GENERIC_FLOAT64) == 8,
-               core::native::Generics::GENERIC_FLOAT64_ALT > ::Type);
-
 
 #ifdef CORE_COMPILER_MSVC
 #ifdef _DComplex
@@ -614,15 +390,8 @@ namespace {
     CORE_ALIAS(GENERIC_COMPLEX, struct _C_double_complex);
 #endif
 #else
-    CORE_ALIAS(GENERIC_COMPLEX, _Complex double);
+    CORE_ALIAS(GENERIC_CPLEX, _Complex double);
 #endif
-
-
-    CORE_STATIC_ASSERT(
-            sizeof(gbyte) == sizeof(gbool) &&
-            sizeof(glong) == sizeof(gdouble) &&
-            sizeof(glong) == (sizeof(gint) << 1),
-            "This compiler not supported. On architecture:" CORE_ARCH);
 
 }
 
@@ -632,6 +401,7 @@ namespace core {
 
         namespace Templates {
 
+            /////////////////////////////////[Declaration]/////////////////////////////////////
             namespace {
 
                 template<class T, class U = T &&>
@@ -646,6 +416,29 @@ namespace core {
             }
 
 
+            /////////////////////////////////[Convertible]/////////////////////////////////////
+#ifdef CORE_COMPILER_MSVC
+            template<class From, class To>
+            interface TEST<21, From, To> : CONSTANT<__is_convertible_to(From, To)> {
+            };
+#else
+            namespace {
+                template<class T>
+                void UNSAFE_IMPLICIT_CONVERTER(T);
+
+                template<class From, class To, class = decltype(UNSAFE_IMPLICIT_CONVERTER<To>(
+                        UNSAFE_DECLARATION<From>()))>
+                static ALWAYS_TRUE UNSAFE_IMPLICIT_CONVERTER_TEST(gint);
+
+                template<class, class>
+                static ALWAYS_FALSE UNSAFE_IMPLICIT_CONVERTER_TEST(glong);
+
+            }
+            template<class From, class To>
+            interface TEST<21, From, To> : decltype(UNSAFE_IMPLICIT_CONVERTER_TEST<From, To>(0)) {
+            };
+#endif
+
 
             /////////////////////////////////[Complete]/////////////////////////////////////
 
@@ -656,16 +449,16 @@ namespace core {
             interface TEST<10, T &&> : TEST<10, T> {
             };
             template<class T>
-            interface TEST<10, T const> : TEST<10, T> {
+            interface TEST<10, const T> : TEST<10, T> {
             };
             template<class T>
-            interface TEST<10, T volatile> : TEST<10, T> {
+            interface TEST<10, volatile T> : TEST<10, T> {
             };
             template<class T>
-            interface TEST<10, T const volatile> : TEST<10, T> {
+            interface TEST<10, const volatile T> : TEST<10, T> {
             };
 
-#if __has_builtin(__is_complete_type)
+#ifdef __clang__
             template<class T>
             interface TEST<10, T> : CONSTANT<__is_complete_type(T)> {
             };
@@ -830,7 +623,7 @@ namespace core {
             interface TEST<25, const volatile T> : TEST<25, T> {
             };
             template<>
-            interface TEST<25, Generics::GENERIC_BOOLEAN> : ALWAYS_TRUE {
+            interface TEST<25, GENERIC_BOOL> : ALWAYS_TRUE {
             };
 
             /////////////////////////////////[Callable]/////////////////////////////////////
@@ -868,7 +661,7 @@ namespace core {
             template<class T, class...U>
             interface TEST<26, T, U...> {
                 CORE_ALIAS(Type, decltype(UNSAFE_FUNCTION_TESTER<T, U...>(0)));
-                static CORE_FAST gbool Value = TEST<1, Type, ALWAYS_FALSE>::Value == false;
+                static CORE_FAST gbool Value = !TEST<1, Type, ALWAYS_FALSE>::Value;
             };
 
             template<class T, class U, class V, class ...W>
@@ -876,8 +669,8 @@ namespace core {
                 CORE_ALIAS(V2, typename MODIFY<-4,, V > ::Type);
                 CORE_ALIAS(Type1, decltype(UNSAFE_METHOD_TESTER<T U::*, V2, W...>(0)));
                 CORE_ALIAS(Type2, decltype(UNSAFE_MEMBER_TESTER<T U::*, V2, W...>(0)));
-                static CORE_FAST gbool Value1 = TEST<1, Type1, ALWAYS_FALSE>::Value == false;
-                static CORE_FAST gbool Value2 = TEST<1, Type2, ALWAYS_FALSE>::Value == false;
+                static CORE_FAST gbool Value1 = !TEST<1, Type1, ALWAYS_FALSE>::Value;
+                static CORE_FAST gbool Value2 = !TEST<1, Type2, ALWAYS_FALSE>::Value;
                 static CORE_FAST gbool Value = Value1 || Value2;
                 CORE_ALIAS(Type, typename CONDITIONAL<Type1,, Value1, Type2 > ::Type);
             };
@@ -954,31 +747,31 @@ namespace core {
             interface MODIFY<30, gbool> : ALWAYS<Boolean> {
             };
             template<gint S>
-            interface MODIFY<30, gbool[S]> : ALWAYS<primitive::BooleanArray> {
+            interface MODIFY<30, gbool[S]> : ALWAYS<BooleanArray> {
             };
             template<>
             interface MODIFY<30, gbyte> : ALWAYS<Byte> {
             };
             template<gint S>
-            interface MODIFY<30, gbyte[S]> : ALWAYS<primitive::ByteArray> {
+            interface MODIFY<30, gbyte[S]> : ALWAYS<ByteArray> {
             };
             template<>
             interface MODIFY<30, gshort> : ALWAYS<Short> {
             };
             template<gint S>
-            interface MODIFY<30, gshort[S]> : ALWAYS<primitive::ShortArray> {
+            interface MODIFY<30, gshort[S]> : ALWAYS<ShortArray> {
             };
             template<>
             interface MODIFY<30, unsigned short> : ALWAYS<Short> {
             };
             template<gint S>
-            interface MODIFY<30, unsigned short[S]> : ALWAYS<primitive::ShortArray> {
+            interface MODIFY<30, unsigned short[S]> : ALWAYS<ShortArray> {
             };
             template<>
             interface MODIFY<30, wchar_t> : ALWAYS<Character> {
             };
             template<gint S>
-            interface MODIFY<30, wchar_t[S]> : ALWAYS<primitive::CharArray> {
+            interface MODIFY<30, wchar_t[S]> : ALWAYS<CharArray> {
             };
             template<>
             interface MODIFY<30, unsigned char> : ALWAYS<Character> {
@@ -987,45 +780,45 @@ namespace core {
             interface MODIFY<30, char16_t> : ALWAYS<Character> {
             };
             template<gint S>
-            interface MODIFY<30, char16_t[S]> : ALWAYS<primitive::CharArray> {
+            interface MODIFY<30, char16_t[S]> : ALWAYS<CharArray> {
             };
             template<>
             interface MODIFY<30, char32_t> : ALWAYS<Character> {
             };
             template<gint S>
-            interface MODIFY<30, char32_t[S]> : ALWAYS<primitive::IntArray> {
+            interface MODIFY<30, char32_t[S]> : ALWAYS<IntArray> {
             };
 #ifdef __cpp_lib_char8_t
             template<>
             interface MODIFY<30, char8_t> : ALWAYS<Character> {
             };
             template<gint S>
-            interface MODIFY<30, char8_t[S]> : ALWAYS<primitive::CharArray> {
+            interface MODIFY<30, char8_t[S]> : ALWAYS<CharArray> {
             };
 #endif
             template<>
             interface MODIFY<30, gint> : ALWAYS<Integer> {
             };
             template<gint S>
-            interface MODIFY<30, gint[S]> : ALWAYS<primitive::IntArray> {
+            interface MODIFY<30, gint[S]> : ALWAYS<IntArray> {
             };
             template<>
             interface MODIFY<30, unsigned int> : ALWAYS<Integer> {
             };
             template<gint S>
-            interface MODIFY<30, unsigned int[S]> : ALWAYS<primitive::IntArray> {
+            interface MODIFY<30, unsigned int[S]> : ALWAYS<IntArray> {
             };
             template<>
             interface MODIFY<30, long long> : ALWAYS<Long> {
             };
             template<gint S>
-            interface MODIFY<30, long[S]> : ALWAYS<primitive::LongArray> {
+            interface MODIFY<30, long[S]> : ALWAYS<LongArray> {
             };
             template<>
             interface MODIFY<30, unsigned long long> : ALWAYS<Long> {
             };
             template<gint S>
-            interface MODIFY<30, unsigned long long[S]> : ALWAYS<primitive::LongArray> {
+            interface MODIFY<30, unsigned long long[S]> : ALWAYS<LongArray> {
             };
 
 #if defined(__INT128__) || defined(__SIZEOF_INT128__)
@@ -1037,11 +830,11 @@ namespace core {
             };
 #endif
             template<>
-            interface MODIFY<30, long> : CONDITIONAL<Integer, sizeof(long) == 4, Long> {
+            interface MODIFY<30, long> : ALWAYS<Long> {
             };
 
             template<>
-            interface MODIFY<30, unsigned long> : CONDITIONAL<Integer, sizeof(long) == 4, Long> {
+            interface MODIFY<30, unsigned long> : ALWAYS<Long> {
             };
 
             template<>
@@ -1062,7 +855,7 @@ namespace core {
             };
 
             template<>
-            interface MODIFY<30, GENERIC_COMPLEX> : ALWAYS<Complex> {
+            interface MODIFY<30, GENERIC_CPLEX> : ALWAYS<Complex> {
             };
 
             template<class T>
@@ -1070,7 +863,7 @@ namespace core {
                     : CONDITIONAL<Enum<T>, TEST<16, T>::Value, typename CONDITIONAL<String, TEST<27, T>::Value, T>::Type> {
             };
 
-            /////////////////////////////////[primitive]/////////////////////////////////////
+            /////////////////////////////////[native]/////////////////////////////////////
             template<class T>
             interface MODIFY<31, T> : ALWAYS<T> {
             };
@@ -1144,34 +937,68 @@ namespace core {
             };
 
             /////////////////////////////////[...]/////////////////////////////////////
+            template<class...Params>
+            interface FnParams {
+                static CORE_FAST gint count = sizeof...(Params);
+            };
+
+            template<gint i, class Params>
+            interface FnParamSelector : ALWAYS<void> {
+            };
+
+            template<gint i, class... Params>
+            interface FnParamSelector<i, FnParams<Params...>> : VA_ARGS<i, void, Params...> {
+            };
+
+            template<class Signature>
+            interface FnAnalyzer : FnParams<> {
+            };
+
+            template<class R, class...Params>
+            interface FnAnalyzer<R(Params...)> : FnParams<Params...> {
+            };
+
+            template<class R, class...Params>
+            interface FnAnalyzer<R(*)(Params...)> : FnParams<Params...> {
+            };
+
+            template<class R, class Obj, class ...Params>
+            interface FnAnalyzer<R(Obj::*)(Params...)> : FnParams<Params...> {
+            };
+
+            /////////////////////////////////[Aggregate]/////////////////////////////////////
+#if defined(CORE_COMPILER_MSVC) && defined(_HAS_CXX17) || ____cplusplus > 201402L
+            template<class T>
+            interface TEST<33, T> : CONSTANT<__is_aggregate(T)> {
+            };
+#endif
+            /////////////////////////////////[Final class]/////////////////////////////////////
+            template<class T>
+            interface TEST<34, T> : CONSTANT<__is_final(T)> {
+            };
+            /////////////////////////////////[Final class]/////////////////////////////////////
+            template<class T>
+            interface TEST<35, T> : CONSTANT<__is_polymorphic(T)> {
+            };
+            /////////////////////////////////[Final class]/////////////////////////////////////
+            template<class T>
+            interface TEST<36, T> : CONSTANT<__is_empty(T)> {
+            };
+            /////////////////////////////////[Final class]/////////////////////////////////////
+            template<class T>
+            interface TEST<37, T> : CONSTANT<__is_trivial(T)> {
+            };
+            /////////////////////////////////[Final class]/////////////////////////////////////
+            template<class T>
+            interface TEST<38, T> : CONSTANT<__is_literal_type(T)> {
+            };
+            /////////////////////////////////[...]/////////////////////////////////////
             /////////////////////////////////[...]/////////////////////////////////////
             /////////////////////////////////[...]/////////////////////////////////////
         }
 
         CORE_WARNING_POP
 
-        namespace Templates {
-            /////////////////////////////////[User Defined Literal]/////////////////////////////////////
-#define CORE_ENABLE_STRING_LITERAL_CONSTRUCTOR(class, suffix) \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, const char[],, size_t); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, const char16_t[],, size_t); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, const char32_t[],, size_t); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, const wchar_t[],, size_t);
-
-#define CORE_ENABLE_CHARACTER_LITERAL_CONSTRUCTOR(class, suffix) \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, char); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, char16_t); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, char32_t); \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, wchar_t);
-
-#define CORE_ENABLE_INTEGER_LITERAL_CONSTRUCTOR(class, suffix) \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, unsigned long long);
-
-#define CORE_ENABLE_FLOATING_LITERAL_CONSTRUCTOR(class, suffix) \
-        CORE_ENABLE_INTEGER_LITERAL_CONSTRUCTOR(class, suffix) \
-        CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, long double);
-
-        }
     }
 }
 

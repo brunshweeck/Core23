@@ -536,11 +536,10 @@ namespace core {
     }
 
     gfloat Math::max(gfloat a, gfloat b) {
-        if (a != a)
-            return a;   // is NaN
-        if ((a == 0.0f) &&
-            (b == 0.0f) &&
-            (Float::toIntBits(a) == Float::toIntBits(-0.0f))) {
+        if (a != a) return a;   // is NaN
+        if ((a == 0.0F) &&
+            (b == 0.0F) &&
+            (Float::toIntBits(a) == Float::toIntBits(-0.0F))) {
             // Raw conversion ok since NaN can't map to -0.0.
             return b;
         }
@@ -548,8 +547,7 @@ namespace core {
     }
 
     gdouble Math::max(gdouble a, gdouble b) {
-        if (a != a)
-            return a;   // is NaN
+        if (a != a) return a;   // is NaN
         if ((a == 0.0) &&
             (b == 0.0) &&
             (Double::toLongBits(a) == Double::toLongBits(-0.0))) {
@@ -560,9 +558,8 @@ namespace core {
     }
 
     gfloat Math::min(gfloat a, gfloat b) {
-        if (a != a)
-            return a;   // is NaN
-        if ((a == 0.0f) && (b == 0.0f) && (Float::toIntBits(b) == Float::toIntBits(-0.0f))) {
+        if (a != a) return a;   // is NaN
+        if ((a == 0.0F) && (b == 0.0F) && (Float::toIntBits(b) == Float::toIntBits(-0.0f))) {
             // Raw conversion ok since NaN can't map to -0.0.
             return b;
         }
@@ -570,8 +567,7 @@ namespace core {
     }
 
     gdouble Math::min(gdouble a, gdouble b) {
-        if (a != a)
-            return a;   //is NaN
+        if (a != a) return a;   //is NaN
         if ((a == 0.0) && (b == 0.0) && (Double::toLongBits(b) == Double::toLongBits(-0.0))) {
             // Raw conversion ok since NaN can't map to -0.0.
             return b;

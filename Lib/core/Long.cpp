@@ -6,9 +6,13 @@
 #include "NumberFormatException.h"
 #include "ArgumentException.h"
 #include "Integer.h"
+#include "CastException.h"
 #include <core/private/Unsafe.h>
 
 namespace core {
+
+    CORE_ALIAS(U, native::Unsafe);
+
     glong Long::parseLong(const String &str, gint base) {
         if (base < 2 || base > 36)
             ArgumentException("Unsupported conversion base.").throws(__trace("core.Long"));
@@ -80,7 +84,7 @@ namespace core {
         if (length < 13 || base == 10 && length < 19) {
             // MAX_VALUE in base 36 has 13 digits
             // MAX_VALUE in base 10 has 19 digits
-            glong a;
+            glong a = {};
             try {
                 a = parseLong(str, base);
             } catch (const NumberFormatException &nfe) {
@@ -323,7 +327,7 @@ namespace core {
     }
 
     Object &Long::clone() const {
-        return native::Unsafe::U.createInstance<Long>(*this);
+        return U::createInstance<Long>(*this);
     }
 
     gint Long::leadingZeros(glong l) {
@@ -360,6 +364,16 @@ namespace core {
 
     Long Long::valueOf(glong l) {
         return l;
+    }
+
+    gbool Long::equals(const Object &object) const {
+        if (Class<Long>::hasInstance(object))
+            return value == ((Long &) object).value;
+        return false;
+    }
+
+    gint Long::compareTo(const Long &other) const {
+        return compare(value, other.value);
     }
 
 } // core

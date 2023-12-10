@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The Boolean class wrap the value of primitive type
+     * The Boolean class wrap the value of native type
      * (generic) bool in an object.
      *
      * <p>
@@ -20,26 +20,35 @@ namespace core {
      * @author
      *      Brunshweeck Tazeussong
      */
-    class Boolean CORE_FINAL : public Comparable<Boolean> {
+    class Boolean CORE_FINAL  : public Object, public Comparable<Boolean> {
     private:
         /**
          * The value of the Boolean
          */
-        gbool value;
+        gbool value = {};
 
     public:
 
         /**
-         * The Boolean object corresponding to the primitive
+         * The Boolean object corresponding to the native
          * value 'true'
          */
         static const Boolean TRUE;
 
         /**
-         * The Boolean object corresponding to the primitive
+         * The Boolean object corresponding to the native
          * value 'false'
          */
         static const Boolean FALSE;
+
+        /**
+         * Construct the Boolean object representing the value
+         * argument.
+         *
+         * @param value
+         *         The value of the Boolean
+         */
+        CORE_FAST Boolean() = default;
 
         /**
          * Construct the Boolean object representing the value
@@ -63,15 +72,13 @@ namespace core {
          * @param str
          *        The String containing the boolean representation to be parsed
          */
-        static gbool parseBoolean(const String& str);
+        static gbool parseBoolean(const String &str);
 
         /**
          * Return the value of this Boolean object as gbool
          *
          */
-        CORE_FAST gbool booleanValue() const {
-            return value;
-        }
+        CORE_FAST gbool booleanValue() const { return value; }
 
         /**
          * Return the Boolean instance representing by specified
@@ -79,7 +86,7 @@ namespace core {
          *
          * @param b The boolean value
          */
-        static Boolean valueOf(gbool b);
+        static CORE_FAST Boolean valueOf(gbool b) { return {b}; }
 
         /**
          * Return the Boolean instance representing by string
@@ -87,7 +94,7 @@ namespace core {
          * @param str
          *        The String representation
          */
-        static Boolean valueOf(const String& str);
+        static Boolean valueOf(const String &str);
 
         /**
          * Return a String object representing the specified
@@ -115,9 +122,7 @@ namespace core {
          * @param b
          *        The value to hash
          */
-        static CORE_FAST gint hash(gbool b) {
-            return b ? ~0 : 0;
-        }
+        static CORE_FAST gint hash(gbool b) { return b ? ~0 : 0; }
 
         /**
          * Return true if and only if the object argument
@@ -145,9 +150,7 @@ namespace core {
          * @param y
          *        The second boolean to compare
          */
-        static CORE_FAST gint compare(gbool x, gbool y) {
-            return (x == y) ? 0 : (x ? 1 : -1);
-        }
+        static CORE_FAST gint compare(gbool x, gbool y) { return (x == y) ? 0 : (x ? 1 : -1); }
 
         /**
          * Return the result of applying logical AND operator to the
@@ -158,9 +161,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gbool AND(gbool x, gbool y) {
-            return x && y;
-        }
+        static CORE_FAST gbool AND(gbool x, gbool y) { return x && y; }
 
         /**
          * Return the result of applying logical OR operator to the
@@ -171,9 +172,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gbool OR(gbool x, gbool y) {
-            return x || y;
-        }
+        static CORE_FAST gbool OR(gbool x, gbool y) { return x || y; }
 
         /**
          * Return the result of applying logical XOR operator to the
@@ -184,9 +183,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gbool XOR(gbool x, gbool y) {
-            return x ^ y;
-        }
+        static CORE_FAST gbool XOR(gbool x, gbool y) { return x ^ y; }
 
         /**
          * Return sharable copy of this Boolean instance

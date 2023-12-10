@@ -76,28 +76,142 @@ namespace core {
 
 
         glong Unsafe::allocateMemoryImpl(glong sizeInBytes) {
-            return (glong) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, sizeInBytes);
+            glong addr = 0;
+            addr = (glong) LocalAlloc(LMEM_MOVEABLE | LMEM_ZEROINIT, sizeInBytes);
+            if (addr == 0)
+                addr = (glong) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, sizeInBytes);
+            return addr;
         }
 
         glong Unsafe::reallocateMemoryImpl(glong address, glong sizeInBytes) {
-            return (glong) LocalReAlloc((HANDLE) address, sizeInBytes, LMEM_FIXED | LMEM_ZEROINIT);
+            glong addr = 0;
+            addr = (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, LMEM_MOVEABLE | LMEM_ZEROINIT); // NOLINT(*-no-int-to-ptr)
+            if (addr == 0)
+                addr = (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, LMEM_FIXED | LMEM_ZEROINIT); // NOLINT(*-no-int-to-ptr)
+//            addr = (glong) VirtualAlloc((LPVOID) address, sizeInBytes,// NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
+//                                        MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            return addr;
         }
 
         void Unsafe::freeMemoryImpl(glong address) {
             LocalFree((HANDLE) address);
+//            GlobalFree((HANDLE) address);
+//            VirtualFree((LPVOID) address, 0, MEM_RELEASE); // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
             deleteInstance(address);
         }
 
         void Unsafe::setMemoryImpl(glong address, glong sizeInBytes, gbyte value) {
-            FillMemory((HANDLE) address, sizeInBytes, value);
+            if (address != 0) {
+                glong i = 0;
+                if (sizeInBytes >= 8) {
+                    glong x = (glong) value;
+                    glong v = x << 0 |
+                              x << 8 |
+                              x << 16 |
+                              x << 24 |
+                              x << 32 |
+                              x << 40 |
+                              x << 48 |
+                              x << 56;
+                    for (; sizeInBytes >= 8; i += 8) {
+                        putLong(address + i, x);
+                        sizeInBytes -= 8;
+                    }
+                }
+                if (sizeInBytes >= 4) {
+                    gint x = (gint) value;
+                    gint v = x << 0 |
+                             x << 8 |
+                             x << 16 |
+                             x << 24;
+                    for (; sizeInBytes >= 4; i += 4) {
+                        putInt(address + i, x);
+                        sizeInBytes -= 4;
+                    }
+                }
+                if (sizeInBytes >= 2) {
+                    gshort x = (gshort) value;
+                    gshort v = x << 0 |
+                               x << 8 |
+                               x << 16 |
+                               x << 24;
+                    for (; sizeInBytes >= 2; i += 2) {
+                        putShort(address + i, x);
+                        sizeInBytes -= 2;
+                    }
+                }
+                if (sizeInBytes >= 1) {
+                    putByte(address + i, value);
+                    sizeInBytes -= 1;
+                }
+            }
         }
 
-        void Unsafe::copyMemoryImpl(glong srcAddress, Object &dest, glong destAddress, glong sizeInBytes) {
-            CopyMemory((HANDLE) destAddress, (HANDLE) srcAddress, sizeInBytes);
+        void Unsafe::copyMemoryImpl(glong srcAddress, glong destAddress, glong sizeInBytes) {
+            if (srcAddress != 0 && destAddress != 0) {
+                glong i = 0;
+                if (sizeInBytes >= 8) {
+                    glong v = getLong(srcAddress + i);
+                    for (; sizeInBytes >= 8; i += 8) {
+                        putLong(destAddress + i, v);
+                        sizeInBytes -= 8;
+                    }
+                }
+                if (sizeInBytes >= 4) {
+                    gint v = getInt(srcAddress + i);
+                    for (; sizeInBytes >= 4; i += 4) {
+                        putInt(destAddress + i, v);
+                        sizeInBytes -= 4;
+                    }
+                }
+                if (sizeInBytes >= 2) {
+                    gshort v = getShort(srcAddress + i);
+                    for (; sizeInBytes >= 2; i += 2) {
+                        putShort(destAddress + i, v);
+                        sizeInBytes -= 2;
+                    }
+                }
+                if (sizeInBytes >= 1) {
+                    putByte(destAddress + i, getByte(srcAddress + i));
+                    sizeInBytes -= 1;
+                }
+            }
         }
 
         void Unsafe::copySwapMemoryImpl(glong srcAddress, glong destAddress, glong sizeInBytes, glong elemSize) {
-            MoveMemory((HANDLE) destAddress, (HANDLE) srcAddress, sizeInBytes);
+            if (srcAddress != 0 && destAddress != 0) {
+                switch (elemSize) {
+                    case 1:
+                        if (sizeInBytes > 1000) {
+                            if (sizeInBytes % 8 == 0)
+                                return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 3, 8);
+                            if (sizeInBytes % 4 == 0)
+                                return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 2, 4);
+                            if (sizeInBytes % 2 == 0)
+                                return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 1, 2);
+                        }
+                        for (glong i = 0; i < sizeInBytes; ++i) putByte(destAddress + i, getByte(srcAddress + i));
+                        break;
+                    case 2:
+                        if ((sizeInBytes >> 1) > 1000) {
+                            if (sizeInBytes % 8 == 0)
+                                return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 3, 8);
+                            if (sizeInBytes % 4 == 0)
+                                return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 2, 4);
+                        }
+                        for (glong i = 0; i < sizeInBytes; i += 2) putShort(destAddress + i, getShort(srcAddress + i));
+                        break;
+                    case 4:
+                        if ((sizeInBytes >> 2) > 1000 && sizeInBytes % 8 == 0)
+                            return copySwapMemoryImpl(srcAddress, destAddress, sizeInBytes >> 3, 8);
+                        for (glong i = 0; i < sizeInBytes; i += 4) putInt(destAddress + i, getInt(srcAddress + i));
+                        break;
+                    case 8:
+                    default:
+                        for (glong i = 0; i < sizeInBytes; i += 8) putLong(destAddress + i, getLong(srcAddress + i));
+                        break;
+                }
+            }
         }
 
         void Unsafe::loadFence() {
@@ -231,7 +345,7 @@ namespace core {
             expected : getInt(o, offset);
 #endif
             return InterlockedCompareExchangeAcquire((volatile LONG *) UnsafeImpl::getNativeAddress(o, offset),
-                                                     (LONG) x,(LONG) expected);
+                                                     (LONG) x, (LONG) expected);
         }
 
         gint Unsafe::compareAndExchangeIntRelease(core::Object &o, glong offset, gint expected, gint x) {
@@ -288,7 +402,7 @@ namespace core {
             expected : getInt(o, offset);
 #endif
             return InterlockedCompareExchangeAcquire((volatile LONG *) UnsafeImpl::getNativeAddress(o, offset),
-                                                     (LONG) x,(LONG) expected);
+                                                     (LONG) x, (LONG) expected);
         }
 
         gint Unsafe::weakCompareAndExchangeIntRelease(core::Object &o, glong offset, gint expected, gint x) {
@@ -302,7 +416,7 @@ namespace core {
             expected : getInt(o, offset);
 #endif
             return InterlockedCompareExchangeRelease((volatile LONG *) UnsafeImpl::getNativeAddress(o, offset),
-                                                     (LONG) x,(LONG) expected);
+                                                     (LONG) x, (LONG) expected);
         }
 
         gint Unsafe::weakCompareAndExchangeIntRelaxed(core::Object &o, glong offset, gint expected, gint x) {
@@ -444,7 +558,7 @@ namespace core {
             gint mask = 0xFF << shift;
             gint maskedExpected = (expected & 0xFF) << shift;
             gint maskedX = (x & 0xFF) << shift;
-            gint fullWord;
+            gint fullWord = {};
             do {
                 fullWord = getIntVolatile(o, wordOffset);
                 if ((fullWord & mask) != maskedExpected)
@@ -499,28 +613,28 @@ namespace core {
             if (UnsafeImpl::checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return InterlockedCompareExchange16((volatile SHORT *) UnsafeImpl::getNativeAddress(o, offset), (SHORT) x,
-                                                 (SHORT) expected);
-            if ((offset & 3) == 3) {
-                ArgumentException("Update spans the word, not supported")
-                        .throws(__trace("core.native.Unsafe"));
-            }
-            glong wordOffset = offset & ~3;
-            gint shift = (gint) (offset & 3) << 3;
-            if (BIG_ENDIAN) {
-                shift = 16 - shift;
-            }
-            gint mask = 0xFFFF << shift;
-            gint maskedExpected = (expected & 0xFFFF) << shift;
-            gint maskedX = (x & 0xFFFF) << shift;
-            gint fullWord;
-            do {
-                fullWord = getIntVolatile(o, wordOffset);
-                if ((fullWord & mask) != maskedExpected) {
-                    return (short) ((fullWord & mask) >> shift);
-                }
-            } while (!weakCompareAndSetInt(o, wordOffset,
-                                           fullWord, (fullWord & ~mask) | maskedX));
-            return expected;
+                                                (SHORT) expected);
+//            if ((offset & 3) == 3) {
+//                ArgumentException("Update spans the word, not supported")
+//                        .throws(__trace("core.native.Unsafe"));
+//            }
+//            glong wordOffset = offset & ~3;
+//            gint shift = (gint) (offset & 3) << 3;
+//            if (BIG_ENDIAN) {
+//                shift = 16 - shift;
+//            }
+//            gint mask = 0xFFFF << shift;
+//            gint maskedExpected = (expected & 0xFFFF) << shift;
+//            gint maskedX = (x & 0xFFFF) << shift;
+//            gint fullWord;
+//            do {
+//                fullWord = getIntVolatile(o, wordOffset);
+//                if ((fullWord & mask) != maskedExpected) {
+//                    return (short) ((fullWord & mask) >> shift);
+//                }
+//            } while (!weakCompareAndSetInt(o, wordOffset,
+//                                           fullWord, (fullWord & ~mask) | maskedX));
+//            return expected;
         }
 
         gshort Unsafe::compareAndExchangeShortAcquire(core::Object &o, glong offset, gshort expected, gshort x) {

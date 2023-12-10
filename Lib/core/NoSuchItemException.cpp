@@ -7,19 +7,18 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     NoSuchItemException::NoSuchItemException(String message, const Throwable &cause) CORE_NOTHROW:
-            RuntimeException(Unsafe::moveInstance(message), cause) {}
+            RuntimeException(U::moveInstance(message), cause) {}
 
     NoSuchItemException::NoSuchItemException(String message) CORE_NOTHROW:
-            RuntimeException(Unsafe::moveInstance(message)) {}
+            RuntimeException(U::moveInstance(message)) {}
 
-    void NoSuchItemException::raise() &&{
-        throw *this;
-    }
+    void NoSuchItemException::raise() &&{ throw *this; }
 
     Object &NoSuchItemException::clone() const {
-        return native::Unsafe::U.createInstance<NoSuchItemException>(*this);
+        return U::createInstance<NoSuchItemException>(*this);
     }
+
 } // core

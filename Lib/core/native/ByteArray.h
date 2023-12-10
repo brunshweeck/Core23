@@ -2,34 +2,34 @@
 // Created by T.N.Brunshweeck on 16/11/2023.
 //
 
-#ifndef CORE23_CHARARRAY_H
-#define CORE23_CHARARRAY_H
+#ifndef CORE23_BYTEARRAY_H
+#define CORE23_BYTEARRAY_H
 
 #include "Array.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
         /**
-         * The CharArray class wrap the static array of values from primitive type
-         * (generic) gchar in an object.
+         * The ByteArray class wrap the static array of values from native type
+         * (generic) gbyte in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
          *
          * <p>
-         * The class can be used as view for all buffer using this primitive type
-         * (such as CharBuffer)
+         * The class can be used as view for all buffer using this native type
+         * (such as ByteBuffer)
          *
          * @author
          *      Brunshweeck Tazeussong
          */
-        class CharArray: public Array<Character> {
+        class ByteArray: public Array<Byte> {
         private:
             /**
-             * gchar[*]
+             * gbyte[*]
              */
-            CORE_ALIAS(STORAGE, typename Class<gchar>::Ptr);
+            CORE_ALIAS(STORAGE, typename Class<gbyte>::Ptr);
 
             /**
              * The items storage
@@ -41,22 +41,22 @@ namespace core {
         public:
 
             /**
-             * Construct new empty Char Array
+             * Construct new empty Byte Array
              */
-            CharArray(): CharArray(0) {}
+            ByteArray(): ByteArray(0) {}
 
             /**
-             * Construct new CharArray with specified number
+             * Construct new ByteArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.
              *
              * @param length
              *          The number of items
              */
-            CORE_EXPLICIT CharArray(gint length);
+            CORE_EXPLICIT ByteArray(gint length);
 
             /**
-             * Construct new CharArray with specified number
+             * Construct new ByteArray with specified number
              * of items. After creation all items value will be
              * initialized with specified initial value.
              *
@@ -65,23 +65,23 @@ namespace core {
              * @param initialValue
              *          The value used to initialize all items after array creation
              */
-            CORE_EXPLICIT CharArray(gint length, gchar initialValue);
+            CORE_EXPLICIT ByteArray(gint length, gbyte initialValue);
 
             /**
-             * Initialize newly created CharArray with items of another.
+             * Initialize newly created ByteArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            CharArray(const CharArray &array);
+            ByteArray(const ByteArray &array);
 
             /**
-             * Initialize newly created CharArray with items of another.
+             * Initialize newly created ByteArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            CharArray(CharArray &&array) CORE_NOTHROW;
+            ByteArray(ByteArray &&array) CORE_NOTHROW;
 
             /**
              * Set with items of specified array, all items of this array.
@@ -89,7 +89,7 @@ namespace core {
              * @param array
              *          The array that items are used to set this array items
              */
-            CharArray &operator=(const CharArray &array);
+            ByteArray &operator=(const ByteArray &array);
 
             /**
              * Exchange with items of specified array, all items of this array.
@@ -97,7 +97,7 @@ namespace core {
              * @param array
              *          The array that items are  exchanged with items of this
              */
-            CharArray &operator=(CharArray &&array) CORE_NOTHROW;
+            ByteArray &operator=(ByteArray &&array) CORE_NOTHROW;
 
             /**
              * Return item at specified index
@@ -108,7 +108,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            gchar &get(gint index) override;
+            gbyte &get(gint index) override;
 
             /**
              * Return item at specified index
@@ -119,7 +119,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gchar get(gint index) const override;
+            const gbyte get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -132,10 +132,10 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~CharArray() override;
+            ~ByteArray() override;
         };
 
     } // core
-} // primitive
+} // native
 
-#endif //CORE23_CHARARRAY_H
+#endif //CORE23_BYTEARRAY_H

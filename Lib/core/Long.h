@@ -11,7 +11,7 @@
 namespace core {
 
     /**
-     * The <b>Long</b> class wraps a value of the primitive type <b>
+     * The <b>Long</b> class wraps a value of the native type <b>
      * glong</b> in an object. An object of type <b>Long</b> contains a
      * single field whose type is <b>glong</b>.
      *
@@ -34,7 +34,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Long: public Comparable<Long> {
+    class Long CORE_FINAL  : public Object, public Comparable<Long> {
     private:
         /**
          * The value of the Long
@@ -45,12 +45,12 @@ namespace core {
         /**
          * A constant holding the maximum value a glong can have, 2<sup>15</sup> - 1
          */
-        static CORE_FAST glong  MAX_VALUE = 0x7fffffffffffffff;
+        static CORE_FAST glong MAX_VALUE = 0x7fffffffffffffff;
 
         /**
          * A constant holding the minimum value a glong can have, -2<sup>15</sup>
          */
-        static CORE_FAST glong  MIN_VALUE = ~0x7fffffffffffffff;
+        static CORE_FAST glong MIN_VALUE = ~0x7fffffffffffffff;
 
         /**
          * Construct new Long object that represent the specified
@@ -245,7 +245,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as short after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gshort shortValue() const {
             return (gshort) value;
@@ -253,7 +253,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as int after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gint intValue() const {
             return (gint) value;
@@ -261,7 +261,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as glong after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST glong longValue() const {
             return (glong) value;
@@ -269,7 +269,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as float after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gfloat floatValue() const {
             return (gfloat) value;
@@ -277,7 +277,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as double after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gdouble doubleValue() const {
             return (gdouble) value;
@@ -473,9 +473,7 @@ namespace core {
         /**
          * Return the hash code of this Long's value
          */
-        gint hash() const override {
-            return hash(value);
-        }
+        gint hash() const override { return hash(value); }
 
         /**
          * Return the hash code of specified glong value
@@ -483,9 +481,7 @@ namespace core {
          * @param l
          *        The value to hash
          */
-        static CORE_FAST gint hash(glong l) {
-            return (gint) (l ^ (l >> 32));
-        }
+        static CORE_FAST gint hash(glong l) { return (gint) (l ^ (l >> 32)); }
 
         /**
          * Return true if and only if the object argument
@@ -495,11 +491,7 @@ namespace core {
          * @param object
          *          The object to compared with
          */
-        gbool equals(const Object &object) const override {
-            if (Class<Long>::hasInstance(object))
-                return value == ((Long &) object).value;
-            return false;
-        }
+        gbool equals(const Object &object) const override;
 
         /**
          * Compares two Long objects numerically.
@@ -507,9 +499,7 @@ namespace core {
          * @param other
          *          The Long to be compared
          */
-        gint compareTo(const Long &other) const override {
-            return compare(value, other.value);
-        }
+        gint compareTo(const Long &other) const override;
 
         /**
          * Compares two glong values numerically.
@@ -519,9 +509,7 @@ namespace core {
          * @param y
          *         The second glong to compare
          */
-        static CORE_FAST gint compare(glong x, glong y) {
-            return (x == y) ? 0 : ((x < y) ? -1 : 1);
-        }
+        static CORE_FAST gint compare(glong x, glong y) { return (x == y) ? 0 : ((x < y) ? -1 : 1); }
 
         /**
          * Compares two glong values numerically.
@@ -531,9 +519,7 @@ namespace core {
          * @param y
          *         The second glong to compare
          */
-        static CORE_FAST gint compareUnsigned(glong x, glong y) {
-            return compare(x + MIN_VALUE, y + MIN_VALUE);
-        }
+        static CORE_FAST gint compareUnsigned(glong x, glong y) { return compare(x + MIN_VALUE, y + MIN_VALUE); }
 
         /**
          * Returns a <b> glong</b> value with at most a single one-bit, in the
@@ -548,9 +534,7 @@ namespace core {
          *     the specified value is itself equal to zero.
          * @since 1.5
          */
-        static glong highestOneBit(glong i) {
-            return i & (MIN_VALUE >> leadingZeros(i));
-        }
+        static glong highestOneBit(glong i) { return i & (MIN_VALUE >> leadingZeros(i)); }
 
         /**
          * Returns a <b> glong</b> value with at most a single one-bit, in the
@@ -620,9 +604,7 @@ namespace core {
          * @param n
          *        The number of bit positions to rotate left
          */
-        static CORE_FAST glong rotateLeft(glong l, gint n) {
-            return (l << n) | (l >> -n);
-        }
+        static CORE_FAST glong rotateLeft(glong l, gint n) { return (l << n) | (l >> -n); }
 
         /**
          * Returns the value obtained by rotating the two's complement binary
@@ -641,9 +623,7 @@ namespace core {
          * @param n
          *        The number of bit positions to rotate right
          */
-        static CORE_FAST glong rotateRight(glong l, gint n) {
-            return (l >> n) | (l << -n);
-        }
+        static CORE_FAST glong rotateRight(glong l, gint n) { return (l >> n) | (l << -n); }
 
         /**
          * Returns the value obtained by reversing the order of the bits in the
@@ -671,9 +651,7 @@ namespace core {
          * @param l
          *        The value whose signum is to be computed
          */
-        static CORE_FAST gint signum(glong l) {
-            return (gint) ((l >> 63) | (-l >> 63));
-        }
+        static CORE_FAST gint signum(glong l) { return (gint) ((l >> 63) | (-l >> 63)); }
 
         /**
          * Adds two longs together as per the + operator.
@@ -683,9 +661,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST glong sum(glong x, glong y) {
-            return x + y;
-        }
+        static CORE_FAST glong sum(glong x, glong y) { return x + y; }
 
         /**
          * Returns the greater of two glong values
@@ -695,9 +671,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST glong max(glong x, glong y) {
-            return Math::max(x, y);
-        }
+        static CORE_FAST glong max(glong x, glong y) { return Math::max(x, y); }
 
         /**
          * Returns the smaller of two glong values
@@ -707,9 +681,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST glong min(glong x, glong y) {
-            return Math::min(x, y);
-        }
+        static CORE_FAST glong min(glong x, glong y) { return Math::min(x, y); }
 
         /**
          * Return sharable copy of this Long instance

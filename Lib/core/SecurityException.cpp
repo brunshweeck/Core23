@@ -6,20 +6,19 @@
 #include <core/private/Unsafe.h>
 
 namespace core {
-    using native::Unsafe;
+
+    CORE_ALIAS(U, native::Unsafe);
 
     SecurityException::SecurityException(String message) CORE_NOTHROW:
-            RuntimeException(Unsafe::moveInstance(message)) {}
+            RuntimeException(U::moveInstance(message)) {}
 
     SecurityException::SecurityException(String message, const Throwable &cause) :
-            RuntimeException(Unsafe::moveInstance(message)) {}
+            RuntimeException(U::moveInstance(message)) {}
 
 
-    void SecurityException::raise() &&{
-        throw *this;
-    }
+    void SecurityException::raise() &&{ throw *this; }
 
     Object &SecurityException::clone() const {
-        return Unsafe::U.createInstance<SecurityException>(*this);
+        return U::createInstance<SecurityException>(*this);
     }
 } // core

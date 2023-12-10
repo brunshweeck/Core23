@@ -11,7 +11,7 @@
 namespace core {
 
     /**
-     * The <b> Integer</b> class wraps a value of the primitive type
+     * The <b> Integer</b> class wraps a value of the native type
      * <b> int</b> in an object. An object of type <b> Integer</b>
      * contains a single field whose type is <b> int</b>.
      *
@@ -34,12 +34,12 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Integer: public Comparable<Integer> {
+    class Integer CORE_FINAL  : public Object, public Comparable<Integer> {
     private:
         /**
          * The value of the Integer
          */
-        gint value;
+        gint value = {};
 
     public:
         /**
@@ -51,6 +51,14 @@ namespace core {
          * A constant holding the minimum value a int can have, -2<sup>31</sup>
          */
         static CORE_FAST gint MIN_VALUE = ~0x7fffffff;
+
+        /**
+         * Construct new Integer object with default initialization
+         *
+         * @param value
+         *         The value of the Integer.
+         */
+        CORE_FAST Integer() = default;
 
         /**
          * Construct new Integer object that represent the specified
@@ -159,7 +167,7 @@ namespace core {
          *             specified base .
          * @throws     NumberFormatException if the String does not contain a parsable int.
          */
-        static gint parseUnsignedInt(const String& str, gint base);
+        static gint parseUnsignedInt(const String &str, gint base);
 
         /**
          * Parses the string argument as an unsigned decimal integer. The
@@ -174,7 +182,7 @@ namespace core {
          * @throws FormatException  if the string does not contain a
          *            parsable unsigned integer.
          */
-        static gint parseUnsignedInt(const String& str);
+        static gint parseUnsignedInt(const String &str);
 
         /**
          * Returns a Integer object holding the value extracted from the specified
@@ -207,7 +215,10 @@ namespace core {
          */
         static Integer valueOf(const String &str);
 
-        static Integer valueOf(gint i);
+        /**
+         * Return an Integer object represented by the given value
+         */
+        static CORE_FAST Integer valueOf(gint i) { return {i}; }
 
         /**
          * Decodes a String into a Integer.
@@ -258,7 +269,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as short after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gshort shortValue() const {
             return (gshort) value;
@@ -266,7 +277,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as int after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gint intValue() const {
             return (gint) value;
@@ -274,7 +285,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as long after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST glong longValue() const {
             return (glong) value;
@@ -282,7 +293,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as float after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gfloat floatValue() const {
             return (gfloat) value;
@@ -290,7 +301,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as double after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gdouble doubleValue() const {
             return (gdouble) value;
@@ -486,9 +497,7 @@ namespace core {
         /**
          * Return the hash code of this Integer's value
          */
-        gint hash() const override {
-            return hash(value);
-        }
+        gint hash() const override { return hash(value); }
 
         /**
          * Return the hash code of specified int value
@@ -496,9 +505,7 @@ namespace core {
          * @param i
          *        The value to hash
          */
-        static CORE_FAST gint hash(gint i) {
-            return (gint) i;
-        }
+        static CORE_FAST gint hash(gint i) { return i; }
 
         /**
          * Return true if and only if the object argument
@@ -508,11 +515,7 @@ namespace core {
          * @param object
          *          The object to compared with
          */
-        gbool equals(const Object &object) const override {
-            if (Class<Integer>::hasInstance(object))
-                return value == ((Integer &) object).value;
-            return false;
-        }
+        gbool equals(const Object &object) const override;
 
         /**
          * Compares two Integer objects numerically.
@@ -520,9 +523,7 @@ namespace core {
          * @param other
          *          The Integer to be compared
          */
-        gint compareTo(const Integer &other) const override {
-            return compare(value, other.value);
-        }
+        gint compareTo(const Integer &other) const override;
 
         /**
          * Compares two int values numerically.
@@ -532,9 +533,7 @@ namespace core {
          * @param y
          *         The second int to compare
          */
-        static CORE_FAST gint compare(gint x, gint y) {
-            return (x == y) ? 0 : ((x < y) ? -1 : 1);
-        }
+        static CORE_FAST gint compare(gint x, gint y) { return (x == y) ? 0 : ((x < y) ? -1 : 1); }
 
         /**
          * Compares two int values numerically.
@@ -544,9 +543,7 @@ namespace core {
          * @param y
          *         The second int to compare
          */
-        static CORE_FAST gint compareUnsigned(gint x, gint y) {
-            return compare(x + MIN_VALUE, y + MIN_VALUE);
-        }
+        static CORE_FAST gint compareUnsigned(gint x, gint y) { return compare(x + MIN_VALUE, y + MIN_VALUE); }
 
         /**
          * Converts the argument to a long by an unsigned conversion.
@@ -562,9 +559,7 @@ namespace core {
          * @param i
          *        The value to convert to an unsigned int
          */
-        static CORE_FAST glong toUnsignedLong(gint i) {
-            return ((glong) i) & 0xffffffffLL;
-        }
+        static CORE_FAST glong toUnsignedLong(gint i) { return ((glong) i) & 0xffffffffLL; }
 
         /**
          * Returns an <b> int</b> value with at most a single one-bit, in the
@@ -578,9 +573,7 @@ namespace core {
          *     of the highest-order one-bit in the specified value, or zero if
          *     the specified value is itself equal to zero.
          */
-        static gint highestOneBit(gint i) {
-            return i & (MIN_VALUE >> leadingZeros(i));
-        }
+        static gint highestOneBit(gint i) { return i & (MIN_VALUE >> leadingZeros(i)); }
 
         /**
          * Returns an <b> int</b> value with at most a single one-bit, in the
@@ -649,9 +642,7 @@ namespace core {
          * @param n
          *        The number of bit positions to rotate left
          */
-        static CORE_FAST gint rotateLeft(gint i, gint n) {
-            return (i << n) | (i >> -n);
-        }
+        static CORE_FAST gint rotateLeft(gint i, gint n) { return (i << n) | (i >> -n); }
 
         /**
          * Returns the value obtained by rotating the two's complement binary
@@ -670,9 +661,7 @@ namespace core {
          * @param n
          *        The number of bit positions to rotate right
          */
-        static CORE_FAST gint rotateRight(gint i, gint n) {
-            return (i >> n) | (i << -n);
-        }
+        static CORE_FAST gint rotateRight(gint i, gint n) { return (i >> n) | (i << -n); }
 
         /**
          * Returns the value obtained by reversing the order of the bits in the
@@ -705,9 +694,7 @@ namespace core {
          * @param i
          *        The value whose signum is to be computed
          */
-        static CORE_FAST gint signum(gint i) {
-            return (i >> 31) | (-i >> 31);
-        }
+        static CORE_FAST gint signum(gint i) { return (i >> 31) | (-i >> 31); }
 
         /**
          * Adds two integers together as per the + operator.
@@ -717,9 +704,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gint sum(gint x, gint y) {
-            return x + y;
-        }
+        static CORE_FAST gint sum(gint x, gint y) { return x + y; }
 
         /**
          * Returns the greater of two int values
@@ -729,9 +714,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gint max(gint x, gint y) {
-            return Math::max(x, y);
-        }
+        static CORE_FAST gint max(gint x, gint y) { return Math::max(x, y); }
 
         /**
          * Returns the smaller of two int values
@@ -741,9 +724,7 @@ namespace core {
          * @param y
          *        The second operand
          */
-        static CORE_FAST gint min(gint x, gint y) {
-            return Math::min(x, y);
-        }
+        static CORE_FAST gint min(gint x, gint y) { return Math::min(x, y); }
 
         /**
          * Return sharable copy of this Integer instance

@@ -5,8 +5,8 @@
 #ifndef CORE23_UNSAFE_H
 #define CORE23_UNSAFE_H
 
-#include <core/Object.h>
 #include <core/MemoryError.h>
+#include <core/CloneNotSupportedException.h>
 
 namespace core {
 
@@ -29,23 +29,15 @@ namespace core {
          */
         class Unsafe final : public Object {
         private:
-            /**
-             * This Constructor is Only usable by unique instance
-             */
+
             CORE_FAST Unsafe() = default;
 
         public:
-            CORE_DISABLE_COPY_MOVE(Unsafe);
-
-            /**
-             * The unique instance of Unsafe
-             */
-            static Unsafe U;
 
             /**
              * The size in bytes of a pointer, as stored via <b style="color: orange;">
              * putAddress</b>.  This value will be either 4 or 8.  Note that the
-             * sizes of other primitive types (as stored in memory
+             * sizes of other native types (as stored in memory
              * blocks) is determined fully by their information content.
              */
             const static gint ADDRESS_SIZE;
@@ -98,7 +90,7 @@ namespace core {
              * @return the value fetched from the indicated variable
              * @throws RuntimeException No defined exceptions are thrown
              */
-            gint getInt(const Object &o, glong offset);
+            static gint getInt(const Object &o, glong offset);
 
             /**
              * Stores a value into a given variable.
@@ -119,13 +111,13 @@ namespace core {
              * @param x the value to store into the indicated variable
              * @throws RuntimeException No defined exceptions are thrown
              */
-            void putInt(Object &o, glong offset, gint x);
+            static void putInt(Object &o, glong offset, gint x);
 
             /**
              * Fetches a reference value from a given variable.
              * @see getInt(Object, glong)
              */
-            Object &getReference(const Object &o, glong offset);
+            static Object &getReference(const Object &o, glong offset);
 
             /**
              * Stores a reference value into a given variable.
@@ -137,49 +129,49 @@ namespace core {
              * are updated.
              * @see putInt(Object, glong, gint)
              */
-            void putReference(Object &o, glong offset, Object &x);
+            static void putReference(Object &o, glong offset, Object &x);
 
             /** @see getInt(Object, glong) */
-            gbool getBoolean(const Object &o, glong offset);
+            static gbool getBoolean(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putBoolean(Object &o, glong offset, gbool x);
+            static void putBoolean(Object &o, glong offset, gbool x);
 
             /** @see getInt(Object, glong) */
-            gbyte getByte(const Object &o, glong offset);
+            static gbyte getByte(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putByte(Object &o, glong offset, gbyte x);
+            static void putByte(Object &o, glong offset, gbyte x);
 
             /** @see getInt(Object, glong) */
-            gshort getShort(const Object &o, glong offset);
+            static gshort getShort(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putShort(Object &o, glong offset, gshort x);
+            static void putShort(Object &o, glong offset, gshort x);
 
             /** @see getInt(Object, glong) */
-            gchar getChar(const Object &o, glong offset);
+            static gchar getChar(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putChar(Object &o, glong offset, gchar x);
+            static void putChar(Object &o, glong offset, gchar x);
 
             /** @see getInt(Object, glong) */
-            glong getLong(const Object &o, glong offset);
+            static glong getLong(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putLong(Object &o, glong offset, glong x);
+            static void putLong(Object &o, glong offset, glong x);
 
             /** @see getInt(Object, glong) */
-            gfloat getFloat(const Object &o, glong offset);
+            static gfloat getFloat(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putFloat(Object &o, glong offset, gfloat x);
+            static void putFloat(Object &o, glong offset, gfloat x);
 
             /** @see getInt(Object, glong) */
-            gdouble getDouble(const Object &o, glong offset);
+            static gdouble getDouble(const Object &o, glong offset);
 
             /** @see putInt(Object, glong, gint) */
-            void putDouble(Object &o, glong offset, gdouble x);
+            static void putDouble(Object &o, glong offset, gdouble x);
 
             /**
              * Fetches a native pointer from a given memory address.  If the address is
@@ -196,7 +188,7 @@ namespace core {
              * @see allocateMemory
              * @see getInt(Object, glong)
              */
-            glong getAddress(const Object &o, glong offset);
+            static glong getAddress(const Object &o, glong offset);
 
             /**
              * Stores a native pointer into a given memory address.  If the address is
@@ -209,7 +201,7 @@ namespace core {
              * @see allocateMemory
              * @see putInt(Object, glong, gint)
              */
-            void putAddress(Object &o, glong offset, glong x);
+            static void putAddress(Object &o, glong offset, glong x);
 
             // The work on values in C heap
 
@@ -220,7 +212,7 @@ namespace core {
              *
              * @see allocateMemory
              */
-            gbyte getByte(glong address);
+            static gbyte getByte(glong address);
 
             /**
              * Stores a value into a given memory address.  If the address is zero, or
@@ -229,55 +221,55 @@ namespace core {
              *
              * @see getByte(glong)
              */
-            void putByte(glong address, gbyte x);
+            static void putByte(glong address, gbyte x);
 
             /** @see getByte(glong) */
-            gbool getBoolean(glong address);
+            static gbool getBoolean(glong address);
 
             /** @see putByte(glong, byte) */
-            void putBoolean(glong address, gbool x);
+            static void putBoolean(glong address, gbool x);
 
             /** @see getByte(glong) */
-            gshort getShort(glong address);
+            static gshort getShort(glong address);
 
             /** @see putByte(glong, byte) */
-            void putShort(glong address, gshort x);
+            static void putShort(glong address, gshort x);
 
             /** @see getByte(glong) */
-            gchar getChar(glong address);
+            static gchar getChar(glong address);
 
             /** @see putByte(glong, byte) */
-            void putChar(glong address, gchar x);
+            static void putChar(glong address, gchar x);
 
             /** @see getByte(glong) */
-            gint getInt(glong address);
+            static gint getInt(glong address);
 
             /** @see putByte(glong, byte) */
-            void putInt(glong address, gint x);
+            static void putInt(glong address, gint x);
 
             /** @see getByte(glong) */
-            glong getLong(glong address);
+            static glong getLong(glong address);
 
             /** @see putByte(glong, byte) */
-            void putLong(glong address, glong x);
+            static void putLong(glong address, glong x);
 
             /** @see getByte(glong) */
-            gfloat getFloat(glong address);
+            static gfloat getFloat(glong address);
 
             /** @see putByte(glong, byte) */
-            void putFloat(glong address, gfloat x);
+            static void putFloat(glong address, gfloat x);
 
             /** @see getByte(glong) */
-            gdouble getDouble(glong address);
+            static gdouble getDouble(glong address);
 
             /** @see putByte(glong, byte) */
-            void putDouble(glong address, gdouble x);
+            static void putDouble(glong address, gdouble x);
 
             /** @see getByte(glong) */
-            glong getAddress(glong address);
+            static glong getAddress(glong address);
 
             /** @see putByte(glong, byte) */
-            void putAddress(glong address, glong x);
+            static void putAddress(glong address, glong x);
 
             /**
              * Allocates a new block of native memory, of the given size in sizeInBytes.  The
@@ -303,7 +295,7 @@ namespace core {
              * @see getByte(glong)
              * @see putByte(glong, byte)
              */
-            glong allocateMemory(glong sizeInBytes);
+            static glong allocateMemory(glong sizeInBytes);
 
             /**
              * Resizes a new block of native memory, to the given size in sizeInBytes.  The
@@ -331,7 +323,7 @@ namespace core {
              *
              * @see allocateMemory
              */
-            glong reallocateMemory(glong address, glong sizeInBytes);
+            static glong reallocateMemory(glong address, glong sizeInBytes);
 
             /**
              * Sets all bytes in a given block of memory to a fixed value
@@ -360,7 +352,7 @@ namespace core {
              * @throws RuntimeException if any of the arguments is invalid
              *
              */
-            void setMemory(Object &o, glong offset, glong bytes, gbyte value);
+            static void setMemory(Object &o, glong offset, glong sizeInBytes, gbyte value);
 
             /**
              * Sets all bytes in a given block of memory to a fixed value
@@ -369,7 +361,7 @@ namespace core {
              *
              * <p>Equivalent to <b> setMemory(null, address, bytes, value)</b>.
              */
-            void setMemory(glong address, glong bytes, gbyte value);
+            static void setMemory(glong address, glong sizeInBytes, gbyte value);
 
             /**
              * Sets all bytes in a given block of memory to a copy of another
@@ -398,7 +390,8 @@ namespace core {
              * @throws RuntimeException if any of the arguments is invalid
              *
              */
-            void copyMemory(const Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes);
+            static void
+            copyMemory(const Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes);
 
             /**
              * Sets all bytes in a given block of memory to a copy of another
@@ -407,7 +400,7 @@ namespace core {
              *
              * Equivalent to <b> copyMemory(null, srcAddress, null, destAddress, bytes)</b>.
              */
-            void copyMemory(glong srcAddress, glong destAddress, glong bytes);
+            static void copyMemory(glong srcAddress, glong destAddress, glong bytes);
 
             /**
              * Copies all elements from one block of memory to another block,
@@ -430,8 +423,8 @@ namespace core {
              * @throws RuntimeException if any of the arguments is invalid
              *
              */
-            void copySwapMemory(Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes,
-                                glong elemSize);
+            static void copySwapMemory(Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes,
+                                       glong elemSize);
 
             /**
              * Copies all elements from one block of memory to another block, byte swapping the
@@ -442,7 +435,7 @@ namespace core {
              *
              * Equivalent to <b> copySwapMemory(null, srcAddress, null, destAddress, bytes, elemSize)</b>.
              */
-            void copySwapMemory(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
+            static void copySwapMemory(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
 
             /**
              * Disposes of a block of native memory, as obtained from <b style="color: orange;">
@@ -462,7 +455,7 @@ namespace core {
              *
              * @see allocateMemory
              */
-            void freeMemory(glong address);
+            static void freeMemory(glong address);
 
             /** The value of <b> arrayBaseOffset<gbool>()</b> */
             static const gint ARRAY_BOOLEAN_BASE_OFFSET;
@@ -529,21 +522,24 @@ namespace core {
              *
              * @return <b> true</b> if successful
              */
-            gbool compareAndSetReference(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool compareAndSetReference(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool compareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool compareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool compareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool compareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool compareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool compareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &compareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &compareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &compareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            compareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &compareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            compareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &compareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            compareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
 
             /**
              * Atomically updates variable to <b> x</b> if it is currently
@@ -554,21 +550,24 @@ namespace core {
              *
              * @return <b> true</b> if successful
              */
-            gbool weakCompareAndSetReference(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool weakCompareAndSetReference(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool weakCompareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool weakCompareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool weakCompareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool weakCompareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
 
-            gbool weakCompareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
+            static gbool weakCompareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &weakCompareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &weakCompareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &weakCompareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            weakCompareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &weakCompareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            weakCompareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x);
 
-            Object &weakCompareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
+            static Object &
+            weakCompareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
 
             // ----------------- [atomic int] ---------------------------------------
 
@@ -582,21 +581,21 @@ namespace core {
              *
              * @return <b> true</b> if successful
              */
-            gbool compareAndSetInt(Object &o, glong offset, gint expected, gint x);
+            static gbool compareAndSetInt(Object &o, glong offset, gint expected, gint x);
 
-            gbool compareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x);
+            static gbool compareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x);
 
-            gbool compareAndSetIntRelease(Object &o, glong offset, gint expected, gint x);
+            static gbool compareAndSetIntRelease(Object &o, glong offset, gint expected, gint x);
 
-            gbool compareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x);
+            static gbool compareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x);
 
-            gint compareAndExchangeInt(Object &o, glong offset, gint expected, gint x);
+            static gint compareAndExchangeInt(Object &o, glong offset, gint expected, gint x);
 
-            gint compareAndExchangeIntAcquire(Object &o, glong offset, gint expected, gint x);
+            static gint compareAndExchangeIntAcquire(Object &o, glong offset, gint expected, gint x);
 
-            gint compareAndExchangeIntRelease(Object &o, glong offset, gint expected, gint x);
+            static gint compareAndExchangeIntRelease(Object &o, glong offset, gint expected, gint x);
 
-            gint compareAndExchangeIntRelaxed(Object &o, glong offset, gint expected, gint x);
+            static gint compareAndExchangeIntRelaxed(Object &o, glong offset, gint expected, gint x);
 
 
             /**
@@ -608,396 +607,396 @@ namespace core {
              *
              * @return <b> true</b> if successful
              */
-            gbool weakCompareAndSetInt(Object &o, glong offset, gint expected, gint x);
+            static gbool weakCompareAndSetInt(Object &o, glong offset, gint expected, gint x);
 
-            gbool weakCompareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x);
+            static gbool weakCompareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x);
 
-            gbool weakCompareAndSetIntRelease(Object &o, glong offset, gint expected, gint x);
+            static gbool weakCompareAndSetIntRelease(Object &o, glong offset, gint expected, gint x);
 
-            gbool weakCompareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x);
+            static gbool weakCompareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x);
 
-            gint weakCompareAndExchangeInt(Object &o, glong offset, gint expected, gint x);
+            static gint weakCompareAndExchangeInt(Object &o, glong offset, gint expected, gint x);
 
-            gint weakCompareAndExchangeIntAcquire(Object &o, glong offset, gint expected, gint x);
+            static gint weakCompareAndExchangeIntAcquire(Object &o, glong offset, gint expected, gint x);
 
-            gint weakCompareAndExchangeIntRelease(Object &o, glong offset, gint expected, gint x);
+            static gint weakCompareAndExchangeIntRelease(Object &o, glong offset, gint expected, gint x);
 
-            gint weakCompareAndExchangeIntRelaxed(Object &o, glong offset, gint expected, gint x);
+            static gint weakCompareAndExchangeIntRelaxed(Object &o, glong offset, gint expected, gint x);
 
             // ----------------- [atomic byte] ---------------------------------------
 
-            gbool compareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool compareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool compareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool compareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool compareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool compareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool compareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool compareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte compareAndExchangeByte(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte compareAndExchangeByte(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte compareAndExchangeByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte compareAndExchangeByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte compareAndExchangeByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte compareAndExchangeByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte compareAndExchangeByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte compareAndExchangeByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool weakCompareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool weakCompareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool weakCompareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool weakCompareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool weakCompareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool weakCompareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbool weakCompareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbool weakCompareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte weakCompareAndExchangeByte(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte weakCompareAndExchangeByte(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte weakCompareAndExchangeByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte weakCompareAndExchangeByteAcquire(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte weakCompareAndExchangeByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte weakCompareAndExchangeByteRelease(Object &o, glong offset, gbyte expected, gbyte x);
 
-            gbyte weakCompareAndExchangeByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
+            static gbyte weakCompareAndExchangeByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x);
 
             // ----------------- [atomic short] ---------------------------------------
 
-            gbool compareAndSetShort(Object &o, glong offset, gshort expected, gshort x);
+            static gbool compareAndSetShort(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool compareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x);
+            static gbool compareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool compareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x);
+            static gbool compareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool compareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
+            static gbool compareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort compareAndExchangeShort(Object &o, glong offset, gshort expected, gshort x);
+            static gshort compareAndExchangeShort(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort compareAndExchangeShortAcquire(Object &o, glong offset, gshort expected, gshort x);
+            static gshort compareAndExchangeShortAcquire(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort compareAndExchangeShortRelease(Object &o, glong offset, gshort expected, gshort x);
+            static gshort compareAndExchangeShortRelease(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort compareAndExchangeShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
+            static gshort compareAndExchangeShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool weakCompareAndSetShort(Object &o, glong offset, gshort expected, gshort x);
+            static gbool weakCompareAndSetShort(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool weakCompareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x);
+            static gbool weakCompareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool weakCompareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x);
+            static gbool weakCompareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x);
 
-            gbool weakCompareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
+            static gbool weakCompareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort weakCompareAndExchangeShort(Object &o, glong offset, gshort expected, gshort x);
+            static gshort weakCompareAndExchangeShort(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort weakCompareAndExchangeShortAcquire(Object &o, glong offset, gshort expected, gshort x);
+            static gshort weakCompareAndExchangeShortAcquire(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort weakCompareAndExchangeShortRelease(Object &o, glong offset, gshort expected, gshort x);
+            static gshort weakCompareAndExchangeShortRelease(Object &o, glong offset, gshort expected, gshort x);
 
-            gshort weakCompareAndExchangeShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
+            static gshort weakCompareAndExchangeShortRelaxed(Object &o, glong offset, gshort expected, gshort x);
 
             // ----------------- [atomic char] ---------------------------------------
 
-            gbool compareAndSetChar(Object &o, glong offset, gchar expected, gchar x);
+            static gbool compareAndSetChar(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool compareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x);
+            static gbool compareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool compareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x);
+            static gbool compareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool compareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
+            static gbool compareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar compareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x);
+            static gchar compareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar compareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x);
+            static gchar compareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar compareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x);
+            static gchar compareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar compareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
+            static gchar compareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool weakCompareAndSetChar(Object &o, glong offset, gchar expected, gchar x);
+            static gbool weakCompareAndSetChar(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool weakCompareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x);
+            static gbool weakCompareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool weakCompareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x);
+            static gbool weakCompareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x);
 
-            gbool weakCompareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
+            static gbool weakCompareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar weakCompareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x);
+            static gchar weakCompareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar weakCompareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x);
+            static gchar weakCompareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar weakCompareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x);
+            static gchar weakCompareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x);
 
-            gchar weakCompareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
+            static gchar weakCompareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x);
 
             // ----------------- [atomic boolean] ---------------------------------------
 
-            gbool compareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool compareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
+            static gbool compareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x);
 
-            gbool weakCompareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
+            static gbool weakCompareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x);
 
             // ----------------- [atomic float] ---------------------------------------
 
-            gbool compareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool compareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool compareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool compareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool compareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool compareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool compareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool compareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat compareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat compareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat compareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat compareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat compareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat compareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat compareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat compareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool weakCompareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool weakCompareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool weakCompareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool weakCompareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool weakCompareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool weakCompareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gbool weakCompareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
+            static gbool weakCompareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat weakCompareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat weakCompareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat weakCompareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat weakCompareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat weakCompareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat weakCompareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x);
 
-            gfloat weakCompareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
+            static gfloat weakCompareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x);
 
             // ----------------- [atomic double] ---------------------------------------
 
-            gbool compareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool compareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool compareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool compareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool compareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool compareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool compareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool compareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble compareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble compareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble compareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble compareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble compareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble compareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble compareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble compareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool weakCompareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool weakCompareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool weakCompareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool weakCompareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool weakCompareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool weakCompareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gbool weakCompareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
+            static gbool weakCompareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble weakCompareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble weakCompareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble weakCompareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble weakCompareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble weakCompareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble weakCompareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x);
 
-            gdouble weakCompareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
+            static gdouble weakCompareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
 
             // ----------------- [atomic long] ---------------------------------------
 
-            gbool compareAndSetLong(Object &o, glong offset, glong expected, glong x);
+            static gbool compareAndSetLong(Object &o, glong offset, glong expected, glong x);
 
-            gbool compareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x);
+            static gbool compareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x);
 
-            gbool compareAndSetLongRelease(Object &o, glong offset, glong expected, glong x);
+            static gbool compareAndSetLongRelease(Object &o, glong offset, glong expected, glong x);
 
-            gbool compareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x);
+            static gbool compareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x);
 
-            glong compareAndExchangeLong(Object &o, glong offset, glong expected, glong x);
+            static glong compareAndExchangeLong(Object &o, glong offset, glong expected, glong x);
 
-            glong compareAndExchangeLongAcquire(Object &o, glong offset, glong expected, glong x);
+            static glong compareAndExchangeLongAcquire(Object &o, glong offset, glong expected, glong x);
 
-            glong compareAndExchangeLongRelease(Object &o, glong offset, glong expected, glong x);
+            static glong compareAndExchangeLongRelease(Object &o, glong offset, glong expected, glong x);
 
-            glong compareAndExchangeLongRelaxed(Object &o, glong offset, glong expected, glong x);
+            static glong compareAndExchangeLongRelaxed(Object &o, glong offset, glong expected, glong x);
 
-            gbool weakCompareAndSetLong(Object &o, glong offset, glong expected, glong x);
+            static gbool weakCompareAndSetLong(Object &o, glong offset, glong expected, glong x);
 
-            gbool weakCompareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x);
+            static gbool weakCompareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x);
 
-            gbool weakCompareAndSetLongRelease(Object &o, glong offset, glong expected, glong x);
+            static gbool weakCompareAndSetLongRelease(Object &o, glong offset, glong expected, glong x);
 
-            gbool weakCompareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x);
+            static gbool weakCompareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x);
 
-            glong weakCompareAndExchangeLong(Object &o, glong offset, glong expected, glong x);
+            static glong weakCompareAndExchangeLong(Object &o, glong offset, glong expected, glong x);
 
-            glong weakCompareAndExchangeLongAcquire(Object &o, glong offset, glong expected, glong x);
+            static glong weakCompareAndExchangeLongAcquire(Object &o, glong offset, glong expected, glong x);
 
-            glong weakCompareAndExchangeLongRelease(Object &o, glong offset, glong expected, glong x);
+            static glong weakCompareAndExchangeLongRelease(Object &o, glong offset, glong expected, glong x);
 
-            glong weakCompareAndExchangeLongRelaxed(Object &o, glong offset, glong expected, glong x);
+            static glong weakCompareAndExchangeLongRelaxed(Object &o, glong offset, glong expected, glong x);
 
             /**
              * Fetches a reference value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getReference(Object, glong)</b>
              */
-            Object volatile &getReferenceVolatile(const Object &o, glong offset);
+            static Object &getReferenceVolatile(const Object &o, glong offset);
 
             /**
              * Stores a reference value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putReference(Object, glong, Object)</b>
              */
-            void putReferenceVolatile(Object &o, glong offset, Object volatile &x);
+            static void putReferenceVolatile(Object &o, glong offset, Object &x);
 
             /**
              * Fetches a int value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> get3(Object, glong)</b>
              */
-            gint volatile getIntVolatile(const Object &o, glong offset);
+            static gint getIntVolatile(const Object &o, glong offset);
 
             /**
              * Stores a int value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putInt(Object, glong, Object)</b>
              */
-            void putIntVolatile(Object &o, glong offset, gint volatile x);
+            static void putIntVolatile(Object &o, glong offset, gint x);
 
             /**
              * Fetches a boolean value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getBoolean(Object, glong)</b>
              */
-            gbool volatile getBooleanVolatile(const Object &o, glong offset);
+            static gbool getBooleanVolatile(const Object &o, glong offset);
 
             /**
              * Stores a boolean value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putBoolean(Object, glong, Object)</b>
              */
-            void putBooleanVolatile(Object &o, glong offset, gbool volatile x);
+            static void putBooleanVolatile(Object &o, glong offset, gbool x);
 
             /**
              * Fetches a byte value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getByte(Object, glong)</b>
              */
-            gbyte volatile getByteVolatile(const Object &o, glong offset);
+            static gbyte getByteVolatile(const Object &o, glong offset);
 
             /**
              * Stores a byte value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putByte(Object, glong, Object)</b>
              */
-            void putByteVolatile(Object &o, glong offset, gbyte volatile x);
+            static void putByteVolatile(Object &o, glong offset, gbyte x);
 
             /**
              * Fetches a short value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getShort(Object, glong)</b>
              */
-            gshort volatile getShortVolatile(const Object &o, glong offset);
+            static gshort getShortVolatile(const Object &o, glong offset);
 
             /**
              * Stores a short value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putShort(Object, glong, Object)</b>
              */
-            void putShortVolatile(Object &o, glong offset, gshort volatile x);
+            static void putShortVolatile(Object &o, glong offset, gshort x);
 
             /**
              * Fetches a char value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getChar(Object, glong)</b>
              */
-            gchar volatile getCharVolatile(const Object &o, glong offset);
+            static gchar getCharVolatile(const Object &o, glong offset);
 
             /**
              * Stores a char value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putChar(Object, glong, Object)</b>
              */
-            void putCharVolatile(Object &o, glong offset, gchar volatile x);
+            static void putCharVolatile(Object &o, glong offset, gchar x);
 
             /**
              * Fetches a long value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getLong(Object, glong)</b>
              */
-            glong volatile getLongVolatile(const Object &o, glong offset);
+            static glong getLongVolatile(const Object &o, glong offset);
 
             /**
              * Stores a glong value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putLong(Object, glong, Object)</b>
              */
-            void putLongVolatile(Object &o, glong offset, glong volatile x);
+            static void putLongVolatile(Object &o, glong offset, glong x);
 
             /**
              * Fetches a float value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getFloat(Object, glong)</b>
              */
-            gfloat volatile getFloatVolatile(const Object &o, glong offset);
+            static gfloat getFloatVolatile(const Object &o, glong offset);
 
             /**
              * Stores a float value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putFloat(Object, glong, Object)</b>
              */
-            void putFloatVolatile(Object &o, glong offset, gfloat volatile x);
+            static void putFloatVolatile(Object &o, glong offset, gfloat x);
 
             /**
              * Fetches a double value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getDouble(Object, glong)</b>
              */
-            gdouble volatile getDoubleVolatile(const Object &o, glong offset);
+            static gdouble getDoubleVolatile(const Object &o, glong offset);
 
             /**
              * Stores a double value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putDouble(Object, glong, Object)</b>
              */
-            void putDoubleVolatile(Object &o, glong offset, gdouble volatile x);
+            static void putDoubleVolatile(Object &o, glong offset, gdouble x);
 
             // ---------------------- ACQUIRE --------------------------------------
 
             /** Acquire version of <b style="color: orange;"> getReferenceVolatile(Object, glong)</b> */
-            Object &getReferenceAcquire(const Object &o, glong offset);
+            static Object &getReferenceAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getBooleanVolatile(Object, glong)</b> */
-            gbool getBooleanAcquire(const Object &o, glong offset);
+            static gbool getBooleanAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getByteVolatile(Object, glong)</b> */
-            gbyte getByteAcquire(const Object &o, glong offset);
+            static gbyte getByteAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getShortVolatile(Object, glong)</b> */
-            gshort getShortAcquire(const Object &o, glong offset);
+            static gshort getShortAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getCharVolatile(Object, glong)</b> */
-            gchar getCharAcquire(const Object &o, glong offset);
+            static gchar getCharAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getIntVolatile(Object, glong)</b> */
-            gint getIntAcquire(const Object &o, glong offset);
+            static gint getIntAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getLongVolatile(Object, glong)</b> */
-            glong getLongAcquire(const Object &o, glong offset);
+            static glong getLongAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getFloatVolatile(Object, glong)</b> */
-            gfloat getFloatAcquire(const Object &o, glong offset);
+            static gfloat getFloatAcquire(const Object &o, glong offset);
 
             /** Acquire version of <b style="color: orange;"> getDoubleVolatile(Object, glong)</b> */
-            gdouble getDoubleAcquire(const Object &o, glong offset);
+            static gdouble getDoubleAcquire(const Object &o, glong offset);
 
             // ---------------------- RELEASE --------------------------------------
 
@@ -1012,87 +1011,87 @@ namespace core {
              */
 
             /** Release version of <b style="color: orange;"> putReferenceVolatile(Object, glong, Object)</b> */
-            void putReferenceRelease(Object &o, glong offset, Object &x);
+            static void putReferenceRelease(Object &o, glong offset, Object &x);
 
             /** Release version of <b style="color: orange;"> putBooleanVolatile(Object, glong, gbool)</b> */
-            void putBooleanRelease(Object &o, glong offset, gbool x);
+            static void putBooleanRelease(Object &o, glong offset, gbool x);
 
             /** Release version of <b style="color: orange;"> putByteVolatile(Object, glong, byte)</b> */
-            void putByteRelease(Object &o, glong offset, gbyte x);
+            static void putByteRelease(Object &o, glong offset, gbyte x);
 
             /** Release version of <b style="color: orange;"> putShortVolatile(Object, glong, short)</b> */
-            void putShortRelease(Object &o, glong offset, gshort x);
+            static void putShortRelease(Object &o, glong offset, gshort x);
 
             /** Release version of <b style="color: orange;"> putCharVolatile(Object, glong, char)</b> */
-            void putCharRelease(Object &o, glong offset, gchar x);
+            static void putCharRelease(Object &o, glong offset, gchar x);
 
             /** Release version of <b style="color: orange;"> putIntVolatile(Object, glong, gint)</b> */
-            void putIntRelease(Object &o, glong offset, gint x);
+            static void putIntRelease(Object &o, glong offset, gint x);
 
             /** Release version of <b style="color: orange;"> putLongVolatile(Object, glong, glong)</b> */
-            void putLongRelease(Object &o, glong offset, glong x);
+            static void putLongRelease(Object &o, glong offset, glong x);
 
             /** Release version of <b style="color: orange;"> putFloatVolatile(Object, glong, float)</b> */
-            void putFloatRelease(Object &o, glong offset, gfloat x);
+            static void putFloatRelease(Object &o, glong offset, gfloat x);
 
             /** Release version of <b style="color: orange;"> putDoubleVolatile(Object, glong, double)</b> */
-            void putDoubleRelease(Object &o, glong offset, gdouble x);
+            static void putDoubleRelease(Object &o, glong offset, gdouble x);
 
             // ---------------------- RELAXED --------------------------------------
 
             /** Relaxed version of <b style="color: orange;"> getReferenceVolatile(Object, glong)</b> */
-            Object &getReferenceRelaxed(const Object &o, glong offset);
+            static Object &getReferenceRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getBooleanVolatile(Object, glong)</b> */
-            gbool getBooleanRelaxed(const Object &o, glong offset);
+            static gbool getBooleanRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getByteVolatile(Object, glong)</b> */
-            gbyte getByteRelaxed(const Object &o, glong offset);
+            static gbyte getByteRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getShortVolatile(Object, glong)</b> */
-            gshort getShortRelaxed(const Object &o, glong offset);
+            static gshort getShortRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getCharVolatile(Object, glong)</b> */
-            gchar getCharRelaxed(const Object &o, glong offset);
+            static gchar getCharRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getIntVolatile(Object, glong)</b> */
-            gint getIntRelaxed(const Object &o, glong offset);
+            static gint getIntRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getLongVolatile(Object, glong)</b> */
-            glong getLongRelaxed(const Object &o, glong offset);
+            static glong getLongRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getFloatVolatile(Object, glong)</b> */
-            gfloat getFloatRelaxed(const Object &o, glong offset);
+            static gfloat getFloatRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> getDoubleVolatile(Object, glong)</b> */
-            gdouble getDoubleRelaxed(const Object &o, glong offset);
+            static gdouble getDoubleRelaxed(const Object &o, glong offset);
 
             /** Relaxed version of <b style="color: orange;"> putReferenceVolatile(Object, glong, Object)</b> */
-            void putReferenceRelaxed(Object &o, glong offset, Object &x);
+            static void putReferenceRelaxed(Object &o, glong offset, Object &x);
 
             /** Relaxed version of <b style="color: orange;"> putBooleanVolatile(Object, glong, gbool)</b> */
-            void putBooleanRelaxed(Object &o, glong offset, gbool x);
+            static void putBooleanRelaxed(Object &o, glong offset, gbool x);
 
             /** Relaxed version of <b style="color: orange;"> putByteVolatile(Object, glong, byte)</b> */
-            void putByteRelaxed(Object &o, glong offset, gbyte x);
+            static void putByteRelaxed(Object &o, glong offset, gbyte x);
 
             /** Relaxed version of <b style="color: orange;"> putShortVolatile(Object, glong, short)</b> */
-            void putShortRelaxed(Object &o, glong offset, gshort x);
+            static void putShortRelaxed(Object &o, glong offset, gshort x);
 
             /** Relaxed version of <b style="color: orange;"> putCharVolatile(Object, glong, char)</b> */
-            void putCharRelaxed(Object &o, glong offset, gchar x);
+            static void putCharRelaxed(Object &o, glong offset, gchar x);
 
             /** Relaxed version of <b style="color: orange;"> putIntVolatile(Object, glong, gint)</b> */
-            void putIntRelaxed(Object &o, glong offset, gint x);
+            static void putIntRelaxed(Object &o, glong offset, gint x);
 
             /** Relaxed version of <b style="color: orange;"> putLongVolatile(Object, glong, glong)</b> */
-            void putLongRelaxed(Object &o, glong offset, glong x);
+            static void putLongRelaxed(Object &o, glong offset, glong x);
 
             /** Relaxed version of <b style="color: orange;"> putFloatVolatile(Object, glong, float)</b> */
-            void putFloatRelaxed(Object &o, glong offset, gfloat x);
+            static void putFloatRelaxed(Object &o, glong offset, gfloat x);
 
             /** Relaxed version of <b style="color: orange;"> putDoubleVolatile(Object, glong, double)</b> */
-            void putDoubleRelaxed(Object &o, glong offset, gdouble x);
+            static void putDoubleRelaxed(Object &o, glong offset, gdouble x);
 
             /**
              * Atomically adds the given value to the current value of a field
@@ -1104,13 +1103,13 @@ namespace core {
              * @param delta the value to add
              * @return the previous value
              */
-            gint getAndAddInt(Object &o, glong offset, gint delta);
+            static gint getAndAddInt(Object &o, glong offset, gint delta);
 
-            gint getAndAddIntAcquire(Object &o, glong offset, gint delta);
+            static gint getAndAddIntAcquire(Object &o, glong offset, gint delta);
 
-            gint getAndAddIntRelease(Object &o, glong offset, gint delta);
+            static gint getAndAddIntRelease(Object &o, glong offset, gint delta);
 
-            gint getAndAddIntRelaxed(Object &o, glong offset, gint delta);
+            static gint getAndAddIntRelaxed(Object &o, glong offset, gint delta);
 
             /**
              * Atomically adds the given value to the current value of a field
@@ -1122,71 +1121,53 @@ namespace core {
              * @param delta the value to add
              * @return the previous value
              */
-            glong getAndAddLong(Object &o, glong offset, glong delta);
+            static glong getAndAddLong(Object &o, glong offset, glong delta);
 
-            glong getAndAddLongAcquire(Object &o, glong offset, glong delta);
+            static glong getAndAddLongAcquire(Object &o, glong offset, glong delta);
 
-            glong getAndAddLongRelease(Object &o, glong offset, glong delta);
+            static glong getAndAddLongRelease(Object &o, glong offset, glong delta);
 
-            glong getAndAddLongRelaxed(Object &o, glong offset, glong delta);
+            static glong getAndAddLongRelaxed(Object &o, glong offset, glong delta);
 
-            gbyte getAndAddByte(Object &o, glong offset, gbyte delta);
+            static gbyte getAndAddByte(Object &o, glong offset, gbyte delta);
 
-            gbyte getAndAddByteAcquire(Object &o, glong offset, gbyte delta);
+            static gbyte getAndAddByteAcquire(Object &o, glong offset, gbyte delta);
 
-            gbyte getAndAddByteRelease(Object &o, glong offset, gbyte delta);
+            static gbyte getAndAddByteRelease(Object &o, glong offset, gbyte delta);
 
-            gbyte getAndAddByteRelaxed(Object &o, glong offset, gbyte delta);
+            static gbyte getAndAddByteRelaxed(Object &o, glong offset, gbyte delta);
 
-            gshort getAndAddShort(Object &o, glong offset, gshort delta);
+            static gshort getAndAddShort(Object &o, glong offset, gshort delta);
 
-            gshort getAndAddShortAcquire(Object &o, glong offset, gshort delta);
+            static gshort getAndAddShortAcquire(Object &o, glong offset, gshort delta);
 
-            gshort getAndAddShortRelease(Object &o, glong offset, gshort delta);
+            static gshort getAndAddShortRelease(Object &o, glong offset, gshort delta);
 
-            gshort getAndAddShortRelaxed(Object &o, glong offset, gshort delta);
+            static gshort getAndAddShortRelaxed(Object &o, glong offset, gshort delta);
 
-            gchar getAndAddChar(Object &o, glong offset, gchar delta);
+            static gchar getAndAddChar(Object &o, glong offset, gchar delta);
 
-            gchar getAndAddCharAcquire(Object &o, glong offset, gchar delta);
+            static gchar getAndAddCharAcquire(Object &o, glong offset, gchar delta);
 
-            gchar getAndAddCharRelease(Object &o, glong offset, gchar delta);
+            static gchar getAndAddCharRelease(Object &o, glong offset, gchar delta);
 
-            gchar getAndAddCharRelaxed(Object &o, glong offset, gchar delta);
+            static gchar getAndAddCharRelaxed(Object &o, glong offset, gchar delta);
 
-            gfloat getAndAddFloat(Object &o, glong offset, gfloat delta);
+            static gfloat getAndAddFloat(Object &o, glong offset, gfloat delta);
 
-            gfloat getAndAddFloatAcquire(Object &o, glong offset, gfloat delta);
+            static gfloat getAndAddFloatAcquire(Object &o, glong offset, gfloat delta);
 
-            gfloat getAndAddFloatRelease(Object &o, glong offset, gfloat delta);
+            static gfloat getAndAddFloatRelease(Object &o, glong offset, gfloat delta);
 
-            gfloat getAndAddFloatRelaxed(Object &o, glong offset, gfloat delta);
+            static gfloat getAndAddFloatRelaxed(Object &o, glong offset, gfloat delta);
 
-            gdouble getAndAddDouble(Object &o, glong offset, gdouble delta);
+            static gdouble getAndAddDouble(Object &o, glong offset, gdouble delta);
 
-            gdouble getAndAddDoubleAcquire(Object &o, glong offset, gdouble delta);
+            static gdouble getAndAddDoubleAcquire(Object &o, glong offset, gdouble delta);
 
-            gdouble getAndAddDoubleRelease(Object &o, glong offset, gdouble delta);
+            static gdouble getAndAddDoubleRelease(Object &o, glong offset, gdouble delta);
 
-            gdouble getAndAddDoubleRelaxed(Object &o, glong offset, gdouble delta);
-
-            /**
-             * Atomically exchanges the given value with the current value of
-             * a field or array element within the given object <b> o</b>
-             * at the given <b> offset</b>.
-             *
-             * @param o object/array to update the field/element in
-             * @param offset field/element offset
-             * @param newValue new value
-             * @return the previous value
-             */
-            gint getAndSetInt(Object &o, glong offset, gint newValue);
-
-            gint getAndSetIntAcquire(Object &o, glong offset, gint newValue);
-
-            gint getAndSetIntRelease(Object &o, glong offset, gint newValue);
-
-            gint getAndSetIntRelaxed(Object &o, glong offset, gint newValue);
+            static gdouble getAndAddDoubleRelaxed(Object &o, glong offset, gdouble delta);
 
             /**
              * Atomically exchanges the given value with the current value of
@@ -1198,217 +1179,235 @@ namespace core {
              * @param newValue new value
              * @return the previous value
              */
-            glong getAndSetLong(Object &o, glong offset, glong newValue);
+            static gint getAndSetInt(Object &o, glong offset, gint newValue);
 
-            glong getAndSetLongAcquire(Object &o, glong offset, glong newValue);
+            static gint getAndSetIntAcquire(Object &o, glong offset, gint newValue);
 
-            glong getAndSetLongRelease(Object &o, glong offset, glong newValue);
+            static gint getAndSetIntRelease(Object &o, glong offset, gint newValue);
 
-            glong getAndSetLongRelaxed(Object &o, glong offset, glong newValue);
+            static gint getAndSetIntRelaxed(Object &o, glong offset, gint newValue);
 
-            gbyte getAndSetByte(Object &o, glong offset, gbyte newValue);
+            /**
+             * Atomically exchanges the given value with the current value of
+             * a field or array element within the given object <b> o</b>
+             * at the given <b> offset</b>.
+             *
+             * @param o object/array to update the field/element in
+             * @param offset field/element offset
+             * @param newValue new value
+             * @return the previous value
+             */
+            static glong getAndSetLong(Object &o, glong offset, glong newValue);
 
-            gbyte getAndSetByteAcquire(Object &o, glong offset, gbyte newValue);
+            static glong getAndSetLongAcquire(Object &o, glong offset, glong newValue);
 
-            gbyte getAndSetByteRelease(Object &o, glong offset, gbyte newValue);
+            static glong getAndSetLongRelease(Object &o, glong offset, glong newValue);
 
-            gbyte getAndSetByteRelaxed(Object &o, glong offset, gbyte newValue);
+            static glong getAndSetLongRelaxed(Object &o, glong offset, glong newValue);
 
-            gbool getAndSetBoolean(Object &o, glong offset, gbool newValue);
+            static gbyte getAndSetByte(Object &o, glong offset, gbyte newValue);
 
-            gbool getAndSetBooleanAcquire(Object &o, glong offset, gbool newValue);
+            static gbyte getAndSetByteAcquire(Object &o, glong offset, gbyte newValue);
 
-            gbool getAndSetBooleanRelease(Object &o, glong offset, gbool newValue);
+            static gbyte getAndSetByteRelease(Object &o, glong offset, gbyte newValue);
 
-            gbool getAndSetBooleanRelaxed(Object &o, glong offset, gbool newValue);
+            static gbyte getAndSetByteRelaxed(Object &o, glong offset, gbyte newValue);
 
-            gshort getAndSetShort(Object &o, glong offset, gshort newValue);
+            static gbool getAndSetBoolean(Object &o, glong offset, gbool newValue);
 
-            gshort getAndSetShortAcquire(Object &o, glong offset, gshort newValue);
+            static gbool getAndSetBooleanAcquire(Object &o, glong offset, gbool newValue);
 
-            gshort getAndSetShortRelease(Object &o, glong offset, gshort newValue);
+            static gbool getAndSetBooleanRelease(Object &o, glong offset, gbool newValue);
 
-            gshort getAndSetShortRelaxed(Object &o, glong offset, gshort newValue);
+            static gbool getAndSetBooleanRelaxed(Object &o, glong offset, gbool newValue);
 
-            gchar getAndSetChar(Object &o, glong offset, gchar newValue);
+            static gshort getAndSetShort(Object &o, glong offset, gshort newValue);
 
-            gchar getAndSetCharAcquire(Object &o, glong offset, gchar newValue);
+            static gshort getAndSetShortAcquire(Object &o, glong offset, gshort newValue);
 
-            gchar getAndSetCharRelease(Object &o, glong offset, gchar newValue);
+            static gshort getAndSetShortRelease(Object &o, glong offset, gshort newValue);
 
-            gchar getAndSetCharRelaxed(Object &o, glong offset, gchar newValue);
+            static gshort getAndSetShortRelaxed(Object &o, glong offset, gshort newValue);
 
-            gfloat getAndSetFloat(Object &o, glong offset, gfloat newValue);
+            static gchar getAndSetChar(Object &o, glong offset, gchar newValue);
 
-            gfloat getAndSetFloatAcquire(Object &o, glong offset, gfloat newValue);
+            static gchar getAndSetCharAcquire(Object &o, glong offset, gchar newValue);
 
-            gfloat getAndSetFloatRelease(Object &o, glong offset, gfloat newValue);
+            static gchar getAndSetCharRelease(Object &o, glong offset, gchar newValue);
 
-            gfloat getAndSetFloatRelaxed(Object &o, glong offset, gfloat newValue);
+            static gchar getAndSetCharRelaxed(Object &o, glong offset, gchar newValue);
 
-            gdouble getAndSetDouble(Object &o, glong offset, gdouble newValue);
+            static gfloat getAndSetFloat(Object &o, glong offset, gfloat newValue);
 
-            gdouble getAndSetDoubleAcquire(Object &o, glong offset, gdouble newValue);
+            static gfloat getAndSetFloatAcquire(Object &o, glong offset, gfloat newValue);
 
-            gdouble getAndSetDoubleRelease(Object &o, glong offset, gdouble newValue);
+            static gfloat getAndSetFloatRelease(Object &o, glong offset, gfloat newValue);
 
-            gdouble getAndSetDoubleRelaxed(Object &o, glong offset, gdouble newValue);
+            static gfloat getAndSetFloatRelaxed(Object &o, glong offset, gfloat newValue);
 
-            Object &getAndSetReference(Object &o, glong offset, Object &newValue);
+            static gdouble getAndSetDouble(Object &o, glong offset, gdouble newValue);
 
-            Object &getAndSetReferenceAcquire(Object &o, glong offset, Object &newValue);
+            static gdouble getAndSetDoubleAcquire(Object &o, glong offset, gdouble newValue);
 
-            Object &getAndSetReferenceRelease(Object &o, glong offset, Object &newValue);
+            static gdouble getAndSetDoubleRelease(Object &o, glong offset, gdouble newValue);
 
-            Object &getAndSetReferenceRelaxed(Object &o, glong offset, Object &newValue);
+            static gdouble getAndSetDoubleRelaxed(Object &o, glong offset, gdouble newValue);
+
+            static Object &getAndSetReference(Object &o, glong offset, Object &newValue);
+
+            static Object &getAndSetReferenceAcquire(Object &o, glong offset, Object &newValue);
+
+            static Object &getAndSetReferenceRelease(Object &o, glong offset, Object &newValue);
+
+            static Object &getAndSetReferenceRelaxed(Object &o, glong offset, Object &newValue);
 
 
             // The following contain CAS-based implementations used on
             // platforms not supporting native instructions
 
-            gbyte getAndBitwiseOrByte(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseOrByte(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseOrByteAcquire(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseOrByteAcquire(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseOrByteRelease(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseOrByteRelease(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseOrByteRelaxed(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseOrByteRelaxed(Object &o, glong offset, gbyte mask);
 
-            gbool getAndBitwiseOrBoolean(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseOrBoolean(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseOrBooleanAcquire(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseOrBooleanAcquire(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseOrBooleanRelease(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseOrBooleanRelease(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseOrBooleanRelaxed(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseOrBooleanRelaxed(Object &o, glong offset, gbool mask);
 
-            gshort getAndBitwiseOrShort(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseOrShort(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseOrShortAcquire(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseOrShortAcquire(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseOrShortRelease(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseOrShortRelease(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseOrShortRelaxed(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseOrShortRelaxed(Object &o, glong offset, gshort mask);
 
-            gchar getAndBitwiseOrChar(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseOrChar(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseOrCharAcquire(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseOrCharAcquire(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseOrCharRelease(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseOrCharRelease(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseOrCharRelaxed(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseOrCharRelaxed(Object &o, glong offset, gchar mask);
 
-            gint getAndBitwiseOrInt(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseOrInt(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseOrIntAcquire(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseOrIntAcquire(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseOrIntRelease(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseOrIntRelease(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseOrIntRelaxed(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseOrIntRelaxed(Object &o, glong offset, gint mask);
 
-            glong getAndBitwiseOrLong(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseOrLong(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseOrLongAcquire(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseOrLongAcquire(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseOrLongRelease(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseOrLongRelease(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseOrLongRelaxed(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseOrLongRelaxed(Object &o, glong offset, glong mask);
 
-            gbyte getAndBitwiseAndByte(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseAndByte(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseAndByteAcquire(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseAndByteAcquire(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseAndByteRelease(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseAndByteRelease(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseAndByteRelaxed(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseAndByteRelaxed(Object &o, glong offset, gbyte mask);
 
-            gbool getAndBitwiseAndBoolean(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseAndBoolean(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseAndBooleanAcquire(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseAndBooleanAcquire(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseAndBooleanRelease(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseAndBooleanRelease(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseAndBooleanRelaxed(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseAndBooleanRelaxed(Object &o, glong offset, gbool mask);
 
-            gshort getAndBitwiseAndShort(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseAndShort(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseAndShortAcquire(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseAndShortAcquire(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseAndShortRelease(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseAndShortRelease(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseAndShortRelaxed(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseAndShortRelaxed(Object &o, glong offset, gshort mask);
 
-            gchar getAndBitwiseAndChar(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseAndChar(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseAndCharAcquire(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseAndCharAcquire(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseAndCharRelease(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseAndCharRelease(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseAndCharRelaxed(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseAndCharRelaxed(Object &o, glong offset, gchar mask);
 
-            gint getAndBitwiseAndInt(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseAndInt(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseAndIntAcquire(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseAndIntAcquire(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseAndIntRelease(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseAndIntRelease(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseAndIntRelaxed(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseAndIntRelaxed(Object &o, glong offset, gint mask);
 
-            glong getAndBitwiseAndLong(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseAndLong(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseAndLongAcquire(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseAndLongAcquire(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseAndLongRelease(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseAndLongRelease(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseAndLongRelaxed(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseAndLongRelaxed(Object &o, glong offset, glong mask);
 
-            gbyte getAndBitwiseXorByte(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseXorByte(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseXorByteAcquire(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseXorByteAcquire(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseXorByteRelease(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseXorByteRelease(Object &o, glong offset, gbyte mask);
 
-            gbyte getAndBitwiseXorByteRelaxed(Object &o, glong offset, gbyte mask);
+            static gbyte getAndBitwiseXorByteRelaxed(Object &o, glong offset, gbyte mask);
 
-            gbool getAndBitwiseXorBoolean(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseXorBoolean(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseXorBooleanAcquire(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseXorBooleanAcquire(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseXorBooleanRelease(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseXorBooleanRelease(Object &o, glong offset, gbool mask);
 
-            gbool getAndBitwiseXorBooleanRelaxed(Object &o, glong offset, gbool mask);
+            static gbool getAndBitwiseXorBooleanRelaxed(Object &o, glong offset, gbool mask);
 
-            gshort getAndBitwiseXorShort(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseXorShort(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseXorShortAcquire(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseXorShortAcquire(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseXorShortRelease(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseXorShortRelease(Object &o, glong offset, gshort mask);
 
-            gshort getAndBitwiseXorShortRelaxed(Object &o, glong offset, gshort mask);
+            static gshort getAndBitwiseXorShortRelaxed(Object &o, glong offset, gshort mask);
 
-            gchar getAndBitwiseXorChar(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseXorChar(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseXorCharAcquire(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseXorCharAcquire(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseXorCharRelease(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseXorCharRelease(Object &o, glong offset, gchar mask);
 
-            gchar getAndBitwiseXorCharRelaxed(Object &o, glong offset, gchar mask);
+            static gchar getAndBitwiseXorCharRelaxed(Object &o, glong offset, gchar mask);
 
-            gint getAndBitwiseXorInt(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseXorInt(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseXorIntAcquire(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseXorIntAcquire(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseXorIntRelease(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseXorIntRelease(Object &o, glong offset, gint mask);
 
-            gint getAndBitwiseXorIntRelaxed(Object &o, glong offset, gint mask);
+            static gint getAndBitwiseXorIntRelaxed(Object &o, glong offset, gint mask);
 
-            glong getAndBitwiseXorLong(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseXorLong(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseXorLongAcquire(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseXorLongAcquire(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseXorLongRelease(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseXorLongRelease(Object &o, glong offset, glong mask);
 
-            glong getAndBitwiseXorLongRelaxed(Object &o, glong offset, glong mask);
+            static glong getAndBitwiseXorLongRelaxed(Object &o, glong offset, glong mask);
 
             /**
              * Ensures that loads before the fence will not be reordered with loads and
@@ -1420,7 +1419,7 @@ namespace core {
              * Provides a LoadLoad barrier followed by a LoadStore barrier.
              *
              */
-            void loadFence();
+            static void loadFence();
 
             /**
              * Ensures that loads and stores before the fence will not be reordered with
@@ -1432,7 +1431,7 @@ namespace core {
              * Provides a StoreStore barrier followed by a LoadStore barrier.
              *
              */
-            void storeFence();
+            static void storeFence();
 
             /**
              * Ensures that loads and stores before the fence will not be reordered
@@ -1442,7 +1441,7 @@ namespace core {
              *
              * Corresponds to C11 atomic_thread_fence(memory_order_seq_cst).
              */
-            void fullFence();
+            static void fullFence();
 
             /**
              * Fetches a value at some byte offset into a given object.
@@ -1475,7 +1474,7 @@ namespace core {
              * @return the value fetched from the indicated object
              * @throws RuntimeException No defined exceptions are thrown
              */
-            glong getLongUnaligned(const Object &o, glong offset);
+            static glong getLongUnaligned(const Object &o, glong offset);
 
             /**
              * As <b style="color: orange;"> getLongUnaligned(Object, glong)</b> but with an
@@ -1487,25 +1486,25 @@ namespace core {
              * @param bigEndian The endianness of the value
              * @return the value fetched from the indicated object
              */
-            glong getLongUnaligned(const Object &o, glong offset, gbool bigEndian);
+            static glong getLongUnaligned(const Object &o, glong offset, gbool bigEndian);
 
             /** @see getLongUnaligned(Object, glong) */
-            gint getIntUnaligned(const Object &o, glong offset);
+            static gint getIntUnaligned(const Object &o, glong offset);
 
             /** @see getLongUnaligned(Object, glong, gbool) */
-            gint getIntUnaligned(const Object &o, glong offset, gbool bigEndian);
+            static gint getIntUnaligned(const Object &o, glong offset, gbool bigEndian);
 
             /** @see getLongUnaligned(Object, glong) */
-            gshort getShortUnaligned(const Object &o, glong offset);
+            static gshort getShortUnaligned(const Object &o, glong offset);
 
             /** @see getLongUnaligned(Object, glong, gbool) */
-            gshort getShortUnaligned(const Object &o, glong offset, gbool bigEndian);
+            static gshort getShortUnaligned(const Object &o, glong offset, gbool bigEndian);
 
             /** @see getLongUnaligned(Object, glong) */
-            gchar getCharUnaligned(const Object &o, glong offset);
+            static gchar getCharUnaligned(const Object &o, glong offset);
 
             /** @see getLongUnaligned(Object, glong, gbool) */
-            gchar getCharUnaligned(const Object &o, glong offset, gbool bigEndian);
+            static gchar getCharUnaligned(const Object &o, glong offset, gbool bigEndian);
 
             /**
              * Stores a value at some byte offset into a given object.
@@ -1533,7 +1532,7 @@ namespace core {
              * @param x the value to store
              * @throws RuntimeException No defined exceptions are thrown
              */
-            void putLongUnaligned(Object &o, glong offset, glong x);
+            static void putLongUnaligned(Object &o, glong offset, glong x);
 
             /**
              * As <b style="color: orange;"> putLongUnaligned(Object, glong, glong)</b> but with an additional
@@ -1544,25 +1543,25 @@ namespace core {
              * @param bigEndian The endianness of the value
              * @throws RuntimeException No defined exceptions are thrown
              */
-            void putLongUnaligned(Object &o, glong offset, glong x, gbool bigEndian);
+            static void putLongUnaligned(Object &o, glong offset, glong x, gbool bigEndian);
 
             /** @see putLongUnaligned(Object, glong, glong) */
-            void putIntUnaligned(Object &o, glong offset, gint x);
+            static void putIntUnaligned(Object &o, glong offset, gint x);
 
             /** @see putLongUnaligned(Object, glong, glong, gbool) */
-            void putIntUnaligned(Object &o, glong offset, gint x, gbool bigEndian);
+            static void putIntUnaligned(Object &o, glong offset, gint x, gbool bigEndian);
 
             /** @see putLongUnaligned(Object, glong, glong) */
-            void putShortUnaligned(Object &o, glong offset, gshort x);
+            static void putShortUnaligned(Object &o, glong offset, gshort x);
 
             /** @see putLongUnaligned(Object, glong, glong, gbool) */
-            void putShortUnaligned(Object &o, glong offset, gshort x, gbool bigEndian);
+            static void putShortUnaligned(Object &o, glong offset, gshort x, gbool bigEndian);
 
             /** @see putLongUnaligned(Object, glong, glong) */
-            void putCharUnaligned(Object &o, glong offset, gchar x);
+            static void putCharUnaligned(Object &o, glong offset, gchar x);
 
             /** @see putLongUnaligned(Object, glong, glong, gbool) */
-            void putCharUnaligned(Object &o, glong offset, gchar x, gbool bigEndian);
+            static void putCharUnaligned(Object &o, glong offset, gchar x, gbool bigEndian);
 
             /**
              * Convert given value to rvalue reference.
@@ -1570,7 +1569,7 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST Class<T>::NRef && moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
+            static CORE_FAST Class<T>::NRef &&moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1596,135 +1595,90 @@ namespace core {
              * to reuse store instance use <b>copyInstance(..., true) </b>
              */
             template<class T, class...Params>
-            T &createInstance(Params &&...params) {
+            static T &createInstance(Params &&...params) {
                 CORE_STATIC_ASSERT(!Class<T>::oneIsTrue(Class<Void>::isSimilar<Params>()...), "Illegal parameter type");
                 CORE_STATIC_ASSERT(Class<T>::template isConstructible<Params...>(), "Incompatible parameters");
-                // Allocate sufficient memory space
-                glong address = U.allocateMemory(sizeof(T));
-                if (address == 0) {
-                    // operation fail
-                    MemoryError().throws(__trace("core.native.Unsafe"));
-                }
+                CORE_ALIAS(PTR, typename Class<T>::Ptr);
                 try {
-                    T& t = *new((T *) address) T(U.forwardInstance<Params &&>(params)...);
-                    storeInstance(address);
-                    return t;
-                } catch (Throwable &thr) {
-                    freeMemory(address);
-                    thr.throws(__trace("core.native.Unsafe"));
-                }
+                    GENERIC_PTR ptr = (new T(forwardInstance<Params>(params)...));
+                    glong addr = (glong) ptr;
+                    storeInstance(addr);
+                    return ((PTR) ptr)[/*offset*/0];
+                } catch (std::bad_alloc &) { Error("Unable to create object").throws(__trace("core.native.Unsafe")); }
             }
 
             /**
              * Copy instance or load stored copy of given instance.
              *
-             * @param src The instance to be copied
+             * @param o The instance to be copied
              * @param oldCopy specified if this method return stored instance if it possible.
              */
             template<class T>
-            T &copyInstance(const T &src, gbool oldCopy = false) {
-                if (oldCopy)
-                    if (U.loadInstance((glong) &src))
-                        return CORE_CAST(T &, src);
-                try {
-                    T &copy = CopyImpl<T,
-                            Class<Object>::isSuper<T>(),
-                            Class<T>::template isConstructible<const T &>()>::copy(src);
-                    return copy;
-                } catch (Throwable &thr) {
-                    thr.throws(__trace("core.native.Unsafe"));
-                }
+            static T &copyInstance(const T &o, gbool oldCopy = false) {
+                return ((oldCopy) && loadInstance((glong) &o)) ? (T &) o : CopyImpl<T>::copy(o);
             }
 
             /**
-             * Destroy and free allocated memory used by given instance.
-             * @note the given instance must be allocated by calling of Unsafe::allocateInstance(glong) method.
+             * Destroy and free instance created dynamically.
+             * @note the given instance must be allocated by calling of Unsafe::createInstance<T>(...) method.
              */
             template<class T>
-            void destroyInstance(T &var, gbool freeMemory = true) CORE_NOTHROW {
-                DestructorImpl<T, Class<T>::isDestructible()>::destroy(var);
-                if (freeMemory)
-                    U.freeMemory((glong) &var);
-                deleteInstance((glong) &var);
+            static void destroyInstance(T &var) CORE_NOTHROW {
+                glong addr = getAddress(var, 0);
+                // after this operation addr is not reusable
+                delete &var;
+                deleteInstance(addr);
             }
 
-            virtual ~Unsafe();
-
         private:
-            template<class T, gbool isCloneable, gbool isCopyable>
+            template<class T,
+                    gbool isCloneable = Class<Object>::isSuper<T>(),
+                    gbool isCopyable = Class<T>::template isConstructible<const T &>()>
             class CopyImpl {
             public:
-                static T &copy(const T &x) {
-                    CORE_STATIC_ASSERT(isCloneable || isCopyable, "It's nt possible to create copy");
-                    CORE_IGNORE(x);
+                static T &copy(const T & /*x*/) {
+                    CORE_STATIC_ASSERT(isCloneable || isCopyable, "Noncopyable and Non-cloneable class");
                 }
             };
 
             template<class T>
-            class CopyImpl<T, true, true> {
+            class CopyImpl<T, true, true> CORE_FINAL {
             public:
-                static T &copy(const T &x) {
-                    try {
-                        T &clone = CopyImpl<T, true, false>::copy(x);
-                        return clone;
-                    } catch (Throwable &) {
-                        T &t = CopyImpl<T, false, true>::copy(x);
-                        return t;
-                    }
+                static T &copy(const T &x) CORE_NOTHROW {
+                    try { return CopyImpl<T, true, false>::copy(x); }
+                    catch (const CloneNotSupportedException &) { return CopyImpl<T, false, true>::copy(x); }
                 }
             };
 
             template<class T>
-            class CopyImpl<T, true, false> {
+            class CopyImpl<T, true, false> CORE_FINAL {
             public:
-                static T &copy(const T &x) {
-                    Object &clone = CORE_DYN_CAST(const Object &, x).clone();
-                    T &t = CORE_DYN_CAST(T &, clone);
-                    return t;
-                }
+                static T &copy(const T &x) CORE_NOTHROW { return (T &) x.clone(); }
             };
 
             template<class T>
-            class CopyImpl<T, false, true> {
+            class CopyImpl<T, false, true> CORE_FINAL {
             public:
-                static T &copy(const T &x) {
-                    T &t = U.createInstance<T>(x);
-                    return t;
-                }
+                static T &copy(const T &x) CORE_NOTHROW { return createInstance<T>(x); }
             };
 
-            gbool loadInstance(glong address);
+            static gbool loadInstance(glong address);
 
-            void storeInstance(glong address);
+            static void storeInstance(glong address);
 
-            void deleteInstance(glong address);
+            static void deleteInstance(glong address);
 
-            template<class T, gbool isDestructible>
-            class DestructorImpl {
-            public:
-                static void destroy(T &) {
-                }
-            };
+            static glong allocateMemoryImpl(glong sizeInBytes);
 
-            template<class T>
-            class DestructorImpl<T, true> {
-            public:
-                static void destroy(T &x) {
-                    x.~T();
-                }
-            };
+            static glong reallocateMemoryImpl(glong address, glong sizeInBytes);
 
-            glong allocateMemoryImpl(glong sizeInBytes);
+            static void setMemoryImpl(glong address, glong sizeInBytes, gbyte value);
 
-            glong reallocateMemoryImpl(glong address, glong sizeInBytes);
+            static void copyMemoryImpl(glong srcAddress, glong destAddress, glong sizeInBytes);
 
-            void setMemoryImpl(glong address, glong sizeInBytes, gbyte value);
+            static void copySwapMemoryImpl(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
 
-            void copyMemoryImpl(glong srcAddress, Object &dest, glong destAddress, glong sizeInBytes);
-
-            void copySwapMemoryImpl(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
-
-            void freeMemoryImpl(glong address);
+            static void freeMemoryImpl(glong address);
 
         };
 

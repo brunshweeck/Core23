@@ -29,12 +29,13 @@ namespace core {
 
             CORE_ALIAS(Ret, Return < R >);
 
+            CORE_ALIAS(U, native::Unsafe);
+
             interface Result : public Object {
                 virtual Ret show() const = 0;
 
                 template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
                 static Result &of(Fn &&fn) {
-                    static native::Unsafe &U = native::Unsafe::U;
 
                     class _$ : public Result {
                     private:
@@ -47,19 +48,17 @@ namespace core {
                             return !Class<_$>::hasInstance(o) ? false : CORE_CAST(_$ &, o).fn == fn;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         Ret show() const { return fn(); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Fn>(fn));
+                    return U::createInstance<_$>(U::forwardInstance<Fn>(fn));
                 }
 
                 template<class Callable, Class<gbool>::Iff<
                         !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
                 static Result &of(Callable &&c) {
-
-                    static native::Unsafe &U = native::Unsafe::U;
 
                     CORE_ALIAS(_R, Class<Callable>::template Return<>);
                     CORE_ALIAS(_Fn, Sign<Callable,, _R >);
@@ -67,7 +66,7 @@ namespace core {
 
                     if (!Class<Fn>::template isSimilar<Callable>()) {
                         // simple lambda functions
-                        return of(CORE_CAST(Fn, U.forwardInstance<Callable>(c)));
+                        return of(CORE_CAST(Fn, U::forwardInstance<Callable>(c)));
                     }
 
                     class _$ : public Result {
@@ -75,18 +74,18 @@ namespace core {
                         Callable c;
 
                     public:
-                        CORE_EXPLICIT _$(Callable &&c) : c(U.forwardInstance<Callable>(c)) {}
+                        CORE_EXPLICIT _$(Callable &&c) : c(U::forwardInstance<Callable>(c)) {}
 
                         gbool equals(const Object &o) const {
                             return !Class<_$>::hasInstance(o) ? false : &CORE_CAST(_$ &, o).c == &c;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         Ret show() const { return c(); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Callable>(c));
+                    return U::createInstance<_$>(U::forwardInstance<Callable>(c));
                 }
             };
 
@@ -109,7 +108,7 @@ namespace core {
                 CORE_STATIC_ASSERT(Class<Callable>::isCallable(), "Invalid callable object");
                 CORE_ALIAS(_Ret, typename Class<Callable>::template Return<>);
                 CORE_STATIC_ASSERT(Class<_Ret>::template isConvertible<Ret>(), "Incompatible return types");
-                eval = &Result::of(native::Unsafe::forwardInstance<Callable>(c));
+                eval = &Result::of(U::forwardInstance<Callable>(c));
             }
 
             /**
@@ -117,9 +116,7 @@ namespace core {
              *
              * @param c The other supplier
              */
-            Supplier(const Supplier<R> &c) : eval(0) {
-                eval = &native::Unsafe::U.copyInstance(*c.eval);
-            }
+            Supplier(const Supplier<R> &c) : eval(0) { eval = &U::copyInstance(*c.eval); }
 
             /**
              * Construct new supplier with another
@@ -138,8 +135,8 @@ namespace core {
              */
             Supplier<R> &operator=(const Supplier<R> &c) {
                 if (this != &c) {
-                    Eval eval0 = &native::Unsafe::U.copyInstance(*c.eval);
-                    native::Unsafe::U.destroyInstance(*eval);
+                    Eval eval0 = &U::copyInstance(*c.eval);
+                    U::destroyInstance(*eval);
                     eval = eval0;
                 }
                 return *this;
@@ -179,9 +176,7 @@ namespace core {
             /**
              * Return shadow copy of this supplier
              */
-            Object &clone() const override {
-                return native::Unsafe::U.createInstance<Supplier<R>>(*this);
-            }
+            Object &clone() const override { return U::createInstance<Supplier<R>>(*this); }
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION

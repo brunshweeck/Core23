@@ -7,19 +7,17 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     RuntimeException::RuntimeException(String message) CORE_NOTHROW
-            : Exception(Unsafe::moveInstance(message)) {}
+            : Exception(U::moveInstance(message)) {}
 
     RuntimeException::RuntimeException(String message, const Throwable &cause) CORE_NOTHROW
-            : Exception(Unsafe::moveInstance(message), cause) {}
+            : Exception(U::moveInstance(message), cause) {}
 
     Object &RuntimeException::clone() const {
-        return Unsafe::U.createInstance<RuntimeException>(*this);
+        return U::createInstance<RuntimeException>(*this);
     }
 
-    void RuntimeException::raise() &&{
-        throw *this;
-    }
+    void RuntimeException::raise() &&{ throw *this; }
 } // core

@@ -6,14 +6,13 @@
 #include <core/private/Unsafe.h>
 
 namespace core {
+
+    CORE_ALIAS(U, native::Unsafe);
+
     MemoryError::MemoryError(String message) CORE_NOTHROW:
-            SystemError(native::Unsafe::moveInstance(message)) {}
+            SystemError(U::moveInstance(message)) {}
 
-    void MemoryError::raise() &&{
-        throw *this;
-    }
+    void MemoryError::raise() &&{ throw *this; }
 
-    Object &MemoryError::clone() const {
-        return native::Unsafe::U.createInstance<MemoryError>(*this);
-    }
+    Object &MemoryError::clone() const { return U::createInstance<MemoryError>(*this); }
 } // core

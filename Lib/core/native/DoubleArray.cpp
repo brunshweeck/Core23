@@ -4,14 +4,14 @@
 
 #include <core/private/Unsafe.h>
 #include <core/ArgumentException.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include <core/IndexException.h>
 #include "DoubleArray.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
-        using native::Unsafe;
+        CORE_ALIAS(U, native::Unsafe);
         using util::Preconditions;
 
         namespace {
@@ -28,9 +28,9 @@ namespace core {
         DoubleArray::DoubleArray(gint length, gdouble initialValue) : Array<Double>(length) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.DoubleArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_DOUBLE_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) Unsafe::ARRAY_DOUBLE_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = initialValue;
         }
 
@@ -38,9 +38,9 @@ namespace core {
             gint length = array.length();
             if (len < 0)
                 ArgumentException("Negative array length").throws(__trace("core.DoubleArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_DOUBLE_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) Unsafe::ARRAY_DOUBLE_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = array.value[i];
         }
 
@@ -53,11 +53,11 @@ namespace core {
             if (this != &array) {
                 gint length = array.len;
                 if (len != length) {
-                    value = (STORAGE) Unsafe::U.reallocateMemory((glong) value,
+                    value = (STORAGE) U::reallocateMemory((glong) value,
                                                                  length * Unsafe::ARRAY_DOUBLE_INDEX_SCALE);
                     len = length;
                 }
-                for (int i = 0; i < length; ++i)
+                for (gint i = 0; i < length; ++i)
                     value[i] = array.value[i];
             }
             return *this;
@@ -90,12 +90,12 @@ namespace core {
         }
 
         Object &DoubleArray::clone() const {
-            return Unsafe::U.createInstance<DoubleArray>(*this);
+            return U::createInstance<DoubleArray>(*this);
         }
 
         DoubleArray::~DoubleArray() {
-            Unsafe::U.freeMemory((glong) value);
+            U::freeMemory((glong) value);
             value = null;
         }
     } // core
-} // primitive
+} // native

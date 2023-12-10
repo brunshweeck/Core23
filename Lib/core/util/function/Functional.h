@@ -28,6 +28,10 @@ namespace core {
          *
          */
         interface Functional : Object {
+            virtual ~Functional() = default;
+
+            CORE_ALIAS(U, native::Unsafe);
+
             /**
              * Simplified form (signature) of function ( function(Params...) -> Return )
              */
@@ -40,7 +44,8 @@ namespace core {
             // non-basic objects types -> objects type
             template<class R>
             CORE_ALIAS(Return, typename Class<Prim<R>>::template
-                    If<Class<Prim<R>>::isPrimitive() && !Class<R>::isReference(),, typename Class<Prim<R>>::Reference >);
+                    If<Class<Prim<R>>::isPrimitive() && !Class<R>::isReference(),,
+                       typename Class<Prim<R>>::Reference >);
             // 2- Parameters types (P)
             // non-reference type -> const reference type.
             // reference type -> reference type
@@ -67,49 +72,116 @@ namespace core {
             template<class F, class P1, class P2, class R>
             CORE_ALIAS(BinarySign, typename Class<F>::template If<Class<F>::isFunction(),,
 
-                           typename Class<R(P1, P2)>::template If<Class<F>::template isConvertible<R(P1, P2)>(),
-                           typename Class<R(P1, P2&)>::template If<Class<F>::template isConvertible<R(P1, P2&)>(),
-                           typename Class<R(P1, P2&&)>::template If<Class<F>::template isConvertible<R(P1, P2&&)>(),
-                           typename Class<R(P1, const P2)>::template If<Class<F>::template isConvertible<R(P1, const P2)>(),
-                           typename Class<R(P1, const P2&)>::template If<Class<F>::template isConvertible<R(P1, const P2&)>(),
-                           typename Class<R(P1, const P2&&)>::template If<Class<F>::template isConvertible<R(P1, const P2&&)>(),
+                       typename Class<R(P1, P2)>::template If<Class<F>::template isConvertible<R(P1, P2)>(),
+                               typename Class<R(P1, P2 & )>::template If<Class<F>::template isConvertible<R(P1,
+                                                                                                            P2 & )>(),
+                                       typename Class<R(P1, P2 && )>::template If<Class<F>::template isConvertible<R(P1,
+                                                                                                                     P2 && )>(),
+                               typename Class< R(P1, const P2)>::template If<Class<F>::
+                               template isConvertible<R(P1, const P2)>(),
+                       typename Class< R(P1, const P2 &)>::template If<Class<F>::
+                               template isConvertible<R(P1, const P2&)>(),
+                       typename Class< R(P1, const P2 &&)>::template If<Class<F>::
+                               template isConvertible<R(P1, const P2&&)>(),
 
-                           typename Class<R(P1&, P2)>::template If<Class<F>::template isConvertible<R(P1&, P2)>(),
-                           typename Class<R(P1&, P2&)>::template If<Class<F>::template isConvertible<R(P1&, P2&)>(),
-                           typename Class<R(P1&, P2&&)>::template If<Class<F>::template isConvertible<R(P1&, P2&&)>(),
-                           typename Class<R(P1&, const P2)>::template If<Class<F>::template isConvertible<R(P1&, const P2)>(),
-                           typename Class<R(P1&, const P2&)>::template If<Class<F>::template isConvertible<R(P1&, const P2&)>(),
-                           typename Class<R(P1&, const P2&&)>::template If<Class<F>::template isConvertible<R(P1&, const P2&&)>(),
+                       typename Class<R(P1 & , P2)>::template If<Class<F>::template isConvertible<R(P1 & , P2)>(),
+                               typename Class<R(P1 & , P2 & )>::template If<Class<F>::template isConvertible<R(P1 & ,
+                                                                                                               P2 & )>(),
+                                       typename Class<R(P1 & , P2 && )>::template If<Class<F>::template isConvertible<R(
+                                               P1 & , P2 && )>(),
+                               typename Class< R(P1 &, const P2)>::template If<Class<F>::
+                               template isConvertible<R(P1&, const P2)>(),
+                       typename Class< R(P1 &, const P2 &)>::template If<Class<F>::
+                               template isConvertible<R(P1&, const P2&)>(),
+                       typename Class< R(P1 &, const P2 &&)>::template If<Class<F>::
+                               template isConvertible<R(P1&, const P2&&)>(),
 
-                           typename Class<R(P1&&, P2)>::template If<Class<F>::template isConvertible<R(P1&&, P2)>(),
-                           typename Class<R(P1&&, P2&)>::template If<Class<F>::template isConvertible<R(P1&&, P2&)>(),
-                           typename Class<R(P1&&, P2&&)>::template If<Class<F>::template isConvertible<R(P1&&, P2&&)>(),
-                           typename Class<R(P1&&, const P2)>::template If<Class<F>::template isConvertible<R(P1&&, const P2)>(),
-                           typename Class<R(P1&&, const P2&)>::template If<Class<F>::template isConvertible<R(P1&&, const P2&)>(),
-                           typename Class<R(P1&&, const P2&&)>::template If<Class<F>::template isConvertible<R(P1&&, const P2&&)>(),
+                       typename Class<R(P1 && , P2)>::template If<Class<F>::template isConvertible<R(P1 && , P2)>(),
+                               typename Class<R(P1 && , P2 & )>::template If<Class<F>::template isConvertible<R(P1 && ,
+                                                                                                                P2 & )>(),
+                                       typename Class<R(P1 && ,
+                                                        P2 && )>::template If<Class<F>::template isConvertible<R(P1 && ,
+                                                                                                                 P2 && )>(),
+                               typename Class< R(P1 &&, const P2)>::template If<Class<F>::
+                               template isConvertible<R(P1&&, const P2)>(),
+                       typename Class< R(P1 &&, const P2 &)>::template If<Class<F>::
+                               template isConvertible<R(P1&&, const P2&)>(),
+                       typename Class< R(P1 &&, const P2 &&)>::template If<Class<F>::
+                               template isConvertible<R(P1&&, const P2&&)>(),
 
-                           typename Class<R(const P1, P2)>::template If<Class<F>::template isConvertible<R(const P1, P2)>(),
-                           typename Class<R(const P1, P2&)>::template If<Class<F>::template isConvertible<R(const P1, P2&)>(),
-                           typename Class<R(const P1, P2&&)>::template If<Class<F>::template isConvertible<R(const P1, P2&&)>(),
-                           typename Class<R(const P1, const P2)>::template If<Class<F>::template isConvertible<R(const P1, const P2)>(),
-                           typename Class<R(const P1, const P2&)>::template If<Class<F>::template isConvertible<R(const P1, const P2&)>(),
-                           typename Class<R(const P1, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1, const P2&&)>(),
+                       typename Class<R(const P1, P2)>::template If<Class<F>::template isConvertible<R(const P1, P2)>(),
+                               typename Class<R(const P1, P2 &)>::template If<Class<F>::template isConvertible<R(
+                                       const P1, P2 &)>(),
+                                       typename Class<R(const P1,
+                                                        P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                               const P1, P2 &&)>(),
+                                               typename Class<R(const P1,
+                                                                const P2)>::template If<Class<F>::template isConvertible<R(
+                                                       const P1, const P2)>(),
+                                                       typename Class<R(const P1,
+                                                                        const P2 &)>::template If<Class<F>::template isConvertible<R(
+                                                               const P1, const P2 &)>(),
+                                                               typename Class<R(const P1,
+                                                                                const P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                                                       const P1, const P2 &&)>(),
 
-                           typename Class<R(const P1&, P2)>::template If<Class<F>::template isConvertible<R(const P1&, P2)>(),
-                           typename Class<R(const P1&, P2&)>::template If<Class<F>::template isConvertible<R(const P1&, P2&)>(),
-                           typename Class<R(const P1&, P2&&)>::template If<Class<F>::template isConvertible<R(const P1&, P2&&)>(),
-                           typename Class<R(const P1&, const P2)>::template If<Class<F>::template isConvertible<R(const P1&, const P2)>(),
-                           typename Class<R(const P1&, const P2&)>::template If<Class<F>::template isConvertible<R(const P1&, const P2&)>(),
-                           typename Class<R(const P1&, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1&, const P2&&)>(),
+                                                                       typename Class<R(const P1 &,
+                                                                                        P2)>::template If<Class<F>::template isConvertible<R(
+                                                                               const P1 &, P2)>(),
+                                                                               typename Class<R(const P1 &,
+                                                                                                P2 &)>::template If<Class<F>::template isConvertible<R(
+                                                                                       const P1 &, P2 &)>(),
+                                                                                       typename Class<R(const P1 &,
+                                                                                                        P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                                                                               const P1 &, P2 &&)>(),
+                                                                                               typename Class<R(
+                                                                                                       const P1 &,
+                                                                                                       const P2)>::template If<Class<F>::template isConvertible<R(
+                                                                                                       const P1 &,
+                                                                                                       const P2)>(),
+                                                                                                       typename Class<R(
+                                                                                                               const P1 &,
+                                                                                                               const P2 &)>::template If<Class<F>::template isConvertible<R(
+                                                                                                               const P1 &,
+                                                                                                               const P2 &)>(),
+                                                                                                               typename Class<R(
+                                                                                                                       const P1 &,
+                                                                                                                       const P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                       const P1 &,
+                                                                                                                       const P2 &&)>(),
 
-                           typename Class<R(const P1&&, P2)>::template If<Class<F>::template isConvertible<R(const P1&&, P2)>(),
-                           typename Class<R(const P1&&, P2&)>::template If<Class<F>::template isConvertible<R(const P1&&, P2&)>(),
-                           typename Class<R(const P1&&, P2&&)>::template If<Class<F>::template isConvertible<R(const P1&&, P2&&)>(),
-                           typename Class<R(const P1&&, const P2)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2)>(),
-                           typename Class<R(const P1&&, const P2&)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2&)>(),
-                           typename Class<R(const P1&&, const P2&&)>::template If<Class<F>::template isConvertible<R(const P1&&, const P2&&)>(),
+                                                                                                                       typename Class<R(
+                                                                                                                               const P1 &&,
+                                                                                                                               P2)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                               const P1 &&,
+                                                                                                                               P2)>(),
+                                                                                                                               typename Class<R(
+                                                                                                                                       const P1 &&,
+                                                                                                                                       P2 &)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                                       const P1 &&,
+                                                                                                                                       P2 &)>(),
+                                                                                                                                       typename Class<R(
+                                                                                                                                               const P1 &&,
+                                                                                                                                               P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                                               const P1 &&,
+                                                                                                                                               P2 &&)>(),
+                                                                                                                                               typename Class<R(
+                                                                                                                                                       const P1 &&,
+                                                                                                                                                       const P2)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                                                       const P1 &&,
+                                                                                                                                                       const P2)>(),
+                                                                                                                                                       typename Class<R(
+                                                                                                                                                               const P1 &&,
+                                                                                                                                                               const P2 &)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                                                               const P1 &&,
+                                                                                                                                                               const P2 &)>(),
+                                                                                                                                                               typename Class<R(
+                                                                                                                                                                       const P1 &&,
+                                                                                                                                                                       const P2 &&)>::template If<Class<F>::template isConvertible<R(
+                                                                                                                                                                       const P1 &&,
+                                                                                                                                                                       const P2 &&)>(),
 
-                                   F >>>>>>> >>>>>> >>>>>> >>>>>> >>>>>> >>>>>>);
+                               F >> >>>>> >>>>>> >>>>>> >>>>>> >>>>>> >>>>>>);
 
         };
     } // core

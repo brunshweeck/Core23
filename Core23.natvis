@@ -6,56 +6,90 @@
     <!--    namespace core -->
     <Type Name="core::Boolean">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Byte">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Short">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Character">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Integer">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Long">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Float">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Double">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Enum&lt;*&gt;">
         <DisplayString>{value}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="value">value</Item>
+        </Expand>
     </Type>
     <Type Name="core::Throwable" Inheritable="true">
         <DisplayString>{msg}</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="message">msg</Item>
+        </Expand>
     </Type>
     <Type Name="core::Complex">
-        <DisplayString Condition="ivalue == 0">{rvalue}</DisplayString>
-        <DisplayString Condition="ivalue != ivalue">{rvalue}+({ivalue})i</DisplayString>
-        <DisplayString Condition="ivalue &gt; 0x1.fffffffffffffP+1023">{rvalue}+({ivalue})i</DisplayString>
-        <DisplayString Condition="ivalue &lt; -0x1.fffffffffffffP+1023">{rvalue}-({ivalue})i</DisplayString>
-        <DisplayString Condition="ivalue &lt; 0.0">{rvalue}{ivalue}i</DisplayString>
+        <!-- for non finite imaginary part -->
+        <DisplayString Condition="ivalue != ivalue || 1/ivalue == 0.0">{rvalue}+({ivalue})i</DisplayString>
+        <!-- for finite imaginary part -->
         <DisplayString>{rvalue}+{ivalue}i</DisplayString>
+        <Expand HideRawView="true">
+            <Item Name="real">rvalue</Item>
+            <Item Name="imag">ivalue</Item>
+        </Expand>
     </Type>
     <Type Name="core::Trace">
-        <DisplayString>...</DisplayString>
+        <DisplayString>{clsName}.{metName}({fName}:{fLine})</DisplayString>
         <Expand>
             <Item Name="File">{fName}</Item>
             <Item Name="Line">{fLine}</Item>
             <Item Name="Module" Condition="modVersion.len=0">{modName}</Item>
-            <Item Name="Module" Condition="">{modName}@{modVersion}</Item>
+            <Item Name="Module">{modName}@{modVersion}</Item>
             <Item Name="Class">{clsName}</Item>
             <Item Name="Method">{metName}</Item>
         </Expand>
     </Type>
     <Type Name="core::String">
-        <DisplayString Encoding="Ansi" Optional="true" Condition="len==0||value==0">{u""}</DisplayString>
-        <DisplayString Encoding="Ansi" Optional="true">{(char16_t*) value}</DisplayString>
+        <DisplayString Optional="true" Condition="len==0||value==0">{u""}</DisplayString>
+        <StringView Condition="len==0||value==0" Optional="true">{u""}</StringView>
+        <DisplayString Optional="true">{(char16_t*) value}</DisplayString>
+        <StringView Optional="true">{(char16_t*) value}</StringView>
         <Expand HideRawView="true">
             <ArrayItems Condition="len != 0 &amp;&amp; value!=0">
                 <Size>len * 2</Size>
@@ -64,7 +98,7 @@
         </Expand>
     </Type>
 
-    <!--    namespace core.primitive -->
+    <!--    namespace core.native -->
     <Type Name="core::primitive::Array&lt;*&gt;">
         <DisplayString Optional="true">length={len}</DisplayString>
         <DisplayString Optional="true">&lt;collection&gt;</DisplayString>
@@ -141,6 +175,15 @@
             </ArrayItems>
         </Expand>
     </Type>
+    <Type Name="core::primitive::ReferenceArray&lt;*&gt;">
+        <DisplayString Optional="true">length={len}</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems>
+                <Size>len</Size>
+                <ValueNode>value[$i][0]</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
 
     <!--    namespace core.util -->
     <Type Name="core::util::Iterator&lt;*&gt;" Inheritable="true">
@@ -149,10 +192,24 @@
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::Collection&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
         <DisplayString Optional="true">&lt;collection&gt;</DisplayString>
+        <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::List&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
         <DisplayString Optional="true">&lt;list&gt;</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::Queue&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <DisplayString Optional="true">&lt;queue&gt;</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::Set&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <DisplayString Optional="true">&lt;set&gt;</DisplayString>
+        <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::List&lt;*&gt;::SubList">
         <DisplayString Optional="true">size={len}</DisplayString>
@@ -171,10 +228,10 @@
     <Type Name="core::util::ArrayList&lt;*&gt;">
         <DisplayString Optional="true">size={len}</DisplayString>
         <Expand HideRawView="true">
-            <ArrayItems Optional="true">
+            <IndexListItems>
                 <Size>len</Size>
-                <ValuePointer>data</ValuePointer>
-            </ArrayItems>
+                <ValueNode>data[$i][0]</ValueNode>
+            </IndexListItems>
         </Expand>
     </Type>
     <Type Name="core::util::ArrayList&lt;*&gt;::SubList&lt;*&gt;">
@@ -183,17 +240,15 @@
             <Item Name="root">root</Item>
             <Item Name="parent" Condition="&amp;parent!=&amp;parent.parent" Optional="true">parent</Item>
             <Item Name="offset">offset</Item>
-            <ArrayItems Optional="true">
+            <IndexListItems Optional="true">
                 <Size>len</Size>
-                <ValuePointer>root.data+offset</ValuePointer>
-            </ArrayItems>
+                <ValueNode>root.data[$i+offset][0]</ValueNode>
+            </IndexListItems>
         </Expand>
     </Type>
     <Type Name="core::util::ArrayList&lt;*&gt;::ListItr&lt;*&gt;">
         <DisplayString Optional="true">cursor={cursor}</DisplayString>
-        <Expand HideRawView="true">
-            <Item Name="root">root</Item>
-        </Expand>
+        <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::LinkedList&lt;*&gt;">
         <DisplayString>size={len}</DisplayString>
@@ -208,6 +263,16 @@
     </Type>
     <Type Name="core::util::LinkedList&lt;*&gt;::ListItr&lt;*&gt;">
         <DisplayString Optional="true">cursor={index}</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::PriorityQueue&lt;*&gt;">
+        <DisplayString Optional="true">size={len}</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems Optional="true">
+                <Size>len</Size>
+                <ValueNode>queue[$i][0]</ValueNode>
+            </IndexListItems>
+        </Expand>
     </Type>
     <!-- directory concurrent -->
     <!-- directory function -->

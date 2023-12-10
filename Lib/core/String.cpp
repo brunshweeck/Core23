@@ -3,7 +3,7 @@
 //
 
 #include <core/private/Unsafe.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include "String.h"
 #include "Character.h"
 #include "Integer.h"
@@ -15,25 +15,27 @@
 #include "ArgumentException.h"
 #include "AssertionError.h"
 #include "IndexException.h"
-#include <core/util/Locale.h>
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
     using util::Preconditions;
-    using util::Locale;
 
     namespace {
 
-        Unsafe &U = Unsafe::U;
+        CORE_ALIAS(U, native::Unsafe);
 
         CORE_ALIAS(PBYTE, typename Class<gbyte>::Ptr);
         CORE_ALIAS(PCBYTE, typename Class<const gbyte>::Ptr);
         CORE_ALIAS(PCBYTE2, typename Class<const gchar>::Ptr);
         CORE_ALIAS(PCBYTE4, typename Class<const gint>::Ptr);
 
+        CORE_FAST glong alignToHeapWordSize(glong bytes) {
+            return bytes >= 0 ? (bytes + U::ADDRESS_SIZE - 1) & ~(U::ADDRESS_SIZE - 1) : -1;
+        }
+
         void putChar(PBYTE dst, glong idx, gint ch) {
-            if (!dst || idx < 0)
+            if ((dst == null) || idx < 0)
                 return;
             glong index = idx * 2LL;
             if (!Character::isValidCodePoint(ch)) {
@@ -44,7 +46,7 @@ namespace core {
             } else {
                 gbyte hb = Character::highByte(ch);
                 gbyte lb = Character::lowByte(ch);
-                if (native::Unsafe::BIG_ENDIAN) {
+                if (U::BIG_ENDIAN) {
                     dst[index] = hb;
                     dst[index + 1LL] = lb;
                 } else {
@@ -55,21 +57,21 @@ namespace core {
         }
 
         gchar nextChar(PCBYTE src, glong idx) {
-            if (!src || idx < 0)
+            if ((src == null) || idx < 0)
                 return Character::MIN_VALUE;
             glong index = idx * 2LL;
-            if (native::Unsafe::BIG_ENDIAN)
+            if (U::BIG_ENDIAN)
                 return Character::joinBytes(src[index], src[index + 1]);
             else
                 return Character::joinBytes(src[index + 1], src[index]);
         }
 
         PBYTE generate(gint count) {
-            if (count <= 0)
-                return null;
-            PBYTE address = (PBYTE) U.allocateMemory(Integer::toUnsignedLong(count) * 2LL);
-            if (address == null) generate(count);
-            ((gchar *) address)[Integer::toUnsignedLong(count)] = 0;
+            if (count <= 0) return null;
+            glong sizeInBytes = Integer::toUnsignedLong(count) << 1;
+            const glong heapSize = alignToHeapWordSize(sizeInBytes);
+            PBYTE address = (PBYTE) U::allocateMemory(sizeInBytes);
+            if (address != null) for (glong i = sizeInBytes; i < heapSize; ++i) address[i] = 0;
             return address;
         }
 
@@ -139,7 +141,7 @@ namespace core {
         }
 
         void arraycopy(PCBYTE src, gint offset1, PBYTE dst, gint offset2, gint count) {
-            if (!src || !dst || count == 0 || offset1 < 0 || offset2 < 0) {
+            if ((src == null) || (dst == null) || count == 0 || offset1 < 0 || offset2 < 0) {
                 return;
             }
             glong maxCount = count * 2LL;
@@ -160,353 +162,6 @@ namespace core {
             T t2 = t;
             t = (T) u;
             u = (U) t2;
-        }
-
-        /**
-         * Examines whether a character is 'cased'.
-         *
-         * A character C is defined to be 'cased' if and only if at least one of
-         * following are true for C: uppercase==true, or lowercase==true, or
-         * general_category==titlecase_letter.
-         *
-         * The uppercase and lowercase property values are specified in the data
-         * file DerivedCoreProperties.txt in the Unicode Character Database.
-         */
-        gbool isCasedChar(gint ch) {
-            Character::Category type = Character::category(ch);
-            if (type == Character::Category::LOWERCASE_LETTER
-                || type == Character::Category::UPPERCASE_LETTER
-                || type == Character::Category::TITLECASE_LETTER)
-                return true;
-            else if ((ch >= 0x02B0) && (ch <= 0x02B8)) {
-                // MODIFIER LETTER SMALL H..MODIFIER LETTER SMALL Y
-                return true;
-            } else if ((ch >= 0x02C0) && (ch <= 0x02C1)) {
-                // MODIFIER LETTER GLOTTAL STOP..MODIFIER LETTER REVERSED GLOTTAL STOP
-                return true;
-            } else if ((ch >= 0x02E0) && (ch <= 0x02E4)) {
-                // MODIFIER LETTER SMALL GAMMA..MODIFIER LETTER SMALL REVERSED GLOTTAL STOP
-                return true;
-            } else if (ch == 0x0345) {
-                // COMBINING GREEK YPOGEGRAMMENI
-                return true;
-            } else if (ch == 0x037A) {
-                // GREEK YPOGEGRAMMENI
-                return true;
-            } else if ((ch >= 0x1D2C) && (ch <= 0x1D61)) {
-                // MODIFIER LETTER CAPITAL A..MODIFIER LETTER SMALL CHI
-                return true;
-            } else if ((ch >= 0x2160) && (ch <= 0x217F)) {
-                // ROMAN NUMERAL ONE..ROMAN NUMERAL ONE THOUSAND
-                // SMALL ROMAN NUMERAL ONE..SMALL ROMAN NUMERAL ONE THOUSAND
-                return true;
-            } else if ((ch >= 0x24B6) && (ch <= 0x24E9)) {
-                // CIRCLED LATIN CAPITAL LETTER A..CIRCLED LATIN CAPITAL LETTER Z
-                // CIRCLED LATIN SMALL LETTER A..CIRCLED LATIN SMALL LETTER Z
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        CORE_FAST int FINAL_CASED = 1;
-        CORE_FAST int AFTER_SOFT_DOTTED = 2;
-        CORE_FAST int MORE_ABOVE = 3;
-        CORE_FAST int AFTER_I = 4;
-        CORE_FAST int NOT_BEFORE_DOT = 5;
-
-        // combining class definitions
-        CORE_FAST int COMBINING_CLASS_ABOVE = 230;
-
-        interface Entry {
-            gchar ch;
-            gchar lower[3];
-            gchar upper[3];
-            gchar lang[3];
-            gint condition;
-        };
-
-        CORE_FAST Entry entry[] = {
-                //# ================================================================================
-                //# Conditional mappings
-                //# ================================================================================
-                {0x03A3, {0x03C2},                 {0x03A3}, {},    FINAL_CASED}, // # GREEK CAPITAL LETTER SIGMA
-                {0x0130, {0x0069, 0x0307},         {0x0130}, {},    0}, // # LATIN CAPITAL LETTER I WITH DOT ABOVE
-
-                //# ================================================================================
-                //# Locale-sensitive mappings
-                //# ================================================================================
-                //# Lithuanian
-                {0x0307, {0x0307},                 {},       u"lt", AFTER_SOFT_DOTTED}, // # COMBINING DOT ABOVE
-                {0x0049, {0x0069, 0x0307},         {0x0049}, u"lt", MORE_ABOVE}, // # LATIN CAPITAL LETTER I
-                {0x004A, {0x006A, 0x0307},         {0x004A}, u"lt", MORE_ABOVE}, // # LATIN CAPITAL LETTER J
-                {0x012E, {0x012F, 0x0307},         {0x012E}, u"lt", MORE_ABOVE}, // # LATIN CAPITAL LETTER I WITH OGONEK
-                {0x00CC, {0x0069, 0x0307, 0x0300}, {0x00CC}, u"lt", 0}, // # LATIN CAPITAL LETTER I WITH GRAVE
-                {0x00CD, {0x0069, 0x0307, 0x0301}, {0x00CD}, u"lt", 0}, // # LATIN CAPITAL LETTER I WITH ACUTE
-                {0x0128, {0x0069, 0x0307, 0x0303}, {0x0128}, u"lt", 0}, // # LATIN CAPITAL LETTER I WITH TILDE
-
-                //# ================================================================================
-                //# Turkish and Azeri
-                {0x0130, {0x0069},                 {0x0130}, u"tr", 0}, // # LATIN CAPITAL LETTER I WITH DOT ABOVE
-                {0x0130, {0x0069},                 {0x0130}, u"az", 0}, // # LATIN CAPITAL LETTER I WITH DOT ABOVE
-                {0x0307, {},                       {0x0307}, u"tr", AFTER_I}, // # COMBINING DOT ABOVE
-                {0x0307, {},                       {0x0307}, u"az", AFTER_I}, // # COMBINING DOT ABOVE
-                {0x0049, {0x0131},                 {0x0049}, u"tr", NOT_BEFORE_DOT}, // # LATIN CAPITAL LETTER I
-                {0x0049, {0x0131},                 {0x0049}, u"az", NOT_BEFORE_DOT}, // # LATIN CAPITAL LETTER I
-                {0x0069, {0x0069},                 {0x0130}, u"tr", 0}, // # LATIN SMALL LETTER I
-                {0x0069, {0x0069},                 {0x0130}, u"az", 0},  // # LATIN SMALL LETTER I
-        };
-
-        /**
-         * Implements the "Final_Cased" condition
-         *
-         * Specification: Within the closest word boundaries containing C, there is a cased
-         * letter before C, and there is no cased letter after C.
-         */
-        gbool isFinalCased(PCBYTE str, gint index, const String &lang, gint len = 0) {
-            int ch = 0;
-
-            // Look for a preceding 'cased' letter
-            for (int i = index; i > 0 && i < len; i -= charCount(ch)) {
-
-                ch = i == 0 ? 0 : nextChar(str, i - 1);
-                if (Character::isLowSurrogate(ch) && i > 1) {
-                    gint ch0 = nextChar(str, i - 2);
-                    if (Character::isHighSurrogate(ch0))
-                        ch = Character::joinSurrogates(ch0, ch);
-                }
-
-                if (isCasedChar(ch)) {
-                    ch = nextChar(str, index);
-                    if (Character::isHighSurrogate(ch)) {
-                        gchar ch2 = nextChar(str, index + 1);
-                        if (Character::isLowSurrogate(ch2))
-                            ch = Character::joinSurrogates(ch2, ch2);
-                    }
-                    // Check that there is no 'cased' letter after the index
-                    for (i = index + charCount(ch); i < len && i > 0; i += charCount(ch)) {
-                        if (isCasedChar(ch)) {
-                            return false;
-                        }
-                        ch = nextChar(str, index);
-                        if (Character::isHighSurrogate(ch)) {
-                            gchar ch2 = nextChar(str, index + 1);
-                            if (Character::isLowSurrogate(ch2))
-                                ch = Character::joinSurrogates(ch2, ch2);
-                        }
-                    }
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        gbool isSoftDotted(int ch) {
-            switch (ch) {
-                case 0x0069: // Soft_Dotted # L&       LATIN SMALL LETTER I
-                case 0x006A: // Soft_Dotted # L&       LATIN SMALL LETTER J
-                case 0x012F: // Soft_Dotted # L&       LATIN SMALL LETTER I WITH OGONEK
-                case 0x0268: // Soft_Dotted # L&       LATIN SMALL LETTER I WITH STROKE
-                case 0x0456: // Soft_Dotted # L&       CYRILLIC SMALL LETTER BYELORUSSIAN-UKRAINIAN I
-                case 0x0458: // Soft_Dotted # L&       CYRILLIC SMALL LETTER JE
-                case 0x1D62: // Soft_Dotted # L&       LATIN SUBSCRIPT SMALL LETTER I
-                case 0x1E2D: // Soft_Dotted # L&       LATIN SMALL LETTER I WITH TILDE BELOW
-                case 0x1ECB: // Soft_Dotted # L&       LATIN SMALL LETTER I WITH DOT BELOW
-                case 0x2071: // Soft_Dotted # L&       SUPERSCRIPT LATIN SMALL LETTER I
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        /**
-         * Implements the "After_Soft_Dotted" condition
-         *
-         * Specification: The last preceding character with combining class
-         * of zero before C was Soft_Dotted, and there is no intervening
-         * combining character class 230 (ABOVE).
-         */
-        gbool isAfterSoftDotted(PCBYTE str, gint index) {
-            int ch = 0;
-            Character::CombiningClass cc = Character::CombiningClass::UNDEFINED;
-
-            // Look for the last preceding character
-            for (int i = index; i > 0; i -= charCount(ch)) {
-
-                ch = i == 0 ? 0 : nextChar(str, i - 1);
-                if (Character::isLowSurrogate(ch) && i > 1) {
-                    gint ch0 = nextChar(str, i - 2);
-                    if (Character::isHighSurrogate(ch0))
-                        ch = Character::joinSurrogates(ch0, ch);
-                }
-
-                if (isSoftDotted(ch)) {
-                    return true;
-                }
-                cc = Character::combiningClass(ch);
-                if ((cc == Character::CombiningClass::UNDEFINED) || (cc == Character::CombiningClass::ABOVE)) {
-                    return false;
-                }
-
-            }
-
-            return false;
-        }
-
-        /**
-         * Implements the "More_Above" condition
-         *
-         * Specification: C is followed by one or more characters of combining
-         * class 230 (ABOVE) in the combining character sequence.
-         */
-        gbool isMoreAbove(PCBYTE str, gint index, gint len) {
-            int ch = 0;
-            Character::CombiningClass cc;
-
-            gint ch0 = nextChar(str, index);
-            if (Character::isHighSurrogate(ch0)) {
-                gchar ch1 = nextChar(str, index + 1);
-                if (Character::isLowSurrogate(ch1))
-                    ch0 = Character::joinSurrogates(ch0, ch1);
-            }
-
-            // Look for a following ABOVE combining class character
-            for (int i = index + charCount(ch0); i < len; i += charCount(ch)) {
-
-                ch = nextChar(str, index);
-                if (Character::isHighSurrogate(ch)) {
-                    gchar ch2 = nextChar(str, index + 1);
-                    if (Character::isLowSurrogate(ch2))
-                        ch = Character::joinSurrogates(ch0, ch2);
-                }
-                cc = Character::combiningClass(ch);
-
-                if (cc == Character::CombiningClass::ABOVE) {
-                    return true;
-                } else if (cc == Character::CombiningClass::UNDEFINED) {
-                    return false;
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Implements the "After_I" condition
-         *
-         * Specification: The last preceding base character was an uppercase I,
-         * and there is no intervening combining character class 230 (ABOVE).
-         */
-        gbool isAfterI(PCBYTE str, gint index) {
-            int ch;
-            Character::CombiningClass cc = Character::CombiningClass::UNDEFINED;
-
-            // Look for the last preceding base character
-            for (int i = index; i > 0; i -= charCount(ch)) {
-
-                ch = i == 0 ? 0 : nextChar(str, i - 1);
-                if (Character::isLowSurrogate(ch) && i > 1) {
-                    gint ch0 = nextChar(str, i - 2);
-                    if (Character::isHighSurrogate(ch0))
-                        ch = Character::joinSurrogates(ch0, ch);
-                }
-
-                if (ch == 'I') {
-                    return true;
-                } else {
-                    cc = Character::combiningClass(ch);
-                    if ((cc == Character::CombiningClass::UNDEFINED) || (cc == Character::CombiningClass::ABOVE)) {
-                        return false;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Implements the "Before_Dot" condition
-         *
-         * Specification: C is followed by <b> U+0307 COMBINING DOT ABOVE</b>.
-         * Any sequence of characters with a combining class that is
-         * neither 0 nor 230 may intervene between the current character
-         * and the combining dot above.
-         */
-        gbool isBeforeDot(PCBYTE str, gint index, gint len) {
-            int ch;
-            Character::CombiningClass cc = Character::CombiningClass::UNDEFINED;
-
-            gint ch0 = nextChar(str, index);
-            if (Character::isHighSurrogate(ch0)) {
-                gchar ch1 = nextChar(str, index + 1);
-                if (Character::isLowSurrogate(ch1))
-                    ch0 = Character::joinSurrogates(ch0, ch1);
-            }
-
-            // Look for a following COMBINING DOT ABOVE
-            for (int i = index + charCount(ch0); i < len; i += charCount(ch)) {
-
-                ch = nextChar(str, index);
-                if (Character::isHighSurrogate(ch)) {
-                    gchar ch2 = nextChar(str, index + 1);
-                    if (Character::isLowSurrogate(ch2))
-                        ch = Character::joinSurrogates(ch0, ch2);
-                }
-
-                if (ch == u'\u0307') {
-                    return true;
-                } else {
-                    cc = Character::combiningClass(ch);
-                    if ((cc == Character::CombiningClass::UNDEFINED) || (cc == Character::CombiningClass::ABOVE)) {
-                        return false;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        gbool conditionIsTrue(PCBYTE str, gint index, const String &lang, gint condition, gint len) {
-            switch (condition) {
-                case FINAL_CASED:
-                    return isFinalCased(str, index, lang);
-                case AFTER_SOFT_DOTTED:
-                    return isAfterSoftDotted(str, index);
-                case MORE_ABOVE:
-                    return isMoreAbove(str, index, len);
-                case AFTER_I:
-                    return isAfterI(str, index);
-                case NOT_BEFORE_DOT:
-                    return !isBeforeDot(str, index, len);
-                default:
-                    return true;
-            }
-        }
-
-        gint lookupTable(PCBYTE str, gint index, const String &lang, gbool lower, gint &len) {
-            gint ch = nextChar(str, index);
-            gchar *ret = null;
-            gint idx = -1;
-            gbool ok = false;
-            for (const Entry &e: entry) {
-                idx += 1;
-                if (e.ch != ch) {
-                    if (ok) {
-                        idx -= 1;
-                        break;
-                    }
-                    continue;
-                }
-                if (e.lang[0] == 0 || (lang.equals(e.lang) && conditionIsTrue(str, index, lang, e.condition, len))) {
-                    ret = (gchar *) (lower ? e.lower : e.upper);
-                    len = ret[0] == 0 ? 0 : ret[1] == 0 ? 1 : ret[2] == 0 ? 2 : 3;
-                    ok = true;
-                    if (e.lang[0] != 0)
-                        break;
-                }
-            }
-            return ok ? idx : -1;
         }
     }
 
@@ -676,33 +331,33 @@ namespace core {
         }
     }
 
-    String::String(const String &original) {
-        value = generate(original.len);
-        len = original.length();
-        hashcode = original.hashcode;
-        isHashed = original.isHashed;
+    String::String(const String &original) :
+            value(generate(original.len)),
+            len(original.length()),
+            isHashed(original.isHashed),
+            hashcode(original.hashcode) {
         arraycopy(original.value, 0, value, 0, len);
     }
 
-    String::String(String &&original) CORE_NOTHROW {
-        exchange(value, original.value);
-        exchange(len, original.len);
-        exchange(hashcode, original.hashcode);
-        exchange(isHashed, original.isHashed);
+    String::String(String &&original) CORE_NOTHROW:
+            value(original.value), len(original.len), hashcode(original.hashcode), isHashed(original.isHashed) {
+        original.len = original.hashcode = 0;
+        original.isHashed = false;
+        original.value = null;
     }
 
     String &String::operator=(const String &str) {
         if (this != &str) {
+            PBYTE newValue = {};
             if (len != str.len) {
-                U.freeMemory((glong) value);
-                value = null;
+                newValue = generate(str.len);
                 len = 0;
-            }
-            value = generate(str.len);
-            len = str.len;
+                U::freeMemory((glong) value);
+            } else
+                newValue = value;
+            arraycopy(str.value, 0, value = newValue, 0, len = str.len);
             hashcode = str.hashcode;
             isHashed = str.isHashed;
-            arraycopy(str.value, 0, value, 0, len);
         }
         return *this;
     }
@@ -720,60 +375,39 @@ namespace core {
     gchar String::charAt(gint index) const {
         try {
             Preconditions::checkIndex(index, len);
-        } catch (IndexException &ie) {
-            ie.throws(__trace("core.String"));
-        }
-        gchar ch = nextChar(value, index);
-        return ch;
+            return nextChar(value, index);
+        } catch (IndexException &ie) { ie.throws(__trace("core.String")); }
     }
 
     gint String::codePointAt(gint index) const {
         try {
             Preconditions::checkIndex(index, len);
-        } catch (const IndexException &ie) {
-            ie.throws(__trace("core.String"));
-        }
-        gchar ch = nextChar(value, index);
-        if (Character::isSurrogate(ch))
-            return ch;
-        gchar ch2 = nextChar(value, index + 1);
-        if (Character::isSurrogatePair(ch, ch2))
-            return Character::joinSurrogates(ch, ch2);
-        return ch;
+            gchar ch = nextChar(value, index);
+            if (Character::isSurrogate(ch)) return ch;
+            gchar ch2 = nextChar(value, index + 1);
+            return Character::isSurrogatePair(ch, ch2) ? Character::joinSurrogates(ch, ch2) : ch;
+        } catch (const IndexException &ie) { ie.throws(__trace("core.String")); }
     }
 
     gbool String::equals(const Object &object) const {
-        if (!Class<String>::hasInstance(object))
-            return false;
-        const String &str = (String &) object;
-        if (len != str.len)
-            return false;
-        return compareTo(str) == 0;
+        return (this == &object) || Class<String>::hasInstance(object) && equals((const String &) object);
     }
 
     gbool String::equals(const String &str) const {
-        if (Object::equals(str))
-            return true;
-        if (len != str.len)
-            return false;
-        return compareTo(str) == 0;
+        return (this == &str) || (len == str.len) && (compareTo(str) == 0);
     }
 
     gbool String::equalsIgnoreCase(const String &str) const {
-        if (len != str.len)
-            return false;
-        return compareToIgnoreCase(str) == 0;
+        return (this == &str) || (len == str.len) && (compareToIgnoreCase(str) == 0);
     }
 
     gint String::compareTo(const String &other) const {
-        if (this == &other)
-            return 0;
+        if (this == &other) return 0;
         gint length = Math::min(len, other.len);
         for (gint i = 0; i < length; ++i) {
             gchar ch1 = nextChar(value, i);
             gchar ch2 = nextChar(other.value, i);
-            if (ch1 != ch2)
-                return ch1 - ch2;
+            if (ch1 != ch2) return ch1 - ch2;
         }
         return len == other.len ? 0 :
                length == len ? -nextChar(other.value, length) :
@@ -781,8 +415,7 @@ namespace core {
     }
 
     gint String::compareToIgnoreCase(const String &other) const {
-        if (this == &other)
-            return 0;
+        if (this == &other) return 0;
         gint length = Math::min(len, other.len);
         for (gint i = 0; i < length; ++i) {
             gchar ch1 = nextChar(value, i);
@@ -790,8 +423,7 @@ namespace core {
             if (ch1 != ch2) {
                 ch1 = Character::toLowerCase(ch1);
                 ch2 = Character::toLowerCase(ch2);
-                if (ch1 != ch2)
-                    return ch1 - ch2;
+                if (ch1 != ch2) return ch1 - ch2;
             }
         }
         return len == other.len ? 0 :
@@ -1018,142 +650,6 @@ namespace core {
                 gchar lowerCase = Character::toLowerCase(ch);
                 putChar(str.value, i, lowerCase);
             }
-        }
-        return str;
-    }
-
-    String String::toLowerCase(const util::Locale &locale) const {
-        String str;
-        str.len = len;
-        String lang = locale.language();
-        gbool isLocaleDependant = lang.equals("tr") || lang.equals("az") || lang.equals("lt"); /* or ch == '\u0130' */
-        gint length = 0;
-        gint i2 = 0;
-        while (i2 < len) {
-            gint ch = nextChar(value, i2);
-            if (((isLocaleDependant &&
-                  (ch == 0x0307 || ch == 0x0049 || ch == 0x004A || ch == 0x012E || ch == 0x00CC || ch == 0x00CD ||
-                   ch == 0x0128 || ch == 0x0130 || ch == 0x0069)) || ch == 0x03a3 || ch == 0x0130)) {
-                gint n = len;
-                gint idx = lookupTable(value, i2, lang, true, n);
-                if (idx < 0)
-                    length += 1;
-                else
-                    length += n;
-            } else
-                length += 1;
-            i2 += 1;
-        }
-        str.value = generate(length);
-        str.len += length;
-        gint lowerCase = 0;
-
-        gint i = 0;
-        gint j = 0;
-        for (; i < len; ++i) {
-            gchar ch = nextChar(value, i);
-            if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
-                if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
-                    lowerCase = Character::toLowerCase(codePoint);
-                    if (Character::isSupplementary(lowerCase))
-                        i += 1;
-                } else {
-                    lowerCase = ch;
-                }
-            } else {
-                if (((isLocaleDependant &&
-                      (ch == 0x0307 || ch == 0x0049 || ch == 0x004A || ch == 0x012E || ch == 0x00CC || ch == 0x00CD ||
-                       ch == 0x0128 || ch == 0x0130 || ch == 0x0069)) || ch == 0x03a3 || ch == 0x0130)) {
-                    length = len;
-                    gint idx = lookupTable(value, i, lang, true, length);
-                    if (idx < 0) {
-                        lowerCase = Character::toLowerCase(ch);
-                    } else {
-                        for (int k = 0; k < length; ++k) {
-                            putChar(str.value, j++, entry[idx].lower[k]);
-                        }
-                        continue;
-                    }
-                } else
-                    lowerCase = Character::toLowerCase(ch);
-            }
-            putChar(str.value, j, lowerCase);
-            j += charCount(lowerCase);
-        }
-        if (j < str.len) {
-            // reduce string length
-            str.len = j;
-            putChar(str.value, j, 0);
-        }
-        return str;
-    }
-
-    String String::toUpperCase(const Locale &locale) const {
-        String str;
-        str.len = len;
-        String lang = locale.language();
-        gbool isLocaleDependant = lang.equals("tr") || lang.equals("az") || lang.equals("lt"); /* or ch == '\u0130' */
-        gint length = 0;
-        gint i2 = 0;
-        while (i2 < len) {
-            gint ch = nextChar(value, i2);
-            if (((isLocaleDependant &&
-                  (ch == 0x0307 || ch == 0x0049 || ch == 0x004A || ch == 0x012E || ch == 0x00CC || ch == 0x00CD ||
-                   ch == 0x0128 || ch == 0x0130 || ch == 0x0069)) || ch == 0x03a3 || ch == 0x0130)) {
-                gint n = len;
-                gint idx = lookupTable(value, i2, lang, false, n);
-                if (idx < 0)
-                    length += 1;
-                else
-                    length += n;
-            } else
-                length += 1;
-            i2 += 1;
-        }
-        str.value = generate(length);
-        str.len += length;
-        gint upperCase = 0;
-
-        gint i = 0;
-        gint j = 0;
-        for (; i < len; ++i) {
-            gchar ch = nextChar(value, i);
-            if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
-                if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
-                    upperCase = Character::toUpperCase(codePoint);
-                    if (Character::isSupplementary(upperCase))
-                        i += 1;
-                } else {
-                    upperCase = ch;
-                }
-            } else {
-                if (((isLocaleDependant &&
-                      (ch == 0x0307 || ch == 0x0049 || ch == 0x004A || ch == 0x012E || ch == 0x00CC || ch == 0x00CD ||
-                       ch == 0x0128 || ch == 0x0130 || ch == 0x0069)) || ch == 0x03a3 || ch == 0x0130)) {
-                    length = len;
-                    gint idx = lookupTable(value, i, lang, false, length);
-                    if (idx < 0) {
-                        upperCase = Character::toUpperCase(ch);
-                    } else {
-                        for (int k = 0; k < length; ++k) {
-                            putChar(str.value, j++, entry[idx].upper[k]);
-                        }
-                        continue;
-                    }
-                } else
-                    upperCase = Character::toUpperCase(ch);
-            }
-            putChar(str.value, j, upperCase);
-            j += charCount(upperCase);
-        }
-        if (j < str.len) {
-            // reduce string length
-            str.len = j;
-            putChar(str.value, j, 0);
         }
         return str;
     }
@@ -1574,7 +1070,7 @@ namespace core {
     }
 
     Object &String::clone() const {
-        return U.createInstance<String>(*this);
+        return U::createInstance<String>(*this);
     }
 
     String operator+(const String &x, const String &y) {
@@ -1868,7 +1364,7 @@ namespace core {
 
     String::~String() {
         if (value != null) {
-            U.freeMemory((glong) value);
+            U::freeMemory((glong) value);
             value = null;
         }
         len = 0;

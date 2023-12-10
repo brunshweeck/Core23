@@ -10,11 +10,12 @@
 
 namespace core {
     namespace util {
-        Locale::Locale(String language) :
-                Locale((String &&) language, "", "") {}
 
-        Locale::Locale(String language, String country) :
-                Locale((String &&) language, "", (String &&) country) {}
+        CORE_ALIAS(U, native::Unsafe);
+
+        Locale::Locale(String language) : Locale((String &&) language, "", "") {}
+
+        Locale::Locale(String language, String country) : Locale((String &&) language, "", (String &&) country) {}
 
         Locale::Locale(String language, String script, String country) : Locale(
                 BaseLocale::parseLanguage((String &&) language),
@@ -23,29 +24,17 @@ namespace core {
 
         constexpr Locale::Locale(const Locale &locale) : base(locale.base) {}
 
-        String Locale::language() const {
-            return base.languageCode();
-        }
+        String Locale::language() const { return base.languageCode(); }
 
-        String Locale::script() const {
-            return base.scriptCode();
-        }
+        String Locale::script() const { return base.scriptCode(); }
 
-        String Locale::country() const {
-            return base.countryCode();
-        }
+        String Locale::country() const { return base.countryCode(); }
 
-        String Locale::toString() const {
-            return name();
-        }
+        String Locale::toString() const { return name(); }
 
-        String Locale::name() const {
-            return base.name('_');
-        }
+        String Locale::name() const { return base.name('_'); }
 
-        String Locale::toLanguageTag() const {
-            return base.bcp47Name();
-        }
+        String Locale::toLanguageTag() const { return base.bcp47Name(); }
 
         Locale Locale::forLanguageTag(String languageTag) {
             Locale locale = BaseLocale::parseLocale((String &&) languageTag);
@@ -53,33 +42,19 @@ namespace core {
             return locale;
         }
 
-        String Locale::iso3language() const {
-            return base.languageISO3Code();
-        }
+        String Locale::iso3language() const { return base.languageISO3Code(); }
 
-        String Locale::iso3country() const {
-            return base.countryISO3Code();
-        }
+        String Locale::iso3country() const { return base.countryISO3Code(); }
 
-        String Locale::displayLanguage() const {
-            return base.languageName();
-        }
+        String Locale::displayLanguage() const { return base.languageName(); }
 
-        String Locale::nativeLanguage() const {
-            return base.nativeLanguageName();
-        }
+        String Locale::nativeLanguage() const { return base.nativeLanguageName(); }
 
-        String Locale::displayScript() const {
-            return base.scriptName();
-        }
+        String Locale::displayScript() const { return base.scriptName(); }
 
-        String Locale::displayCountry() const {
-            return base.countryName();
-        }
+        String Locale::displayCountry() const { return base.countryName(); }
 
-        String Locale::nativeCountry() const {
-            return base.nativeCountryName();
-        }
+        String Locale::nativeCountry() const { return base.nativeCountryName(); }
 
         String Locale::displayName() const {
             String lang = displayLanguage();
@@ -97,9 +72,7 @@ namespace core {
             return sb.toString();
         }
 
-        Object &Locale::clone() const {
-            return native::Unsafe::U.createInstance<Locale>(*this);
-        }
+        Object &Locale::clone() const { return U::createInstance<Locale>(*this); }
 
         gint Locale::hash() const {
             return (gint) base.language << 20 | (gint) base.country << 10 | (gint) base.script;
@@ -111,13 +84,9 @@ namespace core {
             return base.equals(CORE_CAST(const Locale&, o).base);
         }
 
-        Locale Locale::forName(String locale) {
-            return Locale(String());
-        }
+        Locale Locale::forName(String locale) { return Locale(String()); }
 
-        Locale Locale::of(String language, String script, String country) {
-            return Locale(String());
-        }
+        Locale Locale::of(String language, String script, String country) { return Locale(String()); }
 
         Locale Locale::of(Locale::Language language, Locale::Script script, Locale::Country country) {
             Locale locale = Locale(BaseLocale::normalize(language), BaseLocale::normalize(country),
@@ -125,32 +94,19 @@ namespace core {
             return locale;
         }
 
-        Locale Locale::systemLocale() {
-            return Locale(String());
-        }
+        Locale Locale::systemLocale() { return Locale(String()); }
 
-        Locale Locale::defaultLocale() {
-            return Locale(core::String());
-        }
+        Locale Locale::defaultLocale() { return Locale(core::String()); }
 
         void Locale::setDefaultLocale(Locale newLocale) {}
 
-        List<String> &Locale::availableUILanguages() {
-            return *(List<String> *) 0;
-        }
+        List<String> &Locale::availableUILanguages() { return *(List<String> *) 0; }
 
-        List<Locale> &Locale::availableLocales() {
-            return *(List<Locale> *) 0;
-        }
+        List<Locale> &Locale::availableLocales() { return *(List<Locale> *) 0; }
 
+        Object &Locale::BaseLocale::clone() const { return U::createInstance<BaseLocale>(*this); }
 
-        Object &Locale::BaseLocale::clone() const {
-            return native::Unsafe::U.createInstance<BaseLocale>(*this);
-        }
-
-        String Locale::BaseLocale::languageCode() const {
-            return {};
-        }
+        String Locale::BaseLocale::languageCode() const { return {}; }
 
         String Locale::BaseLocale::languageISO3Code() const {
             return {};

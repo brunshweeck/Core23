@@ -5,15 +5,17 @@
 #ifndef CORE23_ENUM_H
 #define CORE23_ENUM_H
 
-#include <core/String.h>
+#include <core/CastException.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
     template<class E>
-    class Enum: public Comparable<Enum<E>> {
+    class Enum CORE_FINAL : public Object, public Comparable<Enum<E>> {
     private:
         CORE_STATIC_ASSERT(Class<E>::isEnum(), "This template is not Enumerable type");
+
+        CORE_ALIAS(U, native::Unsafe);
 
         /**
          * The value of the Enum
@@ -101,7 +103,7 @@ namespace core {
          * Return shadow copy of this enum constant
          */
         Object &clone() const override {
-            return native::Unsafe::U.createInstance<Enum>(*this);
+            return U::createInstance<Enum>(*this);
         }
 
         /**
@@ -113,7 +115,7 @@ namespace core {
          * same enum type.  The natural order implemented by this
          * method is the order in which the constants are declared.
          */
-        gint compareTo(const Enum<E> &other) const override {
+        gint compareTo(const Enum& other) const override {
             return compare(value, other.value);
         }
 

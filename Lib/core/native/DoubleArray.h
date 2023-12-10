@@ -9,17 +9,17 @@
 #include "Array.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
         /**
-         * The DoubleArray class wrap the static array of values from primitive type
+         * The DoubleArray class wrap the static array of values from native type
          * (generic) gdouble in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
          *
          * <p>
-         * The class can be used as view for all buffer using this primitive type
+         * The class can be used as view for all buffer using this native type
          * (such as DoubleBuffer)
          *
          * @author
@@ -137,6 +137,6 @@ namespace core {
         };
 
     } // core
-} // primitive
+} // native
 
 #endif //CORE23_DOUBLEARRAY_H

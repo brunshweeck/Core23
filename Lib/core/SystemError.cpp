@@ -7,19 +7,19 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     SystemError::SystemError(String message) CORE_NOTHROW:
-            Error(Unsafe::moveInstance(message)) {}
+            Error(U::moveInstance(message)) {}
 
     SystemError::SystemError(String message, const Throwable &cause) CORE_NOTHROW:
-            Error(Unsafe::moveInstance(message), cause) {}
+            Error(U::moveInstance(message), cause) {}
 
     void SystemError::raise() &&{
         throw *this;
     }
 
     Object &SystemError::clone() const {
-        return Unsafe::U.createInstance<SystemError>(*this);
+        return U::createInstance<SystemError>(*this);
     }
 } // core

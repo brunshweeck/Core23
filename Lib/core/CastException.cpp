@@ -7,16 +7,14 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     CastException::CastException(String message) CORE_NOTHROW:
-    RuntimeException(Unsafe::moveInstance(message)) {}
+    RuntimeException(U::moveInstance(message)) {}
 
     Object &CastException::clone() const {
-        return Unsafe::U.createInstance<CastException>(*this);
+        return U::createInstance<CastException>(*this);
     }
 
-    void CastException::raise() &&{
-        throw *this;
-    }
+    void CastException::raise() &&{ throw *this;}
 } // core

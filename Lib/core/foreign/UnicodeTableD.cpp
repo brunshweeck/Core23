@@ -3706,7 +3706,7 @@ namespace core {
 
         glong UnicodeTable::readDecompositions(gint ch) {
             gint i = (gint) ch;
-            int dec = i < 0x3400 ? (Y[Y[i >> 4] + (i & 0xf)]) :
+            gint dec = i < 0x3400 ? (Y[Y[i >> 4] + (i & 0xf)]) :
                       (i < 0x30000 ? Y[Y[((i - 0x3400) >> 8) + 0x340] + (i & 0xff)] : 0xffff);
             if(dec == 0xFFFF)
                 return 0;

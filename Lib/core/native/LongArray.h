@@ -1,35 +1,35 @@
 //
-// Created by T.N.Brunshweeck on 19/11/2023.
+// Created by T.N.Brunshweeck on 16/11/2023.
 //
 
-#ifndef CORE23_FLOATARRAY_H
-#define CORE23_FLOATARRAY_H
+#ifndef CORE23_LONGARRAY_H
+#define CORE23_LONGARRAY_H
 
 #include "Array.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
         /**
-         * The FloatArray class wrap the static array of values from primitive type
-         * (generic) gfloat in an object.
+         * The LongArray class wrap the static array of values from native type
+         * (generic) glong in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
          *
          * <p>
-         * The class can be used as view for all buffer using this primitive type
-         * (such as FloatBuffer)
+         * The class can be used as view for all buffer using this native type
+         * (such as LongBuffer)
          *
          * @author
          *      Brunshweeck Tazeussong
          */
-        class FloatArray: public Array<Float> {
+        class LongArray: public Array<Long> {
         private:
             /**
-             * gfloat[*]
+             * glong[*]
              */
-            CORE_ALIAS(STORAGE, typename Class<gfloat>::Ptr);
+            CORE_ALIAS(STORAGE, typename Class<glong>::Ptr);
 
             /**
              * The items storage
@@ -41,22 +41,22 @@ namespace core {
         public:
 
             /**
-             * Construct new empty Float Array
+             * Construct new empty Long Array
              */
-            FloatArray(): FloatArray(0) {}
+            LongArray(): LongArray(0) {}
 
             /**
-             * Construct new FloatArray with specified number
+             * Construct new LongArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.
              *
              * @param length
              *          The number of items
              */
-            CORE_EXPLICIT FloatArray(gint length);
+            CORE_EXPLICIT LongArray(gint length);
 
             /**
-             * Construct new FloatArray with specified number
+             * Construct new LongArray with specified number
              * of items. After creation all items value will be
              * initialized with specified initial value.
              *
@@ -65,23 +65,23 @@ namespace core {
              * @param initialValue
              *          The value used to initialize all items after array creation
              */
-            CORE_EXPLICIT FloatArray(gint length, gfloat initialValue);
+            CORE_EXPLICIT LongArray(gint length, glong initialValue);
 
             /**
-             * Initialize newly created FloatArray with items of another.
+             * Initialize newly created LongArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            FloatArray(const FloatArray &array);
+            LongArray(const LongArray &array);
 
             /**
-             * Initialize newly created FloatArray with items of another.
+             * Initialize newly created LongArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            FloatArray(FloatArray &&array) CORE_NOTHROW;
+            LongArray(LongArray &&array) CORE_NOTHROW;
 
             /**
              * Set with items of specified array, all items of this array.
@@ -89,7 +89,7 @@ namespace core {
              * @param array
              *          The array that items are used to set this array items
              */
-            FloatArray &operator=(const FloatArray &array);
+            LongArray &operator=(const LongArray &array);
 
             /**
              * Exchange with items of specified array, all items of this array.
@@ -97,7 +97,7 @@ namespace core {
              * @param array
              *          The array that items are  exchanged with items of this
              */
-            FloatArray &operator=(FloatArray &&array) CORE_NOTHROW;
+            LongArray &operator=(LongArray &&array) CORE_NOTHROW;
 
             /**
              * Return item at specified index
@@ -108,7 +108,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            gfloat &get(gint index) override;
+            glong &get(gint index) override;
 
             /**
              * Return item at specified index
@@ -119,7 +119,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gfloat get(gint index) const override;
+            const glong get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -132,10 +132,10 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~FloatArray() override;
+            ~LongArray() override;
         };
 
     } // core
-} // primitive
+} // native
 
-#endif //CORE23_FLOATARRAY_H
+#endif //CORE23_LONGARRAY_H

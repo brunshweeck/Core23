@@ -5,15 +5,14 @@
 #include <core/private/Unsafe.h>
 #include "Double.h"
 #include "String.h"
-#include "Character.h"
 #include "NumberFormatException.h"
 #include "Math.h"
 #include "Long.h"
+#include "CastException.h"
 
 namespace core {
 
-    static const String pINFINITE = "infinity";
-    static const String mINFINITE = "-infinity";
+    CORE_ALIAS(U, native::Unsafe);
 
     gdouble Double::parseDouble(const String &str) {
         if (str.isEmpty())
@@ -33,7 +32,8 @@ namespace core {
                     NumberFormatException("Invalid number format for input \" " + str + "\".")
                             .throws(__trace("core.Double"));
                 ch = str.charAt(next);
-            default: break;
+            default:
+                break;
         }
         switch (ch) {
             case '0':
@@ -93,7 +93,8 @@ namespace core {
                         return sign * Math::INF;
                 }
                 goto throwIllegalFormat;
-            default: break;
+            default:
+                break;
         }
         switch (base) {
             case 2:
@@ -165,7 +166,8 @@ namespace core {
                                     next += 1;
                                     if (next == len)
                                         goto throwIllegalFormat;
-                                default: break;
+                                default:
+                                    break;
                             }
                             while (next < len) {
                                 ch = str.charAt(next);
@@ -258,7 +260,6 @@ namespace core {
                                 rounded = (digit & 0x8) != 0;
                                 sticky = (digit & 0x7) != 0;
                                 break;
-                            default: break;
                         }
                         shift -= 4;
                     } else if (!sticky)
@@ -311,7 +312,6 @@ namespace core {
                                         rounded = (digit & 0x8) != 0;
                                         sticky = (digit & 0x7) != 0;
                                         break;
-                                    default: break;
                                 }
                                 shift -= 4;
                             } else if (!sticky)
@@ -333,7 +333,8 @@ namespace core {
                                 next += 1;
                                 if (next == len)
                                     goto throwIllegalFormat;
-                            default: break;
+                            default:
+                                break;
                         }
                         while (next < len) {
                             ch = str.charAt(next);
@@ -380,8 +381,6 @@ namespace core {
                     }
                 }
             }
-            default:
-                goto throwIllegalFormat;
         }
         throwIllegalFormat:
         NumberFormatException("Invalid number format for input \" " + str + "\".").throws(__trace("core.Double"));
@@ -390,9 +389,7 @@ namespace core {
     Double Double::valueOf(const String &str) {
         try {
             return valueOf(parseDouble(str));
-        } catch (NumberFormatException &nfe) {
-            nfe.throws(__trace("core.Double"));
-        }
+        } catch (NumberFormatException &nfe) { nfe.throws(__trace("core.Double")); }
     }
 
     Double Double::valueOf(gdouble d) {
@@ -443,7 +440,6 @@ namespace core {
                 10000000000000000LL,
                 100000000000000000LL,
                 1000000000000000000LL,
-                10000000000000000000LL,
         };
 
         CORE_FAST gchar DIGITS[] = {
@@ -456,7 +452,7 @@ namespace core {
         if (isNaN(d))
             return "NaN";
         if (isInfinite(d))
-            return d < 0 ? pINFINITE : mINFINITE;
+            return d < 0 ? "infinity" : "-infinity";
         glong bit64 = toLongBits(d);
         if (bit64 == 0)
             // bit64 = 0 00000000000 0000000000000000000000000000000000000000000000000000.
@@ -632,18 +628,18 @@ namespace core {
     }
 
     glong Double::toLongBits(gdouble d) {
-        return native::Unsafe::U.getLong((glong) &d);
+        return U::getLong((glong) &d);
     }
 
     gdouble Double::fromLongBits(glong bits) {
-        return native::Unsafe::U.getDouble((glong) &bits);
+        return U::getDouble((glong) &bits);
     }
 
     Object &Double::clone() const {
-        return native::Unsafe::U.createInstance<Double>(*this);
+        return U::createInstance<Double>(*this);
     }
 
-    const gdouble Double::NaN = 0.0/0.0;
-    const gdouble Double::POSITIVE_INFINITY = 1.0/0.0;
-    const gdouble Double::NEGATIVE_INFINITY = -1.0/0.0;
+    const gdouble Double::NaN = 0.0 / 0.0;
+    const gdouble Double::POSITIVE_INFINITY = 1.0 / 0.0;
+    const gdouble Double::NEGATIVE_INFINITY = -1.0 / 0.0;
 } // core

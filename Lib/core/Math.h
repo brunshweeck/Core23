@@ -56,11 +56,11 @@ namespace core {
      *
      * <p>
      * The platform uses signed two's complement integer arithmetic with
-     * int and long primitive types.  The developer should choose
-     * the primitive type to ensure that arithmetic operations consistently
+     * int and long native types.  The developer should choose
+     * the native type to ensure that arithmetic operations consistently
      * produce correct results, which in some cases means the operations
      * will not overflow the range of values of the computation.
-     * The best practice is to choose the primitive type and algorithm to avoid
+     * The best practice is to choose the native type and algorithm to avoid
      * overflow. In cases where the size is <b> int</b> or <b> long</b> and
      * overflow errors need to be detected, the methods whose names end with
      * <b> Exact</b> throw an <b> ArithmeticException</b> when the results overflow.
@@ -618,7 +618,7 @@ namespace core {
          * This new pseudo-random-number generator is used thereafter for
          * all calls to this method and is used nowhere else.
          * <p>This method is properly synchronized to allow correct use by
-         * more than one thread. However, if many threads need to generate
+         * more than one thread. However, if many threads need to comparator
          * pseudorandom numbers at a great rate, it may reduce contention
          * for each thread to have its own pseudorandom-number generator.
          */

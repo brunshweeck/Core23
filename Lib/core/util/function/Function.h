@@ -17,7 +17,7 @@ namespace core {
             CORE_ALIAS(Ret, Return < R >);
 
         public:
-            virtual Ret apply(Param p) const { CORE_UNREACHABLE(); }
+            virtual Ret apply(Param /*p*/) const { CORE_UNREACHABLE(); }
         };
 
     } // core

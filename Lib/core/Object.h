@@ -59,7 +59,7 @@ namespace core {
          * copying any mutable objects that comprise the internal "deep structure"
          * of the object being cloned and replacing the references to these
          * objects with references to the copies.  If a class contains only
-         * primitive fields or references to immutable objects, then it is usually
+         * native fields or references to immutable objects, then it is usually
          * the case that no fields in the object returned by <b>super.clone</b>
          * need to be modified.
          *
@@ -69,7 +69,7 @@ namespace core {
          * not support cloning, then a <b>CloneNotSupportedException</b> is thrown.
          * Note that all arrays are considered cloneable and that
          * the return type of the <b>clone</b> method of an array type <b>T</b>
-         * is array of type <b>T</b> where T is any reference or primitive type.
+         * is array of type <b>T</b> where T is any reference or native type.
          * Otherwise, this method creates a new instance of the class of this
          * object and initializes all its fields with exactly the contents of
          * the corresponding fields of this object, as if by assignment; the

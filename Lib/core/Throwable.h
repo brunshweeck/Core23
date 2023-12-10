@@ -7,6 +7,7 @@
 
 #include "Object.h"
 #include <core/Trace.h>
+#include <exception>
 
 namespace core {
 
@@ -66,7 +67,7 @@ namespace core {
      * @author  Brunshweeck Tazeussong
      *
      */
-    class Throwable: public Object, public virtual native::GENERIC_THROWABLE {
+class Throwable: public Object, public virtual std::exception {
     private:
         /**
          * ///
@@ -272,7 +273,7 @@ namespace core {
 
     private:
         /**
-         * Print and return the stack trace of this throwable on the primitive stream
+         * Print and return the stack trace of this throwable on the native stream
          */
         PRINTSTREAM what() const CORE_NOTHROW override;
     };

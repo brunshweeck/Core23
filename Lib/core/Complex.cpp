@@ -6,11 +6,13 @@
 #include "Complex.h"
 #include "ArithmeticException.h"
 #include "Math.h"
-#include "NumberFormatException.h"
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
+
+    CORE_WARNING_PUSH
+    CORE_WARNING_DISABLE_DEPRECATED
 
     gbyte Complex::byteValue() const {
         if (!isReal())
@@ -57,13 +59,13 @@ namespace core {
     gbool Complex::equals(const Object &object) const {
         if (Class<Complex>::hasInstance(object))
             return false;
-        const Complex &z = CORE_DYN_CAST(const Complex&, object);
+        const Complex &z = (Complex &) object;
         return (rvalue == z.rvalue || Double::isNaN(rvalue) && Double::isNaN(z.rvalue)) &&
                (ivalue == z.ivalue || Double::isNaN(ivalue) && Double::isNaN(ivalue));
     }
 
     Object &Complex::clone() const {
-        return Unsafe::U.createInstance<Complex>(*this);
+        return U::createInstance<Complex>(*this);
     }
 
     String Complex::toString() const {
@@ -145,16 +147,19 @@ namespace core {
         return Complex(d);
     }
 
-    Complex Complex::valueOf(const String &str) {
+    Complex Complex::valueOf(const String & /*str*/) {
         static String pattern = R"(^[+-]?(p{\digit}+([eE]([+-]?)p{\digit}(p{\digit}*))|0[xX]p{\xdigit}+(.p{\digit}*[pP]([+-]?)p{\digit}+)?))";
         return 0;
     }
 
-    gint Complex::compareTo(const Complex &o) const {
-        gint r = Double::compare(rvalue, o.rvalue);
-        if (r != 0)
-            return r;
-        return Double::compare(ivalue, o.ivalue);
+    gint Complex::compareTo(const Complex &other) const {
+        gint r = Double::compare(rvalue, other.rvalue);
+        if (r != 0) return r;
+        return Double::compare(ivalue, other.ivalue);
     }
 
+    Complex::Complex(GENERIC_CPLEX cplex) :
+            rvalue(U::getDouble((glong) &cplex)), ivalue(U::getDouble((glong) &cplex + 8)) {}
+
+    CORE_WARNING_POP
 } // core

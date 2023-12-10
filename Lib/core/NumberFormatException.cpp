@@ -7,16 +7,14 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     NumberFormatException::NumberFormatException(String message) CORE_NOTHROW:
-            ArgumentException(Unsafe::moveInstance(message)) {}
+            ArgumentException(U::moveInstance(message)) {}
 
-    void NumberFormatException::raise() &&{
-        throw *this;
-    }
+    void NumberFormatException::raise() &&{ throw *this; }
 
     Object &NumberFormatException::clone() const {
-        return Unsafe::U.createInstance<NumberFormatException>(*this);
+        return U::createInstance<NumberFormatException>(*this);
     }
 } // core

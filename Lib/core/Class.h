@@ -17,20 +17,25 @@ namespace core {
      * For other class operations see header file <core/private/Unsafe.h>
      */
     template<class T>
-    class Class final {
+    class Class CORE_FINAL {
     private:
 
         /**
          * Construct new instance of Class
          */
-        CORE_FAST Class() {}
+        CORE_FAST Class() = default;
 
-    public:
-        CORE_DISABLE_COPY_MOVE(Class)
-
-    private:
         CORE_WARNING_PUSH
         CORE_WARNING_DISABLE_DEPRECATED
+
+        template<gint x, class Extractor>
+        CORE_ALIAS(PARAM_SELECTOR, native::Templates::FnParamSelector<x,, Extractor >);
+
+        template<gint x, class...Params>
+        CORE_ALIAS(TPARAM_SELECTOR, native::Templates::VA_ARGS<x,, Params...>);
+
+        template<class Signature>
+        CORE_ALIAS(PARAM_EXTRACTOR, native::Templates::FnAnalyzer<Signature>);
 
         template<gint X, class Y>
         CORE_ALIAS(MODIFY, native::Templates::MODIFY<X,, Y >);
@@ -105,16 +110,16 @@ namespace core {
         /**
          * Constant Reference version of template type
          */
-        CORE_ALIAS(ConstRef, MODIFY_RESULT<7,, T >);
-        CORE_ALIAS(ConstLvalueRef, MODIFY_RESULT<7,, T >);
-        CORE_ALIAS(ConstRvalueRef, MODIFY_RESULT<77,, T >);
+        CORE_ALIAS(ConstRef, typename Class<Constant>::Reference);
+        CORE_ALIAS(ConstLvalueRef, typename Class<Constant>::LvalueReference);
+        CORE_ALIAS(ConstRvalueRef, typename Class<Constant>::RvalueReference);
 
         /**
          * Constant Volatile Reference version of template type.
          */
-        CORE_ALIAS(ConstVolRef, MODIFY_RESULT<8,, T >);
-        CORE_ALIAS(ConstVolLvalueRef, MODIFY_RESULT<8,, T >);
-        CORE_ALIAS(ConstVolRvalueRef, MODIFY_RESULT<88,, T >);
+        CORE_ALIAS(ConstVolRef, typename Class<ConstVol>::Reference);
+        CORE_ALIAS(ConstVolLvalueRef, typename Class<ConstVol>::LvalueReference);
+        CORE_ALIAS(ConstVolRvalueRef, typename Class<ConstVol>::RvalueReference);
 
         /**
          * Mutable version of template type
@@ -149,14 +154,14 @@ namespace core {
         /**
          * Mutable and Unreferenced version of template type
          */
-        CORE_ALIAS(NoConstRef, MODIFY_RESULT<-7,, T >);
-        CORE_ALIAS(NoConstRvalueRef, MODIFY_RESULT<-77,, T >);
+        CORE_ALIAS(NoConstRef, typename Class<NoReference>::NoConstant);
+        CORE_ALIAS(NoConstRvalueRef, typename Class<NoRvalueReference>::NoConstant);
 
         /**
          * Mutable, Non Volatile and Unreferenced version of template type
          */
-        CORE_ALIAS(NoConstVolRef, MODIFY_RESULT<-8,, T >);
-        CORE_ALIAS(NoConstVolRvalueRef, MODIFY_RESULT<-88,, T >);
+        CORE_ALIAS(NoConstVolRef, typename Class<NoReference>::NoConstVol);
+        CORE_ALIAS(NoConstVolRvalueRef, typename Class<NoRvalueReference>::NoConstVol);
 
         /**
          * Strict conditional (if ... else error) version of template type.
@@ -183,12 +188,12 @@ namespace core {
          * static Array version of template type
          */
         template<gint Size>
-        CORE_ALIAS(Array, ARRAY_MODIFY_RESULT<9,, T, Size >);
+        CORE_ALIAS(Array, ARRAY_MODIFY_RESULT<9,, NoReference , Size >);
 
         /**
          * Array Item type of template type
          */
-        CORE_ALIAS(NoArray, MODIFY_RESULT<-9,, T >);
+        CORE_ALIAS(NoArray, MODIFY_RESULT<-9,, NoReference >);
 
         /**
          * VarArgs Item type at specified position.
@@ -196,6 +201,9 @@ namespace core {
          * <p>
          * Note: If Args is empty of index out of range this template
          * type is returned as Fallback type.
+         *
+         * @tparam Index The position of type (the fist position is 1)
+         * @tparam Args The list of types
          */
         template<gint Index, class ...Args>
         CORE_ALIAS(VarArgs, MULTI_ARGS<Index,, T, Args...>);
@@ -207,11 +215,10 @@ namespace core {
         CORE_ALIAS(LvRef, LvalueReference);
         CORE_ALIAS(RvRef, RvalueReference);
         CORE_ALIAS(CRef, ConstRef);
-        CORE_ALIAS(CLvRef, ConstRef);
+        CORE_ALIAS(CLvRef, ConstLvalueRef);
         CORE_ALIAS(CRvRef, ConstRvalueRef);
-        CORE_ALIAS(CVol, ConstVol);
         CORE_ALIAS(CVRef, ConstVolRef);
-        CORE_ALIAS(CVLvRef, ConstVolRef);
+        CORE_ALIAS(CVLvRef, ConstVolLvalueRef);
         CORE_ALIAS(CVRvRef, ConstVolRvalueRef);
         CORE_ALIAS(NConst, NoConstant);
         CORE_ALIAS(NVol, NoVolatile);
@@ -219,7 +226,6 @@ namespace core {
         CORE_ALIAS(NRvRef, NoRvalueReference);
         CORE_ALIAS(NCVol, NoConstVol);
         CORE_ALIAS(NCRef, NoConstRef);
-        CORE_ALIAS(NCLvRef, NoConstRef);
         CORE_ALIAS(NCRvRef, NoConstRvalueRef);
         CORE_ALIAS(NCVRef, NoConstVolRef);
         CORE_ALIAS(NCVRvRef, NoConstVolRvalueRef);
@@ -265,52 +271,57 @@ namespace core {
         /**
          * Return true if this type is pointer type
          */
-        static CORE_FAST gbool isPointer() { return TEST_RESULT<5, NCVRef>(); }
+        static CORE_FAST gbool isPointer() { return TEST_RESULT<5, T>(); }
 
         /**
          * Return true if this type is static array type
          */
-        static CORE_FAST gbool isArray() { return TEST_RESULT<9, NCVRef>(); }
+        static CORE_FAST gbool isArray() { return TEST_RESULT<9, NRef>(); }
 
         /**
          * Return true if this type is complete type (sizable type)
          */
-        static CORE_FAST gbool isComplete() { return TEST_RESULT<10, NCVRef>(); }
+        static CORE_FAST gbool isComplete() { return TEST_RESULT<10, T>(); }
 
         /**
          * Return true if this type is template type
          */
-        static CORE_FAST gbool isTemplate() { return TEST_RESULT<11, NCVRef>(); }
+        static CORE_FAST gbool isTemplate() { return TEST_RESULT<11, T>(); }
 
         /**
          * Return true if this type is function type
          */
-        static CORE_FAST gbool isFunction() { return TEST_RESULT<12, NCVol>(); }
+        static CORE_FAST gbool isFunction() { return TEST_RESULT<12, NRef>(); }
 
         /**
          * Return true if this type is class member type
          */
-        static CORE_FAST gbool isMember() { return TEST_RESULT<13, NCVol>(); }
+        static CORE_FAST gbool isMember() { return TEST_RESULT<13, T>(); }
 
         /**
          * Return true if this type is function member type
          */
-        static CORE_FAST gbool isFunctionMember() { return TEST_RESULT<14, NCVol>(); }
+        static CORE_FAST gbool isFunctionMember() { return TEST_RESULT<14, T>(); }
 
         /**
          * Return true if this type is abstract type
          */
-        static CORE_FAST gbool isAbstract() { return TEST_RESULT<15, NCVRef>(); }
+        static CORE_FAST gbool isAbstract() { return TEST_RESULT<15, T>(); }
 
         /**
          * Return true if this type is enum type
          */
-        static CORE_FAST gbool isEnum() { return TEST_RESULT<16, NCVRef>(); }
+        static CORE_FAST gbool isEnum() { return TEST_RESULT<16, T>(); }
 
         /**
          * Return true if this type is class type
          */
-        static CORE_FAST gbool isClass() { return TEST_RESULT<17, NCVRef>(); }
+        static CORE_FAST gbool isClass() { return TEST_RESULT<17, NRef>(); }
+
+        /**
+         * Return true if this type is aggregate (class, union or array)
+         */
+        static CORE_FAST gbool isAggregate() { return TEST_RESULT<33, T>() || isClass() || isArray() || __is_union(T); }
 
         /**
          * Return true if this template type is implement destructor.
@@ -320,11 +331,10 @@ namespace core {
         /**
          * Return true if instance of this type is constructible with values of specified types
          *
-         * @param U
-         *      The arguments types
+         * @tparam Params The arguments parameters types
          */
-        template<class ...U>
-        static CORE_FAST gbool isConstructible() { return MULTI_TEST_RESULT<18, T, U...>(); }
+        template<class ...Params>
+        static CORE_FAST gbool isConstructible() { return MULTI_TEST_RESULT<18, T, Params...>(); }
 
         /**
          * Return true if value of specified type is assignable to instance of this type
@@ -332,77 +342,104 @@ namespace core {
          * @param U
          *        The assigning value type
          */
-        template<class U>
-        static CORE_FAST gbool isAssignable() { return MULTI_TEST_RESULT<19, T, U>(); }
+        template<class To>
+        static CORE_FAST gbool isAssignable() { return MULTI_TEST_RESULT<19, To, T>(); }
 
         /**
          * Return true if this type is one base of specified type
          *
-         * @param U
+         * @tparam Derived
          *        The derived type
          */
-        template<class U>
-        static CORE_FAST gbool isSuper() { return MULTI_TEST_RESULT<20, T, U>(); }
+        template<class Derived>
+        static CORE_FAST gbool isSuper() { return MULTI_TEST_RESULT<20, NCVRef, typename Class<Derived>::NCVRef>(); }
 
         /**
          * Return true if value this type is implicit convertible to specified type
          *
-         * @param U
-         *        The target type
+         * @tparam To The Destination type
          */
-        template<class U>
-        static CORE_FAST gbool isConvertible() { return MULTI_TEST_RESULT<21, T, U>(); }
+        template<class To>
+        static CORE_FAST gbool isConvertible() { return MULTI_TEST_RESULT<21, T, To>(); }
 
         /**
-         * Return true if this type is primitive integer type
+         * Return true if this type is not overridable or is marked final (is available for class or union types only)
          */
-        static CORE_FAST gbool isInteger() { return TEST_RESULT<22, T>(); }
+        static CORE_FAST gbool isFinal() { return TEST_RESULT<34, T>(); }
 
         /**
-         * Return true if this type is primitive floating type
+         * Return true if this type is polymorphic type
          */
-        static CORE_FAST gbool isFloating() { return TEST_RESULT<23, T>(); }
+        static CORE_FAST gbool isPolymorphic() { return TEST_RESULT<35, T>(); }
 
         /**
-         * Return true if this type is primitive character type
+         * Return true if this type is empty type (for class and union types)
          */
-        static CORE_FAST gbool isCharacter() { return TEST_RESULT<24, T>(); }
+        static CORE_FAST gbool isEmpty() { return TEST_RESULT<36, NRef>(); }
 
         /**
-         * Return true if this type is primitive boolean type
+         * Return true if this type is empty type
          */
-        static CORE_FAST gbool isBoolean() { return TEST_RESULT<25, T>(); }
+        static CORE_FAST gbool isTrivial() { return TEST_RESULT<37, NRef>(); }
+
+        /**
+         * Return true if this type is literal type
+         */
+        static CORE_FAST gbool isLiteral() { return TEST_RESULT<38, NRef>(); }
+
+        /**
+         * Return true if this type is native integer type
+         */
+        static CORE_FAST gbool isInteger() { return TEST_RESULT<22, NCVRef>(); }
+
+        /**
+         * Return true if this type is native floating type
+         */
+        static CORE_FAST gbool isFloating() { return TEST_RESULT<23, NCVRef>(); }
+
+        /**
+         * Return true if this type is native character type
+         */
+        static CORE_FAST gbool isCharacter() { return TEST_RESULT<24, NCVRef>(); }
+
+        /**
+         * Return true if this type is native boolean type
+         */
+        static CORE_FAST gbool isBoolean() { return TEST_RESULT<25, NCVRef>(); }
+
+        /**
+         * Return true if this type is native boolean type
+         */
+        static CORE_FAST gbool isVoid() { return isSimilar<void>(); }
 
         /**
          * Return true if instance of this type is callable with values of specified type
          *
-         * @param U
-         *        The arguments types
+         * @tparam Params The arguments types
          */
-        template<class ...U>
-        static CORE_FAST gbool isCallable() { return MULTI_TEST_RESULT<26, T, U...>(); }
+        template<class ...Params>
+        static CORE_FAST gbool isCallable() { return MULTI_TEST_RESULT<26, T, Params...>(); }
 
         /**
-         * Return true if this type is primitive string type
+         * Return true if this type is native string type
          */
         static CORE_FAST gbool isString() { return TEST_RESULT<27, T>(); }
 
         /**
-         * Return true if this type is primitive number type
+         * Return true if this type is native number type
          */
         static CORE_FAST gbool isNumber() { return isInteger() || isFloating(); }
 
         /**
-         * Return true if this type is primitive integral type
+         * Return true if this type is native integral type
          */
         static CORE_FAST gbool isIntegral() { return isBoolean() || isInteger() || isEnum() || isCharacter(); }
 
         /**
-         * Return true if this template type is primitive type
+         * Return true if this template type is native type
          */
         static CORE_FAST gbool isPrimitive() {
-            return isBoolean() || isNumber() || isString() || isEnum() || isSimilar<void>() || isCharacter() ||
-                   isFunction() || isPointer() || isArray();
+            return isVoid() || isIntegral() || isFloating() || isCharacter() || isPointer() || isArray();
         }
 
         /**
@@ -425,7 +462,7 @@ namespace core {
             CORE_STATIC_ASSERT(Class<U>::isClass(), "This Test require class type as Arguments");
             CORE_ALIAS(NVRef, typename Class<NCVRef>::Const);
             CORE_ALIAS(NVRefPtr, typename Class<NVRef>::Ptr);
-            return CORE_DYN_CAST(NVRefPtr, &o) != 0;
+            return CORE_DYN_CAST(NVRefPtr, &o);
         }
 
         /**
@@ -444,7 +481,7 @@ namespace core {
         CORE_ALIAS(Object, MODIFY_RESULT<30,, T >);
 
         /**
-         * primitive represent the primitive version of this template type
+         * native represent the native version of this template type
          */
         CORE_ALIAS(Primitive, MODIFY_RESULT<31,, T >);
 
@@ -456,14 +493,14 @@ namespace core {
          * Note: Return exist if and only of this template type is callable with instances
          * given types parameters (if and only if Class\<T>.isCallable\<V...>() return true)
          *
-         * @param U The types parameters
+         * @tparam Params The types parameters
          *
          * @see isCallable
          * @see isFunction
          * @see isMethod
          */
-        template<class ...U>
-        CORE_ALIAS(Return, typename MULTI_TESTER<26,, T, U...>::Type::Type);
+        template<class ...Params>
+        CORE_ALIAS(Return, typename MULTI_TESTER<26,, T, Params...>::Type::Type);
 
         /**
          * Return result of multiple boolean tests using logical AND as operator.
@@ -824,8 +861,53 @@ namespace core {
                    valueExactAt(i - 10, defaultValue, (V &&) v...);
         }
 
+        /**
+         * Return template type at specified position.
+         * The first position is 1.
+         * The current type that represent the fallback type
+         * <p>
+         * Ex: for the types: String and Complex
+         *  <li> Class<Object>::TParams<0, String, Complex> = Object
+         *  <li> Class<Object>::TParams<1, String, Complex> = String.
+         *  <li> Class<Object>::TParams<2, String, Complex> = Complex.
+         *  <li> Class<Object>::TParams<3, String, Complex> = Object
+         *  <li> Class<Object>::TParams<*> = Object
+         */
         template<gint i, class ...VarArgs>
-        CORE_ALIAS(TParams, , typename native::Templates::VA_ARGS<i, T, VarArgs...>::Type);
+        CORE_ALIAS(TParams, , typename TPARAM_SELECTOR<i, T, VarArgs...>::Type);
+
+        /**
+         * Return function parameter type at specified position.
+         * The first position is 1.
+         * In error case, The void type that represent it
+         * <p>
+         * Ex: for signature bool(String, Complex)
+         *  <li> Class<bool(String, Complex)>::TParams<0> = void
+         *  <li> Class<bool(String, Complex)>::TParams<1> = String.
+         *  <li> Class<bool(String, Complex)>::TParams<2> = Complex.
+         *  <li> Class<bool(String, Complex)>::TParams<3> = void
+         *  <li> Class<bool()>::TParams<*> = void
+         * <p>
+         * Ex: for signature bool(*)(String, Complex)
+         *  <li> Class<bool(*)(String, Complex)>::TParams<0> = void
+         *  <li> Class<bool(*)(String, Complex)>::TParams<1> = String.
+         *  <li> Class<bool(*)(String, Complex)>::TParams<2> = Complex.
+         *  <li> Class<bool(*)(String, Complex)>::TParams<3> = void
+         *  <li> Class<bool(*)()>::TParams<*> = T
+         * <p>
+         * Ex: for signature bool(MyClass::*)(String, Complex)
+         *  <li> Class<bool(MyClass::*)(String, Complex)>::TParams<0> = void
+         *  <li> Class<bool(MyClass::*)(String, Complex)>::TParams<1> = String.
+         *  <li> Class<bool(MyClass::*)(String, Complex)>::TParams<2> = Complex.
+         *  <li> Class<bool(MyClass::*)(String, Complex)>::TParams<3> = void
+         *  <li> Class<bool(MyClass::*)()>::TParams<*> = void
+         * <p>
+         * Ex: for non function type
+         *  <li> Class<MyType>::TParams<*> = void
+         *  <li> Class<MyClass>::TParams<*> = void
+         */
+        template<gint i>
+        CORE_ALIAS(Params, , typename PARAM_SELECTOR<i, PARAM_EXTRACTOR<T>>::Type);
 
         CORE_WARNING_POP
 

@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The <b> Float</b> class wraps a value of primitive type
+     * The <b> Float</b> class wraps a value of native type
      * <b> float</b> in an object. An object of type
      * <b> Float</b> contains a single field whose type is
      * <b> float</b>.
@@ -40,7 +40,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Float: public Comparable<Float> {
+    class Float CORE_FINAL : public Object, public Comparable<Float> {
     private:
         /**
          * The value of Float
@@ -154,7 +154,7 @@ namespace core {
 
         /**
          * Constructs a newly allocated Float object that represents
-         * the primitive float argument.
+         * the native float argument.
          *
          * @param value
          *          The value to be represented by the Float.
@@ -338,7 +338,7 @@ namespace core {
 
         /**
          * Return the value of this Float as byte
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST gbyte byteValue() const {
             return (gbyte) value;
@@ -346,7 +346,7 @@ namespace core {
 
         /**
          * Return the value of this Float as short
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST gshort shortValue() const {
             return (gshort) value;
@@ -354,7 +354,7 @@ namespace core {
 
         /**
          * Return the value of this Float as int
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST gint intValue() const {
             return (gint) value;
@@ -362,7 +362,7 @@ namespace core {
 
         /**
          * Return the value of this Float as long
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST glong longValue() const {
             return (glong) value;
@@ -377,7 +377,7 @@ namespace core {
 
         /**
          * Return the value of this Float as double
-         * after widening primitive conversion.
+         * after widening native conversion.
          */
         CORE_FAST gdouble doubleValue() const {
             return (gdouble) value;
@@ -385,7 +385,7 @@ namespace core {
 
         /**
          * Returns a string representation of this Float object.
-         * The primitive float value represented by this object
+         * The native float value represented by this object
          * is converted to a String exactly as if by the method
          * toString of one argument.
          *
@@ -594,7 +594,7 @@ namespace core {
         /**
          * Returns a hash code for this Float object. The
          * result is the integer bit representation, exactly as produced
-         * by the method Float.toIntBits, of the primitive
+         * by the method Float.toIntBits, of the native
          * float value represented by this Float object.
          */
         gint hash() const override {
@@ -659,7 +659,7 @@ namespace core {
          * @param other
          *          The Float to be compared.
          */
-        gint compareTo(const Float &other) const override;
+        gint compareTo(const Float& other) const override;
 
         /**
          * Compares the two specified float values.
@@ -721,7 +721,7 @@ namespace core {
          * The binary16 format is discussed in more detail in the fromShortBits() method.
          * <p>
          * Note: This method corresponds to the convertFormat operation defined in IEEE 754 from the
-         * binary32 format to the binary16 format. The operation of this method is analogous to a primitive
+         * binary32 format to the binary16 format. The operation of this method is analogous to a native
          * narrowing conversion.
          *
          * @param f
@@ -818,7 +818,7 @@ namespace core {
          * <p>
          * Note: This method corresponds to the convertFormat operation defined
          * in IEEE 754 from the binary16 format to the binary32 format.
-         * The operation of this method is analogous to a primitive
+         * The operation of this method is analogous to a native
          * widening conversion.
          *
          * @param bits

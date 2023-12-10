@@ -6,7 +6,7 @@
 #ifndef CORE23_PREPROCESSOR_H
 #define CORE23_PREPROCESSOR_H
 
-#include <core/private/OperatingSystem.h>
+#include "OperatingSystem.h"
 
 
 /**

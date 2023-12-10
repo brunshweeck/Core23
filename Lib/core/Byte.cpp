@@ -4,21 +4,22 @@
 
 #include "Byte.h"
 #include "NumberFormatException.h"
+#include "CastException.h"
 #include <core/Integer.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     gbyte Byte::parseByte(const String &s, gint base) {
-        gint i;
+        gint i = {};
         try {
             i = Integer::parseInt(s, base);
-        } catch (NumberFormatException& nfe) {
+        } catch (NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
-        if(i < MIN_VALUE || i > MAX_VALUE)
+        if (i < MIN_VALUE || i > MAX_VALUE)
             NumberFormatException(R"(Value out of range for input ")" + s + "\"").throws(__trace("core.Byte"));
         return (gbyte) i;
     }
@@ -26,7 +27,7 @@ namespace core {
     gbyte Byte::parseByte(const String &s) {
         try {
             return parseByte(s, 10);
-        } catch (NumberFormatException& nfe) {
+        } catch (NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
@@ -34,7 +35,7 @@ namespace core {
     Byte Byte::valueOf(const String &s, gint base) {
         try {
             return valueOf(parseByte(s, base));
-        } catch (NumberFormatException& nfe) {
+        } catch (NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
@@ -42,19 +43,19 @@ namespace core {
     Byte Byte::valueOf(const String &s) {
         try {
             return valueOf(s, 10);
-        } catch (NumberFormatException& nfe) {
+        } catch (NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
 
     Byte Byte::decode(const String &s) {
-        gint i;
+        gint i = {};
         try {
             i = Integer::decode(s);
-        } catch (NumberFormatException& nfe) {
+        } catch (NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
-        if(i < MIN_VALUE || i > MAX_VALUE)
+        if (i < MIN_VALUE || i > MAX_VALUE)
             NumberFormatException(R"(Value out of range for input ")" + s + "\"").throws(__trace("core.Byte"));
         return (gbyte) i;
     }
@@ -72,8 +73,7 @@ namespace core {
     }
 
     gbool Byte::equals(const Object &object) const {
-        if (Class<Byte>::hasInstance(object))
-            return value == ((Byte &) object).value;
+        if (Class<Byte>::hasInstance(object)) return value == ((Byte &) object).value;
         return false;
     }
 
@@ -82,6 +82,6 @@ namespace core {
     }
 
     Object &Byte::clone() const {
-        return Unsafe::U.createInstance<Byte>(*this);
+        return U::createInstance<Byte>(*this);
     }
 } // core

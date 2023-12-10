@@ -80,7 +80,6 @@ namespace core {
         template<class E>
         class ArrayList : public List<E> {
         private:
-            CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(), "Illegal template");
 
             /**
              * Default initial capacity.
@@ -110,7 +109,7 @@ namespace core {
             gint len = 0;
 
             /**
-             * The capacity if the ArrayList (number of place allocated)
+             * The capacity of this ArrayList (number of place allocated)
              */
             gint capacity;
 
@@ -129,14 +128,14 @@ namespace core {
                 if (initialCapacity < 0)
                     ArgumentException("Illegal capacity: " + String::valueOf(initialCapacity))
                             .throws(__trace("core.util.ArrayList"));
-                data = (ARRAY) U::U.allocateMemory(L(capacity = initialCapacity));
+                data = (ARRAY) U::allocateMemory(L(capacity = initialCapacity));
             }
 
             /**
              * Constructs an empty list with an initial capacity of ten.
              */
             CORE_IMPLICIT ArrayList() {
-                data = (ARRAY) U::U.allocateMemory(L(capacity = DEFAULT_CAPACITY));
+                data = (ARRAY) U::allocateMemory(L(capacity = DEFAULT_CAPACITY));
             }
 
             /**
@@ -152,8 +151,8 @@ namespace core {
                     // Optimized form
                     const ArrayList<T> &a = CORE_CAST(ArrayList<T> &, c);
                     if ((len = a.len) != 0) {
-                        data = (ARRAY) U::U.allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
-                        for (int i = 0; i < len && a.isSet(i); ++i) data[i] = a.data[i];
+                        data = (ARRAY) U::allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
+                        for (gint i = 0; i < len && a.isSet(i); ++i) data[i] = a.data[i];
                     } else {
                         capacity = 0;
                         data = null;
@@ -161,8 +160,8 @@ namespace core {
                 } else {
                     ReferenceArray<T> a = c.toArray();
                     if ((len = a.length()) != 0) {
-                        data = (ARRAY) U::U.allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
-                        for (int i = 0; i < len && a.isSet(i); ++i) data[i] = &a[i];
+                        data = (ARRAY) U::allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
+                        for (gint i = 0; i < len && a.isSet(i); ++i) data[i] = &a[i];
                     } else {
                         capacity = 0;
                         data = null;
@@ -179,8 +178,8 @@ namespace core {
              */
             ArrayList(const ArrayList<E> &a) {
                 if ((len = a.len) != 0) {
-                    data = (ARRAY) U::U.allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
-                    for (int i = 0; i < len && a.isSet(i); ++i) data[i] = a.data[i];
+                    data = (ARRAY) U::allocateMemory(L(capacity = Math::max(len, DEFAULT_CAPACITY)));
+                    for (gint i = 0; i < len && a.isSet(i); ++i) data[i] = a.data[i];
                 } else {
                     capacity = 0;
                     data = null;
@@ -214,7 +213,7 @@ namespace core {
                     if (capacity < a.len)
                         resize(len + (a.len - capacity));
                     arraycopy(a.data, 0, data, 0, a.len);
-                    for (int i = a.len; i < len; ++i) data[i] = null;
+                    for (gint i = a.len; i < len; ++i) data[i] = null;
                     len = a.len;
                 }
                 return *this;
@@ -256,9 +255,9 @@ namespace core {
                                    Math::max(DEFAULT_CAPACITY, minCapacity);
                 {
                     /* data copy */
-                    ARRAY newData = (ARRAY) U::U.allocateMemory(L(newCapacity));
+                    ARRAY newData = (ARRAY) U::allocateMemory(L(newCapacity));
                     arraycopy(data, 0, newData, 0, len);
-                    U::U.freeMemory((glong) data);
+                    U::freeMemory((glong) data);
                     data = newData;
                 }
                 capacity = newCapacity;
@@ -312,9 +311,9 @@ namespace core {
             gint findIndex(const E &o, gint start, gint end, gbool first) const {
                 ARRAY es = data;
                 if (first) {
-                    for (int i = start; i < end; i++) if (o.equals(elementAt(es, i))) return i;
+                    for (gint i = start; i < end; i++) if (o.equals(elementAt(es, i))) return i;
                 } else
-                    for (int i = end - 1; i >= start; i--) if (o.equals(elementAt(es, i))) return i;
+                    for (gint i = end - 1; i >= start; i--) if (o.equals(elementAt(es, i))) return i;
                 return -1;
             }
 
@@ -327,9 +326,9 @@ namespace core {
              * @return a clone of this <b>ArrayList</b> instance
              */
             Object &clone() const override {
-                ArrayList<E> &a = U::U.createInstance<ArrayList<E>>(0);
-                ARRAY dataCopy = (ARRAY) U::U.allocateMemory(1LL * capacity * U::ARRAY_REFERENCE_INDEX_SCALE);
-                U::U.copyMemory((glong) data, (glong) dataCopy, 1LL * len * U::ARRAY_REFERENCE_INDEX_SCALE);
+                ArrayList<E> &a = U::createInstance<ArrayList<E>>(0);
+                ARRAY dataCopy = (ARRAY) U::allocateMemory(1LL * capacity * U::ARRAY_REFERENCE_INDEX_SCALE);
+                U::copyMemory((glong) data, (glong) dataCopy, 1LL * len * U::ARRAY_REFERENCE_INDEX_SCALE);
                 a.len = len;
                 a.capacity = capacity;
                 a.data = dataCopy;
@@ -352,7 +351,7 @@ namespace core {
              */
             ReferenceArray<E> toArray() const override {
                 ReferenceArray<E> a = ReferenceArray<E>(len);
-                for (int i = 0; i < len; ++i) a.set(i, elementAt(data, i));
+                for (gint i = 0; i < len; ++i) a.set(i, elementAt(data, i));
                 return a;
             }
 
@@ -396,7 +395,7 @@ namespace core {
                 try {
                     Preconditions::checkIndex(index, len);
                     E &oldValue = *data[index];
-                    data[index] = &U::U.copyInstance(element, true);
+                    data[index] = &U::copyInstance(element, true);
                     return oldValue;
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList")); }
             }
@@ -441,13 +440,13 @@ namespace core {
              */
             inline void add(const E &e, gint index) {
                 if (index == capacity) resize(len + 1);
-                data[index] = &U::U.copyInstance(e, true);
+                data[index] = &U::copyInstance(e, true);
                 len += 1;
             }
 
             template<class Src, class Dest>
             static void arraycopy(Src src, gint srcBegin, Dest dest, gint destBegin, gint length) {
-                for (int i = 0; i < length; ++i) dest[destBegin + i] = src[srcBegin + i];
+                for (gint i = 0; i < length; ++i) dest[destBegin + i] = src[srcBegin + i];
             }
 
         public:
@@ -516,7 +515,7 @@ namespace core {
                     ARRAY es = data;
                     if (s > capacity || s > other.capacity)
                         ConcurrentException().throws(__trace("core.util.ArrayList"));
-                    for (int i = 0; i < s; i++)
+                    for (gint i = 0; i < s; i++)
                         if (!(equal &= Object::equals(elementAt(es, i), elementAt(otherEs, i)))) break;
                 }
                 other.checkModNum(otherModNum);
@@ -560,7 +559,7 @@ namespace core {
             void clear() override {
                 modNum += 1;
                 ARRAY es = data;
-                for (int i = len - 1; i >= 0; ++i) es[i] = null;
+                for (gint i = len - 1; i >= 0; ++i) es[i] = null;
             }
 
             /**
@@ -601,7 +600,7 @@ namespace core {
                 gint oldSize = len;
                 if (aSize > capacity - oldSize)
                     resize(len + aSize);
-                for (int i = 0; i < aSize; ++i) data[i + oldSize] = &a[i];
+                for (gint i = 0; i < aSize; ++i) data[i + oldSize] = &a[i];
                 len = oldSize + aSize;
                 return true;
             }
@@ -651,7 +650,7 @@ namespace core {
                     if (aSize > capacity - oldSize)
                         resize(len + aSize);
                     arraycopy(data, index, data, index + aSize, aSize);
-                    for (int i = 0; i < aSize; ++i) data[i + index] = &a[i];
+                    for (gint i = 0; i < aSize; ++i) data[i + index] = &a[i];
                     len = oldSize + aSize;
                     return true;
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList")); }
@@ -682,7 +681,7 @@ namespace core {
 
             void shift(gint from, gint to) {
                 arraycopy(data, to, data, from, len - to);
-                for (int end = len, i = (len -= to - from); i < end; i++) data[i] = null;
+                for (gint end = len, i = (len -= to - from); i < end; i++) data[i] = null;
             }
 
         public:
@@ -751,13 +750,13 @@ namespace core {
             template<class T = E>
             gbool removeAllForRange(const Collection<Capture<T>> &c, gbool save, gint from, gint end) {
                 ARRAY es = data;
-                int r;
+                gint r;
                 // Optimize for initial run of survivors
                 for (r = from;; r++) {
                     if (r == end) return false;
                     if (c.contains(elementAt(es, r)) != save) break;
                 }
-                int w = r++;
+                gint w = r++;
                 try { for (REFERENCE e; r < end; r++) if (c.contains(*(e = es[r])) == save) es[w++] = e; }
                 catch (Throwable &ex) {
                     // Preserve behavioral compatibility with AbstractCollection,
@@ -790,7 +789,7 @@ namespace core {
             ListIterator<E> &iterator(gint index) override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::U.createInstance < ListItr < E >> ((ArrayList &) *this, index);
+                    return U::createInstance < ListItr < E >> ((ArrayList &) *this, index);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList")); }
             }
 
@@ -809,7 +808,7 @@ namespace core {
             ListIterator<const E> &iterator(gint index) const override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::U.createInstance<ListItr<const E>>((ArrayList &) *this, index);
+                    return U::createInstance<ListItr<const E>>((ArrayList &) *this, index);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList")); }
             }
 
@@ -822,7 +821,7 @@ namespace core {
              * @see #listIterator(int)
              */
             ListIterator<E> &iterator() override {
-                return U::U.createInstance < ListItr < E >> ((ArrayList &) *this, 0);
+                return U::createInstance < ListItr < E >> ((ArrayList &) *this, 0);
             }
 
             /**
@@ -834,7 +833,7 @@ namespace core {
              * @see #listIterator(int)
              */
             ListIterator<const E> &iterator() const override {
-                return U::U.createInstance<ListItr<const E>>((ArrayList &) *this, 0);
+                return U::createInstance<ListItr<const E>>((ArrayList &) *this, 0);
             }
 
         private:
@@ -981,7 +980,7 @@ namespace core {
             List<E> &subList(gint from, gint to) const override {
                 try {
                     Preconditions::checkIndexFromRange(from, to, len);
-                    return U::U.createInstance < SubList < E >> ((ArrayList &) *this, from, to);
+                    return U::createInstance < SubList < E >> ((ArrayList &) *this, from, to);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList")); }
             }
 
@@ -1020,7 +1019,7 @@ namespace core {
                         Preconditions::checkIndex(index, len);
                         root.checkModNum(modNum);
                         T &oldValue = elementAt(root.data, index + offset);
-                        root.data[index + offset] = &U::U.copyInstance(element, true);
+                        root.data[index + offset] = &U::copyInstance(element, true);
                         return oldValue;
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                     catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList.SubList")); }
@@ -1132,7 +1131,7 @@ namespace core {
                     try {
                         root.checkModNum(modNum);
                         ReferenceArray<T> a = ReferenceArray<T>(len);
-                        for (int i = 0; i < len; ++i) a.set(i, *root.data[i + offset]);
+                        for (gint i = 0; i < len; ++i) a.set(i, *root.data[i + offset]);
                         return a;
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                 }
@@ -1196,7 +1195,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         root.checkModNum(modNum);
-                        return U::U.createInstance<_$>((SubList &) *this, index);
+                        return U::createInstance<_$>((SubList &) *this, index);
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                     catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList.SubList")); }
                 }
@@ -1222,7 +1221,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         root.checkModNum(modNum);
-                        return U::U.createInstance<_$>((SubList &) *this, index);
+                        return U::createInstance<_$>((SubList &) *this, index);
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                     catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList.SubList")); }
                 }
@@ -1231,7 +1230,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexFromRange(from, to, len);
                         root.checkModNum(modNum);
-                        return U::U.createInstance<SubList<T>>((SubList<T> &) *this, from, to);
+                        return U::createInstance<SubList<T>>((SubList<T> &) *this, from, to);
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                     catch (IndexException &ie) { ie.throws(__trace("core.util.ArrayList.SubList")); }
                 }
@@ -1258,25 +1257,25 @@ namespace core {
                     } catch (ConcurrentException &cme) { cme.throws(__trace("core.util.ArrayList.SubList")); }
                 }
 
-                void forEach(const Consumer<const T> &action) const override {
+                void forEach(const Consumer<T> &action) const override {
                     gint oldModNum = modNum;
                     ARRAY es = root.data;
                     gint size = len;
-                    for (int i = 0; i < size && oldModNum == modNum; ++i) action.accept(elementAt(es, i + offset));
+                    for (gint i = 0; i < size && oldModNum == modNum; ++i) action.accept(elementAt(es, i + offset));
                     if (oldModNum != modNum) ConcurrentException().throws(__trace("core.util.ArrayList.SubList"));
                 }
 
-                void forEach(const Consumer<T> &action) override {
+                void forEach(const Consumer<T &> &action) override {
                     gint oldModNum = modNum;
                     ARRAY es = root.data;
                     gint size = len;
-                    for (int i = 0; i < size && oldModNum == modNum; ++i) action.accept(elementAt(es, i + offset));
+                    for (gint i = 0; i < size && oldModNum == modNum; ++i) action.accept(elementAt(es, i + offset));
                     if (oldModNum != modNum)
                         ConcurrentException().throws(__trace("core.util.ArrayList.SubList"));
                 }
 
                 Object &clone() const override {
-                    return U::U.createInstance<SubList<T>>(CORE_CAST(SubList<T> &, *this), 0, len);
+                    return U::createInstance<SubList<T>>(CORE_CAST(SubList<T> &, *this), 0, len);
                 }
 
             private:
@@ -1300,7 +1299,7 @@ namespace core {
              * i (inclusive) to index end (exclusive).
              */
             gbool removeIfForRange(const Predicate<E> &filter, gint from, gint to) {
-                int oldModNum = modNum;
+                gint oldModNum = modNum;
                 ARRAY es = data;
                 gint i = from;
                 gint end = to;
@@ -1316,14 +1315,14 @@ namespace core {
                     for (i = beg + 1; i < end; i++)
                         if (filter.test(elementAt(es, i))) setBit(deathRow, i - beg);
                     if (modNum != oldModNum) {
-                        U::U.freeMemory((glong) deathRow);
+                        U::freeMemory((glong) deathRow);
                         ConcurrentException().throws(__trace("core.util.ArrayList"));
                     }
                     modNum++;
-                    int w = beg;
+                    gint w = beg;
                     for (i = beg; i < end; i++) if (isClear(deathRow, i - beg)) es[w++] = es[i];
                     shift(w, end);
-                    U::U.freeMemory((glong) deathRow);
+                    U::freeMemory((glong) deathRow);
                     return true;
                 } else {
                     if (modNum != oldModNum) ConcurrentException().throws(__trace("core.util.ArrayList"));
@@ -1334,13 +1333,13 @@ namespace core {
 
             // A tiny bit set implementation
 
-            static glong nBits(int n) {
-                return U::U.allocateMemory(1LL * (((n - 1) >> 6) + 1) * U::ARRAY_LONG_INDEX_SCALE);
+            static glong nBits(gint n) {
+                return U::allocateMemory(1LL * (((n - 1) >> 6) + 1) * U::ARRAY_LONG_INDEX_SCALE);
             }
 
-            static void setBit(glong bits[], int i) { bits[i >> 6] |= 1L << i; }
+            static void setBit(glong bits[], gint i) { bits[i >> 6] |= 1L << i; }
 
-            static gbool isClear(const glong bits[], int i) { return (bits[i >> 6] & (1L << i)) == 0; }
+            static gbool isClear(const glong bits[], gint i) { return (bits[i >> 6] & (1L << i)) == 0; }
 
             void replaceAllForRange(const UnaryOperator<E> &op, gint from, gint to) {
                 gint oldModNum = modNum;
@@ -1348,7 +1347,7 @@ namespace core {
                 gint i = from;
                 gint end = to;
                 for (; modNum == oldModNum && i < end; i++)
-                    es[i] = &U::U.copyInstance<E>(op.apply(elementAt(es, i)), true);
+                    es[i] = &U::copyInstance<E>(op.apply(elementAt(es, i)), true);
                 if (modNum != oldModNum) ConcurrentException().throws(__trace("core.util.ArrayList"));
             }
 
@@ -1367,25 +1366,25 @@ namespace core {
 
             void replaceAll(const UnaryOperator<E> &op) override { return replaceAllForRange(op, 0, len); }
 
-            void forEach(const Consumer<const E> &action) const override {
+            void forEach(const Consumer<E> &action) const override {
                 gint oldModNum = modNum;
                 ARRAY es = data;
                 gint size = len;
-                for (int i = 0; modNum == oldModNum && i < size; i++) action.accept(elementAt(es, i));
+                for (gint i = 0; modNum == oldModNum && i < size; i++) action.accept(elementAt(es, i));
                 if (modNum != oldModNum) ConcurrentException().throws(__trace("core.util.ArrayList"));
             }
 
-            void forEach(const Consumer<E> &action) override {
+            void forEach(const Consumer<E &> &action) override {
                 gint oldModNum = modNum;
                 ARRAY es = data;
                 gint size = len;
-                for (int i = 0; modNum == oldModNum && i < size; i++) action.accept(elementAt(es, i));
+                for (gint i = 0; modNum == oldModNum && i < size; i++) action.accept(elementAt(es, i));
                 if (modNum != oldModNum) ConcurrentException().throws(__trace("core.util.ArrayList"));
             }
 
             ~ArrayList() override {
                 len = capacity = 0;
-                U::U.freeMemory((glong) data);
+                U::freeMemory((glong) data);
                 data = null;
             }
         };

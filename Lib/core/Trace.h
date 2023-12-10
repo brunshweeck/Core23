@@ -9,7 +9,7 @@
 
 namespace core {
 
-    class Trace final: public Object {
+    class Trace CORE_FINAL : public Object, public Comparable<Trace> {
     private:
         /**
          * The module name (library name)
@@ -188,6 +188,8 @@ namespace core {
          * Return hash code value for this trace
          */
         gint hash() const override;
+
+        gint compareTo(const Trace &other) const override;
     };
 
 } // core

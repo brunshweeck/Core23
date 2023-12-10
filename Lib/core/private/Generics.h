@@ -6,7 +6,7 @@
 #ifndef CORE23_GENERICS_H
 #define CORE23_GENERICS_H
 
-#include <core/private/Compiler.h>
+#include "Compiler.h"
 
 namespace core {
 
@@ -22,24 +22,43 @@ namespace core {
     namespace regex {}
     namespace random {}
     namespace gui {}
-    namespace primitive {
+    namespace native {
         class BooleanArray;
+
         class ByteArray;
+
         class ShortArray;
+
         class CharArray;
+
         class IntArray;
+
         class LongArray;
+
         class FloatArray;
+
         class DoubleArray;
-        template <class T>
+
+        template<class T>
         class ReferenceArray;
     }
 
-    namespace CORE_DEPRECATED native {
+    using native::BooleanArray;
+    using native::ByteArray;
+    using native::ShortArray;
+    using native::CharArray;
+    using native::IntArray;
+    using native::LongArray;
+    using native::FloatArray;
+    using native::DoubleArray;
+    using native::ReferenceArray;
+
+    namespace native {
 
 
 #ifndef CORE_ALIAS
 #define CORE_ALIAS(alias, target, ...) using alias = target __VA_ARGS__
+#define CORE_USING(namespace, Element, ...) using namespace::target __VA_ARGS__
 #endif //CORE_ALIAS
 
 #ifndef CORE_STATIC_ASSERT
@@ -57,9 +76,6 @@ namespace core {
 #ifndef CORE_CAST
 #define CORE_CAST(class, expr) ((class)expr)
 #define CORE_DYN_CAST(class, expr) dynamic_cast<class>(expr)
-#define CORE_STATIC_CAST(class, expr) static_cast<class>(expr)
-#define CORE_CONST_CAST(class, expr) const_cast<class>(expr)
-#define CORE_PTR_CAST(class, expr) reinterpret_cast<class>(expr)
 #endif //CORE_CAST
 
 #ifndef CORE_IGNORE
@@ -92,32 +108,24 @@ namespace core {
 #error "This platform require C++11 or later"
 #endif
 
-        namespace Generics {
+        extern "C" {
 
-            CORE_ALIAS(GENERIC_BOOLEAN, bool);
-            CORE_ALIAS(GENERIC_BYTE_ALT, enum : signed char {
-            });
-            CORE_ALIAS(GENERIC_BYTE, signed char);
-            CORE_ALIAS(GENERIC_FLOAT32, float);
-            CORE_ALIAS(GENERIC_FLOAT64_ALT, long double);
-            CORE_ALIAS(GENERIC_FLOAT64, double);
-            CORE_ALIAS(GENERIC_CHR16, char16_t);
-            CORE_ALIAS(GENERIC_INT16, signed short);
-            CORE_ALIAS(GENERIC_INT32, signed int);
-            CORE_ALIAS(GENERIC_INT64, signed long);
-            CORE_ALIAS(GENERIC_INT64_ALT, signed long long);
+        typedef signed char GENERIC_INT8;
+        typedef signed short int GENERIC_INT16;
+        typedef signed int GENERIC_INT32;
+#if __WORDSIZE == 64
+        typedef signed long int GENERIC_INT64;
+#else
+        __extension__ typedef signed long long int GENERIC_INT64;
+#endif //
+        typedef float GENERIC_FLT32;
+        typedef double GENERIC_FLT64;
+        typedef char16_t GENERIC_CHR16;
+        typedef char32_t GENERIC_CHR32;
+        typedef bool GENERIC_BOOL;
+        typedef void* GENERIC_PTR;
 
         }
-
-
-#define CORE_DISABLE_COPY(Class)            \
-    Class(const Class &) = delete;          \
-    Class &operator=(const Class &) = delete;
-
-#define CORE_DISABLE_COPY_MOVE(Class) \
-    CORE_DISABLE_COPY(Class)          \
-    Class(Class &&) = delete;         \
-    Class &operator=(Class &&) = delete;
 
 #define CORE_ENABLE_IMPLICIT_CAST(class, op, ...)   operator class () __VA_ARGS__ { return CORE_CAST(class, op); }
 
@@ -129,10 +137,10 @@ namespace core {
 #define __ftrace(classname) Trace(CORE_GENERIC_MODULE CORE_GENERIC_VERSION classname, &CORE_FUNCTION_SIGNATURE[0], &CORE_FILE[0], CORE_LINE)
 #else
 // trace represent a simple function/method trace (trace with function name).
-#define __trace(...) Trace(__VA_ARGS__, &CORE_FUNCTION[0], &CORE_FILE[0], CORE_LINE)
+#define __trace(...) Trace(__VA_ARGS__, CORE_FUNCTION, CORE_FILE, CORE_LINE)
 
 // ftrace represent a full function/method trace (trace with function signature).
-#define __ftrace(...) Trace(__VA_ARGS__, &CORE_FUNCTION_SIGNATURE[0], &CORE_FILE[0], CORE_LINE)
+#define __ftrace(...) Trace(__VA_ARGS__, CORE_FUNCTION_SIGNATURE, CORE_FILE, CORE_LINE)
 
 #endif //CORE_SHOW_TRACE_MODULE
 
@@ -144,7 +152,7 @@ namespace core {
 #endif //CORE_XCOMPILER_UDL
 
 #ifndef CORE_ASSERT
-#define CORE_ASSERT(expr, class) if(!(expr)) AssertionError(false).throws(__trace(class)); else CORE_IGNORE(0)
+#define CORE_ASSERT(expr, class) { if(!(expr)) AssertionError(false).throws(__trace(class)); }
 #endif //CORE_ASSERT
 
 #ifndef CORE_FEATURE
@@ -153,64 +161,66 @@ namespace core {
 
     }
 
-
-
-    // basics class
-
     class Object;
+
     class Boolean;
+
     class Byte;
+
     class Short;
+
     class Integer;
+
     class Long;
+
     class Float;
+
     class Double;
+
     class String;
+
     class Character;
+
     class Complex;
+
     class Void;
+
     class Throwable;
+
     class Exception;
+
     class Error;
 
-    template<class Enumerable>
+    template<class E>
     class Enum;
 
 
 }
 
+// primitives types
+extern "C" {
+
 CORE_WARNING_PUSH
 CORE_WARNING_DISABLE_DEPRECATED
-
-// primitives types
-namespace {
-
-
-
-    CORE_ALIAS(gbool, core::native::Generics::GENERIC_BOOLEAN);
-    CORE_ALIAS(gshort, core::native::Generics::GENERIC_INT16);
-    CORE_ALIAS(gchar, core::native::Generics::GENERIC_CHR16);
-    CORE_ALIAS(gint, core::native::Generics::GENERIC_INT32);
-    CORE_ALIAS(gfloat, core::native::Generics::GENERIC_FLOAT32);
-
-    CORE_STATIC_ASSERT(
-            sizeof(gbool) == 1 &&
-            sizeof(gshort) == sizeof(gchar) &&
-            sizeof(gint) == sizeof(gfloat) &&
-            sizeof(gshort) == (sizeof(gbool) << 1) &&
-            sizeof(gint) == (sizeof(gshort) << 1), "This compiler not supported. On architecture:" CORE_ARCH);
-
-}
-
+CORE_ALIAS(gbool, core::native::GENERIC_BOOL);
+CORE_ALIAS(gbyte, core::native::GENERIC_INT8);
+CORE_ALIAS(gshort, core::native::GENERIC_INT16);
+CORE_ALIAS(gchar, core::native::GENERIC_CHR16);
+CORE_ALIAS(gint, core::native::GENERIC_INT32);
+CORE_ALIAS(glong, core::native::GENERIC_INT64);
+CORE_ALIAS(gfloat, core::native::GENERIC_FLT32);
+CORE_ALIAS(gdouble, core::native::GENERIC_FLT64);
 CORE_WARNING_POP
+CORE_STATIC_ASSERT(sizeof(gbool) == 1 && sizeof(gbyte) == 1 &&
+                   sizeof(gshort) == 2 && sizeof(gchar) == 2 &&
+                   sizeof(gint) == 4 && sizeof(gfloat) == 4 &&
+                   sizeof(glong) == 8 && sizeof(gdouble) == 8,
+                   "This compiler not supported. On architecture:" CORE_ARCH);
 
-#include <exception>
-
-namespace core {
-
-    namespace native {
-        CORE_ALIAS(GENERIC_THROWABLE, std::exception);
-    }
 }
+
+
+using core::native::GENERIC_PTR;
+
 
 #endif //CORE23_GENERICS_H

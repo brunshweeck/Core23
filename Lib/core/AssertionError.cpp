@@ -6,15 +6,15 @@
 #include "AssertionError.h"
 
 namespace core {
-    using native::Unsafe;
+
+    CORE_ALIAS(U, native::Unsafe);
 
     AssertionError::AssertionError(String message) CORE_NOTHROW:
-            Error(Unsafe::moveInstance(message)) {}
+            Error(U::moveInstance(message)) {}
 
     AssertionError::AssertionError(const Object &expression) CORE_NOTHROW:
             Error(Class<Throwable>::hasInstance(expression) ? "" : String::valueOf(expression)) {
-        if (Class<Throwable>::hasInstance(expression))
-            setCause((const Throwable &) expression);
+        if (Class<Throwable>::hasInstance(expression)) setCause((const Throwable &) expression);
     }
 
     AssertionError::AssertionError(gbool expression) CORE_NOTHROW:
@@ -36,14 +36,9 @@ namespace core {
             Error(String::valueOf(expression)) {}
 
     AssertionError::AssertionError(String message, const Throwable &cause) CORE_NOTHROW:
-            Error(Unsafe::moveInstance(message), cause) {}
+            Error(U::moveInstance(message), cause) {}
 
-    void AssertionError::raise() &&{
-        throw *this;
-    }
+    void AssertionError::raise() &&{throw *this;}
 
-    Object &AssertionError::clone() const {
-        Unsafe &U = Unsafe::U;
-        return U.createInstance<AssertionError>(*this);
-    }
+    Object &AssertionError::clone() const {return U::createInstance<AssertionError>(*this);}
 } // core

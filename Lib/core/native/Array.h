@@ -7,7 +7,6 @@
 
 #include <core/Integer.h>
 #include <core/private/Null.h>
-#include <core/Object.h>
 
 namespace core {
 
@@ -15,11 +14,11 @@ namespace core {
         class ArraysSupport;
     }
 
-    namespace primitive {
+    namespace native {
 
         /**
          * The Array class represent the static collection
-         * of items that are instance of primitive type
+         * of items that are instance of native type
          *
          * @param E
          *          The object type of item
@@ -377,8 +376,6 @@ namespace core {
         };
 
     } // core
-
-    using namespace primitive;
-} // primitive
+} // native
 
 #endif //CORE23_ARRAY_H

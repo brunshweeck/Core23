@@ -1,35 +1,36 @@
 //
-// Created by T.N.Brunshweeck on 16/11/2023.
+// Created by T.N.Brunshweeck on 19/11/2023.
 //
 
-#ifndef CORE23_SHORTARRAY_H
-#define CORE23_SHORTARRAY_H
+#ifndef CORE23_BOOLEANARRAY_H
+#define CORE23_BOOLEANARRAY_H
 
+#include <core/Boolean.h>
 #include "Array.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
         /**
-         * The ShortArray class wrap the static array of values from primitive type
-         * (generic) gshort in an object.
+         * The BooleanArray class wrap the static array of values from native type
+         * (generic) gbool in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
          *
          * <p>
-         * The class can be used as view for all buffer using this primitive type
-         * (such as ShortBuffer)
+         * The class can be used as view for all buffer using this native type
+         * (such as BooleanBuffer)
          *
          * @author
          *      Brunshweeck Tazeussong
          */
-        class ShortArray: public Array<Short> {
+        class BooleanArray: public Array<Boolean> {
         private:
             /**
-             * gshort[*]
+             * gbool[*]
              */
-            CORE_ALIAS(STORAGE, typename Class<gshort>::Ptr);
+            CORE_ALIAS(STORAGE, typename Class<gbool>::Ptr);
 
             /**
              * The items storage
@@ -41,22 +42,22 @@ namespace core {
         public:
 
             /**
-             * Construct new empty Short Array
+             * Construct new empty Boolean Array
              */
-            ShortArray(): ShortArray(0) {}
+            BooleanArray(): BooleanArray(0) {}
 
             /**
-             * Construct new ShortArray with specified number
+             * Construct new BooleanArray with specified number
              * of items. After creation all items value will be
              * initialized with random value.
              *
              * @param length
              *          The number of items
              */
-            CORE_EXPLICIT ShortArray(gint length);
+            CORE_EXPLICIT BooleanArray(gint length);
 
             /**
-             * Construct new ShortArray with specified number
+             * Construct new BooleanArray with specified number
              * of items. After creation all items value will be
              * initialized with specified initial value.
              *
@@ -65,23 +66,23 @@ namespace core {
              * @param initialValue
              *          The value used to initialize all items after array creation
              */
-            CORE_EXPLICIT ShortArray(gint length, gshort initialValue);
+            CORE_EXPLICIT BooleanArray(gint length, gbool initialValue);
 
             /**
-             * Initialize newly created ShortArray with items of another.
+             * Initialize newly created BooleanArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            ShortArray(const ShortArray &array);
+            BooleanArray(const BooleanArray &array);
 
             /**
-             * Initialize newly created ShortArray with items of another.
+             * Initialize newly created BooleanArray with items of another.
              *
              * @param array
              *          The array that items are used to initialize this array
              */
-            ShortArray(ShortArray &&array) CORE_NOTHROW;
+            BooleanArray(BooleanArray &&array) CORE_NOTHROW;
 
             /**
              * Set with items of specified array, all items of this array.
@@ -89,7 +90,7 @@ namespace core {
              * @param array
              *          The array that items are used to set this array items
              */
-            ShortArray &operator=(const ShortArray &array);
+            BooleanArray &operator=(const BooleanArray &array);
 
             /**
              * Exchange with items of specified array, all items of this array.
@@ -97,7 +98,7 @@ namespace core {
              * @param array
              *          The array that items are  exchanged with items of this
              */
-            ShortArray &operator=(ShortArray &&array) CORE_NOTHROW;
+            BooleanArray &operator=(BooleanArray &&array) CORE_NOTHROW;
 
             /**
              * Return item at specified index
@@ -108,7 +109,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            gshort &get(gint index) override;
+            gbool &get(gint index) override;
 
             /**
              * Return item at specified index
@@ -119,7 +120,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gshort get(gint index) const override;
+            const gbool get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -132,10 +133,10 @@ namespace core {
             /**
              * Destroy this array
              */
-            ~ShortArray() override;
+            ~BooleanArray() override;
         };
 
     } // core
-} // primitive
+} // native
 
-#endif //CORE23_SHORTARRAY_H
+#endif //CORE23_BOOLEANARRAY_H

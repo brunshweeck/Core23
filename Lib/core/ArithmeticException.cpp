@@ -6,17 +6,14 @@
 #include "ArithmeticException.h"
 
 namespace core {
-    using native::Unsafe;
 
-    ArithmeticException::ArithmeticException(String message) CORE_NOTHROW:
-    RuntimeException(Unsafe::moveInstance(message)) {}
+    CORE_ALIAS(U, native::Unsafe);
 
-    void ArithmeticException::raise() &&{
-        throw *this;
-    }
+    ArithmeticException::ArithmeticException(String message) CORE_NOTHROW: RuntimeException(U::moveInstance(message)) {}
+
+    void ArithmeticException::raise() &&{ throw *this; }
 
     Object &ArithmeticException::clone() const {
-        Unsafe &U = Unsafe::U;
-        return U.createInstance<ArithmeticException>(*this);
+        return U::createInstance<ArithmeticException>(*this);
     }
 } // core

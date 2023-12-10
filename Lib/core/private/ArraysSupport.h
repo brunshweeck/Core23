@@ -5,17 +5,16 @@
 #ifndef CORE23_ARRAYSSUPPORT_H
 #define CORE23_ARRAYSSUPPORT_H
 
-#include <core/Object.h>
 #include <core/ArgumentException.h>
+#include <core/util/Preconditions.h>
 #include <core/Integer.h>
-#include "Preconditions.h"
 
 namespace core {
     namespace util {
 
         /**
          * Utility methods to work with arrays.  This includes a set of methods
-         * to find a mismatch between two primitive arrays.  Also included is
+         * to find a mismatch between two native arrays.  Also included is
          * a method to calculate the new length of an array to be reallocated.
          *
          * <p>
@@ -44,14 +43,12 @@ namespace core {
         private:
             ArraysSupport() = default;
 
-            CORE_DISABLE_COPY_MOVE(ArraysSupport);
-
             class Unsafe;
 
         public:
             /**
              * Find the relative index of the first mismatching pair of elements in two
-             * primitive arrays of the same component type.  Pairs of elements will be
+             * native arrays of the same component type.  Pairs of elements will be
              * tested in order relative to given offsets into both arrays.
              *
              * <p>This method does not perform type checks or bounds checks.  It is the
@@ -209,13 +206,13 @@ namespace core {
              * <li>The <b> dest</b> argument refers to an object that is not an
              *     array.
              * <li>The <b> src</b> argument and <b> dest</b> argument refer
-             *     to arrays whose component types are different primitive types.
-             * <li>The <b> src</b> argument refers to an array with a primitive
+             *     to arrays whose component types are different native types.
+             * <li>The <b> src</b> argument refers to an array with a native
              *    component type and the <b> dest</b> argument refers to an array
              *     with a reference component type.
              * <li>The <b> src</b> argument refers to an array with a reference
              *    component type and the <b> dest</b> argument refers to an array
-             *     with a primitive component type.
+             *     with a native component type.
              * </ul>
              * <p>
              * Otherwise, if any of the following is true, an
@@ -289,10 +286,10 @@ namespace core {
                 }
                 if (src && dest) {
                     if (srcPos < destPos) {
-                        for (int i = length; i > 0; i--)
+                        for (gint i = length; i > 0; i--)
                             dest[destPos + i - 1] = src[srcPos + i - 1];
                     } else
-                        for (int i = 0; i < length; ++i) {
+                        for (gint i = 0; i < length; ++i) {
                             dest[destPos + i] = src[srcPos + i];
                         }
                 } else

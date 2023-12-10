@@ -5,13 +5,13 @@
 #include <core/private/Unsafe.h>
 #include <core/ArgumentException.h>
 #include <core/IndexException.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include "BooleanArray.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
-        using native::Unsafe;
+        CORE_ALIAS(U, native::Unsafe);
         using util::Preconditions;
 
         namespace {
@@ -28,9 +28,9 @@ namespace core {
         BooleanArray::BooleanArray(gint length, gbool initialValue) : Array<Boolean>(length) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_BOOLEAN_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = initialValue;
         }
 
@@ -38,9 +38,9 @@ namespace core {
             gint length = array.length();
             if (len < 0)
                 ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_BOOLEAN_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = array.value[i];
         }
 
@@ -53,11 +53,11 @@ namespace core {
             if (this != &array) {
                 gint length = array.len;
                 if (len != length) {
-                    value = (STORAGE) Unsafe::U.reallocateMemory((glong) value,
-                                                                 length * Unsafe::ARRAY_BOOLEAN_INDEX_SCALE);
+                    value = (STORAGE) U::reallocateMemory((glong) value,
+                                                                 length * U::ARRAY_BOOLEAN_INDEX_SCALE);
                     len = length;
                 }
-                for (int i = 0; i < length; ++i)
+                for (gint i = 0; i < length; ++i)
                     value[i] = array.value[i];
             }
             return *this;
@@ -90,12 +90,12 @@ namespace core {
         }
 
         Object &BooleanArray::clone() const {
-            return Unsafe::U.createInstance<BooleanArray>(*this);
+            return U::createInstance<BooleanArray>(*this);
         }
 
         BooleanArray::~BooleanArray() {
-            Unsafe::U.freeMemory((glong) value);
+            U::freeMemory((glong) value);
             value = null;
         }
     } // core
-} // primitive
+} // native

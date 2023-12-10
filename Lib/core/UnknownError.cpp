@@ -7,19 +7,17 @@
 
 namespace core {
 
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     UnknownError::UnknownError(String message) noexcept:
-            Error(Unsafe::moveInstance(message)) {}
+            Error(U::moveInstance(message)) {}
 
     UnknownError::UnknownError(String message, const Throwable &cause) noexcept:
-            Error(Unsafe::moveInstance(message), cause) {}
+            Error(U::moveInstance(message), cause) {}
 
     Object &UnknownError::clone() const {
-        return Unsafe::U.createInstance<UnknownError>(*this);
+        return U::createInstance<UnknownError>(*this);
     }
 
-    void UnknownError::raise() &&{
-        throw *this;
-    }
+    void UnknownError::raise() &&{ throw *this; }
 } // core

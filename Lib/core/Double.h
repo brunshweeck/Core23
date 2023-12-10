@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The <b> Double</b> class wraps a value of the primitive type
+     * The <b> Double</b> class wraps a value of the native type
      * <b> double</b> in an object. An object of type
      * <b> Double</b> contains a single field whose type is
      * <b> double</b>.
@@ -184,7 +184,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Double:public Comparable<Double> {
+    class Double CORE_FINAL  : public Object, public Comparable<Double> {
     private:
         /**
          * The value of Double
@@ -299,7 +299,7 @@ namespace core {
 
         /**
          * Constructs a newly allocated <b>Double</b> object that
-         * represents the primitive <b>double</b> argument.
+         * represents the native <b>double</b> argument.
          *
          * @param value
          *          The value to be represented by the <b>Double</b>.
@@ -545,7 +545,7 @@ namespace core {
 
         /**
          * Return the value of this Double as byte
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         gbyte byteValue() const {
             return (gbyte) value;
@@ -553,7 +553,7 @@ namespace core {
 
         /**
          * Return the value of this Double as short
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST gshort shortValue() const {
             return (gshort) value;
@@ -561,7 +561,7 @@ namespace core {
 
         /**
          * Return the value of this Double as int
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST gint intValue() const {
             return (gint) value;
@@ -569,7 +569,7 @@ namespace core {
 
         /**
          * Return the value of this Double as long
-         * after narrowing primitive conversion.
+         * after narrowing native conversion.
          */
         CORE_FAST glong longValue() const {
             return (glong) value;
@@ -584,7 +584,7 @@ namespace core {
 
         /**
          * Return the value of this Double as double
-         * after widening primitive conversion.
+         * after widening native conversion.
          */
         CORE_FAST gdouble doubleValue() const {
             return (gdouble) value;
@@ -592,7 +592,7 @@ namespace core {
 
         /**
          * Returns a string representation of this <b>Double</b> object.
-         * The primitive <b>double</b> value represented by this
+         * The native <b>double</b> value represented by this
          * object is converted to a string exactly as if by the method
          * <b>toString</b> of one argument.
          *
@@ -815,7 +815,7 @@ namespace core {
          * result is the exclusive OR of the two halves of the
          * <b>long</b> integer bit representation, exactly as
          * produced by the method <b>doubleToLongBits(double)</b>, of
-         * the primitive <b>double</b> value represented by this
+         * the native <b>double</b> value represented by this
          * <b>Double</b> object. That is, the hash code is the value
          * of the expression:
          *
@@ -1054,11 +1054,11 @@ namespace core {
         CORE_ENABLE_IMPLICIT_CAST(gdouble &, value);
 
         CORE_STATIC_ASSERT(((SIGN_BIT_MASK | EXPONENT_BIT_MASK | SIGNIFICAND_BIT_MASK) == ~0LL) &&
-                    (((SIGN_BIT_MASK & EXPONENT_BIT_MASK) == 0LL) &&
-                     ((SIGN_BIT_MASK & SIGNIFICAND_BIT_MASK) == 0LL) &&
-                     ((EXPONENT_BIT_MASK & SIGNIFICAND_BIT_MASK) == 0LL)) &&
-                    ((SIGN_BIT_MASK | MAGNITUDE_BIT_MASK) == ~0LL),
-                    "This compiler Compiler is not Supported for Floating operations on architecture(" CORE_ARCH ")");
+                           (((SIGN_BIT_MASK & EXPONENT_BIT_MASK) == 0LL) &&
+                            ((SIGN_BIT_MASK & SIGNIFICAND_BIT_MASK) == 0LL) &&
+                            ((EXPONENT_BIT_MASK & SIGNIFICAND_BIT_MASK) == 0LL)) &&
+                           ((SIGN_BIT_MASK | MAGNITUDE_BIT_MASK) == ~0LL),
+                           "This compiler Compiler is not Supported for Floating operations on architecture(" CORE_ARCH ")");
     };
 
 } // core

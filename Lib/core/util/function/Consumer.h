@@ -27,14 +27,22 @@ namespace core {
             CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Illegal template type");
             CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "Illegal parameter type");
 
-            CORE_ALIAS(Param, Params < T >);
+            CORE_ALIAS(Param, Params<T>);
+
+            CORE_ALIAS(U, native::Unsafe);
+
+            /**
+             * Capture<E> represent all type E that are base of T.
+             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             */
+            template<class E>
+            CORE_ALIAS(Capture, typename Class<E>::template Iff<Class<E>::template isSuper<T>()>);
 
             interface Launcher : Object {
                 virtual void launch(Param) const = 0;
 
                 template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
                 static Launcher &of(Fn &&fn) {
-                    static native::Unsafe &U = native::Unsafe::U;
 
                     class _$ : public Launcher {
                     private:
@@ -44,29 +52,27 @@ namespace core {
                         CORE_EXPLICIT _$(Fn &&fn) : fn(fn) {}
 
                         gbool equals(const Object &o) const {
-                            return !Class<_$>::hasInstance(o) ? false : CORE_CAST(_$ &, o).fn == fn;
+                            return Class<_$>::hasInstance(o) && CORE_CAST(_$ &, o).fn == fn;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         void launch(Param p) const { CORE_IGNORE(fn(p)); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Fn>(fn));
+                    return U::createInstance<_$>(U::forwardInstance<Fn>(fn));
                 }
 
                 template<class Callable, Class<gbool>::Iff<
                         !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
                 static Launcher &of(Callable &&c) {
 
-                    static native::Unsafe &U = native::Unsafe::U;
-
                     CORE_ALIAS(_Fn, UnarySign<Callable,, T, void >);
                     CORE_ALIAS(Fn, UnarySign<Callable,, Param, void >);
 
                     if (!Class<Fn>::template isSimilar<Callable>()) {
                         // simple lambda functions
-                        return of(CORE_CAST(Fn, U.forwardInstance<Callable>(c)));
+                        return of(CORE_CAST(Fn, U::forwardInstance<Callable>(c)));
                     }
 
                     class _$ : public Launcher {
@@ -74,18 +80,18 @@ namespace core {
                         Callable c;
 
                     public:
-                        CORE_EXPLICIT _$(Callable &&c) : c(U.forwardInstance<Callable>(c)) {}
+                        CORE_EXPLICIT _$(Callable &&c) : c(U::forwardInstance<Callable>(c)) {}
 
                         gbool equals(const Object &o) const {
-                            return !Class<_$>::hasInstance(o) ? false : &CORE_CAST(_$ &, o).c == &c;
+                            return Class<_$>::hasInstance(o) && &CORE_CAST(_$ &, o).c == &c;
                         }
 
-                        Object &clone() const { return U.createInstance<_$>(*this); }
+                        Object &clone() const { return U::createInstance<_$>(*this); }
 
                         void launch(Param p) const { CORE_IGNORE(c(p)); }
                     };
 
-                    return U.createInstance<_$>(U.forwardInstance<Callable>(c));
+                    return U::createInstance<_$>(U::forwardInstance<Callable>(c));
                 }
             };
 
@@ -105,7 +111,7 @@ namespace core {
             template<class Callable, Class<gbool>::Iff<Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
             CORE_IMPLICIT Consumer(Callable &&c) CORE_NOTHROW : act(0) {
                 CORE_STATIC_ASSERT(Class<Callable>::template isCallable<Param>(), "Invalid callable object");
-                act = &Launcher::of(native::Unsafe::forwardInstance<Callable>(c));
+                act = &Launcher::of(U::forwardInstance<Callable>(c));
             }
 
             /**
@@ -113,17 +119,14 @@ namespace core {
              *
              * @param c The other consumer
              */
-            Consumer(const Consumer<T> &c) : act(0) {
-                act = &native::Unsafe::U.copyInstance(*c.act);
-            }
+            Consumer(const Consumer<T> &c) : act(0) { act = &U::copyInstance(*c.act); }
 
             /**
              * Construct new consumer with another
              *
              * @param c The other consumer
              */
-            Consumer(Consumer<T> &&c) CORE_NOTHROW: act(0) {
-                act = c.act;
+            Consumer(Consumer<T> &&c) CORE_NOTHROW: act(c.act) {
                 c.act = null;
             }
 
@@ -134,8 +137,8 @@ namespace core {
              */
             Consumer<T> &operator=(const Consumer<T> &c) {
                 if (this != &c) {
-                    Action act0 = &native::Unsafe::U.copyInstance(*c.act);
-                    native::Unsafe::U.destroyInstance(*act);
+                    Action act0 = &U::copyInstance(*c.act);
+                    U::destroyInstance(*act);
                     act = act0;
                 }
                 return *this;
@@ -176,7 +179,7 @@ namespace core {
              * Return shadow copy of this consumer
              */
             Object &clone() const override {
-                return native::Unsafe::U.createInstance<Consumer<T>>(*this);
+                return U::createInstance<Consumer<T>>(*this);
             }
 
             /**
@@ -198,17 +201,28 @@ namespace core {
             /**
              * Destroy this consumer
              */
-            virtual ~Consumer() {
-                native::Unsafe::U.destroyInstance(*act);
+            ~Consumer() override {
+                U::destroyInstance(*act);
                 act = null;
             }
+
+            /**
+             * Implicit call operator.
+             *
+             * @param p The parameter value
+             */
+            virtual void operator()(Param p) { return accept(p); }
 
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION
         Consumer() -> Consumer<Object>;
+
         template<class Return, class Param, class ...Params>
-        Consumer(Return(Param, Params...)) -> Consumer<typename Class<Param>::Object>;
+        Consumer (Return(Param, Params...))
+
+        ->
+        Consumer<typename Class<Param>::Object>;
 #endif
 
     } // core

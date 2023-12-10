@@ -79,7 +79,7 @@ namespace core {
      * @see Comparator
      */
     template<class T>
-    interface Comparable : Object {
+    interface Comparable {
 
         /**
          * Compares this object with the specified object for order.  Returns a
@@ -115,7 +115,7 @@ namespace core {
          * @throws CastException if the specified object's type prevents it
          *         from being compared to this object.
          */
-        virtual gint compareTo(const T &o) const = 0;
+        virtual gint compareTo(const T& other) const = 0;
     };
 
 } // core

@@ -6,9 +6,13 @@
 #include "Integer.h"
 #include "Long.h"
 #include "NumberFormatException.h"
+#include "CastException.h"
 #include <core/private/Unsafe.h>
 
 namespace core {
+
+    CORE_ALIAS(U, native::Unsafe);
+
     gint Short::hash() const {
         return hash(value);
     }
@@ -19,7 +23,7 @@ namespace core {
         return false;
     }
 
-    gint Short::compareTo(const Short &other) const {
+    gint Short::compareTo(const Short& other) const {
         return compare(value, other.value);
     }
 
@@ -84,7 +88,7 @@ namespace core {
     }
 
     Object &Short::clone() const {
-        return native::Unsafe::U.createInstance<Short>(*this);
+        return U::createInstance<Short>(*this);
     }
 
     Short Short::valueOf(gshort i) {

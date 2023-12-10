@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The Byte class wrap the value of primitive type
+     * The Byte class wrap the value of native type
      * (generic) byte in an object.
      *
      * <p>
@@ -20,7 +20,7 @@ namespace core {
      * @author
      *      Brunshweeck Tazeussong
      */
-    class Byte : public Comparable<Byte> {
+    class Byte CORE_FINAL  : public Object, public Comparable<Byte> {
     private:
         /**
          * The value of the Byte
@@ -170,49 +170,37 @@ namespace core {
         /**
          * Return the value of this Byte as byte
          */
-        CORE_FAST gbyte byteValue() const {
-            return value;
-        }
+        CORE_FAST gbyte byteValue() const { return value; }
 
         /**
          * Return the value of this Byte as short after
-         * widening primitive conversion
+         * widening native conversion
          */
-        CORE_FAST gshort shortValue() const {
-            return (gshort) value;
-        }
+        CORE_FAST gshort shortValue() const { return (gshort) value; }
 
         /**
          * Return the value of this Byte as int after
-         * widening primitive conversion
+         * widening native conversion
          */
-        CORE_FAST gint intValue() const {
-            return (gint) value;
-        }
+        CORE_FAST gint intValue() const { return (gint) value; }
 
         /**
          * Return the value of this Byte as long after
-         * widening primitive conversion
+         * widening native conversion
          */
-        CORE_FAST glong longValue() const {
-            return (glong) value;
-        }
+        CORE_FAST glong longValue() const { return (glong) value; }
 
         /**
          * Return the value of this Byte as float after
-         * widening primitive conversion
+         * widening native conversion
          */
-        CORE_FAST gfloat floatValue() const {
-            return (gfloat) value;
-        }
+        CORE_FAST gfloat floatValue() const { return (gfloat) value; }
 
         /**
          * Return the value of this Byte as double after
-         * widening primitive conversion
+         * widening native conversion
          */
-        CORE_FAST gdouble doubleValue() const {
-            return (gdouble) value;
-        }
+        CORE_FAST gdouble doubleValue() const { return (gdouble) value; }
 
         /**
          * Return String object representing this Byte's value.
@@ -241,9 +229,7 @@ namespace core {
          * @param b
          *        The value to hash
          */
-        static CORE_FAST gint hash(gbyte b) {
-            return (gint) b;
-        }
+        static CORE_FAST gint hash(gbyte b) { return (gint) b; }
 
         /**
          * Return true if and only if the object argument
@@ -271,9 +257,7 @@ namespace core {
          * @param y
          *         The second byte to compare
          */
-        static CORE_FAST gint compare(gbyte x, gbyte y) {
-            return x - y;
-        }
+        static CORE_FAST gint compare(gbyte x, gbyte y) { return x - y; }
 
         /**
          * Compares two byte values numerically.
@@ -283,9 +267,7 @@ namespace core {
          * @param y
          *         The second byte to compare
          */
-        static CORE_FAST gint compareUnsigned(gbyte x, gbyte y) {
-            return toUnsignedInt(x) - toUnsignedInt(y);
-        }
+        static CORE_FAST gint compareUnsigned(gbyte x, gbyte y) { return toUnsignedInt(x) - toUnsignedInt(y); }
 
         /**
          * Converts the argument to an int by an unsigned conversion.
@@ -301,9 +283,7 @@ namespace core {
          * @param b
          *        The value to convert to an unsigned int
          */
-        static CORE_FAST gint toUnsignedInt(gbyte b) {
-            return ((gint) b) & 0xff;
-        }
+        static CORE_FAST gint toUnsignedInt(gbyte b) { return ((gint) b) & 0xff; }
 
         /**
          * Converts the argument to a long by an unsigned conversion.
@@ -319,9 +299,7 @@ namespace core {
          * @param b
          *        The value to convert to an unsigned int
          */
-        static CORE_FAST glong toUnsignedLong(gbyte b) {
-            return ((glong) b) & 0xffLL;
-        }
+        static CORE_FAST glong toUnsignedLong(gbyte b) { return ((glong) b) & 0xffLL; }
 
         /**
          * Return sharable copy of this Byte instance

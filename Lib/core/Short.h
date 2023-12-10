@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * The Short class wrap the value of primitive type
+     * The Short class wrap the value of native type
      * (generic) short in an object.
      *
      * <p>
@@ -20,7 +20,7 @@ namespace core {
      * @author
      *      Brunshweeck Tazeussong
      */
-    class Short: public Comparable<Short> {
+    class Short CORE_FINAL : public Object, public Comparable<Short> {
     private:
         /**
          * The value of the Short
@@ -176,7 +176,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as short after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gshort shortValue() const {
             return (gshort) value;
@@ -184,7 +184,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as int after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gint intValue() const {
             return (gint) value;
@@ -192,7 +192,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as long after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST glong longValue() const {
             return (glong) value;
@@ -200,7 +200,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as float after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gfloat floatValue() const {
             return (gfloat) value;
@@ -208,7 +208,7 @@ namespace core {
 
         /**
          * Return the value of this Byte as double after
-         * widening primitive conversion
+         * widening native conversion
          */
         CORE_FAST gdouble doubleValue() const {
             return (gdouble) value;
@@ -261,7 +261,7 @@ namespace core {
          * @param other
          *          The Short to be compared
          */
-        gint compareTo(const Short &other) const override;
+        gint compareTo(const Short& other) const override;
 
         /**
          * Compares two short values numerically.

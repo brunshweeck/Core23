@@ -11,7 +11,7 @@ namespace core {
         CORE_ALIAS(U, native::Unsafe);
 
         Object &ConcurrentException::clone() const {
-            return U::U.createInstance<ConcurrentException>(*this);
+            return U::createInstance<ConcurrentException>(*this);
         }
 
         void ConcurrentException::raise() &&{

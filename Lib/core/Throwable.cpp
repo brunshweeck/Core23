@@ -10,9 +10,7 @@
 
 namespace core {
 
-    using native::Unsafe;
-
-    CORE_ALIAS(U, Unsafe);
+    CORE_ALIAS(U, native::Unsafe);
 
     namespace {
         gint putString(const String &str, gchar in[], gint offset, gint length) {
@@ -81,21 +79,12 @@ namespace core {
     }
 
     Throwable::Throwable() CORE_NOTHROW:
-#ifdef CORE_COMPILER_MSVC
-            native::GENERIC_THROWABLE("", 0),
-#endif
             cse(null), stack(null), stackSize(0), isTemporary(false) {}
 
     Throwable::Throwable(String message) CORE_NOTHROW:
-#ifdef CORE_COMPILER_MSVC
-            native::GENERIC_THROWABLE(StrToCStr(message), 0),
-#endif
             msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {}
 
     Throwable::Throwable(String message, const Throwable &cause) CORE_NOTHROW:
-#ifdef CORE_COMPILER_MSVC
-            native::GENERIC_THROWABLE(StrToCStr(message), 0),
-#endif
             msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {
         setCause(cause);
     }
@@ -110,24 +99,17 @@ namespace core {
             CORE_CAST(Throwable &, thr).stack = null;
             CORE_CAST(Throwable &, thr).stackSize = 0;
             CORE_CAST(Throwable &, thr).isTemporary = false;
-            U::U.destroyInstance(thr);
+            U::destroyInstance(thr);
         } else {
             msg = thr.msg;
             if (thr.cse != null)
-                cse = &U::U.copyInstance(*thr.cse, true);
+                cse = &U::copyInstance(*thr.cse, true);
             copyStack(thr);
         }
     }
 
     Throwable::Throwable(Throwable &&thr) CORE_NOTHROW:
-#ifdef CORE_COMPILER_MSVC
-            native::GENERIC_THROWABLE(thr)
-#endif
-{
-        msg = U::moveInstance(thr.msg);
-        cse = thr.cse;
-        stack = thr.stack;
-        stackSize = thr.stackSize;
+            msg(U::moveInstance(thr.msg)), cse(thr.cse), stack(thr.stack), stackSize(thr.stackSize) {
         thr.cse = null;
         thr.stack = null;
         thr.stackSize = 0;
@@ -145,7 +127,7 @@ namespace core {
     void Throwable::setCause(const Throwable &cause) {
         if (&cause == this)
             ArgumentException("Self-causation not authorized").throws(__trace("core.Throwable"));
-        cse = &U::U.copyInstance(cause, true);
+        cse = &U::copyInstance(cause, true);
     }
 
     String Throwable::toString() const {
@@ -172,7 +154,7 @@ namespace core {
         if (cse != null && th.cse != null)
             if (*cse != *th.cse)
                 return false;
-        for (int i = 0; i < stackSize; ++i) {
+        for (gint i = 0; i < stackSize; ++i) {
             if (*stack[i] != *th.stack[i])
                 return false;
         }
@@ -180,17 +162,18 @@ namespace core {
     }
 
     void Throwable::throws(const Trace &trace) const {
-        Throwable &th = U::U.copyInstance(*this);
+        Throwable &th = U::copyInstance(*this);
         th.isTemporary = true;
         th.updateStack(trace);
         U::moveInstance(th).raise();
+        CORE_UNREACHABLE();
     }
 
     Throwable::~Throwable() CORE_NOTHROW {
         isTemporary = false;
         if (stackSize > 0) {
-            for (int i = 0; i < stackSize; ++i) {
-                U::U.destroyInstance(stack[i][0]);
+            for (gint i = 0; i < stackSize; ++i) {
+                U::destroyInstance(stack[i][0]);
                 stack[i] = null;
             }
             stackSize = 0;
@@ -254,8 +237,8 @@ namespace core {
             STACKTRACE st = new STACKPOINT[thr.stackSize + 1];
             st[thr.stackSize + 1] = (STACKPOINT) 0x1;
             stackSize = 0;
-            for (int i = 0; i < thr.stackSize; ++i) {
-                st[i] = &U::U.copyInstance(thr.stack[i][0], true);
+            for (gint i = 0; i < thr.stackSize; ++i) {
+                st[i] = &U::copyInstance(thr.stack[i][0], true);
             }
             stack = st;
             stackSize = thr.stackSize;
@@ -271,20 +254,20 @@ namespace core {
         if (stackSize >= 1000) {
             newSize = 1000;
             // removing of first trace
-            for (int i = 1; i < 1000; ++i)
+            for (gint i = 1; i < 1000; ++i)
                 stack[i] = stack[i + 1];
-            stack[999] = &U::U.copyInstance(trace, true);
+            stack[999] = &U::copyInstance(trace, true);
         } elif (stackSize > 0 && stack[stackSize] != (STACKPOINT) 0x1) {
             newSize = stackSize + 1;
-            stack[stackSize] = &U::U.copyInstance(trace, true);
+            stack[stackSize] = &U::copyInstance(trace, true);
         } else {
             newSize = stackSize + Math::max(stackSize >> 3, 1);
             STACKTRACE st = new STACKPOINT[newSize + 1];
-            for (int i = 0; i < stackSize; ++i) {
+            for (gint i = 0; i < stackSize; ++i) {
                 st[i] = stack[i];
                 stack[i] = null;
             }
-            st[stackSize] = &U::U.copyInstance(trace, true);
+            st[stackSize] = &U::copyInstance(trace, true);
             stack = st;
         }
         stackSize = newSize;

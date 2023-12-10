@@ -6,25 +6,23 @@
 #include "KeyNotFoundException.h"
 
 namespace core {
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     KeyNotFoundException::KeyNotFoundException(String message) CORE_NOTHROW:
-            ArgumentException(Unsafe::moveInstance(message)) {}
+            ArgumentException(U::moveInstance(message)) {}
 
     KeyNotFoundException::KeyNotFoundException(const Object &key) CORE_NOTHROW:
-    ArgumentException(String::valueOf(key)) {}
+            ArgumentException(String::valueOf(key)) {}
 
     KeyNotFoundException::KeyNotFoundException(String message, const Throwable &cause) CORE_NOTHROW:
-    ArgumentException(Unsafe::moveInstance(message), cause) {}
+            ArgumentException(U::moveInstance(message), cause) {}
 
     KeyNotFoundException::KeyNotFoundException(const Object &key, const Throwable &cause) CORE_NOTHROW
             : ArgumentException(String::valueOf(key), cause) {}
 
-    void KeyNotFoundException::raise() &&{
-        throw *this;
-    }
+    void KeyNotFoundException::raise() &&{ throw *this; }
 
     Object &KeyNotFoundException::clone() const {
-        return Unsafe::U.createInstance<KeyNotFoundException>(*this);
+        return U::createInstance<KeyNotFoundException>(*this);
     }
 } // core

@@ -5,7 +5,6 @@
 #include <core/private/Unsafe.h>
 #include "Float.h"
 #include "String.h"
-#include "Character.h"
 #include "NumberFormatException.h"
 #include "Math.h"
 #include "Integer.h"
@@ -13,8 +12,7 @@
 
 namespace core {
 
-    static const String pINFINITE = "infinity";
-    static const String mINFINITE = "-infinity";
+    CORE_ALIAS(U, native::Unsafe);
 
     gfloat Float::parseFloat(const String &str) {
         if (str.isEmpty())
@@ -41,7 +39,7 @@ namespace core {
                 next += 1;
                 if (next == len)
                     // +0 or -0
-                    return 0.0f * (gfloat) sign;
+                    return 0.0F * (gfloat) sign;
                 ch = str.charAt(next);
                 if (ch == 'x' || ch == 'X') {
                     // hex format
@@ -260,7 +258,6 @@ namespace core {
                                 rounded = (digit & 0x8) != 0;
                                 sticky = (digit & 0x7) != 0;
                                 break;
-                            default: break;
                         }
                         shift -= 4;
                     } else if (!sticky)
@@ -313,7 +310,6 @@ namespace core {
                                         rounded = (digit & 0x8) != 0;
                                         sticky = (digit & 0x7) != 0;
                                         break;
-                                    default: break;
                                 }
                                 shift -= 4;
                             } else if (!sticky)
@@ -349,7 +345,7 @@ namespace core {
                         }
                     }
                     if (bit32 == 0) {
-                        retVal = 0.0f * (gfloat) sign;
+                        retVal = 0.0F * (gfloat) sign;
                         return retVal;
                     } else {
                         gint eBit32 = sign2 * exponent + integerBitsLen + (decimalBitsLen - 1) * 4;
@@ -372,7 +368,7 @@ namespace core {
                             bit32 = bit32 >> var;
                             eBit32 = (gint) (MIN_EXPONENT - 1 + EXPONENT_BIAS) << 23;
                         }
-                        if (((bit32 & 1) != 0 && rounded && sticky) || (!(bit32 & 1) && rounded))
+                        if (((bit32 & 1) != 0 && rounded && sticky) || (((bit32 & 1) == 0) && rounded))
                             bit32 += 1;
                         if (sign < 0)
                             bit32 |= SIGN_BIT_MASK;
@@ -382,8 +378,6 @@ namespace core {
                     }
                 }
             }
-            default:
-                goto throwIllegalFormat;
         }
         throwIllegalFormat:
         NumberFormatException("Invalid number format for input \" " + str + "\".").throws(__trace("core.Float"));
@@ -448,13 +442,13 @@ namespace core {
         if (isNaN(d))
             return "NaN";
         if (isInfinite(d))
-            return d < 0 ? pINFINITE : mINFINITE;
+            return d < 0 ? "infinity" : "-infinity";
         gint bit32 = toIntBits(d);
         if (bit32 == 0)
-            // bit32 = 0 00000000000 0000000000000000000000000000000000000000000000000000.
+            // bit32 = 0 00000000 00000000000000000000000.
             return "0.0";
         if (bit32 == SIGN_BIT_MASK)
-            // bit32 = 1 00000000000 0000000000000000000000000000000000000000000000000000.
+            // bit32 = 1 00000000 00000000000000000000000.
             return "-0.0";
         // find the binary precision
         gint binaryPrecision = (SIGNIFICAND_WIDTH - Integer::trailingZeros(bit32 & SIGN_BIT_MASK)) % 20;
@@ -476,7 +470,7 @@ namespace core {
         gint exponent = 0;
         gfloat divider = 10; // used to update power of Teen
         gint updater = 1; // used to update exponent
-        gint digit = -1; // last digit
+        gint digit = {}; // last digit
         if (uVal < 1) {
             updater = -1;
             divider = 0.1;
@@ -612,20 +606,20 @@ namespace core {
         return false;
     }
 
-    gint Float::compareTo(const Float &other) const {
+    gint Float::compareTo(const Float& other) const {
         return compare(value, other.value);
     }
 
     gint Float::toIntBits(gfloat d) {
-        return native::Unsafe::U.getInt((glong) &d);
+        return U::getInt((glong) &d);
     }
 
     gfloat Float::fromIntBits(gint bits) {
-        return native::Unsafe::U.getFloat((glong) &bits);
+        return U::getFloat((glong) &bits);
     }
 
     Object &Float::clone() const {
-        return native::Unsafe::U.createInstance<Float>(*this);
+        return U::createInstance<Float>(*this);
     }
 
     gshort Float::toShortBits(gfloat f) {
@@ -646,11 +640,11 @@ namespace core {
         }
         gfloat uVal = Math::abs(f);
         // The overflow threshold is binary16 MAX_VALUE + 1/2 ulp
-        if (uVal >= (0x1.ffcp15f + 0x0.002p15f))
+        if (uVal >= (0x1.ffcp15F + 0x0.002p15F))
             return (gshort) (sign | 0x7c00); // Positive or negative infinity
         // Smallest magnitude nonzero representable binary16 value
         // is equal to 0x1.0p-24; half-way and smaller rounds to zero.
-        if (uVal <= 0x1.0p-24f * 0.5f) { // Covers float zeros and sub-normals.
+        if (uVal <= 0x1.0p-24F * 0.5F) { // Covers float zeros and sub-normals.
             return sign; // Positive or negative zero
         }
         // Dealing with finite values in exponent range of binary16
@@ -714,7 +708,7 @@ namespace core {
         // the float and binary16 formats
         CORE_FAST gint SIGNIFICAND_SHIFT = (SIGNIFICAND_WIDTH - 11);
 
-        float sign = (bin16SignBit != 0) ? -1.0f : 1.0f;
+        float sign = (bin16SignBit != 0) ? -1.0F : 1.0F;
 
         // Extract binary16 exponent, remove its bias, add in the bias
         // of a float exponent and shift to correct bit location
@@ -725,7 +719,7 @@ namespace core {
             // For subnormal binary16 values and 0, the numerical
             // value is 2^24 * the significand as an integer (no
             // implicit bit).
-            return sign * (0x1p-24f * (gfloat) bin16SignificandBits);
+            return sign * (0x1p-24F * (gfloat) bin16SignificandBits);
         } else if (bin16Exp == 16) {
             return (bin16SignificandBits == 0) ? sign * POSITIVE_INFINITY :
                    fromIntBits((bin16SignBit << 16) | 0x7f800000 |
@@ -739,7 +733,7 @@ namespace core {
         return fromIntBits((bin16SignBit << 16) | floatExpBits | (bin16SignificandBits << SIGNIFICAND_SHIFT));
     }
 
-    const gfloat Float::NaN = 0.0/0.0f;
-    const gfloat Float::POSITIVE_INFINITY = 1.0f/0.0f;
-    const gfloat Float::NEGATIVE_INFINITY = -1.0f/0.0f;
+    const gfloat Float::NaN = 0.0F/0.0F;
+    const gfloat Float::POSITIVE_INFINITY = 1.0F/0.0F;
+    const gfloat Float::NEGATIVE_INFINITY = -1.0F/0.0F;
 } // core

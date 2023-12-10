@@ -3,13 +3,13 @@
 //
 
 #include "ArraysSupport.h"
-#include <core/primitive/BooleanArray.h>
-#include <core/primitive/ByteArray.h>
-#include <core/primitive/ShortArray.h>
-#include <core/primitive/IntArray.h>
-#include <core/primitive/LongArray.h>
-#include <core/primitive/FloatArray.h>
-#include <core/primitive/DoubleArray.h>
+#include <core/native/BooleanArray.h>
+#include <core/native/ByteArray.h>
+#include <core/native/ShortArray.h>
+#include <core/native/IntArray.h>
+#include <core/native/LongArray.h>
+#include <core/native/FloatArray.h>
+#include <core/native/DoubleArray.h>
 #include <core/Boolean.h>
 #include <core/Byte.h>
 #include <core/Short.h>
@@ -19,11 +19,14 @@
 #include <core/Float.h>
 #include <core/Double.h>
 #include <core/MemoryError.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
+
+    CORE_ALIAS(U, native::Unsafe);
+
     namespace util {
 
-        static CORE_FAST gbool BIG_ENDIAN = CORE_BYTE_ORDER == CORE_BIG_ENDIAN;
         static CORE_FAST gint LOG2_ARRAY_BOOLEAN_INDEX_SCALE = 0;
         static CORE_FAST gint LOG2_ARRAY_BYTE_INDEX_SCALE = 0;
         static CORE_FAST gint LOG2_ARRAY_CHAR_INDEX_SCALE = 1;
@@ -106,13 +109,13 @@ namespace core {
                 return *(glong *) (getAddress(object) + offset);
             }
 
-            static gchar convEndian(gbool big, gchar n) { return big == BIG_ENDIAN ? n : Character::reverseBytes(n); }
+            static gchar convEndian(gbool big, gchar n) { return big == U::BIG_ENDIAN ? n : Character::reverseBytes(n); }
 
-            static gshort convEndian(gbool big, gshort n) { return big == BIG_ENDIAN ? n : Short::reverseBytes(n); }
+            static gshort convEndian(gbool big, gshort n) { return big == U::BIG_ENDIAN ? n : Short::reverseBytes(n); }
 
-            static gint convEndian(gbool big, gint n) { return big == BIG_ENDIAN ? n : Integer::reverseBytes(n); }
+            static gint convEndian(gbool big, gint n) { return big == U::BIG_ENDIAN ? n : Integer::reverseBytes(n); }
 
-            static glong convEndian(gbool big, glong n) { return big == BIG_ENDIAN ? n : Long::reverseBytes(n); }
+            static glong convEndian(gbool big, glong n) { return big == U::BIG_ENDIAN ? n : Long::reverseBytes(n); }
 
             static glong getLongUnaligned(const Object &o, glong offset, bool bigEndian) {
                 return convEndian(bigEndian, getLongUnaligned(o, offset));
@@ -175,13 +178,13 @@ namespace core {
 
             static gint toUnsignedInt(gshort n) { return n & 0xffff; }
 
-            static glong toUnsignedLong(gbyte n) { return n & 0xffl; }
+            static glong toUnsignedLong(gbyte n) { return n & 0xffL; }
 
-            static glong toUnsignedLong(gshort n) { return n & 0xffffl; }
+            static glong toUnsignedLong(gshort n) { return n & 0xffffL; }
 
-            static glong toUnsignedLong(gint n) { return n & 0xffffffffl; }
+            static glong toUnsignedLong(gint n) { return n & 0xffffffffL; }
 
-            static gint pickPos(gint top, gint pos) { return BIG_ENDIAN ? top - pos : pos; }
+            static gint pickPos(gint top, gint pos) { return U::BIG_ENDIAN ? top - pos : pos; }
         };
 
         gint ArraysSupport::vectorizedMismatch(const Object &a, glong aOffset, const Object &b, glong bOffset, gint length,
@@ -196,11 +199,11 @@ namespace core {
             gint wi = 0;
             for (; wi < length >> log2ValuesPerWidth; wi++) {
                 glong bi = ((glong) wi) << LOG2_ARRAY_LONG_INDEX_SCALE;
-                glong av = Unsafe::getLongUnaligned(a, aOffset + bi);
-                glong bv = Unsafe::getLongUnaligned(b, bOffset + bi);
+                glong av = U::getLongUnaligned(a, aOffset + bi);
+                glong bv = U::getLongUnaligned(b, bOffset + bi);
                 if (av != bv) {
                     glong x = av ^ bv;
-                    gint o = BIG_ENDIAN
+                    gint o = U::BIG_ENDIAN
                              ? Long::leadingZeros(x) >> (LOG2_BYTE_BIT_SIZE + log2ArrayIndexScale)
                              : Long::trailingZeros(x) >> (LOG2_BYTE_BIT_SIZE + log2ArrayIndexScale);
                     return (wi << log2ValuesPerWidth) + o;
@@ -215,11 +218,11 @@ namespace core {
                 // Handle 4 bytes or 2 chars in the tail using gint width
                 if (tail >= wordTail) {
                     glong bi = ((glong) wi) << LOG2_ARRAY_LONG_INDEX_SCALE;
-                    gint av = Unsafe::getIntUnaligned(a, aOffset + bi);
-                    gint bv = Unsafe::getIntUnaligned(b, bOffset + bi);
+                    gint av = U::getIntUnaligned(a, aOffset + bi);
+                    gint bv = U::getIntUnaligned(b, bOffset + bi);
                     if (av != bv) {
                         gint x = av ^ bv;
-                        gint o = BIG_ENDIAN
+                        gint o = U::BIG_ENDIAN
                                  ? Integer::leadingZeros(x) >> (LOG2_BYTE_BIT_SIZE + log2ArrayIndexScale)
                                  : Integer::trailingZeros(x) >> (LOG2_BYTE_BIT_SIZE + log2ArrayIndexScale);
                         return (wi << log2ValuesPerWidth) + o;
@@ -237,7 +240,7 @@ namespace core {
             if (length > 7) {
                 if (a[0] != b[0])
                     return 0;
-                Boolean bb = true;
+                Boolean bb;
                 i = vectorizedMismatch(
                         a, ARRAY_BOOLEAN_BASE_OFFSET,
                         b, ARRAY_BOOLEAN_BASE_OFFSET,

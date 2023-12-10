@@ -4,14 +4,14 @@
 
 #include <core/private/Unsafe.h>
 #include <core/ArgumentException.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include <core/IndexException.h>
 #include "IntArray.h"
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
-        using native::Unsafe;
+        CORE_ALIAS(U, native::Unsafe);
         using util::Preconditions;
 
         namespace {
@@ -28,9 +28,9 @@ namespace core {
         IntArray::IntArray(gint length, gint initialValue) : Array<Integer>(length) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.IntArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_INT_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_INT_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = initialValue;
         }
 
@@ -38,9 +38,9 @@ namespace core {
             gint length = array.length();
             if (len < 0)
                 ArgumentException("Negative array length").throws(__trace("core.IntArray"));
-            value = (STORAGE) Unsafe::U.allocateMemory(length * (glong) Unsafe::ARRAY_INT_INDEX_SCALE);
+            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_INT_INDEX_SCALE);
             len = length;
-            for (int i = 0; i < length; ++i)
+            for (gint i = 0; i < length; ++i)
                 value[i] = array.value[i];
         }
 
@@ -53,11 +53,11 @@ namespace core {
             if (this != &array) {
                 gint length = array.len;
                 if (len != length) {
-                    value = (STORAGE) Unsafe::U.reallocateMemory((glong) value,
-                                                                 length * Unsafe::ARRAY_INT_INDEX_SCALE);
+                    value = (STORAGE) U::reallocateMemory((glong) value,
+                                                                 length * U::ARRAY_INT_INDEX_SCALE);
                     len = length;
                 }
-                for (int i = 0; i < length; ++i)
+                for (gint i = 0; i < length; ++i)
                     value[i] = array.value[i];
             }
             return *this;
@@ -90,12 +90,12 @@ namespace core {
         }
 
         Object &IntArray::clone() const {
-            return Unsafe::U.createInstance<IntArray>(*this);
+            return U::createInstance<IntArray>(*this);
         }
 
         IntArray::~IntArray() {
-            Unsafe::U.freeMemory((glong) value);
+            U::freeMemory((glong) value);
             value = null;
         }
     } // core
-} // primitive
+} // native

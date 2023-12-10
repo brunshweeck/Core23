@@ -17,8 +17,6 @@ namespace core {
         private:
             CORE_FAST UnicodeTable() = default;
 
-            CORE_DISABLE_COPY_MOVE(UnicodeTable);
-
             /**
              * Return the row of properties corresponding to the given character.
              */
@@ -36,7 +34,7 @@ namespace core {
             /**
              * The sorted list of columns in unicode table
              */
-            enum class Column {
+            enum class Column: gbyte {
                 CATEGORY,
                 DIRECTION,
                 COMBINING_CLASS,

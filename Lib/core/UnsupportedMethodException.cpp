@@ -6,20 +6,18 @@
 #include <core/private/Unsafe.h>
 
 namespace core {
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     UnsupportedMethodException::UnsupportedMethodException(String message) CORE_NOTHROW:
-            RuntimeException(Unsafe::moveInstance(message)) {}
+            RuntimeException(U::moveInstance(message)) {}
 
-    UnsupportedMethodException::UnsupportedMethodException(String message, const Throwable &cause) CORE_NOTHROW
-            : RuntimeException(Unsafe::moveInstance(message), cause) {}
+    UnsupportedMethodException::UnsupportedMethodException(String message, const Throwable &cause) CORE_NOTHROW:
+            RuntimeException(U::moveInstance(message), cause) {}
 
 
-    void UnsupportedMethodException::raise() &&{
-        throw *this;
-    }
+    void UnsupportedMethodException::raise() &&{ throw *this; }
 
     Object &UnsupportedMethodException::clone() const {
-        return native::Unsafe::U.createInstance<UnsupportedMethodException>(*this);
+        return U::createInstance<UnsupportedMethodException>(*this);
     }
 } // core

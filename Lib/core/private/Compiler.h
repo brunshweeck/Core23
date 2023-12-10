@@ -6,7 +6,7 @@
 #ifndef CORE23_COMPILER_H
 #define CORE23_COMPILER_H
 
-#include <core/Private/Processor.h>
+#include "Processor.h"
 
 
 /**
@@ -1374,5 +1374,8 @@ CORE_WARNING_DISABLE_MSVC(4530) /* C++ exception handler used, but unwind semant
 
 #endif // offsetof
 
+#ifdef BIG_ENDIAN
+#undef BIG_ENDIAN // is always defined on file <endian.h> at line 24
+#endif //BIG_ENDIAN
 
 #endif //CORE23_COMPILER_H

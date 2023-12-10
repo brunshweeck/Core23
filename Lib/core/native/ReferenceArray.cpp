@@ -3,7 +3,7 @@
 //
 
 namespace core {
-    namespace primitive {
+    namespace native {
 
     } // core
-} // primitive
+} // native

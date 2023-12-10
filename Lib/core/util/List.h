@@ -515,7 +515,7 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            void forEach(const Consumer<const E> &action) const override { Collection<E>::forEach(action); }
+            void forEach(const Consumer<E> &action) const override { Collection<E>::forEach(action); }
 
             /**
              * Performs the given action for each element of the <b>Iterable</b>
@@ -537,7 +537,7 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            virtual void forEach(const Consumer<E> &action) { iterator().forEach(action); }
+            virtual void forEach(const Consumer<E &> &action) { iterator().forEach(action); }
 
             /**
              * Returns a list iterator over the elements in this list (in proper
@@ -555,7 +555,7 @@ namespace core {
             virtual ListIterator<E> &iterator(gint index) {
                 try {
                     Preconditions::checkIndexForAdding(index, size());
-                    return native::Unsafe::U.createInstance < ListItr < E >> ((List &) *this, 0);
+                    return native::Unsafe::createInstance < ListItr < E >> ((List &) *this, 0);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -575,7 +575,7 @@ namespace core {
             virtual ListIterator<const E> &iterator(gint index) const {
                 try {
                     Preconditions::checkIndexForAdding(index, size());
-                    return native::Unsafe::U.createInstance<ListItr<const E>>((List &) *this, 0);
+                    return native::Unsafe::createInstance<ListItr<const E>>((List &) *this, 0);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -615,7 +615,7 @@ namespace core {
             virtual List &subList(gint from, gint to) const {
                 try {
                     Preconditions::checkIndexFromRange(from, to, size());
-                    return native::Unsafe::U.createInstance<SubList>((List &) *this, from, to);
+                    return native::Unsafe::createInstance<SubList<>>((List &) *this, from, to);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -811,7 +811,8 @@ namespace core {
                 }
             };
 
-            class SubList : public List<E> {
+            template<class T = E>
+            class SubList : public List<T> {
             private:
                 List &root;
                 SubList &parent;
@@ -920,7 +921,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::U.createInstance<_$>((SubList &) *this, index);
+                        return native::Unsafe::createInstance<_$>((SubList &) *this, index);
                     } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
 
                 }
@@ -945,7 +946,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::U.createInstance<_$>((SubList &) *this, index);
+                        return native::Unsafe::createInstance<_$>((SubList &) *this, index);
                     } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
@@ -953,7 +954,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexFromRange(from, to, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::U.createInstance<SubList>((SubList &) *this, from, to);
+                        return native::Unsafe::createInstance<SubList>((SubList &) *this, from, to);
                     } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 

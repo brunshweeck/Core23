@@ -14,26 +14,29 @@ namespace core {
      * null Object (for json object, ...)
      */
     class Null final: public Object {
-    public:
+    private:
         /**
          * Construct new null object.
          * Note: This constructor is called one time only
          */
-        CORE_FAST Null() {}
-
-        CORE_DISABLE_COPY_MOVE(Null);
-
-        template<class T>
-        CORE_FAST CORE_ENABLE_IMPLICIT_CAST(T*, 0, const);
+        CORE_FAST Null() = default;
 
         gbool equals(const Object &o) const override;
 
         Object &clone() const override;
 
         String toString() const override;
+
+    public:
+
+        template<class T>
+        CORE_FAST CORE_ENABLE_IMPLICIT_CAST(T*, 0, const);
+
+        static Null INSTANCE;
+
     };
 
-    extern Null null;
+    extern Null& null;
 
 } // core
 

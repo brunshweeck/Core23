@@ -97,7 +97,7 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            inline void forEach(const Consumer<E> &action) { while (hasNext()) action.accept(next()); }
+            inline void forEach(const Consumer<E &> &action) { while (hasNext()) action.accept(next()); }
         };
 
     }

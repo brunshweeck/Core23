@@ -11,21 +11,26 @@
 #include <typeinfo>
 
 #if __has_include(<cxxabi.h>)
+
 #include <cxxabi.h>
+#include <core/private/Unsafe.h>
+
 #endif
 
 namespace {
     using namespace core;
+    using std::type_info;
+    CORE_ALIAS(U, native::Unsafe);
 
     String classname0(const Object &o) {
         const type_info &t = typeid(o);
 #if __has_include(<cxxabi.h>)
         // GCC
-        const char* rawName = t.name();
+        const char *rawName = t.name();
         char name0[256] = {};
         size_t len = 256;
         gint status = 0;
-        const char* name1 = __cxxabiv1::__cxa_demangle(rawName, name0, &len, &status);
+        const char *name1 = __cxxabiv1::__cxa_demangle(rawName, name0, &len, &status);
         String name = status != 0 ? "?" : name1;
 #elif defined(CORE_COMPILER_MSVC)
         // MSVC
@@ -44,36 +49,24 @@ namespace {
 }
 
 namespace core {
-    gbool Object::equals(const Object &o) const {
-        if (this == &o)
-            return true;
-        gbyte *bytes1 = (gbyte *) this;
-        gbyte *bytes2 = (gbyte *) &o;
-        for (int i = 0; i < sizeof(Object); ++i) {
-            if (bytes1[i] != bytes2[i])
-                return false;
-        }
-        return false;
-    }
 
-    Object &Object::clone() const {
-        CloneNotSupportedException().throws(__trace("core.Object"));
-    }
+    CORE_ALIAS(U, native::Unsafe);
+
+    gbool Object::equals(const Object &o) const { return this == &o; }
+
+    Object &Object::clone() const { CloneNotSupportedException().throws(__trace("core.Object")); }
 
     String Object::toString() const {
+        if (this == &null) return "null";
         glong h = hash();
         return classname() + "@" + Long::toUnsignedString(
-                (h == 0 ? (glong ) typeid(*this).hash_code() : h) ^ (glong) this, 16);
+                (h == 0 ? (glong) typeid(*this).hash_code() : h) ^ (glong) this, 16);
     }
 
 
-    gint Object::hash() const {
-        return Long::hash((glong) typeid(*this).hash_code() ^ (glong ) this);
-    }
+    gint Object::hash() const { return Long::hash((glong) typeid(*this).hash_code() ^ (glong) this); }
 
-    String Object::classname() const {
-        return classname0(*this);
-    }
+    String Object::classname() const { return classname0(*this); }
 
     gbool Object::equals(const Object &a, const Object &b) { return a.equals(b); }
 

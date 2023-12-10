@@ -8,7 +8,7 @@
 #include <core/Object.h>
 #include <core/private/Unsafe.h>
 #include <core/StringBuffer.h>
-#include <core/private/Preconditions.h>
+#include <core/util/Preconditions.h>
 #include <core/StateException.h>
 #include <core/CastException.h>
 #include <core/ArgumentException.h>
@@ -16,29 +16,33 @@
 #include "Array.h"
 
 namespace core {
-    namespace primitive {
+
+    namespace util {
+        template<class> class ArrayList;
+        template<class> class Vector;
+        template<class> class PriorityQueue;
+    }
+
+    namespace native {
 
         /**
-         * The ReferenceArray class wrap the static array of values from primitive type
+         * The ReferenceArray class wrap the static array of values from native type
          * (generic) object in an object.
          *
          * <p>
          * This class provide the instantaneous access from items
          *
          * <p>
-         * The class can be used as view for all buffer using this primitive type
-         * (such as ObjectBuffer)
+         * The class can be used as view for all buffer using this native type
+         * (such as ReferenceBuffer)
          *
          * @author
          *      Brunshweeck Tazeussong
          */
         template<class E>
         class ReferenceArray : public Array<Object> {
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<E>(), "Illegal template type");
-            CORE_STATIC_ASSERT(!Class<E>::isConstant(), "Illegal template type");
-            CORE_STATIC_ASSERT(!Class<E>::isReference(), "Illegal template type");
-
         private:
+
             CORE_ALIAS(REFERENCE, typename Class<E>::Ptr);
 
             CORE_ALIAS(STORAGE, typename Class<REFERENCE>::Ptr);
@@ -62,6 +66,13 @@ namespace core {
              */
             gint len;
 
+            /**
+             *  (transient) to simplify nested class access
+             */
+            template<class T> friend class util::ArrayList;
+            template<class T> friend class util::Vector;
+            template<class T> friend class util::PriorityQueue;
+
         public:
 
             /**
@@ -77,10 +88,10 @@ namespace core {
              */
             CORE_EXPLICIT ReferenceArray(gint length) {
                 if (length < 0)
-                    ArgumentException("Negative array length").throws(__trace("core.primitive.ReferenceArray"));
-                value = (STORAGE) U::U.allocateMemory(1LL * length * U::ARRAY_REFERENCE_INDEX_SCALE);
+                    ArgumentException("Negative array length").throws(__trace("core.native.ReferenceArray"));
+                value = (STORAGE) U::allocateMemory(1LL * length * U::ARRAY_REFERENCE_INDEX_SCALE);
                 len = length;
-                for (int i = 0; i < length; ++i) value[i] = null;
+                for (gint i = 0; i < length; ++i) value[i] = null;
             }
 
             /**
@@ -94,8 +105,8 @@ namespace core {
                 if ((len = aSize) == 0)
                     value = null;
                 else {
-                    value = (STORAGE) U::U.allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
-                    for (int i = 0; i < len; ++i) value[i] = a.value[i];
+                    value = (STORAGE) U::allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
+                    for (gint i = 0; i < len; ++i) value[i] = a.value[i];
                 }
             }
 
@@ -109,8 +120,8 @@ namespace core {
                 if ((len = aSize) == 0)
                     value = null;
                 else {
-                    value = (STORAGE) U::U.allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
-                    for (int i = 0; i < len; ++i) value[i] = a.value[i];
+                    value = (STORAGE) U::allocateMemory(1LL * aSize * U::ARRAY_REFERENCE_INDEX_SCALE);
+                    for (gint i = 0; i < len; ++i) value[i] = a.value[i];
                 }
             }
 
@@ -133,9 +144,9 @@ namespace core {
             ReferenceArray &operator=(const ReferenceArray &array) {
                 if (this != &array) {
                     if (len != array.len)
-                        value = (STORAGE) U::U.reallocateMemory((glong) value, 1LL * (len = array.len) *
+                        value = (STORAGE) U::reallocateMemory((glong) value, 1LL * (len = array.len) *
                                                                                U::ARRAY_REFERENCE_INDEX_SCALE);
-                    for (int i = 0; i < len; ++i) value[i] = array.value[i];
+                    for (gint i = 0; i < len; ++i) value[i] = array.value[i];
                 }
             }
 
@@ -155,7 +166,7 @@ namespace core {
                 Array<Object> const &array = CORE_CAST(const Array<Object>&, o);
                 if (len != array.length())
                     return false;
-                for (int i = 0; i < len; ++i) {
+                for (gint i = 0; i < len; ++i) {
                     if (!isSet(i) && array.isSet(i))
                         return false;
                     if (!Class<E>::hasInstance(array[i]))
@@ -166,12 +177,12 @@ namespace core {
                 return true;
             }
 
-            Object &clone() const override { return U::U.template createInstance<ReferenceArray>(*this); }
+            Object &clone() const override { return U::template createInstance<ReferenceArray>(*this); }
 
             String toString() const override {
                 if (isEmpty()) return "[]";
                 StringBuffer sb = StringBuffer('[').append(get(0));
-                for (int i = 1; i < len; ++i)
+                for (gint i = 1; i < len; ++i)
                     sb.append(',').append(' ').append(isSet(i) ? (const Object &) get(i) : null);
                 return sb.append("]").toString();
             }
@@ -181,24 +192,24 @@ namespace core {
             E &get(gint index) override {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
-                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.primitive.ReferenceArray"));
+                } catch (const IndexException &ie) { ie.throws(__trace("core.native.ReferenceArray")); }
+                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.native.ReferenceArray"));
                 return *value[index];
             }
 
             const E &get(gint index) const override {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
-                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.primitive.ReferenceArray"));
+                } catch (const IndexException &ie) { ie.throws(__trace("core.native.ReferenceArray")); }
+                if (!isSet(index)) StateException("Null Reference").throws(__trace("core.native.ReferenceArray"));
                 return *value[index];
             }
 
             void set(gint index, const E &newValue) {
                 try {
                     util::Preconditions::checkIndex(index, len);
-                    value[index] = &U::U.copyInstance(newValue, true);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
+                    value[index] = &U::copyInstance(newValue, true);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.native.ReferenceArray")); }
             }
 
             gbool isSet(gint index) const override { return index >= 0 && index < len && value[index] != null; }
@@ -207,12 +218,12 @@ namespace core {
                 try {
                     util::Preconditions::checkIndex(index, len);
                     value[index] = null;
-                } catch (const IndexException &ie) { ie.throws(__trace("core.primitive.ReferenceArray")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.native.ReferenceArray")); }
             }
 
             ~ReferenceArray() override {
                 len = 0;
-                U::U.freeMemory((glong) value);
+                U::freeMemory((glong) value);
                 value = null;
             }
 
@@ -280,6 +291,13 @@ namespace core {
             inline NativeArrayIterator<const E> end() const {
                 return NativeArrayIterator<const E>((ReferenceArray &) *this, false);
             }
+
+
+            CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
+                               "The valid parameters type must be a class deriving from core.Object");
+
+            CORE_STATIC_ASSERT(!Class<E>::isReference() && !Class<E>::isConstant() && !Class<E>::isVolatile(),
+                               "The valid parameters type mustn't have qualifiers (const, volatile, &, &&, ...)");
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION
@@ -289,6 +307,6 @@ namespace core {
 #endif
 
     } // core
-} // primitive
+} // native
 
 #endif //CORE23_REFERENCEARRAY_H

@@ -13,11 +13,10 @@ namespace core {
         /**
          * Utility methods to check if state or arguments are correct.
          */
-        class Preconditions final: public virtual Object {
+        class Preconditions CORE_FINAL: public Object {
         private:
-            Preconditions() = default;
 
-            CORE_DISABLE_COPY_MOVE(Preconditions);
+            CORE_FAST Preconditions() = default;
 
         public:
 

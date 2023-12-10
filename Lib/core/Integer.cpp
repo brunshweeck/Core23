@@ -8,9 +8,10 @@
 #include "NumberFormatException.h"
 #include "Long.h"
 #include "Math.h"
+#include "CastException.h"
 
 namespace core {
-    using native::Unsafe;
+    CORE_ALIAS(U, native::Unsafe);
 
     gint Integer::parseInt(const String &str, gint base) {
         if (base < 2 || base > 36)
@@ -304,11 +305,11 @@ namespace core {
         return reverseBytes(i);
     }
 
-    Object &Integer::clone() const {
-        return Unsafe::U.createInstance<Integer>(*this);
+    Object &Integer::clone() const { return U::createInstance<Integer>(*this); }
+
+    gbool Integer::equals(const Object &object) const {
+        return (this == &object) || Class<Integer>::hasInstance(object) && value == ((Integer &) object).value;
     }
 
-    Integer Integer::valueOf(gint i) {
-        return i;
-    }
+    gint Integer::compareTo(const Integer &other) const { return compare(value, other.value); }
 } // core

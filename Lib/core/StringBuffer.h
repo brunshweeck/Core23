@@ -8,9 +8,9 @@
 #include "Object.h"
 #include "Comparable.h"
 #include <core/private/Null.h>
-#include <core/primitive/CharArray.h>
-#include <core/primitive/ByteArray.h>
-#include <core/primitive/IntArray.h>
+#include <core/native/CharArray.h>
+#include <core/native/ByteArray.h>
+#include <core/native/IntArray.h>
 
 namespace core {
 
@@ -69,7 +69,7 @@ namespace core {
      * @author   Brunshweeck Tazeussong
      * @see     core.String
      */
-    class StringBuffer: public Comparable<StringBuffer> {
+    class StringBuffer CORE_FINAL : public Object, public Comparable<StringBuffer> {
     private:
         /**
          * gbyte[*]
@@ -79,26 +79,22 @@ namespace core {
         /**
          * The value used for character storage.
          */
-        STORAGE value = null;
+        STORAGE value = {};
 
         /**
          * The character count of this String
          */
-        gint len = 0;
+        gint len = {};
 
         /**
          * The capacity of this Buffer.
          */
-        gint cap = 0;
+        gint cap = {};
 
         /**
          * The default initial capacity
          */
         static CORE_FAST gint DEFAULT_CAPACITY = 1 << 4;
-
-        glong synchronizer = 0;
-
-        void synchronize(gbool tryLock);
 
         /**
          * Returns a capacity at least as large as the given minimum capacity.
@@ -123,7 +119,7 @@ namespace core {
          * Construct new StringBuffer with no characters in it and an initial
          * capacity of 16 characters.
          */
-        StringBuffer();
+        CORE_IMPLICIT StringBuffer() : StringBuffer(DEFAULT_CAPACITY) {}
 
         /**
          * Construct new StringBuffer with no characters in it and the\
@@ -196,16 +192,12 @@ namespace core {
         /**
          * Return the current number of character in this StringBuffer.
          */
-        CORE_FAST gint length() const {
-            return len;
-        }
+        CORE_FAST gint length() const { return len; }
 
         /**
          * Return the current capacity of this StringBuffer.
          */
-        CORE_FAST gint capacity() const {
-            return cap;
-        }
+        CORE_FAST gint capacity() const { return cap; }
 
         /**
          * Set the length of this character sequence. The sequence is changed
@@ -316,7 +308,7 @@ namespace core {
          */
         StringBuffer &append(const String &str);
 
-        template <class Str, Class<gbool>::Iff<Class<Str>::isString()> = true>
+        template<class Str, Class<gbool>::Iff<Class<Str>::isString()> = true>
         StringBuffer &append(Str &&str) {
             return append((String) str);
         }
@@ -356,8 +348,8 @@ namespace core {
          */
         StringBuffer &append(gchar ch);
 
-        template <class Chr, Class<gbool>::Iff<Class<Chr>::isCharacter()> = true>
-        StringBuffer &append(Chr&& ch) {
+        template<class Chr, Class<gbool>::Iff<Class<Chr>::isCharacter()> = true>
+        StringBuffer &append(Chr &&ch) {
             return append((gchar) ch);
         }
 
@@ -529,7 +521,7 @@ namespace core {
          */
         StringBuffer &insert(gint offset, const String &str);
 
-        template <class Str, Class<gbool>::Iff<Class<Str>::isString()> = true>
+        template<class Str, Class<gbool>::Iff<Class<Str>::isString()> = true>
         StringBuffer &insert(gint offset, Str &&str) {
             return insert(offset, (String) str);
         }
@@ -579,8 +571,8 @@ namespace core {
          */
         StringBuffer &insert(gint offset, gchar ch);
 
-        template <class Chr, Class<gbool>::Iff<Class<Chr>::isCharacter()> = true>
-        StringBuffer &insert(gint offset, Chr&& ch) {
+        template<class Chr, Class<gbool>::Iff<Class<Chr>::isCharacter()> = true>
+        StringBuffer &insert(gint offset, Chr &&ch) {
             return insert(offset, (gchar) ch);
         }
 
@@ -1020,7 +1012,7 @@ namespace core {
          *              is negative or greater than or equal to
          *              length.
          */
-        StringBuffer& removeAt(gint index);
+        StringBuffer &removeAt(gint index);
 
         /**
          * Removes the characters in a substring of this sequence.
@@ -1034,7 +1026,7 @@ namespace core {
          *             is negative, greater than length, or
          *             greater than endIndex.
          */
-        StringBuffer& remove(gint startIndex, gint endIndex);
+        StringBuffer &remove(gint startIndex, gint endIndex);
     };
 
 } // core

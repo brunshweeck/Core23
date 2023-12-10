@@ -6,20 +6,14 @@
 #define CORE23_STRING_H
 
 #include <core/Comparable.h>
-#include <core/primitive/ByteArray.h>
-#include <core/primitive/CharArray.h>
-#include <core/primitive/IntArray.h>
+#include <core/native/ByteArray.h>
+#include <core/native/CharArray.h>
+#include <core/native/IntArray.h>
 #include <core/private/Null.h>
 
 namespace core {
 
-    class StringBuffer;
-
-    namespace util {
-        class Locale;
-    }
-
-    class String final: public Comparable<String> {
+    class String CORE_FINAL : public Object, public Comparable<String> {
     private:
         /**
          * Storage represent a primitie byte array used to store string value
@@ -29,17 +23,17 @@ namespace core {
         /**
          * The value used to store character.
          */
-        STORAGE value = null;
+        STORAGE value = {};
 
         /**
          * The character count of this String
          */
-        gint len = 0;
+        gint len = {};
 
         /**
          * The cache for hash code of this String
          */
-        gint hashcode = 0;
+        gint hashcode = {};
 
         /**
          * The cache for hash, tell if hashcode has been calculated
@@ -56,7 +50,7 @@ namespace core {
          */
         void wrap(glong address, gint bytesPerChar, glong nbChars, gint offset, gint limit);
 
-        friend StringBuffer;
+        friend class StringBuffer;
 
     public:
 
@@ -64,7 +58,7 @@ namespace core {
          * Initializes a newly created String object so that it represents
          * an empty character sequence.
          */
-        CORE_FAST String() {}
+        CORE_FAST String() = default;
 
         /**
          * Initializes a newly created String object so that it represents
@@ -197,15 +191,15 @@ namespace core {
          */
         template<class Str, Class<gbool>::OnlyIf<Class<Str>::isString()> = true>
         CORE_IMPLICIT String(Str &&value) {
-            gint bpc = 0; // used to determine char type (support values 1, 2, 4)
-            glong nbChars = 0; // number of chars in given array (-1 if array is pointer)
-            glong address = 0; // memory address of given array
+            gint bpc = {}; // used to determine char type (support values 1, 2, 4)
+            glong nbChars = {}; // number of chars in given array (-1 if array is pointer)
+            glong address = {}; // memory address of given array
             if((address = (glong) value) == 0) {
                 // the null pointer is used as empty String
                 return;
             }
             if (Class<Str>::isArray()) {
-                // primitive and static char array
+                // native and static char array
                 CORE_ALIAS(CharT, typename Class<Str>::NoArray);
                 if((nbChars = sizeof(Str)/(bpc = sizeof(CharT))) > 0 && value[nbChars - 1] == 0) {
                     // remove last NULL char
@@ -217,7 +211,7 @@ namespace core {
                 }
             } else {
                 CORE_ALIAS(CharT, typename Class<Str>::NoPointer);
-                // primitive and unsizable (dynamic) chars array
+                // native and unsizable (dynamic) chars array
                 // The start of this string is char at index <offset>
                 // The end of this string is char at index <offset + count>
                 bpc = sizeof(CharT);
@@ -257,7 +251,7 @@ namespace core {
                 return;
             }
             if (Class<Str>::isArray()) {
-                // primitive and static char array
+                // native and static char array
                 CORE_ALIAS(CharT, typename Class<Str>::NoArray);
                 if((nbChars = sizeof(Str)/(bpc = sizeof(CharT))) > 0 && value[nbChars - 1] == 0) {
                     // remove last NULL char (1 char = bpc)
@@ -269,7 +263,7 @@ namespace core {
                 }
             } else {
                 CORE_ALIAS(CharT, typename Class<Str>::NoPointer);
-                // primitive and unsizable (dynamic) chars array
+                // native and unsizable (dynamic) chars array
                 // The start of this string is char at index <offset>
                 // The end of this string is char at index <offset + count>
                 bpc = sizeof(CharT);
@@ -418,7 +412,7 @@ namespace core {
          * @param str
          *          The String to be compared.
          */
-        gint compareTo(const String &other) const override;
+        gint compareTo(const String& other) const override;
 
         /**
          * Compares two strings lexicographically, ignoring case differences. This method returns
@@ -784,106 +778,6 @@ namespace core {
          * toLowerCase(Locale.ROOT).
          */
         String toLowerCase() const;
-
-        /**
-         * Converts all of the characters in this String to lower
-         * case using the rules of the given Locale.  Case mapping is based
-         * on the Unicode Standard version specified by the  Character Character
-         * class. Since case mappings are not always 1:1 char mappings, the resulting String
-         * and this String may differ in length.
-         * <p>
-         * Examples of lowercase mappings are in the following table:
-         * <table class="plain">
-         * <caption style="display:none">Lowercase mapping examples showing language code of locale, upper case, lower case, and description</caption>
-         * <thead>
-         * <tr>
-         *   <th scope="col">Language Code of Locale</th>
-         *   <th scope="col">Upper Case</th>
-         *   <th scope="col">Lower Case</th>
-         *   <th scope="col">Description</th>
-         * </tr>
-         * </thead>
-         * <tbody>
-         * <tr>
-         *   <td>tr (Turkish)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0130</th>
-         *   <td>&#92;u0069</td>
-         *   <td>capital letter I with dot above -&gt; small letter i</td>
-         * </tr>
-         * <tr>
-         *   <td>tr (Turkish)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0049</th>
-         *   <td>&#92;u0131</td>
-         *   <td>capital letter I -&gt; small letter dotless i </td>
-         * </tr>
-         * <tr>
-         *   <td>(all)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">French Fries</th>
-         *   <td>french fries</td>
-         *   <td>lowercased all chars in String</td>
-         * </tr>
-         * <tr>
-         *   <td>(all)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">
-         *       &Iota;&Chi;&Theta;&Upsilon;&Sigma;</th>
-         *   <td>&iota;&chi;&theta;&upsilon;&sigma;</td>
-         *   <td>lowercased all chars in String</td>
-         * </tr>
-         * </tbody>
-         * </table>
-         *
-         * @param locale use the case transformation rules for this locale
-         */
-        String toLowerCase(const util::Locale &locale) const;
-
-        /**
-         * Converts all of the characters in this String to upper
-         * case using the rules of the given Locale. Case mapping is based
-         * on the Unicode Standard version specified by the  Character Character
-         * class. Since case mappings are not always 1:1 char mappings, the resulting String
-         * and this String may differ in length.
-         * <p>
-         * Examples of locale-sensitive and 1:M case mappings are in the following table:
-         * <table class="plain">
-         * <caption style="display:none">Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.</caption>
-         * <thead>
-         * <tr>
-         *   <th scope="col">Language Code of Locale</th>
-         *   <th scope="col">Lower Case</th>
-         *   <th scope="col">Upper Case</th>
-         *   <th scope="col">Description</th>
-         * </tr>
-         * </thead>
-         * <tbody>
-         * <tr>
-         *   <td>tr (Turkish)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0069</th>
-         *   <td>&#92;u0130</td>
-         *   <td>small letter i -&gt; capital letter I with dot above</td>
-         * </tr>
-         * <tr>
-         *   <td>tr (Turkish)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0131</th>
-         *   <td>&#92;u0049</td>
-         *   <td>small letter dotless i -&gt; capital letter I</td>
-         * </tr>
-         * <tr>
-         *   <td>(all)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u00df</th>
-         *   <td>&#92;u0053 &#92;u0053</td>
-         *   <td>small letter sharp s -&gt; two letters: SS</td>
-         * </tr>
-         * <tr>
-         *   <td>(all)</td>
-         *   <th scope="row" style="font-weight:normal; text-align:left">Fahrvergn&uuml;gen</th>
-         *   <td>FAHRVERGN&Uuml;GEN</td>
-         *   <td></td>
-         * </tr>
-         * </tbody>
-         * </table>
-         * @param locale use the case transformation rules for this locale
-         */
-        String toUpperCase(const util::Locale &locale) const;
 
         /**
          * Converts all of the characters in this String to upper

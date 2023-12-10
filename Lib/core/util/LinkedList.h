@@ -207,7 +207,7 @@ namespace core {
              */
             void linkFirst(E &e) {
                 LnkNode f = first;
-                LnkNode newNode = &U::U.createInstance<Node>(null, e, f);
+                LnkNode newNode = &U::createInstance<Node>(null, e, f);
                 first = newNode;
                 if (f == null) last = newNode; else f->prev = newNode;
                 len += 1;
@@ -219,7 +219,7 @@ namespace core {
              */
             void linkLast(E &e) {
                 LnkNode l = last;
-                LnkNode newNode = &U::U.createInstance<Node>(l, e, null);
+                LnkNode newNode = &U::createInstance<Node>(l, e, null);
                 last = newNode;
                 if (l == null) first = newNode; else l->next = newNode;
                 len += 1;
@@ -232,7 +232,7 @@ namespace core {
             void linkBefore(E &e, LnkNode succ) {
                 // CORE_ASSERT(succ != null, "core.util.LinkedList");
                 LnkNode pred = succ->prev;
-                LnkNode newNode = &U::U.createInstance<Node>(pred, e, succ);
+                LnkNode newNode = &U::createInstance<Node>(pred, e, succ);
                 succ->prev = newNode;
                 if (pred == null) first = newNode; else pred->next = newNode;
                 len += 1;
@@ -326,7 +326,7 @@ namespace core {
              * @return <b>true</b> (as specified by <b style="color:orange;">Collection#add</b>)
              */
             gbool add(const E &e) override {
-                linkLast(U::U.copyInstance(e, true));
+                linkLast(U::copyInstance(e, true));
                 return true;
             }
 
@@ -427,7 +427,7 @@ namespace core {
                     }
                     for (T &t: a) {
                         E &e = (E &) t;
-                        LnkNode newNode = &U::U.createInstance<Node>(pred, e, null);
+                        LnkNode newNode = &U::createInstance<Node>(pred, e, null);
                         if (pred == null) first = newNode; else pred->next = newNode;
                         pred = newNode;
                     }
@@ -506,7 +506,7 @@ namespace core {
                     Preconditions::checkIndex(index, len);
                     LnkNode x = nodeAt(index);
                     E &oldValue = *x->item;
-                    x->item = &U::U.copyInstance(element, true);
+                    x->item = &U::copyInstance(element, true);
                     return oldValue;
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
@@ -523,8 +523,8 @@ namespace core {
             void add(gint index, const E &element) override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    if (index == len) linkLast(U::U.copyInstance(element, true));
-                    else linkBefore(U::U.copyInstance(element, true), nodeAt(index));
+                    if (index == len) linkLast(U::copyInstance(element, true));
+                    else linkBefore(U::copyInstance(element, true), nodeAt(index));
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
@@ -553,11 +553,11 @@ namespace core {
                 // CORE_ASSERT(index >= 0 && index <= len, "core.util.LinkedList");
                 if (index < (len >> 1)) {
                     LnkNode x = first;
-                    for (int i = 0; i < index; i++) x = x->next;
+                    for (gint i = 0; i < index; i++) x = x->next;
                     return x;
                 } else {
                     LnkNode x = last;
-                    for (int i = len - 1; i > index; i--) x = x->prev;
+                    for (gint i = len - 1; i > index; i--) x = x->prev;
                     return x;
                 }
             }
@@ -628,7 +628,7 @@ namespace core {
             ListIterator<E> &iterator(gint index) override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::U.createInstance<ListItr<E >>((LinkedList &) *this, index);
+                    return U::createInstance<ListItr<E >>((LinkedList &) *this, index);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
@@ -656,7 +656,7 @@ namespace core {
             ListIterator<const E> &iterator(gint index) const override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::U.createInstance<ListItr<const E>>((LinkedList &) *this, index);
+                    return U::createInstance<ListItr<const E>>((LinkedList &) *this, index);
                 } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
@@ -727,14 +727,14 @@ namespace core {
                 void set(const T &e) override {
                     if (last == null) StateException().throws(__trace("core.util.LinkedList.ListItr"));
                     if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
-                    last->item = &U::U.copyInstance(e, true);
+                    last->item = &U::copyInstance(e, true);
                 }
 
                 void add(const T &e) override {
                     if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = null;
-                    if (cursor == null) root.linkLast(U::U.copyInstance(e, true));
-                    else root.linkBefore(U::U.copyInstance(e, true), cursor);
+                    if (cursor == null) root.linkLast(U::copyInstance(e, true));
+                    else root.linkBefore(U::copyInstance(e, true), cursor);
                     index += 1;
                     modNum = root.modNum;
                 }
@@ -760,7 +760,7 @@ namespace core {
              *
              * @return a shallow copy of this <b>LinkedList</b> instance
              */
-            Object &clone() const override { return U::U.createInstance<LinkedList>(*this); }
+            Object &clone() const override { return U::createInstance<LinkedList>(*this); }
 
             /**
              * Returns an array containing all of the elements in this list
