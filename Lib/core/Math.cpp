@@ -165,7 +165,7 @@ namespace core {
             if (intBits < 0) {
                 r = -r;
             }
-            // In the comments below each Java expression evaluates to the value
+            // In the comments below each expression evaluates to the value
             // the corresponding mathematical expression:
             // (r) evaluates to a / ulp(a)
             // (r >> shift) evaluates to floor(a * 2)
@@ -191,7 +191,7 @@ namespace core {
             if (longBits < 0) {
                 r = -r;
             }
-            // In the comments below each Java expression evaluates to the value
+            // In the comments below each expression evaluates to the value
             // the corresponding mathematical expression:
             // (r) evaluates to a / ulp(a)
             // (r >> shift) evaluates to floor(a * 2)

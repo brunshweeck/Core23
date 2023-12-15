@@ -8,8 +8,6 @@
 #include <core/util/Collection.h>
 #include <core/util/ListIterator.h>
 #include <core/util/function/UnaryOperator.h>
-#include <core/NoSuchItemException.h>
-#include "ConcurrentException.h"
 
 namespace core {
     namespace util {
@@ -34,7 +32,7 @@ namespace core {
          * also included here for convenience.<p>
          *
          * The <b> List</b> interface provides four methods for positional (indexed)
-         * access to list elements.  Lists (like Java arrays) are zero based.  Note
+         * access to list elements.  Lists (like arrays) are zero based.  Note
          * that these operations may execute in time proportional to the index value
          * for some implementations (the <b> LinkedList</b> class, for
          * example). Thus, iterating over the elements in a list is typically

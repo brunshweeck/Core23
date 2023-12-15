@@ -24,7 +24,7 @@ namespace core {
          * <p>
          * The mismatch method implementation, vectorizedMismatch, leverages
          * vector-based techniques to access and compare the contents of two arrays.
-         * The Java implementation uses Unsafe.getLongUnaligned</b> to access the
+         * The implementation uses Unsafe.getLongUnaligned</b> to access the
          * content of an array, thus access is supported on platforms that do not
          * support unaligned access.  For a const ByteArray & array, 8 bytes (64 bits) can be
          * accessed and compared as a unit rather than individually, which increases
@@ -33,7 +33,7 @@ namespace core {
          * instructions.  So for a const ByteArray & array, 16 bytes (128 bits), 32 bytes
          * (256 bits), and perhaps in the future even 64 bytes (512 bits), platform
          * permitting, can be accessed and compared as a unit, which further increases
-         * the performance over the Java implementation.
+         * the performance over the implementation.
          *
          * <p>None of the mismatch methods perform array bounds checks.  It is the
          * responsibility of the caller (direct or otherwise) to perform such checks

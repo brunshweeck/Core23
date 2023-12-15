@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class CharArray: public Array<Character> {
+        class CharArray : public Array<Character> {
         private:
             /**
              * gchar[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gbool>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gbool>()>);
 
         public:
 
             /**
              * Construct new empty Char Array
              */
-            CharArray(): CharArray(0) {}
+            CharArray() : CharArray(0) {}
 
             /**
              * Construct new CharArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~CharArray() override;
+
+            /**
+             * Construct new CharArray instance with address
+             *
+             * @code
+             *  gchar b[50] = {...}
+             *  CharArray ba = CharArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static CharArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gchar>()> = true>
+            static CharArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                CharArray ba(size, (gchar) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gchar) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new CharArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gchar>::allIsTrue
+                    (Class<T>::template isAssignable<gchar>()...)> = true>
+            static CharArray of(T &&...a) {
+                gint size = sizeof...(a);
+                CharArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gbool>::valueExactAt(i + 1, 0, (gchar) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

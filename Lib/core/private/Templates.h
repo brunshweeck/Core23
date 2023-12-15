@@ -283,42 +283,42 @@ namespace core {
             template<class T, class U, class ...Params>
             interface TEST<14, T(U::*)(Params...) const volatile &&> : ALWAYS_TRUE {
             };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) volatile CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const volatile CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) &CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const &CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) volatile &CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const volatile &CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) &&CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const &&CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
-            };
-            template<class T, class U, class ...Params>
-            interface TEST<14, T(U::*)(Params...) const volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
-            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) volatile CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const volatile CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) &CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const &CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) volatile &CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const volatile &CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) &&CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const &&CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
+//            template<class T, class U, class ...Params>
+//            interface TEST<14, T(U::*)(Params...) const volatile &&CORE_NOTHROW> : ALWAYS_TRUE {
+//            };
 #endif
             /////////////////////////////////[Abstract]/////////////////////////////////////
 
@@ -384,11 +384,13 @@ namespace {
 
 
 #ifdef CORE_COMPILER_MSVC
-#ifdef _DComplex
-    CORE_ALIAS(GENERIC_COMPLEX, _DComplex);
-#else
-    CORE_ALIAS(GENERIC_COMPLEX, struct _C_double_complex);
-#endif
+    #ifdef _DComplex
+        CORE_ALIAS(GENERIC_CPLEX, _DComplex);
+    #elif !defined(__clang__)
+        CORE_ALIAS(GENERIC_CPLEX, ::_C_double_complex);
+    #else
+        CORE_ALIAS(GENERIC_CPLEX, _Complex double);
+    #endif //_DComplex
 #else
     CORE_ALIAS(GENERIC_CPLEX, _Complex double);
 #endif
@@ -1004,3 +1006,4 @@ namespace core {
 
 
 #endif //CORE23_TEMPLATES_H
+

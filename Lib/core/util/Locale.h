@@ -1649,7 +1649,7 @@ namespace core {
              * href="#def_region">well-formed</a> (for example "12" or "USA"),
              * it will be omitted.
              *
-             * <p><b>Special Conversions:</b> Java supports some old locale
+             * <p><b>Special Conversions:</b> supports some old locale
              * representations, including deprecated ISO language codes,
              * for compatibility. This method performs the following
              * conversions:

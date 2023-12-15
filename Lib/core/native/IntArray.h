@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class IntArray: public Array<Integer> {
+        class IntArray : public Array<Integer> {
         private:
             /**
              * gint[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gint>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gint>()>);
 
         public:
 
             /**
              * Construct new empty Int Array
              */
-            IntArray(): IntArray(0) {}
+            IntArray() : IntArray(0) {}
 
             /**
              * Construct new IntArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~IntArray() override;
+
+            /**
+             * Construct new IntArray instance with address
+             *
+             * @code
+             *  gint b[50] = {...}
+             *  IntArray ba = IntArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static IntArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gint>()> = true>
+            static IntArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                IntArray ba(size, (gint) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gint) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new IntArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gint>::allIsTrue
+                    (Class<T>::template isAssignable<gint>()...)> = true>
+            static IntArray of(T &&...a) {
+                gint size = sizeof...(a);
+                IntArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gint>::valueExactAt(i + 1, 0, (gint) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

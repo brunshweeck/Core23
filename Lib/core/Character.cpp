@@ -545,4 +545,6 @@ namespace core {
                 return String((gchar *) dec, 1, length);
         }
     }
+
+    Character Character::valueOf(gchar c) { return c;}
 } // core

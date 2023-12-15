@@ -20,7 +20,7 @@ namespace core {
      * @author
      *      Brunshweeck Tazeussong
      */
-    class Byte CORE_FINAL  : public Object, public Comparable<Byte> {
+    class Byte CORE_FINAL : public Object, public Comparable<Byte> {
     private:
         /**
          * The value of the Byte
@@ -125,7 +125,7 @@ namespace core {
          */
         static Byte valueOf(const String &s);
 
-        static CORE_FAST Byte valueOf(gbyte b) { return b; }
+        static Byte valueOf(gbyte b);
 
         /**
          * Decodes a String into a Byte.

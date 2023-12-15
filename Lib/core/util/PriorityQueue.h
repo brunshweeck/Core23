@@ -5,13 +5,8 @@
 #ifndef CORE23_PRIORITYQUEUE_H
 #define CORE23_PRIORITYQUEUE_H
 
-#include <core/util/Queue.h>
-#include <core/util/Comparator.h>
-#include <core/util/TreeSet.h>
-#include <core/AssertionError.h>
 #include <core/private/ArraysSupport.h>
-#include <core/NoSuchItemException.h>
-#include "ConcurrentException.h"
+#include <core/util/Queue.h>
 
 namespace core {
     namespace util {
@@ -115,6 +110,10 @@ namespace core {
              */
             gint modNum = {};
 
+            template<class T>
+            friend
+            class PriorityQueue;
+
         public:
 
             /**
@@ -133,7 +132,7 @@ namespace core {
              * @param initialCapacity the initial capacity for this priority queue
              * @throws ArgumentException if <b>initialCapacity</b> is negative
              */
-            CORE_EXPLICIT PriorityQueue(gint initialCapacity) {
+            CORE_EXPLICIT PriorityQueue(gint initialCapacity) : cmp((COMPARATOR) &Comparator<E>::naturalOrder()) {
                 if (initialCapacity < 0)
                     ArgumentException("Negative initial capacity").throws(__trace("core.util.PriorityQueue"));
                 queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, initialCapacity)));
@@ -146,11 +145,10 @@ namespace core {
              * @param  comparator the comparator that will be used to order this
              *         priority queue.  If <b>null</b>, the <b style="color:green;">Comparable
              *         natural ordering</b> of the elements will be used.
-             * @since 1.8
              */
             template<class T = E>
-            CORE_EXPLICIT
-            PriorityQueue(const Comparator<Capture<T>> &comparator): cmp(&Comparator<E>::copyOf(comparator)) {
+            CORE_EXPLICIT PriorityQueue(const Comparator<Capture<T>> &comparator) {
+                cmp = (COMPARATOR) &Comparator<E>::copyOf(comparator);
                 queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, DEFAULT_CAPACITY)));
             }
 
@@ -168,9 +166,10 @@ namespace core {
             template<class T = E>
             CORE_EXPLICIT PriorityQueue(gint initialCapacity, const Comparator<Capture<T>> &comparator) {
                 // Note: This restriction of at least one is not actually needed
-                if (initialCapacity < 1) ArgumentException().throws(__trace("core.util.PriorityQueue"));
+                if (initialCapacity < 1)
+                    ArgumentException().throws(__trace("core.util.PriorityQueue"));
+                cmp = (COMPARATOR) &U::copyInstance(comparator, true);
                 queue = (ARRAY) U::allocateMemory(L(capacity = initialCapacity));
-                cmp = &U::copyInstance(comparator, true);
             }
 
             /**
@@ -189,24 +188,27 @@ namespace core {
              */
             template<class T = E>
             CORE_EXPLICIT PriorityQueue(const Collection<Capture<T>> &c) {
+                gbool doHeapify = false;
                 if (Class<PriorityQueue<T>>::hasInstance(c)) {
-                    const PriorityQueue<T> &pq = CORE_DYN_CAST(const PriorityQueue<T>&, c);
-                    cmp = &Comparator<E>::copyOf(*pq.cmp);
-                    queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, pq.capacity)));
-                    arraycopy(pq.queue, 0, queue, 0, len = pq.len);
+                    const PriorityQueue<T> &pq = (PriorityQueue<T> &) c;
+                    cmp = (COMPARATOR) &Comparator<E>::copyOf(pq.comparator());
+                } else if (Class<SortedStruct<T>>::hasInstance(c) != 0) {
+                    const SortedStruct<T> &aStruct = (SortedStruct<T> &) c;
+                    cmp = (COMPARATOR) &Comparator<E>::copyOf(aStruct.comparator());
                 } else {
-                    if (Class<TreeSet<T>>::hasInstance(c)) {
-                        const TreeSet<T> &ts = (CORE_DYN_CAST(const TreeSet<T>&, c));
-                        //cmp = &ts.comparator();
-                    }
-                    ReferenceArray<T> ra = c.toArray();
-                    if (ra.length() == 0) queue = (ARRAY) U::allocateMemory(L(capacity = 1));
-                    else {
-                        queue = ra.value;
-                        len = capacity = ra.len;
-                        ra.len = 0;
-                        ra.value = null;
-                    }
+                    cmp = (COMPARATOR) &Comparator<E>::naturalOrder();
+                    doHeapify = true;
+                }
+                ReferenceArray<T> ra = c.toArray();
+                if (ra.length() == 0)
+                    queue = (ARRAY) U::allocateMemory(L(capacity = 1));
+                else {
+                    queue = ra.value;
+                    len = capacity = ra.len;
+                    ra.len = 0;
+                    ra.value = null;
+                    if (doHeapify)
+                        heapify();
                 }
             }
 
@@ -224,33 +226,11 @@ namespace core {
              */
             template<class T = E>
             CORE_EXPLICIT PriorityQueue(const PriorityQueue<Capture<T>> &pq) {
-                if (pq.cmp != null) cmp = &Comparator<E>::copyOf(pq.cmp[0]);
-                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, pq.capacity)));
-                arraycopy(pq.queue, 0, queue, 0, len = pq.len);
-            }
-
-            /**
-             * Creates a <b>PriorityQueue</b> containing the elements in the
-             * specified sorted set.   This priority queue will be ordered
-             * according to the same ordering as the given sorted set.
-             *
-             * @param  ts the sorted set whose elements are to be placed
-             *         into this priority queue
-             * @throws CastException if elements of the specified sorted
-             *         set cannot be compared to one another according to the
-             *         sorted set's ordering
-             */
-            template<class T = E>
-            CORE_EXPLICIT PriorityQueue(const TreeSet<Capture<T>> &ts) {
-                //cmp = &Comparator<E>::copyOf(ts.comparator());
-                ReferenceArray<T> ra = ts.toArray();
-                if (ra.length() == 0) queue = (ARRAY) U::allocateMemory(L(capacity = 1));
-                else {
-                    queue = ra.value;
-                    len = capacity = ra.len;
-                    ra.len = 0;
-                    ra.value = null;
-                }
+                if (pq.cmp != null)
+                    cmp = &Comparator<E>::copyOf(pq.comparator());
+                gint pSize = pq.size();
+                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, pSize)));
+                arraycopy(pq.queue, 0, queue, 0, len = pSize);
             }
 
             /**
@@ -363,7 +343,9 @@ namespace core {
                 gint qSize = len;
                 modNum += 1;
                 if (qSize >= capacity) resize(qSize + 1);
-                shiftUp(qSize, U::copyInstance(e, true));
+                // find the reusable perfect copy of e
+                E &x = U::copyInstance(e, true);
+                shiftUp(qSize, x);
                 len = qSize + 1;
                 return true;
             }
@@ -430,8 +412,7 @@ namespace core {
              */
             ReferenceArray<E> toArray() const override {
                 ReferenceArray<E> ra = ReferenceArray<E>(len);
-                gint j = 0;
-                for (gint i = 1; i <= len; i = successor(i, len)) ra.value[j++] = queue[i];
+                arraycopy(queue, 0, ra.value, 0, len);
                 return ra;
             }
 
@@ -464,7 +445,7 @@ namespace core {
                  * Index (into queue array) of element to be returned by
                  * subsequent call to next.
                  */
-                gint cursor = 1;
+                gint cursor = 0;
 
                 /**
                  * Index of element returned by most recent call to next,
@@ -482,25 +463,45 @@ namespace core {
 
                 PriorityQueue<E> &root;
 
+                ArrayList<E> forgetMeNot = {};
+
+                REFERENCE lastRef = {};
+
             public:
                 CORE_FAST Itr(PriorityQueue<E> &root) : root(root), modNum(root.modNum) {}
 
-                gbool hasNext() const override { return 1 <= cursor && cursor <= root.len; }
+                gbool hasNext() const override { return cursor <= root.len; }
 
                 T &next() override {
                     if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.PriorityQueue"));
-                    if (!hasNext()) NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
-                    last = cursor;
-                    cursor = successor(cursor, root.len);
-                    return elementAt(root.queue, last - 1);
+                    if (cursor < root.len) {
+                        return elementAt(root.queue, last = cursor++);
+                    } elif (!forgetMeNot.isEmpty()) {
+                        last = -1;
+                        lastRef = &forgetMeNot.get(0);
+                        forgetMeNot.removeAt(0);
+                        return *lastRef;
+                    }
+                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
                 }
 
                 void remove() override {
                     if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.PriorityQueue"));
-                    if (last < 1) StateException().throws(__trace("core.util.PriorityQueue"));
-                    cursor = last;
-                    root.removeAt(last - 1);
-                    last = -1;
+                    if (last != -1) {
+                        const E &e = root.removeAt(last);
+                        last = -1;
+                        forgetMeNot.add(e);
+                    } elif (lastRef != null) {
+                        gint qSize = root.len;
+                        for (int i = 0; i < qSize; ++i) {
+                            if (*lastRef == elementAt(root.queue, i)) {
+                                root.removeAt(i);
+                                break;
+                            }
+                        }
+                        lastRef = null;
+                    } else
+                        StateException().throws(__trace("core.util.PriorityQueue"));
                     modNum = root.modNum;
                 }
 
@@ -569,29 +570,6 @@ namespace core {
                 return moved;
             }
 
-            static CORE_FAST gint parent(gint n) { return n >> 1; }
-
-            static CORE_FAST gint left(gint n) { return n << 1; }
-
-            static CORE_FAST gint right(gint n) { return (n << 1) + 1; }
-
-            static gint successor(gint n, gint limit) {
-                if (n > limit) return n;
-                if (right(n) < limit) {
-                    gint p = right(n);
-                    while (left(p) <= limit) p = left(p);
-                    return p;
-                }
-                gint p = parent(n);
-                gint c = n;
-                while (p > 0 && c == right(p)) {
-                    c = p;
-                    p = parent(p);
-                }
-                return p;
-
-            }
-
             /**
              * Inserts item x at position k, maintaining heap invariant by
              * promoting x up the tree until it is greater than or equal to
@@ -606,7 +584,7 @@ namespace core {
              */
             void shiftUp(gint k, E &x) {
                 ARRAY es = queue;
-                Comparator<E> &comparator = cmp != null ? cmp[0] : Comparator<E>::naturalOrder();
+                Comparator<E> &comparator = cmp[0];
                 while (k > 0) {
                     gint parent = (k - 1) >> 1;
                     E &e = elementAt(es, parent);
@@ -629,7 +607,7 @@ namespace core {
                 gint n = len;
                 ARRAY es = queue;
                 gint half = n >> 1;
-                Comparator<E> &comparator = cmp != null ? cmp[0] : Comparator<E>::naturalOrder();
+                Comparator<E> &comparator = cmp[0];
                 while (k < half) {
                     gint child = (k << 1) + 1;
                     E &c = elementAt(es, child);
@@ -770,7 +748,7 @@ namespace core {
                 gint oldModNum = modNum;
                 ARRAY es = queue;
                 gint qSize = len;
-                for (gint i = 1; i <= qSize; i = successor(i, qSize)) action.accept(elementAt(es, i - 1));
+                for (gint i = 0; i <= qSize; i++) action.accept(elementAt(es, i));
                 if (oldModNum != modNum) ConcurrentException().throws(__trace("core.util.PriorityQueue"));
             }
 

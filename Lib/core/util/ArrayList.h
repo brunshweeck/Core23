@@ -5,11 +5,9 @@
 #ifndef CORE23_ARRAYLIST_H
 #define CORE23_ARRAYLIST_H
 
-#include "List.h"
-#include "ConcurrentException.h"
 #include <core/Math.h>
+#include <core/util/List.h>
 #include <core/private/ArraysSupport.h>
-#include <core/NoSuchItemException.h>
 
 namespace core {
     namespace util {
@@ -311,9 +309,13 @@ namespace core {
             gint findIndex(const E &o, gint start, gint end, gbool first) const {
                 ARRAY es = data;
                 if (first) {
-                    for (gint i = start; i < end; i++) if (o.equals(elementAt(es, i))) return i;
+                    for (gint i = start; i < end; i++)
+                        if (o.equals(elementAt(es, i)))
+                            return i;
                 } else
-                    for (gint i = end - 1; i >= start; i--) if (o.equals(elementAt(es, i))) return i;
+                    for (gint i = end - 1; i >= start; i--)
+                        if (o.equals(elementAt(es, i)))
+                            return i;
                 return -1;
             }
 
@@ -546,10 +548,12 @@ namespace core {
              * @return <b>true</b> if this list contained the specified element
              */
             gbool remove(const E &o) override {
-                gint i;
-                if ((i = indexOf(o)) < 0) return false;
-                removeAt(i);
-                return true;
+                gint i = indexOf(o);
+                if (i >= 0) {
+                    removeAt(i);
+                    return true;
+                }
+                return false;
             }
 
             /**
@@ -1357,10 +1361,12 @@ namespace core {
             }
 
             gbool containsAll(const Collection<E> &c) const override {
-                auto &itr = c.iterator();
-                while (itr.hasNext())
-                    if (!contains(itr.next()))
+                Iterator<const E> &itr = c.iterator();
+                while (itr.hasNext()) {
+                    if (!contains(itr.next())) {
                         return false;
+                    }
+                }
                 return true;
             }
 

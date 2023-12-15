@@ -340,9 +340,6 @@ namespace core {
          * <b>double</b> value represented by the argument string
          * <b>str</b>.
          *
-         * <p>If <b>str</b> is <b>null</b>, then a
-         * <b>NullPointerException</b> is thrown.
-         *
          * <p>Leading and trailing whitespace characters in <b>str</b>
          * are ignored.  Whitespace is removed as if by the <b>
          * String.strip</b> method; that is, both ASCII space and control

@@ -10,7 +10,7 @@
 namespace core {
 
     /**
-     * Thrown when the Java Virtual Machine cannot allocate an object
+     * Thrown when the Machine cannot allocate an object
      * because it is out of memory, and no more memory could be made
      * available by the garbage collector.
      */

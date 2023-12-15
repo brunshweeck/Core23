@@ -90,55 +90,51 @@ namespace core {
          * <p>
          * Note: Complex number is finite if all complex parts are finite
          */
-        CORE_FAST gbool isFinite() const { return Double::isFinite(rvalue) && Double::isFinite(ivalue);}
+        CORE_FAST gbool isFinite() const { return Double::isFinite(rvalue) && Double::isFinite(ivalue); }
 
         /**
          * Return the reverse form of this Complex.
          * @example <pre>(2 + 3i).reverse() = 3 + 2i</pre>
          */
-        CORE_FAST Complex reverse() const { return Complex(imag(), real()); }
+        Complex reverse() const;
 
         /**
          * Return the conjugate of this Complex
          */
-        CORE_FAST Complex conjugate() const { return Complex(real(), -imag());}
+        Complex conjugate() const;
 
         /**
          * Return the negation of this Complex
          */
-        CORE_FAST Complex negate() const { return Complex(-real(), -imag());}
+        Complex negate() const;
 
         /**
          * Return the sum between this Complex and another.
          *
          * @param z The Other complex
          */
-        CORE_FAST Complex plus(const Complex &z) const { return Complex(real() + z.real(), imag() + z.imag()); }
+        Complex plus(const Complex &z) const;
 
         /**
          * Return the subtraction between this Complex and another.
          *
          * @param z The Other complex
          */
-        CORE_FAST Complex minus(const Complex &z) const { return Complex(real() - z.real(), imag() - z.imag()); }
+        Complex minus(const Complex &z) const;
 
         /**
          * Return the multiplication between this Complex and another.
          *
          * @param z The Other complex
          */
-        CORE_FAST Complex mult(const Complex &z) const {
-            return Complex(real() * z.real() - imag() * z.imag(), imag() * z.real() + real() * z.imag());
-        }
+        Complex mult(const Complex &z) const;
 
         /**
          * Return the multiplication between this Complex and another.
          *
          * @param z The Other complex
          */
-        CORE_FAST Complex div(const Complex &z) const {
-            return mult(z.conjugate()).div(z.real() * z.real() + z.imag() * z.imag());
-        }
+        Complex div(const Complex &z) const;
 
         /**
          * Return the division between this Complex and another.
@@ -146,7 +142,7 @@ namespace core {
          * @param cplex
          *          The Other complex
          */
-        CORE_FAST Complex div(gdouble d) const { return Complex(real() / d, imag() / d); }
+        Complex div(gdouble d) const;
 
         /**
          * Return the value of this Complex as byte
@@ -288,14 +284,35 @@ namespace core {
 
         gint compareTo(const Complex &other) const override;
 
-        CORE_FAST friend Complex operator+(const Complex &z1, const Complex &z2) { return z1.plus(z2); }
+        friend Complex operator+(const Complex &z1, const Complex &z2);
 
-        CORE_FAST friend Complex operator-(const Complex &z1, const Complex &z2) { return z1.minus(z2); }
+        friend Complex operator-(const Complex &z1, const Complex &z2);
 
-        CORE_FAST friend Complex operator*(const Complex &z1, const Complex &z2) { return z1.mult(z2); }
+        friend Complex operator*(const Complex &z1, const Complex &z2);
 
-        CORE_FAST friend Complex operator/(const Complex &z1, const Complex &z2) { return z1.div(z2); }
+        friend Complex operator/(const Complex &z1, const Complex &z2);
+
+        friend Complex operator+(const Complex &z);
+
+        friend Complex operator-(const Complex &z);
     };
+
+    CORE_WARNING_PUSH
+    CORE_WARNING_DISABLE_UDL
+
+    /**
+     * Literal for Complex class
+     * (for no-confusion with standard complex library, we will use character 'j')
+     */
+    Complex operator "" J(unsigned long long imag);
+
+    Complex operator "" J(long double imag);
+
+    Complex operator "" j(unsigned long long imag);
+
+    Complex operator "" j(long double imag);
+
+    CORE_WARNING_POP
 
 } // core
 

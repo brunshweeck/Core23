@@ -57,7 +57,7 @@ namespace core {
     }
 
     gbool Complex::equals(const Object &object) const {
-        if (Class<Complex>::hasInstance(object))
+        if (!Class<Complex>::hasInstance(object))
             return false;
         const Complex &z = (Complex &) object;
         return (rvalue == z.rvalue || Double::isNaN(rvalue) && Double::isNaN(z.rvalue)) &&
@@ -157,9 +157,58 @@ namespace core {
         if (r != 0) return r;
         return Double::compare(ivalue, other.ivalue);
     }
+}
 
-    Complex::Complex(GENERIC_CPLEX cplex) :
-            rvalue(U::getDouble((glong) &cplex)), ivalue(U::getDouble((glong) &cplex + 8)) {}
+#if defined(CORE_COMPILER_MSVC) && !defined(__clang__)
+struct _C_double_complex {
+    gdouble _Val[2];
+};
+#endif
+
+namespace core {
+    Complex::Complex(GENERIC_CPLEX cplex) : rvalue(*((gdouble *) &cplex)), ivalue(*((gdouble *) &cplex + 1)) {}
+
+    Complex Complex::reverse() const { return Complex(imag(), real()); }
+
+    Complex Complex::conjugate() const { return Complex(real(), -imag()); }
+
+    Complex Complex::negate() const { return Complex(-real(), -imag()); }
+
+    Complex Complex::plus(const Complex &z) const { return Complex(real() + z.real(), imag() + z.imag()); }
+
+    Complex Complex::minus(const Complex &z) const { return Complex(real() - z.real(), imag() - z.imag()); }
+
+    Complex Complex::mult(const Complex &z) const {
+        return Complex(real() * z.real() - imag() * z.imag(), imag() * z.real() + real() * z.imag());
+    }
+
+    Complex Complex::div(const Complex &z) const {
+        return mult(z.conjugate()).div(z.real() * z.real() + z.imag() * z.imag());
+    }
+
+    Complex Complex::div(gdouble d) const { return Complex(real() / d, imag() / d); }
+
+    Complex operator+(const Complex &z1, const Complex &z2) { return z1.plus(z2); }
+
+    Complex operator-(const Complex &z1, const Complex &z2) { return z1.minus(z2); }
+
+    Complex operator*(const Complex &z1, const Complex &z2) { return z1.mult(z2); }
+
+    Complex operator/(const Complex &z1, const Complex &z2) { return z1.div(z2); }
+
+    Complex operator+(const Complex &z) { return z; }
+
+    Complex operator-(const Complex &z) { return z.negate(); }
+
+    CORE_WARNING_DISABLE_UDL
+
+    Complex operator "" J(unsigned long long int imag) { return Complex(0, (gdouble) imag); }
+
+    Complex operator "" J(long double imag) { return Complex(0, (gdouble) imag); }
+
+    Complex operator "" j(unsigned long long int imag) { return Complex(0, (gdouble) imag); }
+
+    Complex operator "" j(long double imag) { return Complex(0, (gdouble) imag); }
 
     CORE_WARNING_POP
 } // core

@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class LongArray: public Array<Long> {
+        class LongArray : public Array<Long> {
         private:
             /**
              * glong[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<glong>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<glong>()>);
 
         public:
 
             /**
              * Construct new empty Long Array
              */
-            LongArray(): LongArray(0) {}
+            LongArray() : LongArray(0) {}
 
             /**
              * Construct new LongArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~LongArray() override;
+
+            /**
+             * Construct new LongArray instance with address
+             *
+             * @code
+             *  glong b[50] = {...}
+             *  LongArray ba = LongArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static LongArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<glong>()> = true>
+            static LongArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                LongArray ba(size, (glong) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (glong) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new LongArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<glong>::allIsTrue
+                    (Class<T>::template isAssignable<glong>()...)> = true>
+            static LongArray of(T &&...a) {
+                gint size = sizeof...(a);
+                LongArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<glong>::valueExactAt(i + 1, 0L, (glong) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

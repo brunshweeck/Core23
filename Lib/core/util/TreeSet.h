@@ -5,7 +5,8 @@
 #ifndef CORE23_TREESET_H
 #define CORE23_TREESET_H
 
-#include "Set.h"
+#include <core/util/Set.h>
+#include <core/util/TreeMap.h>
 
 namespace core {
     namespace util {
@@ -67,7 +68,198 @@ namespace core {
          * @see     TreeMap
          */
         template<class E>
-        class TreeSet : public Set<E> {
+        class TreeSet : public Set<E>, public SortedStruct<E> {
+        private:
+
+            CORE_ALIAS(U, native::Unsafe);
+
+            /**
+             * Capture<T> represent all type T that extends this value type E.
+             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             */
+            template<class T>
+            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
+
+            /**
+             * The backing map (The Dummy value used is null instance)
+             */
+            TreeMap<E, Null> m;
+
+            /**
+             * Constructs a set backed by the specified map.
+             */
+            CORE_EXPLICIT TreeSet(const TreeMap<E, Null> &m) : m(m) {}
+
+        public:
+
+            /**
+             * Constructs a new, empty tree set, sorted according to the
+             * natural ordering of its elements.  All elements inserted into
+             * the set must implement the <b style="color:orange;"> Comparable</b>  interface.
+             * Furthermore, all such elements must be <i>mutually
+             * comparable</i>: <b> e1.compareTo(e2)</b>  must not throw a
+             * <b> CastException</b>  for any elements <b> e1</b>  and
+             * <b> e2</b>  in the set.  If the user attempts to add an element
+             * to the set that violates this constraint (for example, the user
+             * attempts to add a string element to a set whose elements are
+             * integers), the <b> add</b>  call will throw a
+             * <b> CastException</b> .
+             */
+            CORE_IMPLICIT TreeSet() : TreeSet(TreeMap<E, Null>{}) {}
+
+            /**
+             * Constructs a new, empty tree set, sorted according to the specified
+             * comparator.  All elements inserted into the set must be <i>mutually
+             * comparable</i> by the specified comparator: <b> comparator.compare(e1,
+             * e2)</b>  must not throw a <b> CastException</b>  for any elements
+             * <b> e1</b>  and <b> e2</b>  in the set.  If the user attempts to add
+             * an element to the set that violates this constraint, the
+             * <b> add</b>  call will throw a <b> CastException</b> .
+             *
+             * @param comparator the comparator that will be used to order this set.
+             *        If <b> null</b> , the <b style="color:green;"> natural
+             *        ordering</b>  of the elements will be used.
+             */
+            template<class T = E>
+            CORE_EXPLICIT TreeSet(const Comparator<Capture<T>> &comparator): TreeSet(TreeMap<E, Null>(comparator)) {}
+
+            /**
+             * Constructs a new tree set containing the elements in the specified
+             * collection, sorted according to the <i>natural ordering</i> of its
+             * elements.  All elements inserted into the set must implement the
+             * <b style="color:orange;"> Comparable</b>  interface.  Furthermore, all such elements must be
+             * <i>mutually comparable</i>: <b> e1.compareTo(e2)</b>  must not throw a
+             * <b> CastException</b>  for any elements <b> e1</b>  and
+             * <b> e2</b>  in the set.
+             *
+             * @param c collection whose elements will comprise the new set
+             * @throws CastException if the elements in <b> c</b>  are
+             *         not <b style="color:orange;"> Comparable</b> , or are not mutually comparable
+             */
+            template<class T = E>
+            CORE_EXPLICIT TreeSet(const Collection<Capture<T>> &c): TreeSet() { TreeSet<E>::addAll(c); }
+
+            /**
+             * Returns an iterator over the elements in this set in ascending order.
+             *
+             * @return an iterator over the elements in this set in ascending order
+             */
+            Iterator<const E> &iterator() const override { return m.keySet().iterator(); }
+
+            /**
+             * Returns an iterator over the elements in this set in descending order.
+             *
+             * @return an iterator over the elements in this set in descending order
+             * @since 1.6
+             */
+            virtual Iterator<const E> &reversedIterator() { return m.reversedKeySet().iterator(); }
+
+            /**
+             * Returns the number of elements in this set (its cardinality).
+             *
+             * @return the number of elements in this set (its cardinality)
+             */
+            gint size() const override { return m.size(); }
+
+            /**
+             * Returns <b> true</b>  if this set contains the specified element.
+             * More formally, returns <b> true</b>  if and only if this set
+             * contains an element <b> e</b>  such that
+             * <b> Objects.equals(o, e)</b> .
+             *
+             * @param o object to be checked for containment in this set
+             * @return <b> true</b>  if this set contains the specified element
+             * @throws CastException if the specified object cannot be compared
+             *         with the elements currently in the set
+             */
+            gbool contains(const E &o) const override { return m.containsKey(o); }
+
+            /**
+             * Adds the specified element to this set if it is not already present.
+             * More formally, adds the specified element <b> e</b>  to this set if
+             * the set contains no element <b> e2</b>  such that
+             * <b> Objects.equals(e, e2)</b> .
+             * If this set already contains the element, the call leaves the set
+             * unchanged and returns <b> false</b> .
+             *
+             * @param e element to be added to this set
+             * @return <b> true</b>  if this set did not already contain the specified
+             *         element
+             * @throws CastException if the specified object cannot be compared
+             *         with the elements currently in this set
+             */
+            gbool add(const E &e) override {
+                if (m.containsKey(e))
+                    return false;
+                m.put(e, null);
+                return true;
+            }
+
+            /**
+             * Removes the specified element from this set if it is present.
+             * More formally, removes an element <b> e</b>  such that
+             * <b> Objects.equals(o, e)</b> ,
+             * if this set contains such an element.  Returns <b> true</b>  if
+             * this set contained the element (or equivalently, if this set
+             * changed as a result of the call).  (This set will not contain the
+             * element once the call returns.)
+             *
+             * @param o object to be removed from this set, if present
+             * @return <b> true</b>  if this set contained the specified element
+             * @throws CastException if the specified object cannot be compared
+             *         with the elements currently in this set
+             */
+            gbool remove(const E &o) override { return m.remove(o, null); }
+
+            /**
+             * Removes all of the elements from this set.
+             * The set will be empty after this call returns.
+             */
+            void clear() override { m.clear(); }
+
+            /**
+             * Adds all of the elements in the specified collection to this set.
+             *
+             * @param c collection containing elements to be added to this set
+             * @return <b> true</b>  if this set changed as a result of the call
+             * @throws CastException if the elements provided cannot be compared
+             *         with the elements currently in the set
+             */
+            gbool addAll(const Collection<E> &c) override { return addAll<E>(c); }
+
+            /**
+             * Adds all of the elements in the specified collection to this set.
+             *
+             * @param c collection containing elements to be added to this set
+             * @return <b> true</b>  if this set changed as a result of the call
+             * @throws CastException if the elements provided cannot be compared
+             *         with the elements currently in the set
+             */
+            template<class T = E>
+            gbool addAll(const Collection<Capture<T>> &c) {
+                // Use linear-time version if applicable
+                if (m.size() == 0 && c.size() > 0 && Class<SortedStruct<T>>::hasInstance(c)) {
+                    const SortedStruct<T> &s = (SortedStruct<E> &) c;
+                    if (Object::equals(s.comparator(), m.comparator())) {
+                        m.buildFromSorted(c.size(), c.iterator(), null);
+                        return true;
+                    }
+                }
+                return Set<E>::addAll<T>(c);
+            }
+
+            /**
+             *
+             */
+            const Comparator<E> &comparator() const override { return m.comparator(); }
+
+            /**
+             * Returns a shallow copy of this <b> TreeSet</b>  instance. (The elements
+             * themselves are not cloned.)
+             *
+             * @return a shallow copy of this set
+             */
+            Object &clone() const override { return U::createInstance<TreeSet<E>>(*this); }
 
         };
 

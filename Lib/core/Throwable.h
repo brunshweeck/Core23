@@ -5,9 +5,7 @@
 #ifndef CORE23_THROWABLE_H
 #define CORE23_THROWABLE_H
 
-#include "Object.h"
 #include <core/Trace.h>
-#include <exception>
 
 namespace core {
 
@@ -67,7 +65,7 @@ namespace core {
      * @author  Brunshweeck Tazeussong
      *
      */
-class Throwable: public Object, public virtual std::exception {
+class Throwable: public Object, public native::GENERIC_THROWABLE {
     private:
         /**
          * ///

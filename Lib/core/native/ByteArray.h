@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class ByteArray: public Array<Byte> {
+        class ByteArray : public Array<Byte> {
         private:
             /**
              * gbyte[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gbyte>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gbyte>()>);
 
         public:
 
             /**
              * Construct new empty Byte Array
              */
-            ByteArray(): ByteArray(0) {}
+            ByteArray() : ByteArray(0) {}
 
             /**
              * Construct new ByteArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~ByteArray() override;
+
+            /**
+             * Construct new ByteArray instance with address
+             *
+             * @code
+             *  gbyte b[50] = {...}
+             *  ByteArray ba = ByteArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static ByteArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gbyte>()> = true>
+            static ByteArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                ByteArray ba(size, (gbyte) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gbyte) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new ByteArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gbyte>::allIsTrue
+                    (Class<T>::template isAssignable<gbyte>()...)> = true>
+            static ByteArray of(T &&...a) {
+                gint size = sizeof...(a);
+                ByteArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gbyte>::valueExactAt(i + 1, 0, (gbyte) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

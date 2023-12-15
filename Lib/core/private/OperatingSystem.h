@@ -6,6 +6,12 @@
 #ifndef CORE23_OPERATINGSYSTEM_H
 #define CORE23_OPERATINGSYSTEM_H
 
+#if __has_include(<bits/exception.h>)
+#include <bits/exception>
+#else
+#include <exception>
+#endif
+
 /**
  * The operating system, must be one of: (CORE_SYSTEM_x)
  * <ul>

@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class FloatArray: public Array<Float> {
+        class FloatArray : public Array<Float> {
         private:
             /**
              * gfloat[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gfloat>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gfloat>()>);
 
         public:
 
             /**
              * Construct new empty Float Array
              */
-            FloatArray(): FloatArray(0) {}
+            FloatArray() : FloatArray(0) {}
 
             /**
              * Construct new FloatArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~FloatArray() override;
+
+            /**
+             * Construct new FloatArray instance with address
+             *
+             * @code
+             *  gbool b[50] = {...}
+             *  FloatArray ba = FloatArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static FloatArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static array
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gfloat>()> = true>
+            static FloatArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                FloatArray ba(size, (gfloat) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gfloat) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new FloatArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gfloat>::allIsTrue
+                    (Class<T>::template isAssignable<gfloat>()...)> = true>
+            static FloatArray of(T &&...a) {
+                gint size = sizeof...(a);
+                FloatArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gfloat>::valueExactAt(i + 1, 0.0F, (gfloat) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

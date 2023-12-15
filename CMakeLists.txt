@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 
 PROJECT(Core23 VERSION 2023.6.5 LANGUAGES CXX)
 
-SET(CMAKE_CXX_STANDARD 20)
+SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
@@ -59,7 +59,13 @@ FILE(GLOB Core23
         ${SYSTEM_LIBDIR}/core/private/*.c??
 )
 
-ADD_LIBRARY(Core23 STATIC ${Core23})
+ADD_LIBRARY(Core23 STATIC ${Core23}
+        Lib/core/util/SortedStruct.cpp
+        Lib/core/util/SortedStruct.h
+        Lib/core/util/StringTokenizer.cpp
+        Lib/core/util/StringTokenizer.h
+        Lib/core/native/StringArray.cpp
+        Lib/core/native/StringArray.h)
 
 INCLUDE_DIRECTORIES("Lib")
 

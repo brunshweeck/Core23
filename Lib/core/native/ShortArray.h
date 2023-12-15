@@ -24,7 +24,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class ShortArray: public Array<Short> {
+        class ShortArray : public Array<Short> {
         private:
             /**
              * gshort[*]
@@ -36,14 +36,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gshort>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gshort>()>);
 
         public:
 
             /**
              * Construct new empty Short Array
              */
-            ShortArray(): ShortArray(0) {}
+            ShortArray() : ShortArray(0) {}
 
             /**
              * Construct new ShortArray with specified number
@@ -133,6 +143,50 @@ namespace core {
              * Destroy this array
              */
             ~ShortArray() override;
+
+            /**
+             * Construct new ShortArray instance with address
+             *
+             * @code
+             *  gshort b[50] = {...}
+             *  ShortArray ba = ShortArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static ShortArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gshort>()> = true>
+            static ShortArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                ShortArray ba(size, (gshort) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gshort) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new ShortArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gshort>::allIsTrue
+                    (Class<T>::template isAssignable<gshort>()...)> = true>
+            static ShortArray of(T &&...a) {
+                gint size = sizeof...(a);
+                ShortArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gshort>::valueExactAt(i + 1, (gshort) 0, (gshort) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

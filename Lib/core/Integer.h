@@ -218,7 +218,7 @@ namespace core {
         /**
          * Return an Integer object represented by the given value
          */
-        static CORE_FAST Integer valueOf(gint i) { return {i}; }
+        static Integer valueOf(gint i);
 
         /**
          * Decodes a String into a Integer.

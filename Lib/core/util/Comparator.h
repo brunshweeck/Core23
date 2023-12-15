@@ -48,7 +48,7 @@ namespace core {
          * <b style="color: orange;"> Set.add</b> method.<p>
          *
          * Note: It is generally a good idea for comparators to also implement
-         * <b> java.io.Serializable</b>, as they may be used as ordering methods in
+         * <b> Serializable</b>, as they may be used as ordering methods in
          * serializable data structures (like <b style="color: orange;"> TreeSet</b>, <b style="color: orange;"> TreeMap</b>).  In
          * order for the data structure to serialize successfully, the comparator (if
          * provided) must implement <b> Serializable</b>.<p>
@@ -161,7 +161,7 @@ namespace core {
              * @return a comparator that imposes the reverse ordering of this
              *         comparator.
              */
-            virtual Comparator<T> &reverse() const {
+            virtual const Comparator<T> &reverse() const {
                 if (Class<NaturalOrderComparator<>>::hasInstance(*this))
                     return reverseOrder();
                 else if (Class<ReverseComparator<>>::hasInstance(*this))
@@ -233,7 +233,7 @@ namespace core {
                 /**
                  * Reverse order use one instance only
                  */
-                static ReverseComparator REVERSE_ORDER = {};
+                static ReverseComparator<> REVERSE_ORDER = {};
 
                 return REVERSE_ORDER;
             }
@@ -253,7 +253,7 @@ namespace core {
                 /**
                  * Natural order use one instance only
                  */
-                static NaturalOrderComparator NATURAL_ORDER = {};
+                static NaturalOrderComparator<> NATURAL_ORDER = {};
 
                 return NATURAL_ORDER;
             }
@@ -362,7 +362,7 @@ namespace core {
                     } else {
                         // error
                         AssertionError(CORE_DYN_CAST(const Object&, o1).classname() + " not support natural ordering")
-                                .throws(__trace("core.util.NaturalOrderComparator"));
+                                .throws(__trace("core.util.ReverseComparator"));
                     }
                 }
 
@@ -416,6 +416,12 @@ namespace core {
                 static gint compare(const C &  /*c1*/, const C &  /*c2*/) { return 0; }
             };
 
+        public:
+            /**
+             * Return shadow copy of this comparator.
+             * Note: all comparator must support this method.
+             */
+            Object &clone() const override = 0;
         };
 
     } // core

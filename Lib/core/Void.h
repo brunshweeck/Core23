@@ -12,9 +12,6 @@ namespace core {
     class Void CORE_FINAL : private Object {
     private:
         CORE_FAST Void() = default;
-
-    public:
-        virtual ~Void() = default;
     };
 
 } // core

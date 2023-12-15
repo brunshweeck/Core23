@@ -15,6 +15,10 @@ namespace core {
     }
 
     namespace native {
+        class Unsafe;
+    }
+
+    namespace native {
 
         /**
          * The Array class represent the static collection
@@ -40,7 +44,9 @@ namespace core {
                     Class<E>::template isSimilar<Integer>() || // -> IntArray
                     Class<E>::template isSimilar<Long>() || // LongArray
                     Class<E>::template isSimilar<Float>() || // LongArray
-                    Class<E>::template isSimilar<Double>(), "Template is not permitted");
+                    Class<E>::template isSimilar<Double>() || // DoubleArray
+                    Class<E>::template isSimilar<String>() // StringArray
+                            , "Template is not permitted");
 
         private:
             /**
@@ -58,6 +64,7 @@ namespace core {
             friend LongArray;
             friend FloatArray;
             friend DoubleArray;
+            friend StringArray;
 
         public:
 
@@ -71,16 +78,12 @@ namespace core {
             /**
              * Return number of element in This array
              */
-            CORE_FAST gint length() const {
-                return len;
-            }
+            CORE_FAST gint length() const { return len; }
 
             /**
              * Test if this array has no element
              */
-            CORE_FAST gbool isEmpty() const {
-                return length() == 0;
-            }
+            CORE_FAST gbool isEmpty() const { return length() == 0; }
 
             /**
              * Return item at specified index
@@ -102,9 +105,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual const Es get(gint index) const {
-                return CORE_CAST(Array &, *this)[index];
-            }
+            virtual const Es get(gint index) const { return CORE_CAST(Array &, *this)[index]; }
 
             /**
              * Set the value at specified index with specified new value
@@ -154,9 +155,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual Es &operator[](gint index) {
-                return get(index);
-            }
+            Es &operator[](gint index) { return get(index); }
 
             /**
              * Return item at specified index
@@ -167,11 +166,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual const Es operator[](gint index) const {
-                return get(index);
-            }
-
-            virtual ~Array() = default;
+            const Es operator[](gint index) const { return get(index); }
 
         private:
             /**
@@ -242,9 +237,7 @@ namespace core {
             /**
              * Test if this array has no element
              */
-            gbool isEmpty() const {
-                return length() == 0;
-            }
+            gbool isEmpty() const { return length() == 0; }
 
             /**
              * Return item at specified index
@@ -269,9 +262,7 @@ namespace core {
              *              If index out of bounds.
              * @throws StateException If the value is not set
              */
-            virtual const Object &get(gint index) const {
-                return CORE_CAST(Array<Object> &, *this).get(index);
-            }
+            virtual const Object &get(gint index) const { return CORE_CAST(Array<Object> &, *this).get(index); }
 
             /**
              * Return true if the reference at the given index exists (is not null)
@@ -292,9 +283,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual Object &operator[](gint index) {
-                return get(index);
-            }
+            virtual Object &operator[](gint index) { return get(index); }
 
             /**
              * Return item at specified index
@@ -305,11 +294,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual const Object &operator[](gint index) const {
-                return get(index);
-            }
-
-            virtual ~Array() = default;
+            virtual const Object &operator[](gint index) const { return get(index); }
 
         private:
 

@@ -5,7 +5,7 @@
 #ifndef CORE23_SET_H
 #define CORE23_SET_H
 
-#include "Collection.h"
+#include <core/util/Collection.h>
 
 namespace core {
     namespace util {
@@ -38,7 +38,7 @@ namespace core {
          * they may contain.  For example, some implementations prohibit null elements,
          * and some have restrictions on the types of their elements.  Attempting to
          * add an ineligible element throws an unchecked exception, typically
-         * <b> NullPointerException</b> or <b> CastException</b>.  Attempting
+         * <b> CastException</b>.  Attempting
          * to query the presence of an ineligible element may throw an exception,
          * or it may simply return false; some implementations will exhibit the former
          * behavior and some will exhibit the latter.  More generally, attempting an
@@ -60,8 +60,7 @@ namespace core {
          * will always cause <b> UnsupportedMethodException</b> to be thrown.
          * However, if the contained elements are themselves mutable, this may cause the
          * Set to behave inconsistently or its contents to appear to change.
-         * <li>They disallow <b> null</b> elements. Attempts to create them with
-         * <b> null</b> elements result in <b> NullPointerException</b>.
+         * <li>They disallow <b> null</b> elements.
          * <li>They are serializable if all elements are serializable.
          * <li>They reject duplicate elements at creation time. Duplicate elements
          * passed to a static factory method result in <b> ArgumentException</b>.
@@ -86,6 +85,16 @@ namespace core {
          */
         template<class E>
         class Set : public Collection<E> {
+        private:
+            CORE_ALIAS(U, native::Unsafe);
+
+            /**
+             * Capture<T> represent all type T that extends this value type E.
+             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             */
+            template<class T>
+            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
+
         public:
 
             /**
@@ -108,7 +117,7 @@ namespace core {
              * @throws CastException if the type of the specified element
              *         is incompatible with this set (<a href="">optional</a>)
              */
-            gbool contains(const E &o) const override =0;
+            gbool contains(const E &o) const override { return Collection<E>::contains(o); }
 
             /**
              * Returns an iterator over the elements in this set.  The elements are
@@ -147,8 +156,7 @@ namespace core {
              * @throws ArgumentException if some property of the specified element
              *         prevents it from being added to this set
              */
-            gbool add(const E &e) override = 0;
-
+            gbool add(const E &e) override { UnsupportedMethodException().throws(__trace("core.util.Set")); }
 
             /**
              * Removes the specified element from this set if it is present
@@ -167,7 +175,7 @@ namespace core {
              * @throws UnsupportedMethodException if the <b> remove</b> operation
              *         is not supported by this set
              */
-            gbool remove(const E &o) override = 0;
+            gbool remove(const E &o) override { return Collection<E>::remove(o); }
 
             /**
              * Returns <b> true</b> if this set contains all of the elements of the
@@ -181,7 +189,7 @@ namespace core {
              *         set (<a href="">optional</a>)
              * @see    contains(Object)
              */
-            gbool containsAll(const Collection<E> &c) const override = 0;
+            gbool containsAll(const Collection<E> &c) const override { return Collection<E>::containsAll(c); }
 
             /**
              * Adds all of the elements in the specified collection to this set if
@@ -202,7 +210,29 @@ namespace core {
              *         specified collection prevents it from being added to this set
              * @see add(Object)
              */
-            gbool addAll(const Collection<E> &c) override = 0;
+            gbool addAll(const Collection<E> &c) override { return Collection<E>::addAll(c); }
+
+            /**
+             * Adds all of the elements in the specified collection to this set if
+             * they're not already present (optional operation).  If the specified
+             * collection is also a set, the <b> addAll</b> operation effectively
+             * modifies this set so that its value is the <i>union</i> of the two
+             * sets.  The behavior of this operation is undefined if the specified
+             * collection is modified while the operation is in progress.
+             *
+             * @param  c collection containing elements to be added to this set
+             * @return <b> true</b> if this set changed as a result of the call
+             *
+             * @throws UnsupportedMethodException if the <b> addAll</b> operation
+             *         is not supported by this set
+             * @throws CastException if the class of an element of the
+             *         specified collection prevents it from being added to this set
+             * @throws ArgumentException if some property of an element of the
+             *         specified collection prevents it from being added to this set
+             * @see add(Object)-
+             */
+            template<class T = E>
+            gbool addAll(const Collection<Capture<T>> &c) { return Collection<E>::template addAll<T>(c); }
 
             /**
              * Removes from this set all of its elements that are contained in the
@@ -220,7 +250,21 @@ namespace core {
              * @see remove(Object)
              * @see contains(Object)
              */
-            gbool removeAll(const Collection<E> &c) override =0;
+            gbool removeAll(const Collection<E> &c) override {
+                gbool modified = false;
+                if (size() > c.size()) {
+                    for (const E &e: c)
+                        modified |= remove(e);
+                } else {
+                    for (Iterator<const E> &i = iterator(); i.hasNext();) {
+                        if (c.contains((const E &) i.next())) {
+                            i.remove();
+                            modified = true;
+                        }
+                    }
+                }
+                return modified;
+            }
 
             /**
              * Retains only the elements in this set that are contained in the
@@ -238,7 +282,7 @@ namespace core {
              *         is incompatible with the specified collection (<a href="">optional</a>)
              * @see remove(Object)
              */
-            gbool retainAll(const Collection<E> &c) override =0;
+            gbool retainAll(const Collection<E> &c) override { return Collection<E>::retainAll(c); }
 
             /**
              * Removes all of the elements from this set (optional operation).
@@ -247,7 +291,7 @@ namespace core {
              * @throws UnsupportedMethodException if the <b> clear</b> method
              *         is not supported by this set
              */
-            void clear() override =0;
+            void clear() override = 0;
 
             /**
              * Compares the specified object with this set for equality.  Returns
@@ -261,7 +305,16 @@ namespace core {
              * @param o object to be compared for equality with this set
              * @return <b> true</b> if the specified object is equal to this set
              */
-            gbool equals(const Object &o) const override = 0;
+            gbool equals(const Object &o) const override {
+                if (this == &o)
+                    return true;
+                if (!Class<Set<E>>::hasInstance(o))
+                    return false;
+                const Collection<E> &c = (Collection<E> &) o;
+                if (size() != c.size())
+                    return false;
+                return containsAll(c);
+            }
         };
 
     }

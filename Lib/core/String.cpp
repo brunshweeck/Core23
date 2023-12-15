@@ -68,10 +68,12 @@ namespace core {
 
         PBYTE generate(gint count) {
             if (count <= 0) return null;
-            glong sizeInBytes = Integer::toUnsignedLong(count) << 1;
+            glong sizeInBytes = (count + 1LL) << 1;
             const glong heapSize = alignToHeapWordSize(sizeInBytes);
             PBYTE address = (PBYTE) U::allocateMemory(sizeInBytes);
-            if (address != null) for (glong i = sizeInBytes; i < heapSize; ++i) address[i] = 0;
+            if (address != null)
+                for (glong i = sizeInBytes-2; i < heapSize; ++i)
+                    address[i] = 0;
             return address;
         }
 

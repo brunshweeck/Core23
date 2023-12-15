@@ -48,7 +48,7 @@ namespace core {
      * <p><a id="BMP">The set of characters from U+0000 to U+FFFF</a> is
      * sometimes referred to as the <em>Basic Multilingual Plane (BMP)</em>.
      * <a id="supplementary">Characters</a> whose code points are greater
-     * than U+FFFF are called <em>supplementary character</em>s.  The Java
+     * than U+FFFF are called <em>supplementary character</em>s.  The
      * platform uses the UTF-16 representation in <b> gchar</b> arrays and
      * in the <b> String</b> and <b> StringBuffer</b> classes. In
      * this representation, supplementary characters are represented as a pair
@@ -82,7 +82,7 @@ namespace core {
      * (a CJK ideograph).
      * </ul>
      *
-     * <p>In the Java SE API documentation, <em>Unicode code point</em> is
+     * <p>In the API documentation, <em>Unicode code point</em> is
      * used for character values in the range between U+0000 and U+10FFFF,
      * and <em>Unicode code unit</em> is used for 16-bit
      * <b> gchar</b> values that are code units of the <em>UTF-16</em>
@@ -3269,9 +3269,7 @@ namespace core {
          * @param  c a gchar value.
          * @return a <b> Character</b> instance representing <b> c</b>.
          */
-        static CORE_FAST Character valueOf(gchar c) {
-            return c;
-        }
+        static Character valueOf(gchar c);
 
         /**
          * Returns the value of this <b> Character</b> object.
@@ -3893,9 +3891,6 @@ namespace core {
          * @return  <b> true</b> if the character is a letter;
          *          <b> false</b> otherwise.
          * @see     Character.isDigit(gchar)
-         * @see     Character.isJavaIdentifierStart(gchar)
-         * @see     Character.isJavaLetter(gchar)
-         * @see     Character.isJavaLetterOrDigit(gchar)
          * @see     Character.isLetterOrDigit(gchar)
          * @see     Character.isLowerCase(gchar)
          * @see     Character.isTitleCase(gchar)
@@ -3925,7 +3920,6 @@ namespace core {
          * @return  <b> true</b> if the character is a letter;
          *          <b> false</b> otherwise.
          * @see     Character.isDigit(int)
-         * @see     Character.isJavaIdentifierStart(int)
          * @see     Character.isLetterOrDigit(int)
          * @see     Character.isLowerCase(int)
          * @see     Character.isTitleCase(int)
@@ -3955,9 +3949,6 @@ namespace core {
          * @return  <b> true</b> if the character is a letter or digit;
          *          <b> false</b> otherwise.
          * @see     Character.isDigit(gchar)
-         * @see     Character.isJavaIdentifierPart(gchar)
-         * @see     Character.isJavaLetter(gchar)
-         * @see     Character.isJavaLetterOrDigit(gchar)
          * @see     Character.isLetter(gchar)
          * @see     Character.isUnicodeIdentifierPart(gchar)
          */
@@ -3975,7 +3966,6 @@ namespace core {
          * @return  <b> true</b> if the character is a letter or digit;
          *          <b> false</b> otherwise.
          * @see     Character.isDigit(int)
-         * @see     Character.isJavaIdentifierPart(int)
          * @see     Character.isLetter(int)
          * @see     Character.isUnicodeIdentifierPart(int)
          */
@@ -4124,8 +4114,8 @@ namespace core {
         static gbool isPrintable(gint codePoint);
 
         /**
-         * Determines if the specified character is white space according to Java.
-         * A character is a Java whitespace character if and only if it satisfies
+         * Determines if the specified character is white space.
+         * A character is a whitespace character if and only if it satisfies
          * one of the following criteria:
          * <ul>
          * <li> It is a Unicode space character (<b> SPACE_SEPARATOR</b>,
@@ -4149,7 +4139,7 @@ namespace core {
          * the <b style="color: orange"> isSpace(int)</b> method.
          *
          * @param   ch the character to be tested.
-         * @return  <b> true</b> if the character is a Java whitespace
+         * @return  <b> true</b> if the character is a whitespace
          *          character; <b> false</b> otherwise.
          * @see     Character.isSpaceChar(gchar)
          */
@@ -4157,7 +4147,7 @@ namespace core {
 
         /**
          * Determines if the specified character (Unicode code point) is
-         * white space according to Java.  A character is a Java
+         * white space.  A character is a
          * whitespace character if and only if it satisfies one of the
          * following criteria:
          * <ul>
@@ -4177,7 +4167,7 @@ namespace core {
          * </ul>
          *
          * @param   codePoint the character (Unicode code point) to be tested.
-         * @return  <b> true</b> if the character is a Java whitespace
+         * @return  <b> true</b> if the character is a whitespace
          *          character; <b> false</b> otherwise.
          * @see     Character.isSpaceChar(int)
          */

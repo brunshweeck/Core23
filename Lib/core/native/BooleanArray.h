@@ -11,7 +11,7 @@
 namespace core {
     namespace native {
 
-        /**
+/**
          * The BooleanArray class wrap the static array of values from native type
          * (generic) gbool in an object.
          *
@@ -25,7 +25,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class BooleanArray: public Array<Boolean> {
+        class BooleanArray : public Array<Boolean> {
         private:
             /**
              * gbool[*]
@@ -37,14 +37,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gbool>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gbool>()>);
 
         public:
 
             /**
              * Construct new empty Boolean Array
              */
-            BooleanArray(): BooleanArray(0) {}
+            BooleanArray() : BooleanArray(0) {}
 
             /**
              * Construct new BooleanArray with specified number
@@ -134,6 +144,50 @@ namespace core {
              * Destroy this array
              */
             ~BooleanArray() override;
+
+            /**
+             * Construct new BooleanArray instance with address
+             *
+             * @code
+             *  gbool b[50] = {...}
+             *  BooleanArray ba = BooleanArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static BooleanArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static array
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gbool>()> = true>
+            static BooleanArray copyOf(T &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                BooleanArray ba(size, (gbool) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gbool) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new BooleanArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gbool>::allIsTrue
+                    (Class<T>::template isAssignable<gbool>()...)> = true>
+            static BooleanArray of(T &&...a) {
+                gint size = sizeof...(a);
+                BooleanArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gbool>::valueExactAt(i + 1, false, (gbool) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

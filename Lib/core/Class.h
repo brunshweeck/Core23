@@ -144,7 +144,7 @@ namespace core {
         /**
          * Non Pointer version of template type
          */
-        CORE_ALIAS(NoPointer, MODIFY_RESULT<-5,, T >);
+        CORE_ALIAS(NoPointer, MODIFY_RESULT<-5,, NoReference>);
 
         /**
          * Mutable and Non Volatile version of template type
@@ -343,7 +343,7 @@ namespace core {
          *        The assigning value type
          */
         template<class To>
-        static CORE_FAST gbool isAssignable() { return MULTI_TEST_RESULT<19, To, T>(); }
+        static CORE_FAST gbool isAssignable() { return MULTI_TEST_RESULT<19, T, typename Class<To>::Ref>(); }
 
         /**
          * Return true if this type is one base of specified type
@@ -507,12 +507,14 @@ namespace core {
          * In other word return true if all of given values is true.
          */
         static CORE_FAST gbool allIsTrue() { return true; }
+        static CORE_FAST gbool allIsTrue(gbool b) { return b; }
 
         /**
          * Return result of multiple boolean tests using logical OR as operator.
          * In other word return true if any of given values is true.
          */
         static CORE_FAST gbool oneIsTrue() { return false; }
+        static CORE_FAST gbool oneIsTrue(gbool b) { return b; }
 
         /**
          * Return result of multiple boolean tests using logical AND as operator.

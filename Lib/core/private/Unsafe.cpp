@@ -13,9 +13,11 @@
 #include <core/native/BooleanArray.h>
 #include <core/native/ByteArray.h>
 #include <core/native/ShortArray.h>
+#include <core/native/IntArray.h>
 #include <core/native/LongArray.h>
 #include <core/native/FloatArray.h>
 #include <core/native/DoubleArray.h>
+#include <core/native/ReferenceArray.h>
 #include "Unsafe.h"
 
 namespace core {
@@ -26,27 +28,25 @@ namespace core {
 
         const gint Unsafe::ADDRESS_SIZE = CORE_ADDRESS_SIZE;
         const gbool Unsafe::BIG_ENDIAN = CORE_BYTE_ORDER == CORE_BIG_ENDIAN;
-        const gint Unsafe::ARRAY_BOOLEAN_BASE_OFFSET = 16;
-        const gint Unsafe::ARRAY_BYTE_BASE_OFFSET = ARRAY_BOOLEAN_BASE_OFFSET;
-        const gint Unsafe::ARRAY_CHAR_BASE_OFFSET = 16;
-        const gint Unsafe::ARRAY_SHORT_BASE_OFFSET = ARRAY_CHAR_BASE_OFFSET;
-        const gint Unsafe::ARRAY_INT_BASE_OFFSET = 16;
-        const gint Unsafe::ARRAY_LONG_BASE_OFFSET = 16;
-        const gint Unsafe::ARRAY_FLOAT_BASE_OFFSET = ARRAY_INT_BASE_OFFSET;
-        const gint Unsafe::ARRAY_DOUBLE_BASE_OFFSET = ARRAY_LONG_BASE_OFFSET;
-        const gint Unsafe::ARRAY_REFERENCE_BASE_OFFSET =
-                ADDRESS_SIZE == 4 ? ARRAY_INT_BASE_OFFSET : ARRAY_LONG_BASE_OFFSET;
+        const gint Unsafe::ARRAY_BOOLEAN_BASE_OFFSET = (gint) sizeof(((BooleanArray *) 0)->value);
+        const gint Unsafe::ARRAY_BYTE_BASE_OFFSET = (gint) sizeof(((ByteArray *) 0)->value);
+        const gint Unsafe::ARRAY_CHAR_BASE_OFFSET = (gint) sizeof(((CharArray *) 0)->value);
+        const gint Unsafe::ARRAY_SHORT_BASE_OFFSET = (gint) sizeof(((ShortArray *) 0)->value);
+        const gint Unsafe::ARRAY_INT_BASE_OFFSET = (gint) sizeof(((IntArray *) 0)->value);
+        const gint Unsafe::ARRAY_LONG_BASE_OFFSET = (gint) sizeof(((LongArray *) 0)->value);
+        const gint Unsafe::ARRAY_FLOAT_BASE_OFFSET = (gint) sizeof(((FloatArray *) 0)->value);
+        const gint Unsafe::ARRAY_DOUBLE_BASE_OFFSET = (gint) sizeof(((DoubleArray *) 0)->value);
+        const gint Unsafe::ARRAY_REFERENCE_BASE_OFFSET = (gint) sizeof(((ReferenceArray<Object> *) 0)->value);
 
-        const gint Unsafe::ARRAY_BOOLEAN_INDEX_SCALE = 1;
-        const gint Unsafe::ARRAY_BYTE_INDEX_SCALE = ARRAY_BOOLEAN_INDEX_SCALE;
-        const gint Unsafe::ARRAY_CHAR_INDEX_SCALE = 2;
-        const gint Unsafe::ARRAY_SHORT_INDEX_SCALE = ARRAY_CHAR_INDEX_SCALE;
-        const gint Unsafe::ARRAY_INT_INDEX_SCALE = 4;
-        const gint Unsafe::ARRAY_LONG_INDEX_SCALE = 8;
-        const gint Unsafe::ARRAY_FLOAT_INDEX_SCALE = ARRAY_INT_INDEX_SCALE;
-        const gint Unsafe::ARRAY_DOUBLE_INDEX_SCALE = ARRAY_LONG_INDEX_SCALE;
-        const gint Unsafe::ARRAY_REFERENCE_INDEX_SCALE =
-                ADDRESS_SIZE == 4 ? ARRAY_INT_INDEX_SCALE : ARRAY_LONG_INDEX_SCALE;
+        const gint Unsafe::ARRAY_BOOLEAN_INDEX_SCALE = sizeof(gbool);
+        const gint Unsafe::ARRAY_BYTE_INDEX_SCALE = sizeof(gbyte);
+        const gint Unsafe::ARRAY_CHAR_INDEX_SCALE = sizeof(gchar);
+        const gint Unsafe::ARRAY_SHORT_INDEX_SCALE = sizeof(gshort);
+        const gint Unsafe::ARRAY_INT_INDEX_SCALE = sizeof(gint);
+        const gint Unsafe::ARRAY_LONG_INDEX_SCALE = sizeof(glong);
+        const gint Unsafe::ARRAY_FLOAT_INDEX_SCALE = sizeof(gfloat);
+        const gint Unsafe::ARRAY_DOUBLE_INDEX_SCALE = sizeof(gdouble);
+        const gint Unsafe::ARRAY_REFERENCE_INDEX_SCALE = sizeof(void *);
 
         interface UnsafeImpl {
 
@@ -116,7 +116,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gint *) address;
         }
 
@@ -125,7 +125,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gint *) address = x;
         }
 
@@ -142,7 +142,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gbool *) address;
         }
 
@@ -151,7 +151,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gbool *) address = x;
         }
 
@@ -168,7 +168,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gbyte *) address;
         }
 
@@ -177,7 +177,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gbyte *) address = x;
         }
 
@@ -194,7 +194,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gshort *) address;
         }
 
@@ -203,7 +203,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gshort *) address = x;
         }
 
@@ -220,7 +220,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gchar *) address;
         }
 
@@ -229,7 +229,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gchar *) address = x;
         }
 
@@ -246,7 +246,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(glong *) address;
         }
 
@@ -255,7 +255,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(glong *) address = x;
         }
 
@@ -272,7 +272,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gfloat *) address;
         }
 
@@ -281,7 +281,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gfloat *) address = x;
         }
 
@@ -298,7 +298,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gdouble *) address;
         }
 
@@ -307,7 +307,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gdouble *) address = x;
         }
 
@@ -324,7 +324,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
 
             glong address2 = getAddress(address);
             return address2 == 0 ? null : *(Object *) address2;
@@ -335,7 +335,7 @@ namespace core {
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
             if (address == 0)
-                MemoryError("Couldn't access to address 0x0").throws(__trace("core.native.Unsafe"));
+                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
 
             putAddress(address, UnsafeImpl::getNativeAddress(x, 0));
         }
@@ -451,9 +451,11 @@ namespace core {
             interface Heap {
                 glong address = 0;
                 Heap *next = null;
+
+                CORE_FAST Heap(glong address, Heap *next) : address(address), next(next) {}
             };
 
-            class Cache CORE_FINAL {
+            class Cache CORE_FINAL : public Object {
             private:
                 Heap *head = {};
                 Heap *tail = {};
@@ -466,7 +468,8 @@ namespace core {
                 CORE_FAST Cache(Cache &&) CORE_NOTHROW = default;
 
                 void add(glong address) {
-                    tail == null ? head = tail = ::new Heap(address, null) : tail = tail->next = ::new Heap(address, null);
+                    tail == null ? head = tail = ::new Heap(address, null) : tail = tail->next = ::new Heap(address,
+                                                                                                            null);
                 }
 
                 gbool exists(glong address) const {
@@ -503,7 +506,7 @@ namespace core {
                     }
                 }
 
-                virtual ~Cache() {
+                ~Cache() override {
                     // clean all memory cache
                     while (head != null) {
                         Heap *heap = head;
@@ -511,7 +514,7 @@ namespace core {
                         heap->next = null;
                         glong addr = heap->address;
                         heap->address = 0;
-                        ::delete heap;
+                        delete heap;
                         Unsafe::freeMemory(addr);
                         heap = null;
                     }
@@ -3153,33 +3156,33 @@ namespace core {
     }
 
 } // core
-
-using U = core::native::Unsafe;
-CORE_ALIAS(LPVOID, void*);
-
-using namespace core;
-
-// no inline, required by [replacement.functions]/3
-void* operator new(size_t sz) {
-    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
-    glong addr = U::allocateMemory(sizeInBytes);
-    return (LPVOID) addr;
-}
-// no inline, required by [replacement.functions]/3
-void* operator new[](size_t sz) {
-    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
-    glong addr = U::allocateMemory(sizeInBytes);
-    return (LPVOID) addr;
-}
-
-void operator delete(void* ptr) noexcept {
-    U::freeMemory((glong) ptr);
-}
-
-void operator delete(void* ptr, size_t size) noexcept {
-    U::freeMemory((glong) ptr);
-}
-
-void operator delete[](void* ptr) noexcept {
-    U::freeMemory((glong) ptr);
-}
+//
+//using U = core::native::Unsafe;
+//CORE_ALIAS(LPVOID, void*);
+//
+//using namespace core;
+//
+//// no inline, required by [replacement.functions]/3
+//void* operator new(size_t sz) {
+//    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
+//    glong addr = U::allocateMemory(sizeInBytes);
+//    return (LPVOID) addr;
+//}
+//// no inline, required by [replacement.functions]/3
+//void* operator new[](size_t sz) {
+//    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
+//    glong addr = U::allocateMemory(sizeInBytes);
+//    return (LPVOID) addr;
+//}
+//
+//void operator delete(void* ptr) noexcept {
+//    U::freeMemory((glong) ptr);
+//}
+//
+//void operator delete(void* ptr, size_t size) noexcept {
+//    U::freeMemory((glong) ptr);
+//}
+//
+//void operator delete[](void* ptr) noexcept {
+//    U::freeMemory((glong) ptr);
+//}

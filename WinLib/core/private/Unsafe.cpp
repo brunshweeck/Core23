@@ -52,15 +52,10 @@ namespace core {
             }
 
             static gbool checkPointer(const Object &o, glong offset) {
-                if (null == o)
-                    return checkNativeAddress(offset);
-                else
-                    return checkOffset(o, offset);
+                return null == o ? checkNativeAddress(offset) : checkOffset(o, offset);
             }
 
-            static glong getNativeAddress(const Object &o, glong offset) {
-                return (glong) &o + offset;
-            }
+            static glong getNativeAddress(const Object &o, glong offset) { return (glong) &o + offset; }
 
             /**
              * Round up allocation size to a multiple of HeapWordSize.
@@ -76,28 +71,17 @@ namespace core {
 
 
         glong Unsafe::allocateMemoryImpl(glong sizeInBytes) {
-            glong addr = 0;
-            addr = (glong) LocalAlloc(LMEM_MOVEABLE | LMEM_ZEROINIT, sizeInBytes);
-            if (addr == 0)
-                addr = (glong) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, sizeInBytes);
-            return addr;
+            try {
+                return (glong) new gbyte[sizeInBytes];
+            } catch (...) { return 0L; }
         }
 
         glong Unsafe::reallocateMemoryImpl(glong address, glong sizeInBytes) {
-            glong addr = 0;
-            addr = (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, LMEM_MOVEABLE | LMEM_ZEROINIT); // NOLINT(*-no-int-to-ptr)
-            if (addr == 0)
-                addr = (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, LMEM_FIXED | LMEM_ZEROINIT); // NOLINT(*-no-int-to-ptr)
-//            addr = (glong) VirtualAlloc((LPVOID) address, sizeInBytes,// NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
-//                                        MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-            return addr;
+            return (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, 0);
         }
 
         void Unsafe::freeMemoryImpl(glong address) {
-            LocalFree((HANDLE) address);
-//            GlobalFree((HANDLE) address);
-//            VirtualFree((LPVOID) address, 0, MEM_RELEASE); // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
-            deleteInstance(address);
+            delete[] (gbyte *) address;
         }
 
         void Unsafe::setMemoryImpl(glong address, glong sizeInBytes, gbyte value) {

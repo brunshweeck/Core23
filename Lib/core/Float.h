@@ -30,7 +30,7 @@ namespace core {
      * <h2><a id=equivalenceRelation>Floating-point Equality, Equivalence,
      * and Comparison</a></h2>
      *
-     * The class <b> java.lang.Double</b> has a <a
+     * The class <b> Double</b> has a <a
      * href="#equivalenceRelation">discussion of equality,
      * equivalence, and comparison of floating-point values</a> that is
      * equally applicable to <b> float</b> values.
@@ -748,7 +748,7 @@ namespace core {
          * If the argument is any value in the range 0x7f800001 through 0x7fffffff or in
          * the range 0xff800001 through
          * 0xffffffff, the result is a NaN.  No IEEE 754
-         * floating-point operation provided by Java can distinguish
+         * floating-point operation provided by can distinguish
          * between two NaN values of the same type with different bit
          * patterns.  Distinct values of NaN are only distinguishable by
          * use of the Float.floatToRawIntBits method.

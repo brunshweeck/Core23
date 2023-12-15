@@ -43,7 +43,7 @@ namespace core {
      * because <b> a</b> and <b> b</b> are equivalent from the sorted set's
      * perspective.<p>
      *
-     * Virtually all Java core classes that implement <b> Comparable</b>
+     * Virtually all core classes that implement <b> Comparable</b>
      * have natural orderings that are consistent with equals.  One
      * exception is <b style="color: orange"> BigDecimal</b>, whose <b style="color: green">
      * natural ordering</b> equates <b>

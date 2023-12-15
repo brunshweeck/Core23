@@ -7,11 +7,12 @@
 
 #include <core/CastException.h>
 #include <core/private/Unsafe.h>
+#include <core/util/HashMap.h>
 
 namespace core {
 
     template<class E>
-    class Enum CORE_FINAL : public Object, public Comparable<Enum<E>> {
+    class Enum : public Object, public Comparable<Enum<E>> {
     private:
         CORE_STATIC_ASSERT(Class<E>::isEnum(), "This template is not Enumerable type");
 
@@ -43,9 +44,14 @@ namespace core {
          *         in the enum declaration, where the initial constant is assigned
          *         an ordinal of zero).
          */
-        CORE_EXPLICIT Enum(String name, gint ordinal) {
-            value = (E) ordinal;
-            CORE_IGNORE(name);
+        CORE_EXPLICIT Enum(const String &name, gint ordinal) : Enum((E) ordinal) {
+            Object &cache = U::systemCache();
+            using util::HashMap;
+            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
+            String cls = Enum::classname();
+            HashMap<Enum, String> data = (HashMap<Enum, String> &)
+                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
+            data.put(*this, name);
         }
 
     public:
@@ -60,9 +66,7 @@ namespace core {
          *
          * @return the ordinal of this enumeration constant
          */
-        CORE_FAST gint ordinal() const {
-            return ordinal(value);
-        }
+        CORE_FAST gint ordinal() const { return ordinal(value); }
 
         /**
          * Returns the ordinal of this enumeration constant (its position
@@ -74,9 +78,7 @@ namespace core {
          *
          * @return the ordinal of this enumeration constant
          */
-        static CORE_FAST gint ordinal(E value) {
-            return (gint) value;
-        }
+        static CORE_FAST gint ordinal(E value) { return (gint) value; }
 
         /**
          * Returns true if the specified object is equal to this
@@ -95,9 +97,7 @@ namespace core {
         /**
          * Returns a hash code for this enum constant.
          */
-        gint hash() const override {
-            return ordinal();
-        }
+        gint hash() const override { return ordinal(); }
 
         /**
          * Return shadow copy of this enum constant
@@ -115,7 +115,7 @@ namespace core {
          * same enum type.  The natural order implemented by this
          * method is the order in which the constants are declared.
          */
-        gint compareTo(const Enum& other) const override {
+        gint compareTo(const Enum &other) const override {
             return compare(value, other.value);
         }
 
@@ -169,7 +169,15 @@ namespace core {
          *         no constant with the specified name, or the specified
          *         class object does not represent an enum class
          */
-        static Enum valueOf(const String &name);
+        static Enum valueOf(const String &name) {
+            Object &cache = U::systemCache();
+            using util::HashMap;
+            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
+            String cls = Enum::classname();
+            HashMap<Enum, String> data = (HashMap<Enum, String> &)
+                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
+            Enum &e = data.getOrDefault(name, {});
+        }
 
         /**
          * Returns the name of this enum constant, as contained in the
@@ -179,11 +187,26 @@ namespace core {
          *
          * @return the name of this enum constant
          */
-        String toString() const override {
-            return toString(value);
-        }
+        String toString() const override { return toString(value); }
 
-        static String toString(E value);
+        static String toString(E value) {
+            Enum v = valueOf(value);
+            Object &cache = U::systemCache();
+            using util::HashMap;
+            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
+            String cls = v.classname();
+            HashMap<Enum, String> data = (HashMap<Enum, String> &)
+                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
+            for (const auto &e: data.entrySet()) {
+                if(e.key() == value)
+                    return e.value();
+            }
+            // String representation not found
+            // we will create for next usage
+            String fallback = String::valueOf(ordinal(value));
+            data.putIfAbsent(v, fallback);
+            return fallback;
+        }
 
         /**
          * Evaluate numerically two enum constants with logical AND

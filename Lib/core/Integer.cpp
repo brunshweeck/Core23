@@ -312,4 +312,6 @@ namespace core {
     }
 
     gint Integer::compareTo(const Integer &other) const { return compare(value, other.value); }
+
+    Integer Integer::valueOf(gint i) { return {i}; }
 } // core

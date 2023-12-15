@@ -25,7 +25,7 @@ namespace core {
          * @author
          *      Brunshweeck Tazeussong
          */
-        class DoubleArray: public Array<Double> {
+        class DoubleArray : public Array<Double> {
         private:
             /**
              * gdouble[*]
@@ -37,14 +37,24 @@ namespace core {
              */
             STORAGE value = null;
 
+            gbool isLocal = false;
+
             friend util::ArraysSupport;
+            friend native::Unsafe;
+
+            template<class T>
+            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
+                    Class<typename Class<T>::NoArray>::template isAssignable<gdouble>() >);
+
+            template<class T>
+            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gdouble>()>);
 
         public:
 
             /**
              * Construct new empty Double Array
              */
-            DoubleArray(): DoubleArray(0) {}
+            DoubleArray() : DoubleArray(0) {}
 
             /**
              * Construct new DoubleArray with specified number
@@ -134,6 +144,50 @@ namespace core {
              * Destroy this array
              */
             ~DoubleArray() override;
+
+            /**
+             * Construct new DoubleArray instance with address
+             *
+             * @code
+             *  gdouble b[50] = {...}
+             *  DoubleArray ba = DoubleArray::fromAddress((glong)b, 50);
+             *
+             * @endcode
+             *
+             * @param addr The local address (pointer)
+             * @param length The number of value
+             */
+            static DoubleArray fromAddress(glong addr, gint length);
+
+            /**
+             * Construct new Boolean Array with c static address
+             */
+            template<class T, Class<gbool>::template Iff<
+                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gdouble>()> = true>
+            static DoubleArray copyOf(CaptureArray<T> &&array) {
+                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
+                if (size == 0)
+                    return {};
+                DoubleArray ba(size, (gdouble) array[0]);
+                for (int i = 1; i < size; ++i) {
+                    ba[i] = (gdouble) array[i];
+                }
+                return ba;
+            }
+
+            /**
+             * Construct new DoubleArray list of value
+             */
+            template<class ...T, Class<gbool>::template Iff<Class<gdouble>::allIsTrue
+                    (Class<T>::template isAssignable<gdouble>()...)> = true>
+            static DoubleArray of(T &&...a) {
+                gint size = sizeof...(a);
+                DoubleArray ba(size);
+                for (int i = 0; i < size; ++i) {
+                    ba[i] = Class<gdouble>::valueExactAt(i + 1, 0.0, (gdouble) a...);
+                }
+                return ba;
+            }
         };
 
     } // core

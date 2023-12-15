@@ -5,7 +5,6 @@
 #ifndef CORE23_REFERENCEARRAY_H
 #define CORE23_REFERENCEARRAY_H
 
-#include <core/Object.h>
 #include <core/private/Unsafe.h>
 #include <core/StringBuffer.h>
 #include <core/util/Preconditions.h>
@@ -21,6 +20,8 @@ namespace core {
         template<class> class ArrayList;
         template<class> class Vector;
         template<class> class PriorityQueue;
+        template<class,class> class HashMap;
+        template<class,class> class HashTable;
     }
 
     namespace native {
@@ -72,6 +73,9 @@ namespace core {
             template<class T> friend class util::ArrayList;
             template<class T> friend class util::Vector;
             template<class T> friend class util::PriorityQueue;
+            template<class K, class V> friend class util::HashMap;
+            template<class K, class V> friend class util::HashTable;
+            friend native::Unsafe;
 
         public:
 

@@ -125,6 +125,23 @@ namespace core {
          * @see Object.equals(Object)
          */
         static gbool equals(const Object &a, const Object &b);
+
+        /**
+         * Returns the same hash code for the given object as
+         * would be returned by the default method hash(),
+         * whether or not the given object's class overrides
+         * hash().
+         * The hash code for the null reference is zero.
+         *
+         * @param x object for which the hash Code is to be calculated
+         * @return  the hash Code
+         */
+        static gint identityHash(const Object& x) CORE_NOTHROW;
+
+        /**
+         * Destroy this object
+         */
+        virtual ~Object() = default;
     };
 
 } // core

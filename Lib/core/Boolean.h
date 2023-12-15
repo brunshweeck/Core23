@@ -86,7 +86,7 @@ namespace core {
          *
          * @param b The boolean value
          */
-        static CORE_FAST Boolean valueOf(gbool b) { return {b}; }
+        static Boolean valueOf(gbool b);
 
         /**
          * Return the Boolean instance representing by string

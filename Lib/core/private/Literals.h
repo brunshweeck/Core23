@@ -62,17 +62,17 @@ extern GENERIC_PTR operator new[](size_t, GENERIC_PTR) CORE_NOTHROW;
 extern void operator delete(GENERIC_PTR, GENERIC_PTR) CORE_NOTHROW;
 
 extern void operator delete[](GENERIC_PTR, GENERIC_PTR) CORE_NOTHROW;
-
-// no inline, required by [replacement.functions]/3
-extern GENERIC_PTR operator new(size_t sz);
-
-// no inline, required by [replacement.functions]/3
-extern GENERIC_PTR operator new[](size_t sz);
-
-extern void operator delete(GENERIC_PTR ptr) CORE_NOTHROW;
-
-extern void operator delete(GENERIC_PTR ptr, size_t size) CORE_NOTHROW;
-
-extern void operator delete[](GENERIC_PTR ptr) CORE_NOTHROW;
-
+//
+//// no inline, required by [replacement.functions]/3
+//extern GENERIC_PTR operator new(size_t sz);
+//
+//// no inline, required by [replacement.functions]/3
+//extern GENERIC_PTR operator new[](size_t sz);
+//
+//extern void operator delete(GENERIC_PTR ptr) CORE_NOTHROW;
+//
+//extern void operator delete(GENERIC_PTR ptr, size_t size) CORE_NOTHROW;
+//
+//extern void operator delete[](GENERIC_PTR ptr) CORE_NOTHROW;
+//
 #endif //CORE23_LITERALS_H

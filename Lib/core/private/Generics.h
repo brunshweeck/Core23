@@ -39,6 +39,8 @@ namespace core {
 
         class DoubleArray;
 
+        class StringArray;
+
         template<class T>
         class ReferenceArray;
     }
@@ -52,6 +54,7 @@ namespace core {
     using native::FloatArray;
     using native::DoubleArray;
     using native::ReferenceArray;
+    using native::StringArray;
 
     namespace native {
 
@@ -116,14 +119,15 @@ namespace core {
 #if __WORDSIZE == 64
         typedef signed long int GENERIC_INT64;
 #else
-        __extension__ typedef signed long long int GENERIC_INT64;
+        typedef signed long long int GENERIC_INT64;
 #endif //
         typedef float GENERIC_FLT32;
         typedef double GENERIC_FLT64;
         typedef char16_t GENERIC_CHR16;
         typedef char32_t GENERIC_CHR32;
         typedef bool GENERIC_BOOL;
-        typedef void* GENERIC_PTR;
+        typedef void *GENERIC_PTR;
+        typedef std::exception GENERIC_THROWABLE;
 
         }
 
@@ -221,6 +225,10 @@ CORE_STATIC_ASSERT(sizeof(gbool) == 1 && sizeof(gbyte) == 1 &&
 
 
 using core::native::GENERIC_PTR;
+
+#if defined(CORE_COMPILER_MSVC) && !defined(__clang__)
+struct _C_double_complex;
+#endif
 
 
 #endif //CORE23_GENERICS_H

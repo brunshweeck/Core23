@@ -5,10 +5,16 @@
 #ifndef CORE23_COLLECTION_H
 #define CORE23_COLLECTION_H
 
-#include <core/String.h>
+#include <core/NoSuchItemException.h>
+#include <core/StateException.h>
+#include <core/UnsupportedMethodException.h>
 #include <core/native/ReferenceArray.h>
+#include <core/util/ConcurrentException.h>
+#include <core/util/Iterator.h>
+#include <core/util/SortedStruct.h>
+#include <core/util/Comparator.h>
+#include <core/util/function/Consumer.h>
 #include <core/util/function/Predicate.h>
-#include "Iterator.h"
 
 namespace core {
     namespace util {
@@ -225,6 +231,17 @@ namespace core {
          */
         template<class E>
         interface Collection : public Object {
+        private:
+            CORE_ALIAS(U, native::Unsafe);
+
+            /**
+             * Capture<T> represent all type T that extends this value type E.
+             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             */
+            template<class T>
+            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
+
+        public:
 
             /**
              * Returns the number of elements in this collection.  If this collection
@@ -356,9 +373,7 @@ namespace core {
              * @throws StateException if the element cannot be added at this
              *         time due to insertion restrictions
              */
-            virtual gbool add(const E &e) {
-                UnsupportedMethodException().throws(__trace("core.util.Collection"));
-            }
+            virtual gbool add(const E &e) { UnsupportedMethodException().throws(__trace("core.util.Collection")); }
 
             /**
              * Removes a single instance of the specified element from this
@@ -398,7 +413,7 @@ namespace core {
              */
             virtual gbool containsAll(const Collection &c) const {
                 for (const E &e: c)
-                    if (!contains(e))
+                    if (!contains((const E &) e))
                         return false;
                 return true;
             }
@@ -427,7 +442,38 @@ namespace core {
             virtual gbool addAll(const Collection &c) {
                 gbool modified = false;
                 for (const E &e: c)
-                    if (add(e)) modified = true;
+                    if (add((const E &) e))
+                        modified = true;
+                return modified;
+            }
+
+            /**
+             * Adds all of the elements in the specified collection to this collection
+             * (optional operation).  The behavior of this operation is undefined if
+             * the specified collection is modified while the operation is in progress.
+             * (This implies that the behavior of this call is undefined if the
+             * specified collection is this collection, and this collection is
+             * nonempty.)
+             *
+             * @param c collection containing elements to be added to this collection
+             * @return <b>true</b> if this collection changed as a result of the call
+             * @throws UnsupportedMethodException if the <b>addAll</b> operation
+             *         is not supported by this collection
+             * @throws CastException if the class of an element of the specified
+             *         collection prevents it from being added to this collection
+             * @throws ArgumentException if some property of an element of the
+             *         specified collection prevents it from being added to this
+             *         collection
+             * @throws StateException if not all the elements can be added at
+             *         this time due to insertion restrictions
+             * @see add(Object)
+             */
+            template<class T = E>
+            gbool addAll(const Collection<Capture<T>> &c) {
+                gbool modified = false;
+                for (const T &e: c)
+                    if (add((const E &) e))
+                        modified = true;
                 return modified;
             }
 
@@ -512,7 +558,7 @@ namespace core {
                 gbool modified = false;
                 Iterator<const E> &it = iterator();
                 while (it.hasNext()) {
-                    if (!c.contains(it.next())) {
+                    if (!c.contains((const E &) it.next())) {
                         it.remove();
                         modified = true;
                     }
@@ -568,7 +614,7 @@ namespace core {
              * @see Set.equals(Object)
              * @see List.equals(Object)
              */
-            gbool equals(const Object &o) const override = 0;
+            gbool equals(const Object &o) const override { return Object::equals(o); }
 
             /**
              * Returns a string representation of this collection.  The string
@@ -658,11 +704,6 @@ namespace core {
             inline NativeIterator<const E> end() const {
                 return NativeIterator<const E>(*this);
             }
-
-            /**
-             * Fast Clean and Reset this collection and all of it fields.
-             */
-            virtual ~Collection() = default;
 
             CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
                                "The valid parameters type must be a class deriving from core.Object");

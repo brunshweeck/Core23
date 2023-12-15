@@ -1569,7 +1569,7 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST Class<T>::NRef &&moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
+            static CORE_FAST typename Class<T>::NRef &&moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1609,13 +1609,34 @@ namespace core {
 
             /**
              * Copy instance or load stored copy of given instance.
-             *
+             * <li> for singleton &copyInstance(o) == &o
+             * <li> for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
+             * <li> if o has previously created by Unsafe.createInstance<T>(...):
+             *  <ul>
+             *      <li> if second argument is true,  &copyInstance(o, ) == &o
+             *      <li> if second argument is false,  &copyInstance(o, ) != &o and copyInstance(o, ) == o
              * @param o The instance to be copied
              * @param oldCopy specified if this method return stored instance if it possible.
              */
             template<class T>
             static T &copyInstance(const T &o, gbool oldCopy = false) {
-                return ((oldCopy) && loadInstance((glong) &o)) ? (T &) o : CopyImpl<T>::copy(o);
+                if (((glong) &o == (glong) &null) || (oldCopy) && loadInstance((glong) &o))
+                    // it has been previously created dynamically
+                    return (T &) o;
+                else {
+                    T &copy = CopyImpl<T>::copy(o);
+//                    static glong lastAddr = 0;
+//                    // for singleton &copyInstance(o) == &o
+//                    // for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
+//                    if(&copy != &o && copy != o && lastAddr == 0){
+//                        lastAddr = (glong) &o;
+//                        destroyInstance(copy);
+//                        return copyInstance(o);
+//                    }
+//                    lastAddr = 0;
+                    return copy;
+                }
+
             }
 
             /**
@@ -1624,7 +1645,7 @@ namespace core {
              */
             template<class T>
             static void destroyInstance(T &var) CORE_NOTHROW {
-                glong addr = getAddress(var, 0);
+                glong addr = (glong) &var;
                 // after this operation addr is not reusable
                 delete &var;
                 deleteInstance(addr);
@@ -1679,6 +1700,10 @@ namespace core {
             static void copySwapMemoryImpl(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
 
             static void freeMemoryImpl(glong address);
+
+        public:
+//            Method Used by Objects instance
+            static Object& systemCache();
 
         };
 

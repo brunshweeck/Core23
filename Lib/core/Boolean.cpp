@@ -44,4 +44,6 @@ namespace core {
     Object &Boolean::clone() const {
         return U::createInstance<Boolean>(*this);
     }
+
+    Boolean Boolean::valueOf(gbool b) { return {b}; }
 } // core

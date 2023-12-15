@@ -84,4 +84,6 @@ namespace core {
     Object &Byte::clone() const {
         return U::createInstance<Byte>(*this);
     }
+
+    Byte Byte::valueOf(gbyte b) { return b; }
 } // core

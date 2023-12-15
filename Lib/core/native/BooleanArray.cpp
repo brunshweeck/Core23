@@ -21,14 +21,16 @@ namespace core {
                 t = k;
                 k = t2;
             }
+
+            CORE_FAST glong L(gint size) { return 1LL * size * U::ARRAY_BOOLEAN_INDEX_SCALE; }
         }
 
         BooleanArray::BooleanArray(gint length) : BooleanArray(length, false) {}
 
         BooleanArray::BooleanArray(gint length, gbool initialValue) : Array<Boolean>(length) {
             if (length < 0)
-                ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
-            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_BOOLEAN_INDEX_SCALE);
+                ArgumentException("Negative array length").throws(__trace("core.native.BooleanArray"));
+            value = (STORAGE) U::allocateMemory(L(length));
             len = length;
             for (gint i = 0; i < length; ++i)
                 value[i] = initialValue;
@@ -37,8 +39,8 @@ namespace core {
         BooleanArray::BooleanArray(const BooleanArray &array) : Array<Boolean>(0) {
             gint length = array.length();
             if (len < 0)
-                ArgumentException("Negative array length").throws(__trace("core.BooleanArray"));
-            value = (STORAGE) U::allocateMemory(length * (glong) U::ARRAY_BOOLEAN_INDEX_SCALE);
+                ArgumentException("Negative array length").throws(__trace("core.native.BooleanArray"));
+            value = (STORAGE) U::allocateMemory(L(length));
             len = length;
             for (gint i = 0; i < length; ++i)
                 value[i] = array.value[i];
@@ -47,18 +49,30 @@ namespace core {
         BooleanArray::BooleanArray(BooleanArray &&array) CORE_NOTHROW: Array<Boolean>(0) {
             permute(value, array.value);
             permute(len, array.len);
+            permute(isLocal, array.isLocal);
         }
 
         BooleanArray &BooleanArray::operator=(const BooleanArray &array) {
             if (this != &array) {
                 gint length = array.len;
-                if (len != length) {
-                    value = (STORAGE) U::reallocateMemory((glong) value,
-                                                                 length * U::ARRAY_BOOLEAN_INDEX_SCALE);
-                    len = length;
+                if (array.isLocal) {
+                    if (!isLocal) {
+                        U::freeMemory((glong) value);
+                    }
+                    value = array.value;
+                    len = array.len;
+                    isLocal = true;
+                } else {
+                    if (len != length) {
+                        STORAGE newValue = (STORAGE) U::allocateMemory(L(length));
+                        if (!isLocal) {
+                            U::freeMemory((glong) value);
+                            value = newValue;
+                        }
+                        len = length;
+                    }
+                    U::copySwapMemory((glong) array.value, (glong)value, L(length), 1);
                 }
-                for (gint i = 0; i < length; ++i)
-                    value[i] = array.value[i];
             }
             return *this;
         }
@@ -67,6 +81,7 @@ namespace core {
             if (this != &array) {
                 permute(value, array.value);
                 permute(len, array.len);
+                permute(isLocal, array.isLocal);
             }
             return *this;
         }
@@ -76,7 +91,7 @@ namespace core {
                 Preconditions::checkIndex(index, Array<Boolean>::length());
                 return value[index];
             } catch (const IndexException &ie) {
-                ie.throws(__trace("core.BooleanArray"));
+                ie.throws(__trace("core.native.BooleanArray"));
             }
         }
 
@@ -85,7 +100,7 @@ namespace core {
                 Preconditions::checkIndex(index, Array<Boolean>::length());
                 return value[index];
             } catch (const IndexException &ie) {
-                ie.throws(__trace("core.BooleanArray"));
+                ie.throws(__trace("core.native.BooleanArray"));
             }
         }
 
@@ -94,8 +109,22 @@ namespace core {
         }
 
         BooleanArray::~BooleanArray() {
-            U::freeMemory((glong) value);
+            len = 0;
+            if (!isLocal)
+                U::freeMemory((glong) value);
             value = null;
+        }
+
+        BooleanArray BooleanArray::fromAddress(glong addr, gint length) {
+            if (length < 0)
+                ArgumentException("Negative array length").throws(__trace("core.native.BooleanArray"));
+            if (addr == 0)
+                ArgumentException("Null address").throws(__trace("core.native.BooleanArray"));
+            BooleanArray ba = {};
+            ba.value = (STORAGE) addr;
+            ba.len = length;
+            ba.isLocal = true;
+            return ba;
         }
     } // core
 } // native

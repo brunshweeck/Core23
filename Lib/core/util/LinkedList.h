@@ -5,8 +5,7 @@
 #ifndef CORE23_LINKEDLIST_H
 #define CORE23_LINKEDLIST_H
 
-#include "List.h"
-#include <core/AssertionError.h>
+#include <core/util/List.h>
 
 namespace core {
     namespace util {
@@ -67,7 +66,7 @@ namespace core {
              */
             class Node;
 
-            CORE_ALIAS(LnkNode, Class<Node>::Ptr);
+            CORE_ALIAS(LnkNode, typename Class<Node>::Ptr);
 
             /**
              * The number of node created in this list
@@ -613,7 +612,7 @@ namespace core {
              * modified at any time after the Iterator is created, in any way except
              * through the list-iterator's own <b>remove</b> or <b>add</b>
              * methods, the list-iterator will throw a
-             * <b>ConcurrentModificationException</b>.  Thus, in the face of
+             * <b>ConcurrentException</b>.  Thus, in the face of
              * concurrent modification, the iterator fails quickly and cleanly, rather
              * than risking arbitrary, non-deterministic behavior at an undetermined
              * time in the future.
@@ -641,7 +640,7 @@ namespace core {
              * modified at any time after the Iterator is created, in any way except
              * through the list-iterator's own <b>remove</b> or <b>add</b>
              * methods, the list-iterator will throw a
-             * <b>ConcurrentModificationException</b>.  Thus, in the face of
+             * <b>ConcurrentException</b>.  Thus, in the face of
              * concurrent modification, the iterator fails quickly and cleanly, rather
              * than risking arbitrary, non-deterministic behavior at an undetermined
              * time in the future.

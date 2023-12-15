@@ -28,7 +28,7 @@ namespace core {
          *
          */
         interface Functional : Object {
-            virtual ~Functional() = default;
+        protected:
 
             CORE_ALIAS(U, native::Unsafe);
 

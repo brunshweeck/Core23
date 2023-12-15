@@ -12,11 +12,69 @@
 #include <core/private/Null.h>
 
 namespace core {
-
+    
+    /**
+     * The <b> String</b>  class represents character strings. All
+     * string literals in programs, such as <b> "abc"</b> , are
+     * implemented as instances of this class.
+     * <p>
+     * Strings are constant; their values cannot be changed after they
+     * are created. String buffers support mutable strings.
+     * Because String objects are immutable they can be shared. For example:
+     * <blockquote><pre>
+     *     String str = "abc";
+     * </pre></blockquote><p>
+     * is equivalent to:
+     * <blockquote><pre>
+     *     char data[] = {'a', 'b', 'c'} ;
+     *     String str = {data};
+     * </pre></blockquote><p>
+     * Here are some more examples of how strings can be used:
+     * <blockquote><pre>
+     *     String cde = "cde";
+     *     "abc" + cde;
+     *     String c = "abc"_S.substring(2, 3);
+     *     String d = cde.substring(1, 2);
+     * </pre></blockquote>
+     * <p>
+     * The class <b> String</b>  includes methods for examining
+     * individual characters of the sequence, for comparing strings, for
+     * searching strings, for extracting substrings, and for creating a
+     * copy of a string with all characters translated to uppercase or to
+     * lowercase. Case mapping is based on the Unicode Standard version
+     * specified by the <b style="color:orange;"> Character</b>  class.
+     * <p>
+     * The language provides special support for the string
+     * concatenation operator (&nbsp;+&nbsp;), and for conversion of
+     * other objects to strings. For additional information on string
+     * concatenation and conversion, see <i>The Language Specification</i>.
+     *
+     * <p>A <b> String</b>  represents a string in the UTF-16 format
+     * in which <em>supplementary characters</em> are represented by <em>surrogate
+     * pairs</em> (see the section <a href="Character.html#unicode">Unicode
+     * Character Representations</a> in the <b> Character</b>  class for
+     * more information).
+     * Index values refer to <b> char</b>  code units, so a supplementary
+     * character uses two positions in a <b> String</b> .
+     * <p>The <b> String</b>  class provides methods for dealing with
+     * Unicode code points (i.e., characters), in addition to those for
+     * dealing with Unicode code units (i.e., <b> char</b>  values).
+     *
+     * @implNote The implementation of the string concatenation operator is left to
+     * the discretion of a compiler, as long as the compiler ultimately conforms
+     * to <i>The Language Specification</i>. The
+     * implementation of string conversion is typically through the method <b> toString</b> ,
+     * defined by <b> Object</b>  and inherited by all sub-object classes.
+     *
+     * @author  Brunshweeck Tazeussong
+     * @see     core.Object.toString()
+     * @see     core.StringBuffer
+     * @see     core.io.Charset
+     */
     class String CORE_FINAL : public Object, public Comparable<String> {
     private:
         /**
-         * Storage represent a primitie byte array used to store string value
+         * Storage represent a primitive byte array used to store string value
          */
         CORE_ALIAS(STORAGE, typename Class<gbyte>::Ptr);
 
@@ -175,8 +233,8 @@ namespace core {
          * Example:
          * <blockquote> <pre>
          *  gchar abc1[] = u"abc"; <br>
-         *  gchar abc2[] = {'a', 'b', 'c'}; <br>
-         *  gchar abc2[] = {'a', 'b', 'c', '\\0'}; <br>
+         *  gchar abc2[] = {'a', 'b', 'c'</b> ; <br>
+         *  gchar abc2[] = {'a', 'b', 'c', '\\0'</b> ; <br>
          *  gchar abc3[] = "abc\0"; <br>
          *  String str1 = abc1; // produce "abc"_S <br>
          *  String str2 = abc2; // produce "abc"_S <br>
@@ -243,9 +301,9 @@ namespace core {
          */
         template<class Str, Class<gbool>::OnlyIf<Class<Str>::isString()> = true>
         CORE_IMPLICIT String(Str &&value, gint offset, gint count) {
-            gint bpc = 0; // used to determine char type (support values 1, 2, 4)
-            glong nbChars = 0; // number of chars in given array (-1 if array is pointer)
-            glong address = 0; // memory address of given array
+            gint bpc = {}; // used to determine char type (support values 1, 2, 4)
+            glong nbChars = {}; // number of chars in given array (-1 if array is pointer)
+            glong address = {}; // memory address of given array
             if((address = (glong) value) == 0) {
                 // the null pointer is used as empty String
                 return;
