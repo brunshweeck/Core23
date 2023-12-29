@@ -163,7 +163,7 @@ namespace core {
          * @throws FormatException
          *          If the String does not contain a parsable short.
          *
-         * @see Short.parseShort(String, int)
+         * @see Short.parseShort(String, gint)
          */
         static Short decode(const String &str);
 
@@ -183,7 +183,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Byte as int after
+         * Return the value of this Byte as gint after
          * widening native conversion
          */
         CORE_FAST gint intValue() const {
@@ -191,7 +191,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Byte as long after
+         * Return the value of this Byte as glong after
          * widening native conversion
          */
         CORE_FAST glong longValue() const {
@@ -299,36 +299,36 @@ namespace core {
         }
 
         /**
-         * Converts the argument to an int by an unsigned conversion.
-         * In an unsigned conversion to an int, the high-order 16 bits of
-         * the int are zero and the low-order 8 bits are equal to the bits
+         * Converts the argument to an gint by an unsigned conversion.
+         * In an unsigned conversion to an gint, the high-order 16 bits of
+         * the gint are zero and the low-order 8 bits are equal to the bits
          * of the short argument.
          *
          * <p>
          * Consequently, zero and positive short values are mapped
-         * to a numerically equal int value and negative short values
-         * are mapped to an int value equal to the input plus 2<sup>16</sup>.
+         * to a numerically equal gint value and negative short values
+         * are mapped to an gint value equal to the input plus 2<sup>16</sup>.
          *
          * @param i
-         *        The value to convert to an unsigned int
+         *        The value to convert to an unsigned gint
          */
         static CORE_FAST gint toUnsignedInt(gshort i) {
             return ((gint) i) & 0xffff;
         }
 
         /**
-         * Converts the argument to a long by an unsigned conversion.
-         * In an unsigned conversion to a long, the high-order 48 bits of
-         * the int are zero and the low-order 8 bits are equal to the bits
+         * Converts the argument to a glong by an unsigned conversion.
+         * In an unsigned conversion to a glong, the high-order 48 bits of
+         * the gint are zero and the low-order 8 bits are equal to the bits
          * of the short argument.
          *
          * <p>
          * Consequently, zero and positive short values are mapped
-         * to a numerically equal int value and negative short values
-         * are mapped to an int value equal to the input plus 2<sup>16</sup>.
+         * to a numerically equal gint value and negative short values
+         * are mapped to an gint value equal to the input plus 2<sup>16</sup>.
          *
          * @param i
-         *        The value to convert to an unsigned int
+         *        The value to convert to an unsigned gint
          */
         static CORE_FAST glong toUnsignedLong(gshort i) {
             return ((glong) i) & 0xffffLL;

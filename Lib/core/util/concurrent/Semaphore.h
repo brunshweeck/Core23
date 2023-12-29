@@ -10,7 +10,7 @@
 namespace core {
     namespace util {
 
-        class Semaphore final: public Locker {
+        class Semaphore CORE_FINAL: public Locker {
 
         };
 

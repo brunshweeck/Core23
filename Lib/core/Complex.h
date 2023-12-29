@@ -163,7 +163,7 @@ namespace core {
         CORE_DEPRECATED gshort shortValue() const;
 
         /**
-         * Return the value of this Complex as int
+         * Return the value of this Complex as gint
          * after narrowing native conversion.
          *
          * @throws ArithmeticException
@@ -172,7 +172,7 @@ namespace core {
         CORE_DEPRECATED gint intValue() const;
 
         /**
-         * Return the value of this Complex as long
+         * Return the value of this Complex as glong
          * after narrowing native conversion.
          *
          * @throws ArithmeticException
@@ -304,13 +304,13 @@ namespace core {
      * Literal for Complex class
      * (for no-confusion with standard complex library, we will use character 'j')
      */
-    Complex operator "" J(unsigned long long imag);
+    extern Complex operator "" J(unsigned long long imag);
 
-    Complex operator "" J(long double imag);
+    extern Complex operator "" J(long double imag);
 
-    Complex operator "" j(unsigned long long imag);
+    extern Complex operator "" j(unsigned long long imag);
 
-    Complex operator "" j(long double imag);
+    extern Complex operator "" j(long double imag);
 
     CORE_WARNING_POP
 

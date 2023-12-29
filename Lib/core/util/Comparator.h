@@ -17,7 +17,7 @@ namespace core {
          * A comparison function, which imposes a <i>total ordering</i> on
          * some collection of objects.  Comparators can be passed to a sort
          * method (such as <b style="color: orange;"> List.sort </b>) to allow precise control over the sort order.
-         * Comparators can also be used to control the order of certain data
+         * Comparators can also be used to control the order of certain array
          * structures (such as <b style="color: green;"> sorted sets</b> or
          * <b style="color: green;"> sorted maps</b>), or to provide an ordering for
          * collections of objects that don't have a <b style="color: green;"> Comparable
@@ -49,8 +49,8 @@ namespace core {
          *
          * Note: It is generally a good idea for comparators to also implement
          * <b> Serializable</b>, as they may be used as ordering methods in
-         * serializable data structures (like <b style="color: orange;"> TreeSet</b>, <b style="color: orange;"> TreeMap</b>).  In
-         * order for the data structure to serialize successfully, the comparator (if
+         * serializable array structures (like <b style="color: orange;"> TreeSet</b>, <b style="color: orange;"> TreeMap</b>).  In
+         * order for the array structure to serialize successfully, the comparator (if
          * provided) must implement <b> Serializable</b>.<p>
          *
          * For the mathematically inclined, the <i>relation</i> that defines the

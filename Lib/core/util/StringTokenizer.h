@@ -71,7 +71,7 @@ namespace core {
          * <blockquote><pre>
          * @code
          *     StringArray result = "this is a test".split("\\s");
-         *     for (int x=0; x&lt;result.length; x++)
+         *     for (gint x=0; x&lt;result.length; x++)
          *         Console::println(result[x]);
          * @endcode
          * </pre></blockquote>
@@ -113,14 +113,14 @@ namespace core {
             /**
              * If delimiters include any surrogates (including surrogate
              * pairs), hasSurrogates is true and the tokenizer uses the
-             * different code path. This is because String.indexOf(int)
+             * different code path. This is because String.indexOf(gint)
              * doesn't handle unpaired surrogates as a single character.
              */
             gbool hasSurrogates = false;
 
             /**
              * When hasSurrogates is true, delimiters are converted to code
-             * points and isDelimiter(int) is used to determine if the given
+             * points and isDelimiter(gint) is used to determine if the given
              * codepoint is a delimiter.
              */
             IntArray delims;
@@ -140,15 +140,10 @@ namespace core {
              * If the <b> returnDelimiter</b>  flag is <b> true</b> , then
              * the delimiter characters are also returned as tokens. Each
              * delimiter is returned as a string consisting of a single
-             * <a href="../lang/Character.html#unicode">Unicode code point</a>
+             * <a href="">Unicode code point</a>
              * of the delimiter (which may be one or two <b> char</b> s). If the
              * flag is <b> false</b> , the delimiter characters are skipped
              * and only serve as separators between tokens.
-             * <p>
-             * Note that if <b> delim</b>  is <b> null</b> , this constructor does
-             * not throw an exception. However, trying to invoke other methods on the
-             * resulting <b> StringTokenizer</b>  may result in a
-             * <b> NullPointerException</b> .
              *
              * @param   str            a string to be parsed.
              * @param   delim          the delimiters.
@@ -162,11 +157,6 @@ namespace core {
              * characters in the <b> delim</b>  argument are the delimiters
              * for separating tokens. Delimiter characters themselves will not
              * be treated as tokens.
-             * <p>
-             * Note that if <b> delim</b>  is <b> null</b> , this constructor does
-             * not throw an exception. However, trying to invoke other methods on the
-             * resulting <b> StringTokenizer</b>  may result in a
-             * <b> NullPointerException</b> .
              *
              * @param   str     a string to be parsed.
              * @param   delim   the delimiters.

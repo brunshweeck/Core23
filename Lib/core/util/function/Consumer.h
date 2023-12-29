@@ -192,8 +192,9 @@ namespace core {
              * @param after the operation to perform after this operation
              */
             Consumer<T> andThen(const Consumer<T> &after) {
-                return [after, *this](Param p) {
-                    accept(p);
+                Consumer copyThis = *this;
+                return [after, copyThis](Param p) {
+                    copyThis.accept(p);
                     after.accept(p);
                 };
             }

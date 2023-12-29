@@ -99,10 +99,10 @@ namespace core {
             return Math::NaN;
         if (ivalue == 0 && rvalue == 0)
             return 0;
-        gdouble n = norm();
+        gdouble const n = norm();
         if (Double::isNaN(n))
             return Math::NaN;
-        gdouble rad = Math::acos(rvalue / ivalue);
+        gdouble const rad = Math::acos(rvalue / ivalue);
         if (Math::signum(rvalue) >= 0)
             return Math::signum(ivalue) > 0 ? rad : -rad;
         return Math::signum(ivalue) > 0 ? Math::PI - rad : Math::PI + rad;
@@ -140,7 +140,7 @@ namespace core {
     }
 
     Complex Complex::ofPolar(gdouble norm, gdouble arg) {
-        return Complex(norm * Math::acos(arg), norm * Math::asin(arg));
+        return Complex(norm * Math::cos(arg), norm * Math::sin(arg));
     }
 
     Complex Complex::valueOf(gdouble d) {

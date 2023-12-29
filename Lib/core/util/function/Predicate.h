@@ -56,7 +56,7 @@ namespace core {
                         !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
                 static Launcher &of(Callable &&c) {
 
-                    CORE_ALIAS(_R, Class<Callable>::template Return<Param>);
+                    CORE_ALIAS(_R, typename Class<Callable>::template Return<Param>);
                     CORE_ALIAS(_Fn, UnarySign<Callable,, T, _R >);
                     CORE_ALIAS(Fn, UnarySign<_Fn,, Param, _R >);
 
@@ -197,7 +197,8 @@ namespace core {
              * AND of this predicate and the <b>other</b> predicate
              */
             Predicate<T> logicalAnd(const Predicate<T> &other) {
-                return [other, *this](Param p) { return test(p) && other.test(p); };
+                Predicate copyThis = *this;
+                return [other, copyThis](Param p) { return copyThis.test(p) && other.test(p); };
             }
 
             /**
@@ -219,7 +220,8 @@ namespace core {
             template<class E,
                     Class<gbool>::Iff<Class<E>::template isSuper<T>() && !Class<E>::template isSimilar<T>()> = 1>
             Predicate<T> logicalAnd(const Predicate<E> &other) {
-                return [other, *this](Param p) { return test(p) && other.test(p); };
+                Predicate copyThis = *this;
+                return [other, copyThis](Param p) { return copyThis.test(p) && other.test(p); };
             }
 
             /**
@@ -239,7 +241,8 @@ namespace core {
              * OR of this predicate and the <b>other</b> predicate
              */
             Predicate<T> logicalOr(const Predicate<T> &other) {
-                return [other, *this](Param p) { return test(p) || other.test(p); };
+                Predicate copyThis = *this;
+                return [other, copyThis](Param p) { return copyThis.test(p) || other.test(p); };
             }
 
             /**
@@ -261,7 +264,8 @@ namespace core {
             template<class E,
                     Class<gbool>::Iff<Class<E>::template isSuper<T>() && !Class<E>::template isSimilar<T>()> = 1>
             Predicate<T> logicalOr(const Predicate<E> &other) {
-                return [other, *this](Param p) { return test(p) || other.test(p); };
+                Predicate copyThis = *this;
+                return [other, copyThis](Param p) { return copyThis.test(p) || other.test(p); };
             }
 
             /**
@@ -272,7 +276,8 @@ namespace core {
              * predicate
              */
             Predicate<T> negate() {
-                return [*this](Param x) { return !test(x); };
+                Predicate copyThis = *this;
+                return [copyThis](Param x) { return !copyThis.test(x); };
             }
 
             /**

@@ -60,7 +60,7 @@ namespace core {
                         !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
                 static Result &of(Callable &&c) {
 
-                    CORE_ALIAS(_R, Class<Callable>::template Return<>);
+                    CORE_ALIAS(_R, typename Class<Callable>::template Return<>);
                     CORE_ALIAS(_Fn, Sign<Callable,, _R >);
                     CORE_ALIAS(Fn, Sign<_Fn,, _R >);
 

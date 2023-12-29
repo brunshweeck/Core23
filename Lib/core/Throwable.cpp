@@ -23,7 +23,7 @@ namespace core {
         }
 
         gint encodeUTF16_UTF8(const gchar in[], gint limit, char out[], gint offset, gint length) {
-            gint i;
+            gint i = {};
             for (i = 0; i < limit && offset < length && in[i] < 0x80; ++i) {
                 if (in[i] == 0) {
                     out[offset++] = (char) '?';
@@ -69,23 +69,41 @@ namespace core {
         const char *StrToCStr(const String &str) {
             static gchar in[4096] = {};
             static char out[8192] = {};
-            gint i = putString(str, in, 0, 4096);
+            gint const i = putString(str, in, 0, 4096);
             in[i] = 0;
-            gint j = encodeUTF16_UTF8(in, 4096, out, 0, 8192);
-            out[j] = 0;
+            gint const j = encodeUTF16_UTF8(in, i, out, 0, 8192);
+            if (j < 8192){
+                for (int k = 0; k < Math::min(8192 - j, 20); ++k) {
+                    out[j+k] = 0;
+                }
+            }
             return out;
         }
 
     }
 
     Throwable::Throwable() CORE_NOTHROW:
-            cse(null), stack(null), stackSize(0), isTemporary(false) {}
+            cse(null), stack(null), stackSize(0), isTemporary(false) {
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(msg), 0};
+        (native::GENERIC_THROWABLE &) *this = throwable;
+#endif //
+    }
 
     Throwable::Throwable(String message) CORE_NOTHROW:
-            msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {}
+            msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(msg), 0};
+        (native::GENERIC_THROWABLE &) *this = throwable;
+#endif //
+    }
 
     Throwable::Throwable(String message, const Throwable &cause) CORE_NOTHROW:
             msg(U::moveInstance(message)), cse(null), stack(null), stackSize(0), isTemporary(false) {
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(msg), 0};
+        (native::GENERIC_THROWABLE &) *this = throwable;
+#endif //
         setCause(cause);
     }
 
@@ -106,6 +124,10 @@ namespace core {
                 cse = &U::copyInstance(*thr.cse, true);
             copyStack(thr);
         }
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(msg), 0};
+        (native::GENERIC_THROWABLE &) *this = throwable;
+#endif //
     }
 
     Throwable::Throwable(Throwable &&thr) CORE_NOTHROW:
@@ -114,6 +136,10 @@ namespace core {
         thr.stack = null;
         thr.stackSize = 0;
         thr.isTemporary = false;
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(msg), 0};
+        (native::GENERIC_THROWABLE &) *this = throwable;
+#endif //
     }
 
     String Throwable::message() const {
@@ -163,6 +189,10 @@ namespace core {
 
     void Throwable::throws(const Trace &trace) const {
         Throwable &th = U::copyInstance(*this);
+#ifdef CORE_COMPILER_MSVC
+        native::GENERIC_THROWABLE const throwable = {StrToCStr(th.msg), 0};
+        (native::GENERIC_THROWABLE &) th = throwable;
+#endif //
         th.isTemporary = true;
         th.updateStack(trace);
         U::moveInstance(th).raise();
@@ -185,7 +215,7 @@ namespace core {
     Throwable::PRINTSTREAM Throwable::what() const CORE_NOTHROW {
         static gchar in[4096] = {};
         static char out[8192] = {};
-        gint i;
+        gint i = {};
         for (i = 0; i < 20; ++i) {
             out[i] = '\b';
         }

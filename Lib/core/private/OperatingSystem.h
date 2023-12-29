@@ -7,7 +7,7 @@
 #define CORE23_OPERATINGSYSTEM_H
 
 #if __has_include(<bits/exception.h>)
-#include <bits/exception>
+#include <bits/exception.h>
 #else
 #include <exception>
 #endif

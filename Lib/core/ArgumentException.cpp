@@ -19,6 +19,6 @@ namespace core {
 
 
     Object &ArgumentException::clone() const {
-        return U::createInstance<ArgumentException>(*this);
+        return (Object &) U::createInstance<ArgumentException>(*this);
     }
 } // core

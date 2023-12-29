@@ -109,7 +109,9 @@ namespace core {
                 return *(glong *) (getAddress(object) + offset);
             }
 
-            static gchar convEndian(gbool big, gchar n) { return big == U::BIG_ENDIAN ? n : Character::reverseBytes(n); }
+            static gchar convEndian(gbool big, gchar n) {
+                return big == U::BIG_ENDIAN ? n : Character::reverseBytes(n);
+            }
 
             static gshort convEndian(gbool big, gshort n) { return big == U::BIG_ENDIAN ? n : Short::reverseBytes(n); }
 
@@ -187,8 +189,9 @@ namespace core {
             static gint pickPos(gint top, gint pos) { return U::BIG_ENDIAN ? top - pos : pos; }
         };
 
-        gint ArraysSupport::vectorizedMismatch(const Object &a, glong aOffset, const Object &b, glong bOffset, gint length,
-                                               gint log2ArrayIndexScale) {
+        gint
+        ArraysSupport::vectorizedMismatch(const Object &a, glong aOffset, const Object &b, glong bOffset, gint length,
+                                          gint log2ArrayIndexScale) {
             // assert a.getClass().isArray();
             // assert b.getClass().isArray();
             // assert 0 <= length <= sizeOf(a)
@@ -441,7 +444,8 @@ namespace core {
             return -1;
         }
 
-        gint ArraysSupport::mismatch(const IntArray &a, gint aFromIndex, const IntArray &b, gint bFromIndex, gint length) {
+        gint
+        ArraysSupport::mismatch(const IntArray &a, gint aFromIndex, const IntArray &b, gint bFromIndex, gint length) {
             gint i = 0;
             if (length > 1) {
                 if (a[aFromIndex] != b[bFromIndex])
@@ -581,8 +585,8 @@ namespace core {
                 // put code cold in a separate method
                 try {
                     return hugeLength(oldLength, minGrowth);
-                }catch(const Throwable& thr) {
-                    thr.throws(__trace("Core::ArraysSupport"));
+                } catch (const Throwable &thr) {
+                    thr.throws(__trace("Core.ArraysSupport"));
                 }
             }
         }

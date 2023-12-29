@@ -26,8 +26,8 @@ namespace core {
      * </pre></blockquote><p>
      * is equivalent to:
      * <blockquote><pre>
-     *     char data[] = {'a', 'b', 'c'} ;
-     *     String str = {data};
+     *     char array[] = {'a', 'b', 'c'} ;
+     *     String str = {array};
      * </pre></blockquote><p>
      * Here are some more examples of how strings can be used:
      * <blockquote><pre>
@@ -61,7 +61,7 @@ namespace core {
      * dealing with Unicode code units (i.e., <b> char</b>  values).
      *
      * @implNote The implementation of the string concatenation operator is left to
-     * the discretion of a compiler, as long as the compiler ultimately conforms
+     * the discretion of a compiler, as glong as the compiler ultimately conforms
      * to <i>The Language Specification</i>. The
      * implementation of string conversion is typically through the method <b> toString</b> ,
      * defined by <b> Object</b>  and inherited by all sub-object classes.
@@ -475,7 +475,7 @@ namespace core {
         /**
          * Compares two strings lexicographically, ignoring case differences. This method returns
          * an integer whose sign is that of calling compareTo with case folded versions of the strings
-         * where case differences have been eliminated by calling Character.toLowerCase(Character.toUpperCase(int))
+         * where case differences have been eliminated by calling Character.toLowerCase(Character.toUpperCase(gint))
          * on each Unicode code point.
          *
          * <p>
@@ -520,7 +520,7 @@ namespace core {
          * <blockquote><pre>
          * s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
          * </pre></blockquote>
-         * using int arithmetic, where s[i] is the <i>i</i>th character of the string, n is the length of
+         * using gint arithmetic, where s[i] is the <i>i</i>th character of the string, n is the length of
          * the string, and ^ indicates exponentiation. (The hash value of the empty string is zero.)
          */
         gint hash() const override;
@@ -797,9 +797,9 @@ namespace core {
          *
          * <blockquote>
          * <code>
-         *  str.Pattern.
-         * str.Pattern#compile(String) compile(<i>str</i>).
-         * str.Pattern#matcher(CharSequence) matcher(<i>str</i>).
+         *  str.pattern.
+         * str.pattern.compile(String) compile(<i>str</i>).
+         * str.pattern.matcher(CharSequence) matcher(<i>str</i>).
          * str.Matcher#replaceAll(String) replaceAll(<i>repl</i>)
          * </code>
          * </blockquote>
@@ -865,66 +865,66 @@ namespace core {
 
         /**
          * Returns a string whose value is this string, with all leading
-         * and trailing plain Character#isWhitespace(int) white space
+         * and trailing plain Character#isWhitespace(gint) white space
          * removed.
          * <p>
          * If this String object represents an empty string,
          * or if all code points in this string are
-         * plain Character#isWhitespace(int) white space, then an empty string
+         * plain Character#isWhitespace(gint) white space, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
-         * code point that is not a plain Character#isWhitespace(int) white space
+         * code point that is not a plain Character#isWhitespace(gint) white space
          * up to and including the last code point that is not a
-         * plain Character#isWhitespace(int) white space.
+         * plain Character#isWhitespace(gint) white space.
          * <p>
          * This method may be used to strip
-         * plain Character#isWhitespace(int) white space from
+         * plain Character#isWhitespace(gint) white space from
          * the beginning and end of a string.
          */
         String strip() const;
 
         /**
          * Returns a string whose value is this string, with all leading
-         * plain Character#isWhitespace(int) white space removed.
+         * plain Character#isWhitespace(gint) white space removed.
          * <p>
          * If this String object represents an empty string,
          * or if all code points in this string are
-         * plain Character#isWhitespace(int) white space, then an empty string
+         * plain Character#isWhitespace(gint) white space, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
-         * code point that is not a plain Character#isWhitespace(int) white space
+         * code point that is not a plain Character#isWhitespace(gint) white space
          * up to and including the last code point of this string.
          * <p>
          * This method may be used to trim
-         * plain Character#isWhitespace(int) white space from
+         * plain Character#isWhitespace(gint) white space from
          * the beginning of a string.
          */
         String stripLeading() const;
 
         /**
          * Returns a string whose value is this string, with all trailing
-         * plain Character#isWhitespace(int) white space removed.
+         * plain Character#isWhitespace(gint) white space removed.
          * <p>
          * If this String object represents an empty string,
          * or if all characters in this string are
-         * plain Character#isWhitespace(int) white space, then an empty string
+         * plain Character#isWhitespace(gint) white space, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
          * code point of this string up to and including the last code point
-         * that is not a plain Character#isWhitespace(int) white space.
+         * that is not a plain Character#isWhitespace(gint) white space.
          * <p>
          * This method may be used to trim
-         * plain Character#isWhitespace(int) white space from
+         * plain Character#isWhitespace(gint) white space from
          * the end of a string.
          */
         String stripTrailing() const;
 
         /**
          * Returns true if the string is empty or contains only
-         * plain Character#isWhitespace(int) white space codepoints,
+         * plain Character#isWhitespace(gint) white space codepoints,
          * otherwise false.
          */
         gbool isBlank() const;
@@ -1109,7 +1109,7 @@ namespace core {
         CharArray chars() const;
 
         /**
-         * Copies code points from this string into the destination int
+         * Copies code points from this string into the destination gint
          * array.
          * <p>
          * The first code point to be copied is at index srcBegin;

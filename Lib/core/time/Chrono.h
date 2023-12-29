@@ -10,7 +10,7 @@
 namespace core {
     namespace time {
 
-        class Chrono final: public Temporal {
+        class Chrono CORE_FINAL: public Temporal {
 
         };
 

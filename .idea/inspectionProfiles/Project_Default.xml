@@ -2,8 +2,24 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="ClangTidy" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="clangTidyChecks" value="-*,cert-dcl21-cpp,cert-dcl58-cpp,cert-err34-c,cert-err52-cpp,cert-err60-cpp,cert-flp30-c,cert-msc50-cpp,cert-msc51-cpp,cert-str34-c,google-default-arguments,google-runtime-operator,hicpp-exception-baseclass,mpi-buffer-deref,mpi-type-mismatch,openmp-use-default-none,portability-simd-intrinsics,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,misc-*,modernize-*,performance-*,readability-*,-readability-identifier-length,-cppcoreguidelines-avoid-c-arrays,-modernize-avoid-c-arrays,-readability-braces-around-statements,-modernize-use-trailing-return-type,-modernize-concat-nested-namespaces,-modernize-use-auto,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-avoid-const-or-ref-data-members,-modernize-use-nodiscard,-readability-magic-numbers,-bugprone-easily-swappable-parameters,-cppcoreguidelines-pro-type-cstyle-cast,-cppcoreguidelines-owning-memory,-performance-no-int-to-ptr,-modernize-return-braced-init-list,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-avoid-do-while,-bugprone-switch-missing-default-case,-readability-else-after-return,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-avoid-non-const-global-variables,-cppcoreguidelines-special-member-functions,-bugprone-assignment-in-if-condition,-modernize-deprecated-headers,-cppcoreguidelines-no-malloc,-cppcoreguidelines-missing-std-forward,-modernize-use-using,-misc-non-private-member-variables-in-classes,-bugprone-forwarding-reference-overload,-readability-use-anyofallof,-modernize-pass-by-value,-cppcoreguidelines-rvalue-reference-param-not-moved,-modernize-use-nullptr,-cppcoreguidelines-pro-bounds-pointer-arithmetic" />
+      <option name="clangTidyChecks" value="-*,cert-dcl21-cpp,cert-dcl58-cpp,cert-err34-c,cert-err52-cpp,cert-err60-cpp,cert-flp30-c,cert-msc50-cpp,cert-msc51-cpp,cert-str34-c,google-default-arguments,google-runtime-operator,hicpp-exception-baseclass,mpi-buffer-deref,mpi-type-mismatch,openmp-use-default-none,portability-simd-intrinsics,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,misc-*,modernize-*,performance-*,readability-*,-readability-identifier-length,-cppcoreguidelines-avoid-c-arrays,-modernize-avoid-c-arrays,-readability-braces-around-statements,-modernize-use-trailing-return-type,-modernize-concat-nested-namespaces,-modernize-use-auto,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-avoid-const-or-ref-data-members,-modernize-use-nodiscard,-readability-magic-numbers,-bugprone-easily-swappable-parameters,-cppcoreguidelines-pro-type-cstyle-cast,-cppcoreguidelines-owning-memory,-performance-no-int-to-ptr,-modernize-return-braced-init-list,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-avoid-do-while,-bugprone-switch-missing-default-case,-readability-else-after-return,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-avoid-non-const-global-variables,-cppcoreguidelines-special-member-functions,-bugprone-assignment-in-if-condition,-modernize-deprecated-headers,-cppcoreguidelines-no-malloc,-cppcoreguidelines-missing-std-forward,-modernize-use-using,-misc-non-private-member-variables-in-classes,-bugprone-forwarding-reference-overload,-readability-use-anyofallof,-modernize-pass-by-value,-cppcoreguidelines-rvalue-reference-param-not-moved,-modernize-use-nullptr,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-bugprone-signed-char-misuse,-misc-include-cleaner,-cppcoreguidelines-macro-usage,-cppcoreguidelines-non-private-member-variables-in-classes,-cppcoreguidelines-pro-type-vararg" />
     </inspection_tool>
     <inspection_tool class="OCUnusedGlobalDeclaration" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N806" />
+          <option value="N803" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="gdb.Value" />
+        </list>
+      </option>
+    </inspection_tool>
   </profile>
 </component>

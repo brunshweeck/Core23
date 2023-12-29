@@ -27,7 +27,7 @@ namespace core {
 
         FloatArray::FloatArray(gint length) : FloatArray(length, 0.0F) {}
 
-        FloatArray::FloatArray(gint length, gfloat initialValue) : Array<Float>(length) {
+        FloatArray::FloatArray(gint length, gfloat initialValue)  {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.FloatArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        FloatArray::FloatArray(const FloatArray &array) : Array<Float>(0) {
-            gint length = array.length();
-            if (len < 0)
+        FloatArray::FloatArray(const FloatArray &array)  {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.FloatArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        FloatArray::FloatArray(FloatArray &&array) CORE_NOTHROW: Array<Float>(0) {
+        FloatArray::FloatArray(FloatArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         FloatArray &FloatArray::operator=(const FloatArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +88,16 @@ namespace core {
 
         gfloat &FloatArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Float>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.FloatArray"));
             }
         }
 
-        const gfloat FloatArray::get(gint index) const {
+        gfloat FloatArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Float>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.FloatArray"));
@@ -125,6 +125,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint FloatArray::length() const {
+            return len;
         }
     } // core
 } // native

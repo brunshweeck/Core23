@@ -20,95 +20,84 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a33b91f6-c6fe-4f22-b703-dcfef58b06eb" name="Changes" comment="update on 03/12/2023 22:03&#10;&#10;second building">
-      <change afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/util/SortedStruct.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/util/SortedStruct.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/query/client-vscode/query.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cache-v2-ea4def6e16c0f9aa1551.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cmakeFiles-v1-30f046d9f6e6f665026a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/codemodel-v2-978de79086a1e0967158.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Debug-d0094a50bb2071803777.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-MinSizeRel-d0094a50bb2071803777.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-RelWithDebInfo-d0094a50bb2071803777.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Release-d0094a50bb2071803777.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/index-2023-12-10T04-13-03-0902.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Debug-423c72a1d064dc070f3f.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-MinSizeRel-423c72a1d064dc070f3f.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-RelWithDebInfo-423c72a1d064dc070f3f.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Release-423c72a1d064dc070f3f.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Debug-5a2af753093bd35b11f2.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-MinSizeRel-22adae358f14d3223594.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-RelWithDebInfo-ca88672436cb16feadee.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Release-2dcc13b7392c9e7c398c.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Debug-55706b6db0ca1c4e3c3c.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-MinSizeRel-3c7ca9b60c4804775c78.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-RelWithDebInfo-00d441c35d0204509c74.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Release-a61f54b3da4c31da1893.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Debug-61ffd5987f9b41a4b76a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-MinSizeRel-61ffd5987f9b41a4b76a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-RelWithDebInfo-61ffd5987f9b41a4b76a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Release-61ffd5987f9b41a4b76a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/.cmake/api/v1/reply/toolchains-v1-db24326a19c8c55b6d57.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj.filters" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CMakeSystem.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CMakeCXXCompilerId.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CompilerIdCXX.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.exe.recipe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.command.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.read.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.write.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CompilerIdCXX.lastbuildstate" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.command.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.write.1.tlog" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.recipe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/CMakeFiles/CMakeConfigureLog.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Core23.sln" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Core23.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Core23.vcxproj.filters" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Main23.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Main23.vcxproj.filters" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj.filters" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gdbinit" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/AutoClosable.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/Closeable.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/Closeable.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Chronology.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Chronology.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Era.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Era.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Meta/CLDR/cldr.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UnixLib/time/LocalDateTime.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UnixLib/time/ZoneID.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/time/LocalDateTime.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/time/ZoneID.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Core23.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Core23.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/cmake.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cmake.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core23.natvis" beforeDir="false" afterPath="$PROJECT_DIR$/Core23.natvis" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Boolean.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Boolean.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Boolean.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Boolean.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/ArgumentException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ArgumentException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/AssertionError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/AssertionError.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Byte.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Byte.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Byte.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Byte.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Character.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Character.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Character.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Character.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Class.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Class.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Comparable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Comparable.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Complex.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Complex.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Double.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Double.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Enum.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Enum.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Enum.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Enum.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Exception.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Exception.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Float.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Float.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Integer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Integer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Long.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Long.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/MemoryError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/MemoryError.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Object.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Math.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Short.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Short.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/String.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/String.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Void.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Void.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/File.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/File.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/IOError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/IOError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOError.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/IOException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/IOException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOException.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/Array.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/BooleanArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/BooleanArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray.h" afterDir="false" />
@@ -124,20 +113,43 @@
       <change beforePath="$PROJECT_DIR$/Lib/core/native/IntArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/IntArray.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/LongArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/LongArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/LongArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/LongArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/ShortArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/ShortArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/StringArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/StringArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Compiler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Compiler.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Generics.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Generics.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/private/Literals.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Literals.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Null.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Null.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/OperatingSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/OperatingSystem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Templates.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Templates.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Unsafe.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Formatter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/text/Formatter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Calendar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Calendar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Calendar.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Calendar.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Chrono.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Chrono.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Date.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Date.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTime.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DeadLine.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DeadLine.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Formatter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Formatter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Temporal.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Temporal.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Temporal.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Temporal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Time.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Time.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/TimeZone.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/TimeZone.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/ArrayList.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ArrayList.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Collection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Collection.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Comparator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Comparator.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/HashMap.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/HashMap.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/HashSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/HashSet.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/LinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/LinkedList.h" afterDir="false" />
@@ -145,12 +157,86 @@
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Locale.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Locale.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Map.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Map.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/PriorityQueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/PriorityQueue.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/Set.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Set.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Queue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeMap.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/TreeMap.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/TreeSet.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Functional.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Functional.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Consumer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Consumer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Predicate.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Predicate.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Supplier.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Supplier.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UnixLib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/UnixLib/core/private/Unsafe.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/query/client-vscode/query.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cache-v2-ea4def6e16c0f9aa1551.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cmakeFiles-v1-30f046d9f6e6f665026a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/codemodel-v2-978de79086a1e0967158.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Debug-d0094a50bb2071803777.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-MinSizeRel-d0094a50bb2071803777.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-RelWithDebInfo-d0094a50bb2071803777.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Release-d0094a50bb2071803777.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/index-2023-12-10T04-13-03-0902.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Debug-423c72a1d064dc070f3f.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-MinSizeRel-423c72a1d064dc070f3f.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-RelWithDebInfo-423c72a1d064dc070f3f.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Release-423c72a1d064dc070f3f.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Debug-5a2af753093bd35b11f2.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-MinSizeRel-22adae358f14d3223594.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-RelWithDebInfo-ca88672436cb16feadee.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Release-2dcc13b7392c9e7c398c.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Debug-55706b6db0ca1c4e3c3c.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-MinSizeRel-3c7ca9b60c4804775c78.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-RelWithDebInfo-00d441c35d0204509c74.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Release-a61f54b3da4c31da1893.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Debug-61ffd5987f9b41a4b76a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-MinSizeRel-61ffd5987f9b41a4b76a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-RelWithDebInfo-61ffd5987f9b41a4b76a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Release-61ffd5987f9b41a4b76a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/toolchains-v1-db24326a19c8c55b6d57.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj.filters" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CompilerIdCXX.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.exe.recipe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.command.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.read.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.write.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CompilerIdCXX.lastbuildstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.command.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.write.1.tlog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.recipe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/Core23.sln" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/Core23.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/Core23.vcxproj.filters" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/Main23.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/Main23.vcxproj.filters" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj.filters" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/cmake_install.cmake" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,21 +244,29 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ClangdSettings">
+    <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-VS2019" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-MinGW" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Lib/core/time/Era.h" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="OCResolveContextSettings">
+    <option name="configuration" value="0-Debug-Core23" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -194,38 +288,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;CMake Application.Main23.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/Xml/Schemas/1036/natvis.xsd&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
-    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "CMake Application.Main23.executor": "Debug",
+    "CMake Debug.Project.executor": "Debug",
+    "Python.cldr2LocaleGenerator.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/Meta/CLDR",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "structure.view.defaults.are.configured": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Meta\CLDR" />
+      <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\UnixLib\time" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\UnixLib" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -240,6 +340,19 @@
     </option>
   </component>
   <component name="RunManager" selected="CMake Application.Main23">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Project" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
+      <method v="2" />
+    </configuration>
+    <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-MinGW">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-GCC">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -251,6 +364,11 @@
       </method>
     </configuration>
     <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-VS2019">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-MinGW" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -270,10 +388,41 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="cldr2LocaleGenerator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Core23" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.11" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Meta/CLDR" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Meta/CLDR/cldr2LocaleGenerator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="CMake Application.Core23" />
       <item itemvalue="CMake Application.Main23" />
+      <item itemvalue="CMake Debug.Project" />
+      <item itemvalue="Python.cldr2LocaleGenerator" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.cldr2LocaleGenerator" />
+        <item itemvalue="CMake Debug.Project" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -332,6 +481,33 @@
       <workItem from="1702473196025" duration="7701000" />
       <workItem from="1702526012726" duration="23325000" />
       <workItem from="1702565269867" duration="14759000" />
+      <workItem from="1702627326999" duration="17099000" />
+      <workItem from="1702773880481" duration="22588000" />
+      <workItem from="1702807567810" duration="16276000" />
+      <workItem from="1702824989722" duration="1283000" />
+      <workItem from="1702840419096" duration="20137000" />
+      <workItem from="1702881556971" duration="12655000" />
+      <workItem from="1702960228057" duration="15209000" />
+      <workItem from="1703000220563" duration="11657000" />
+      <workItem from="1703028045687" duration="22951000" />
+      <workItem from="1703101767795" duration="16771000" />
+      <workItem from="1703194274556" duration="21497000" />
+      <workItem from="1703246772682" duration="8137000" />
+      <workItem from="1703305251139" duration="2629000" />
+      <workItem from="1703319384291" duration="15469000" />
+      <workItem from="1703356566978" duration="5571000" />
+      <workItem from="1703386328796" duration="1738000" />
+      <workItem from="1703407897644" duration="8775000" />
+      <workItem from="1703478722077" duration="8335000" />
+      <workItem from="1703491472384" duration="9344000" />
+      <workItem from="1703579509183" duration="20268000" />
+      <workItem from="1703617491149" duration="12524000" />
+      <workItem from="1703658927463" duration="3258000" />
+      <workItem from="1703662531479" duration="12190000" />
+      <workItem from="1703711530920" duration="14223000" />
+      <workItem from="1703740560198" duration="30054000" />
+      <workItem from="1703800557774" duration="10303000" />
+      <workItem from="1703816793872" duration="19454000" />
     </task>
     <task id="LOCAL-00001" summary="update on 24/11/2023 20:49">
       <option name="closed" value="true" />
@@ -390,19 +566,29 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/Enum.h</url>
-          <line>47</line>
-          <option name="timeStamp" value="4" />
+          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
+          <line>518</line>
+          <option name="timeStamp" value="84" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Main.cpp</url>
-          <line>21</line>
-          <option name="timeStamp" value="6" />
+          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
+          <line>509</line>
+          <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/util/Collection.h</url>
-          <line>443</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
+          <line>500</line>
+          <option name="timeStamp" value="86" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp</url>
+          <line>38</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Lib/core/Throwable.cpp</url>
+          <line>221</line>
+          <option name="timeStamp" value="104" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

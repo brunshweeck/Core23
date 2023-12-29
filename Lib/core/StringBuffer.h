@@ -29,7 +29,7 @@ namespace core {
      * <p>
      * The principal operations on a <b>StringBuffer</b> are the
      * <b>append</b> and <b>insert</b> methods, which are
-     * overloaded so as to accept data of any type. Each effectively
+     * overloaded so as to accept array of any type. Each effectively
      * converts a given datum to a string and then appends or inserts the
      * characters of that string to the string buffer. The
      * <b>append</b> method always adds these characters at the end
@@ -60,7 +60,7 @@ namespace core {
      * operation's call, by using an immutable source sequence, or by not
      * sharing the source sequence across threads.
      * <p>
-     * Every string buffer has a capacity. As long as the length of the
+     * Every string buffer has a capacity. As glong as the length of the
      * character sequence contained in the string buffer does not exceed
      * the capacity, it is not necessary to allocate a new internal
      * buffer array. If the internal buffer overflows, it is
@@ -363,34 +363,34 @@ namespace core {
         StringBuffer &appendCodePoint(gint codePoint);
 
         /**
-         * Append String representation of int value argument to this character sequence.
+         * Append String representation of gint value argument to this character sequence.
          *
          * @param i
-         *         The int value to append
+         *         The gint value to append
          */
         StringBuffer &append(gint i);
 
         /**
-         * Append String representation of long value argument to this character sequence.
+         * Append String representation of glong value argument to this character sequence.
          *
          * @param l
-         *         The long value to append
+         *         The glong value to append
          */
         StringBuffer &append(glong l);
 
         /**
-         * Append unsigned String representation of int value argument to this character sequence.
+         * Append unsigned String representation of gint value argument to this character sequence.
          *
          * @param i
-         *         The int value to append
+         *         The gint value to append
          */
         StringBuffer &appendUnsigned(gint i);
 
         /**
-         * Append unsigned String representation of long argument to this character sequence.
+         * Append unsigned String representation of glong argument to this character sequence.
          *
          * @param l
-         *         The long value to append
+         *         The glong value to append
          */
         StringBuffer &appendUnsigned(glong l);
 
@@ -587,7 +587,7 @@ namespace core {
         StringBuffer &insertCodePoint(gint offset, gint codePoint);
 
         /**
-         * Inserts the string representation of the second int
+         * Inserts the string representation of the second gint
          * argument into this sequence.
          *
          * <p>
@@ -596,13 +596,13 @@ namespace core {
          * of this sequence.
          *
          * @param offset   the offset.
-         * @param i        an int.
+         * @param i        an gint.
          * @throws IndexException  if the offset is invalid.
          */
         StringBuffer &insert(gint offset, gint i);
 
         /**
-         * Inserts the string representation of the long
+         * Inserts the string representation of the glong
          * argument into this sequence.
          *
          * <p>
@@ -611,26 +611,26 @@ namespace core {
          * of this sequence.
          *
          * @param offset   the offset.
-         * @param l        a long.
+         * @param l        a glong.
          * @throws IndexException  if the offset is invalid.
          */
         StringBuffer &insert(gint offset, glong l);
 
         /**
-         * Insert unsigned String representation of int value argument into this character sequence.
+         * Insert unsigned String representation of gint value argument into this character sequence.
          *
          * @param offset   the offset.
          * @param i
-         *         The int value to insert
+         *         The gint value to insert
          */
         StringBuffer &insertUnsigned(gint offset, gint i);
 
         /**
-         * Insert unsigned String representation of long argument to this character sequence.
+         * Insert unsigned String representation of glong argument to this character sequence.
          *
          * @param offset   the offset.
          * @param l
-         *         The long value to insert
+         *         The glong value to insert
          */
         StringBuffer &insertUnsigned(gint offset, glong l);
 
@@ -829,7 +829,7 @@ namespace core {
          *
          * @param srcBegin   start copying at this offset.
          * @param srcEnd     stop copying at this offset.
-         * @param dst        the array to copy the data into.
+         * @param dst        the array to copy the array into.
          * @param dstBegin   offset into dst.
          * @throws IndexException  if any of the following is true:
          *             <ul>
@@ -853,7 +853,7 @@ namespace core {
          * pairs encountered in the sequence are combined as if and the result is passed
          * to the stream. Any other code units, including ordinary BMP characters,
          * unpaired surrogates, and undefined code units, are zero-extended to
-         * int values which are then passed to the array.
+         * gint values which are then passed to the array.
          */
         IntArray codePoints() const;
 
@@ -988,7 +988,7 @@ namespace core {
         Object &clone() const override;
 
         /**
-         * Returns a string representing the data in this sequence.
+         * Returns a string representing the array in this sequence.
          */
         String toString() const override;
 
@@ -1027,6 +1027,8 @@ namespace core {
          *             greater than endIndex.
          */
         StringBuffer &remove(gint startIndex, gint endIndex);
+
+        ~StringBuffer() override;
     };
 
 } // core

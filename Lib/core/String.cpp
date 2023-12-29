@@ -72,7 +72,7 @@ namespace core {
             const glong heapSize = alignToHeapWordSize(sizeInBytes);
             PBYTE address = (PBYTE) U::allocateMemory(sizeInBytes);
             if (address != null)
-                for (glong i = sizeInBytes-2; i < heapSize; ++i)
+                for (glong i = sizeInBytes - 2; i < heapSize; ++i)
                     address[i] = 0;
             return address;
         }
@@ -378,7 +378,7 @@ namespace core {
         try {
             Preconditions::checkIndex(index, len);
             return nextChar(value, index);
-        } catch (IndexException &ie) { ie.throws(__trace("core.String")); }
+        } catch (const IndexException &ie) { ie.throws(__trace("core.String")); }
     }
 
     gint String::codePointAt(gint index) const {
@@ -630,7 +630,7 @@ namespace core {
                 k += 1;
             }
         }
-        return str;
+        return str2;
     }
 
     String String::toLowerCase() const {
@@ -1365,11 +1365,11 @@ namespace core {
     }
 
     String::~String() {
-        if (value != null) {
+        if (len > 0) {
+            len = 0;
             U::freeMemory((glong) value);
-            value = null;
         }
-        len = 0;
+        value = null;
         isHashed = false;
         hashcode = 0;
     }

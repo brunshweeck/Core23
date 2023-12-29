@@ -205,7 +205,7 @@ namespace core {
              * <p>If this map permits null values, then a return value of
              * <b>null</b> does not <i>necessarily</i> indicate that the map
              * contains no mapping for the key; it's also possible that the map
-             * explicitly maps the key to <b>null</b>.  The <b style="color:orange;">#containsKey
+             * explicitly maps the key to <b>null</b>.  The <b style="color:orange;"> containsKey
              * containsKey</b> operation may be used to distinguish these two cases.
              *
              * @param key the key whose associated value is to be returned
@@ -237,7 +237,7 @@ namespace core {
              * <p>If this map permits null values, then a return value of
              * <b>null</b> does not <i>necessarily</i> indicate that the map
              * contains no mapping for the key; it's also possible that the map
-             * explicitly maps the key to <b>null</b>.  The <b style="color:orange;">#containsKey
+             * explicitly maps the key to <b>null</b>.  The <b style="color:orange;"> containsKey
              * containsKey</b> operation may be used to distinguish these two cases.
              *
              * @param key the key whose associated value is to be returned
@@ -261,7 +261,7 @@ namespace core {
              * (optional operation).  If the map previously contained a mapping for
              * the key, the old value is replaced by the specified value.  (A map
              * <b>m</b> is said to contain a mapping for a key <b>k</b> if and only
-             * if <b style="color:orange;">#containsKey(Object) m.containsKey(k)</b> would return
+             * if <b style="color:orange;"> containsKey(Object) m.containsKey(k)</b> would return
              * <b>true</b>.)
              *
              * @param key key with which the specified value is to be associated
@@ -284,19 +284,19 @@ namespace core {
 
             /**
              * If the specified key is not already associated with a value (or is mapped
-             * to {@code null}) associates it with the given value and returns
-             * {@code null}, else returns the current value.
+             * to <b> null</b>) associates it with the given value and returns
+             * <b> null</b>, else returns the current value.
              *
              * @implSpec
-             * The default implementation is equivalent to, for this {@code map}:
+             * The default implementation is equivalent to, for this <b> map</b>:
              *
-             * <pre> {@code
+             * <pre> @code
              * V v = map.get(key);
              * if (v == null)
              *     v = map.put(key, value);
              *
              * return v;
-             * }</pre>
+             * @endcode </pre>
              *
              * <p>The default implementation makes no guarantees about synchronization
              * or atomicity properties of this method. Any implementation providing
@@ -306,13 +306,12 @@ namespace core {
              * @param key key with which the specified value is to be associated
              * @param value value to be associated with the specified key
              * @return the previous value associated with the specified key, or
-             *         {@code null} if there was no mapping for the key.
-             *         (A {@code null} return can also indicate that the map
-             *         previously associated {@code null} with the key,
+             *         <b> null</b> if there was no mapping for the key.
+             *         (A <b> null</b> return can also indicate that the map
+             *         previously associated <b> null</b> with the key,
              *         if the implementation supports null values.)
-             * @throws UnsupportedMethodException if the {@code put} operation
-             *         is not supported by this map
-             *         (<a href="{@docRoot}/java.base/java/util/Collection.html#optional-restrictions">optional</a>)
+             * @throws UnsupportedMethodException if the <b> put</b> operation
+             *         is not supported by this map (<a href="">optional</a>)
              * @throws CastException if the key or value is of an inappropriate
              *         type for this map (<a href="">optional</a>)
              * @throws ArgumentException if some property of the specified key
@@ -669,7 +668,7 @@ namespace core {
                         if (!Object::equals(m.get(key)))
                             return false;
                     }
-                } catch (KeyNotFoundException &knfe) {
+                } catch (const KeyNotFoundException &knfe) {
                     return false;
                 }
                 return true;
@@ -678,12 +677,12 @@ namespace core {
             /**
              * Returns a string representation of this map.  The string representation
              * consists of a list of key-value mappings in the order returned by the
-             * map's {@code entrySet} view's iterator, enclosed in braces
-             * ({@code "{}"}).  Adjacent mappings are separated by the characters
-             * {@code ", "} (comma and space).  Each key-value mapping is rendered as
-             * the key followed by an equals sign ({@code "="}) followed by the
+             * map's <b> entrySet</b> view's iterator, enclosed in braces
+             * (<b> "{}"</b>).  Adjacent mappings are separated by the characters
+             * <b> ", "</b> (comma and space).  Each key-value mapping is rendered as
+             * the key followed by an equals sign (<b> "="</b>) followed by the
              * associated value.  Keys and values are converted to strings as by
-             * {@link String#valueOf(Object)}.
+             * <b style="color:orange;"> String#valueOf(Object)</b>.
              *
              * @return a string representation of this map
              */
@@ -732,9 +731,9 @@ namespace core {
              * @throws CastException if the key is of an inappropriate type for
              * this map (<a href="">optional</a>)
              */
-            virtual CORE_REQUIRED_RESULT V &getOrDefault(const K &key, const V &defaultValue) {
+            virtual V &getOrDefault(const K &key, const V &defaultValue) {
                 try { return get(key); }
-                catch (KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
+                catch (const KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
             }
 
             /**
@@ -754,10 +753,10 @@ namespace core {
              * @throws CastException if the key is of an inappropriate type for
              * this map (<a href="">optional</a>)
              */
-            virtual CORE_REQUIRED_RESULT const V &getOrDefault(const K &key, const V &defaultValue) const {
+            virtual const V &getOrDefault(const K &key, const V &defaultValue) const {
                 try {
                     return get(key);
-                } catch (KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
+                } catch (const KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
             };
 
             /**

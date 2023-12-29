@@ -37,7 +37,7 @@ namespace core {
          * <i>load factor</i> is a measure of how full the hash table is allowed to
          * get before its capacity is automatically increased.  When the number of
          * entries in the hash table exceeds the product of the load factor and the
-         * current capacity, the hash table is <i>rehashed</i> (that is, internal data
+         * current capacity, the hash table is <i>rehashed</i> (that is, internal array
          * structures are rebuilt) so that the hash table has approximately twice the
          * number of buckets.
          *
@@ -129,7 +129,7 @@ namespace core {
              * orderable, Thus, performance degrades gracefully under
              * accidental or malicious usages in which hashCode() methods
              * return values that are poorly distributed, as well as those in
-             * which many keys share a hashCode, so long as they are also
+             * which many keys share a hashCode, so glong as they are also
              * Comparable. (If neither of these apply, we may waste about a
              * factor of two in time and space compared to taking no
              * precautions. But the only known cases stem from poor user
@@ -703,9 +703,10 @@ namespace core {
                     tab = resize();
                     n = capacity;
                 }
-                if ((p = tab[i = (n - 1) & hash]) == null)
+                if ((p = tab[i = (n - 1) & hash]) == null) {
                     tab[i] = newNode(hash, key, value, null);
-                else {
+                    retVal = tab[i]->v;
+                } else {
                     NODE e = {};
                     KEY k = {};
                     if ((p->hash == hash) && (((k = p->k) == &key) || key.equals(k[0]))) {
@@ -1027,9 +1028,9 @@ namespace core {
                     }
                 }
 
-                ReferenceArray<K> toArray() const override {
-                    ReferenceArray<K> array = ReferenceArray<K>(root.len);
-                    ARRAY tab;
+                ReferenceArray toArray() const override {
+                    ReferenceArray array = ReferenceArray(root.len);
+                    ARRAY tab = {};
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
@@ -1111,9 +1112,9 @@ namespace core {
 
                 void clear() override { root.clear(); }
 
-                ReferenceArray<V> toArray() const override {
-                    ReferenceArray<V> array = ReferenceArray<V>(root.len);
-                    ARRAY tab;
+                ReferenceArray toArray() const override {
+                    ReferenceArray array = ReferenceArray(root.len);
+                    ARRAY tab = {};
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
@@ -1190,9 +1191,9 @@ namespace core {
                     }
                 }
 
-                ReferenceArray<ExEntry<K, V>> toArray() const override {
-                    ReferenceArray<ExEntry<K, V>> array = ReferenceArray<ExEntry<K, V>>(root.len);
-                    ARRAY tab;
+                ReferenceArray toArray() const override {
+                    ReferenceArray array = ReferenceArray(root.len);
+                    ARRAY tab = {};
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
@@ -1987,6 +1988,17 @@ namespace core {
                 }
 
             };
+
+        public:
+            ~HashMap() override {
+                if (len > 0) {
+                    clear();
+                    len = 0;
+                }
+                capacity = 0;
+                U::freeMemory((glong) table);
+                table = null;
+            }
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION

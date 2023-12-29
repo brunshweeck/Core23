@@ -18,10 +18,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<String>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -40,7 +42,7 @@ namespace core {
             /**
              * Construct new empty Boolean Array
              */
-            StringArray() : StringArray(0) {}
+            CORE_FAST StringArray() = default;
 
             /**
              * Construct new StringArray with specified number
@@ -97,6 +99,11 @@ namespace core {
             StringArray &operator=(StringArray &&array) CORE_NOTHROW;
 
             /**
+             * Return number of String on this array
+             */
+            gint length() const override;
+
+            /**
              * Return item at specified index
              *
              * @param index
@@ -116,7 +123,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const String get(gint index) const override;
+            const String &get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.

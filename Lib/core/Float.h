@@ -353,7 +353,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Float as int
+         * Return the value of this Float as gint
          * after narrowing native conversion.
          */
         CORE_FAST gint intValue() const {
@@ -361,7 +361,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Float as long
+         * Return the value of this Float as glong
          * after narrowing native conversion.
          */
         CORE_FAST glong longValue() const {
@@ -615,7 +615,7 @@ namespace core {
          * represents a float with the same value as the float represented by
          * this object. For this purpose, two float values are considered to be the
          * same if and only if the method Float.toIntBits(gfloat) returns the identical
-         * int value when applied to each.
+         * gint value when applied to each.
          *
          * <p>
          * Note: This method is defined in terms of Float.toIntBits(gfloat) rather than the
@@ -757,9 +757,9 @@ namespace core {
          * values that can be computed from the argument: <br>
          *
          * <code>
-         * int s = ((bits >> 31) == 0) ? 1 : -1; <br>
-         * int e = ((bits >> 23) & 0xff); <br>
-         * int m = (e == 0) ? (bits & 0x7fffff) << 1 : (bits & 0x7fffff) | 0x800000;
+         * gint s = ((bits >> 31) == 0) ? 1 : -1; <br>
+         * gint e = ((bits >> 23) & 0xff); <br>
+         * gint m = (e == 0) ? (bits & 0x7fffff) << 1 : (bits & 0x7fffff) | 0x800000;
          * </code>
          * <p>
          * Then the floating-point result equals the value of the mathematical
@@ -767,7 +767,7 @@ namespace core {
          *
          * <p>Note that this method may not be able to return a
          * float NaN with exactly same bit pattern as the
-         * int argument.  IEEE 754 distinguishes between two
+         * gint argument.  IEEE 754 distinguishes between two
          * kinds of NaNs, quiet NaNs and <i>signaling NaNs</i>.
          * Arithmetic operations on signaling NaNs turn
          * them into quiet NaNs with a different, but often similar, bit
@@ -776,7 +776,7 @@ namespace core {
          * copying a signaling NaN to return it to the calling method may
          * perform this conversion.  So intBitsToFloat may
          * not be able to return a float with a signaling NaN
-         * bit pattern.  Consequently, for some int values,
+         * bit pattern.  Consequently, for some gint values,
          * floatToRawIntBits(intBitsToFloat(start)) may
          * <i>not</i> equal start.  Moreover, which
          * particular bit patterns represent signaling NaNs is platform

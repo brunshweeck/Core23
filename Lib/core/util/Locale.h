@@ -8,10 +8,11 @@
 #include <core/Object.h>
 
 namespace core {
+
+    namespace util {
         template<class E>
         class List;
 
-    namespace util {
 
 
         /**
@@ -27,7 +28,7 @@ namespace core {
          * <a href="https://tools.ietf.org/html/rfc4647">RFC 4647 "Matching of Language
          * Tags"</a> and <a href="https://tools.ietf.org/html/rfc5646">RFC 5646 "Tags
          * for Identifying Languages"</a> with support for the LDML (UTS#35, "Unicode
-         * Locale Data Markup Language") BCP 47-compatible extensions for locale data
+         * Locale Data Markup Language") BCP 47-compatible extensions for locale array
          * exchange.
          *
          * <p> A <b> Locale</b> object logically consists of the fields
@@ -1209,7 +1210,7 @@ namespace core {
                 BaseLocale deleteSubTag() const;
 
                 /**
-                 * The CLDR data
+                 * The CLDR array
                  */
                 interface CLDR {
                     gshort language;

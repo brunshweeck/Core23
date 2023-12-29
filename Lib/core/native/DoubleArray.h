@@ -32,10 +32,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gdouble>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -122,6 +124,11 @@ namespace core {
             gdouble &get(gint index) override;
 
             /**
+             * Return number of element on this array
+             */
+            gint length() const override;
+
+            /**
              * Return item at specified index
              *
              * @param index
@@ -130,7 +137,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gdouble get(gint index) const override;
+            gdouble get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -178,16 +185,16 @@ namespace core {
             /**
              * Construct new DoubleArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gdouble>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gdouble>::allIsTrue
                     (Class<T>::template isAssignable<gdouble>()...)> = true>
             static DoubleArray of(T &&...a) {
                 gint size = sizeof...(a);
                 DoubleArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gdouble>::valueExactAt(i + 1, 0.0, (gdouble) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

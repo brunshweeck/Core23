@@ -80,7 +80,8 @@ namespace core {
              *         prevents it from being added to this queue
              */
             gbool add(const E &e) override {
-                if (push(e)) return true;
+                if (push(e))
+                    return true;
                 StateException("Queue is full").throws(__trace("core.util.Queue"));
             }
 
@@ -108,7 +109,8 @@ namespace core {
              * @throws NoSuchElementException if this queue is empty
              */
             virtual const E &remove() {
-                if (this->size() > 0) return pop();
+                if (this->size() > 0)
+                    return pop();
                 NoSuchItemException().throws(__trace("core.util.Queue"));
             }
 
@@ -143,7 +145,10 @@ namespace core {
              * <p>This implementation repeatedly invokes <b style="color:orange;">pop</b> until it
              * returns <b>null</b>.
              */
-            void clear() override { while (this->size() > 0) pop(); }
+            void clear() override {
+                while (this->size() > 0)
+                    pop();
+            }
 
             /**
              * Adds all of the elements in the specified collection to this
@@ -172,10 +177,12 @@ namespace core {
              * @see add(Object)
              */
             gbool addAll(const Collection<E> &c) override {
-                if (this == &c) ArgumentException().throws(__trace("core.util.Queue"));
-                gbool modified;
+                if (this == &c)
+                    ArgumentException().throws(__trace("core.util.Queue"));
+                gbool modified = {};
                 for (const E &e: c)
-                    if (add(e)) modified = true;
+                    if (add(e))
+                        modified = true;
                 return true;
             }
         };

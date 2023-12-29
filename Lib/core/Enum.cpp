@@ -2,10 +2,11 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include "Enum.h"
 #include <core/util/HashMap.h>
 #include <core/util/TreeMap.h>
 #include <core/Character.h>
+#include <core/String.h>
+#include "Enum.h"
 
 using core::util::HashMap;
 using core::util::TreeMap;
@@ -13,8 +14,7 @@ using core::util::TreeMap;
 namespace core {
 
     namespace {
-        HashMap <String, Object> SharedSecrets = HashMap<String, Object>(500, 0.955);
-        gbool isInitialized = false;
+        HashMap <String, Object> *SharedSecrets = {};
     }
 
     namespace {
@@ -47,11 +47,12 @@ namespace core {
 
     namespace native {
         Object &Unsafe::systemCache() {
-            if (!isInitialized) {
-                isInitialized = true;
+            if (SharedSecrets == 0) {
+                SharedSecrets = &createInstance<HashMap<String, Object>>(500, 0.75);
+            } else {
                 // characters enums
                 {
-                    String str[30] = {
+                    CORE_FAST const char *str[30] = {
                             "NON_SPACING_MARK",
                             "COMBINING_SPACING_MARK",
                             "ENCLOSING_MARK",
@@ -84,11 +85,11 @@ namespace core {
                             "OTHER_SYMBOL",
                     };
                     for (int i = 0; i < 30; ++i) {
-                        EnumCAT(str[i], i);
+                        EnumCAT(String(str[i] + 0), i);
                     }
                 };
                 {
-                    String str[24] = {
+                    CORE_FAST const char *str[24] = {
                             "UNASSIGNED",
                             "LEFT_TO_RIGHT",
                             "RIGHT_TO_LEFT",
@@ -115,11 +116,11 @@ namespace core {
                             "POP_DIRECTIONAL_ISOLATE",
                     };
                     for (int i = 0; i < 24; ++i) {
-                        EnumDIR(str[i], i);
+                        EnumDIR(String(str[i] + 0), i);
                     }
                 };
                 {
-                    String str[164] = {
+                    CORE_FAST const char *str[164] = {
                             "COMMON",
                             "LATIN",
                             "GREEK",
@@ -286,11 +287,11 @@ namespace core {
                             "UNKNOWN",
                     };
                     for (int i = 0; i < 164; ++i) {
-                        EnumUNS(str[i], i);
+                        EnumUNS(String(str[i] + 0), i);
                     }
                 };
                 {
-                    String str[329] = {
+                    CORE_FAST const char *str[329] = {
                             "BASIC_LATIN",
                             "LATIN_1_SUPPLEMENT",
                             "LATIN_EXTENDED_A",
@@ -622,11 +623,11 @@ namespace core {
                             "UNASSIGNED",
                     };
                     for (int i = 0; i < 329; ++i) {
-                        EnumUNB(str[i], i);
+                        EnumUNB(String(str[i] + 0), i);
                     }
                 };
                 {
-                    String str[18] = {
+                    CORE_FAST const char *str[18] = {
                             "UNDEFINED",
                             "CANONICAL",
                             "FONT",
@@ -647,7 +648,7 @@ namespace core {
                             "FRACTION",
                     };
                     for (int i = 0; i < 18; ++i) {
-                        EnumDEC(str[i], i-1);
+                        EnumDEC(String(str[i] + 0), i);
                     }
                 };
                 {
@@ -674,7 +675,7 @@ namespace core {
                 };
                 // locales enums
             }
-            return SharedSecrets;
+            return SharedSecrets[0];
         }
     }
 

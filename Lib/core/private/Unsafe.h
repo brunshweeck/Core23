@@ -27,7 +27,7 @@ namespace core {
          *
          * @author Brunshweeck Tazeussong
          */
-        class Unsafe final : public Object {
+        class Unsafe CORE_FINAL : public Object {
         private:
 
             CORE_FAST Unsafe() = default;
@@ -179,9 +179,9 @@ namespace core {
              * allocateMemory</b>, the results are undefined.
              *
              * <p>If the native pointer is less than 64 bits wide, it is extended as
-             * an unsigned number to a long.  The pointer may be indexed by any
+             * an unsigned number to a glong.  The pointer may be indexed by any
              * given byte offset, simply by adding that offset (as a simple integer) to
-             * the long representing the pointer.  The number of bytes actually read
+             * the glong representing the pointer.  The number of bytes actually read
              * from the target address may be determined by consulting <b style="color: orange;">
              * addressSize</b>.
              *
@@ -336,9 +336,9 @@ namespace core {
              *
              * <p>The stores are in coherent (atomic) units of a size determined
              * by the address and length parameters.  If the effective address and
-             * length are all even modulo 8, the stores take place in 'long' units.
+             * length are all even modulo 8, the stores take place in 'glong' units.
              * If the effective address and length are (resp.) even modulo 4 or 2,
-             * the stores take place in units of 'int' or 'short'.
+             * the stores take place in units of 'gint' or 'short'.
              *
              * <em>Note:</em> It is the responsibility of the caller to make
              * sure arguments are checked before the methods are called. While
@@ -374,9 +374,9 @@ namespace core {
              *
              * <p>The transfers are in coherent (atomic) units of a size determined
              * by the address and length parameters.  If the effective addresses and
-             * length are all even modulo 8, the transfer takes place in 'long' units.
+             * length are all even modulo 8, the transfer takes place in 'glong' units.
              * If the effective addresses and length are (resp.) even modulo 4 or 2,
-             * the transfer takes place in units of 'int' or 'short'.
+             * the transfer takes place in units of 'gint' or 'short'.
              *
              * <em>Note:</em> It is the responsibility of the caller to make
              * sure arguments are checked before the methods are called. While
@@ -569,7 +569,7 @@ namespace core {
             static Object &
             weakCompareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x);
 
-            // ----------------- [atomic int] ---------------------------------------
+            // ----------------- [atomic gint] ---------------------------------------
 
 
             /**
@@ -827,7 +827,7 @@ namespace core {
 
             static gdouble weakCompareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x);
 
-            // ----------------- [atomic long] ---------------------------------------
+            // ----------------- [atomic glong] ---------------------------------------
 
             static gbool compareAndSetLong(Object &o, glong offset, glong expected, glong x);
 
@@ -874,13 +874,13 @@ namespace core {
             static void putReferenceVolatile(Object &o, glong offset, Object &x);
 
             /**
-             * Fetches a int value from a given variable, with volatile
+             * Fetches a gint value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> get3(Object, glong)</b>
              */
             static gint getIntVolatile(const Object &o, glong offset);
 
             /**
-             * Stores a int value into a given variable, with
+             * Stores a gint value into a given variable, with
              * volatile store semantics. Otherwise identical to <b style="color: orange;"> putInt(Object, glong, Object)</b>
              */
             static void putIntVolatile(Object &o, glong offset, gint x);
@@ -934,7 +934,7 @@ namespace core {
             static void putCharVolatile(Object &o, glong offset, gchar x);
 
             /**
-             * Fetches a long value from a given variable, with volatile
+             * Fetches a glong value from a given variable, with volatile
              * load semantics. Otherwise identical to <b style="color: orange;"> getLong(Object, glong)</b>
              */
             static glong getLongVolatile(const Object &o, glong offset);
@@ -1037,7 +1037,7 @@ namespace core {
             /** Release version of <b style="color: orange;"> putDoubleVolatile(Object, glong, double)</b> */
             static void putDoubleRelease(Object &o, glong offset, gdouble x);
 
-            // ---------------------- RELAXED --------------------------------------
+            // ---------------------- RELAXED (OPAQUE) --------------------------------------
 
             /** Relaxed version of <b style="color: orange;"> getReferenceVolatile(Object, glong)</b> */
             static Object &getReferenceRelaxed(const Object &o, glong offset);
@@ -1454,7 +1454,7 @@ namespace core {
              * getLong(Object, glong)</b> except that the offset does not need to
              * have been obtained from <b style="color: orange;"> offsetof </b> on the
              * <b style="color: orange;"> &lt;stddef.h&gt; </b> of some field.  The value
-             * in memory is raw data, and need not correspond to any
+             * in memory is raw array, and need not correspond to any
              * variable.  Unless <code>o</code> is null, the value accessed
              * must be entirely within the allocated object.  The endianness
              * of the value in memory is the endianness of the native platform.
@@ -1513,7 +1513,7 @@ namespace core {
              * getLong(Object, glong)</b> except that the offset does not need to
              * have been obtained from <b style="color: orange;"> offsetof </b> on the
              * <b style="color: orange;"> &lt;stddef.h&gt; </b> of some field.  The value
-             * in memory is raw data, and need not correspond to any
+             * in memory is raw array, and need not correspond to any
              * variable.  The endianness of the value in memory is the
              * endianness of the native platform.
              * <p>
@@ -1569,7 +1569,8 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST typename Class<T>::NRef &&moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
+            static CORE_FAST typename Class<T>::NRef &&
+            moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1604,7 +1605,7 @@ namespace core {
                     glong addr = (glong) ptr;
                     storeInstance(addr);
                     return ((PTR) ptr)[/*offset*/0];
-                } catch (std::bad_alloc &) { Error("Unable to create object").throws(__trace("core.native.Unsafe")); }
+                } catch (...) { Error("Unable to create object").throws(__trace("core.native.Unsafe")); }
             }
 
             /**
@@ -1637,6 +1638,18 @@ namespace core {
                     return copy;
                 }
 
+            }
+
+            /**
+             * Swap two values
+             */
+            template<class From, class To = From>
+            static void swapValues(From &from, To &to) {
+                CORE_STATIC_ASSERT(Class<To>::template isAssignable<From>() && Class<To>::template isAssignable<From>(),
+                                   "Incompatibles types");
+                From f = from;
+                from = to;
+                to = f;
             }
 
             /**
@@ -1703,7 +1716,7 @@ namespace core {
 
         public:
 //            Method Used by Objects instance
-            static Object& systemCache();
+            static Object &systemCache();
 
         };
 

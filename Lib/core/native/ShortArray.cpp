@@ -27,7 +27,7 @@ namespace core {
 
         ShortArray::ShortArray(gint length) : ShortArray(length, 0) {}
 
-        ShortArray::ShortArray(gint length, gshort initialValue) : Array<Short>(length) {
+        ShortArray::ShortArray(gint length, gshort initialValue)  {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        ShortArray::ShortArray(const ShortArray &array) : Array<Short>(0) {
-            gint length = array.length();
-            if (len < 0)
+        ShortArray::ShortArray(const ShortArray &array)  {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        ShortArray::ShortArray(ShortArray &&array) CORE_NOTHROW: Array<Short>(0) {
+        ShortArray::ShortArray(ShortArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         ShortArray &ShortArray::operator=(const ShortArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +88,16 @@ namespace core {
 
         gshort &ShortArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Short>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.ShortArray"));
             }
         }
 
-        const gshort ShortArray::get(gint index) const {
+        gshort ShortArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Short>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.ShortArray"));
@@ -125,6 +125,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint ShortArray::length() const {
+            return len;
         }
     } // core
 } // native

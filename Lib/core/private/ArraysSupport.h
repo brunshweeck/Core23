@@ -39,7 +39,7 @@ namespace core {
          * responsibility of the caller (direct or otherwise) to perform such checks
          * before calling this method.
          */
-        class ArraysSupport final: public virtual Object {
+        class ArraysSupport CORE_FINAL: public virtual Object {
         private:
             ArraysSupport() = default;
 
@@ -250,10 +250,10 @@ namespace core {
              * @param      src      the source array.
              * @param      srcPos   starting position in the source array.
              * @param      dest     the destination array.
-             * @param      destPos  starting position in the destination data.
+             * @param      destPos  starting position in the destination array.
              * @param      length   the number of array elements to be copied.
              * @throws     IndexException  if copying would cause
-             *             access of data outside array bounds.
+             *             access of array outside array bounds.
              * @throws     AssertionError  if an element in the <b> src</b>
              *             array could not be stored into the <b> dest</b> array
              *             because of a type mismatch.
@@ -281,8 +281,8 @@ namespace core {
                         gint size = sizeof(T) / sizeof(dest[0]);
                         Preconditions::checkIndexFromRange(destPos, destPos + length, size);
                     }
-                } catch (const Throwable &thr) {
-                    thr.throws(__trace("Core::ArraysSupport"));
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("Core::ArraysSupport"));
                 }
                 if (src && dest) {
                     if (srcPos < destPos) {

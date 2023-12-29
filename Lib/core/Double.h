@@ -109,7 +109,7 @@ namespace core {
      *
      * <p>The adjusted behaviors defined for <b> equals</b> and <b>
      * compareTo</b> allow instances of wrapper classes to work properly with
-     * conventional data structures. For example, defining NaN
+     * conventional array structures. For example, defining NaN
      * values to be <b> equals</b> to one another allows NaN to be used as
      * an element of a <b style="color: orange"> HashSet</b> or as the key of
      * a <b style="color: orange"> HashMap</b>. Similarly, defining <b>
@@ -557,7 +557,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Double as int
+         * Return the value of this Double as gint
          * after narrowing native conversion.
          */
         CORE_FAST gint intValue() const {
@@ -565,7 +565,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Double as long
+         * Return the value of this Double as glong
          * after narrowing native conversion.
          */
         CORE_FAST glong longValue() const {
@@ -707,7 +707,7 @@ namespace core {
          * <li>Case <i>e</i> &lt; -3 or <i>e</i> &ge; 7:
          * computerized scientific notation is used to format
          * <i>d</i><sub><i>m</i></sub>.
-         * Here <i>e</i> is formatted as by <b>Integer.toString(int)</b>.
+         * Here <i>e</i> is formatted as by <b>Integer.toString(gint)</b>.
          * <ul>
          * <li>Subcase <i>n</i> = 1:
          * <i>d</i><sub><i>m</i></sub> is formatted as
@@ -810,20 +810,20 @@ namespace core {
         /**
          * Returns a hash code for this <b>Double</b> object. The
          * result is the exclusive OR of the two halves of the
-         * <b>long</b> integer bit representation, exactly as
+         * <b>glong</b> integer bit representation, exactly as
          * produced by the method <b>doubleToLongBits(double)</b>, of
          * the native <b>double</b> value represented by this
          * <b>Double</b> object. That is, the hash code is the value
          * of the expression:
          *
          * <blockquote>
-         *  <b>(int)(v^(v>>>32))</b>
+         *  <b>(gint)(v^(v>>>32))</b>
          * </blockquote>
          *
          * where <b>v</b> is defined by:
          *
          * <blockquote>
-         *  <b>long v = Double.doubleToLongBits(this.doubleValue());</b>
+         *  <b>glong v = Double.doubleToLongBits(this.doubleValue());</b>
          * </blockquote>
          */
         gint hash() const override {
@@ -846,7 +846,7 @@ namespace core {
          * <b>double</b> represented by this object. For this
          * purpose, two <b>double</b> values are considered to be
          * the same if and only if the method <b>doubleToLongBits(double)</b>
-         * returns the identical <b>long</b> value when applied to each.
+         * returns the identical <b>glong</b> value when applied to each.
          *
          * <p>
          * This method is defined in terms of <b>
@@ -927,8 +927,8 @@ namespace core {
          * <b>0x7ff0000000000001L</b> through <b>0x7fffffffffffffffL</b> or in the range
          * <b>0xfff0000000000001L</b> through <b>0xffffffffffffffffL</b>.
          *
-         * <p>In all cases, the result is a <b>long</b> integer that, when
-         * given to the <b>longBitsToDouble(long)</b> method, will produce a
+         * <p>In all cases, the result is a <b>glong</b> integer that, when
+         * given to the <b>longBitsToDouble(glong)</b> method, will produce a
          * floating-point value the same as the argument to
          * <b>doubleToLongBits</b> (except all NaN values are
          * collapsed to a single "canonical" NaN value).
@@ -963,9 +963,9 @@ namespace core {
          * values that can be computed from the argument:
          *
          * @code
-         * int s = ((bits >> 63) == 0) ? 1 : -1;
-         * int e = (int)((bits >> 52) & 0x7ffL);
-         * long m = (e == 0) ?
+         * gint s = ((bits >> 63) == 0) ? 1 : -1;
+         * gint e = (gint)((bits >> 52) & 0x7ffL);
+         * glong m = (e == 0) ?
          *                 (bits & 0xfffffffffffffL) << 1 :
          *                 (bits & 0xfffffffffffffL) | 0x10000000000000L;
          * @endcode
@@ -975,7 +975,7 @@ namespace core {
          *
          * <p>Note that this method may not be able to return a
          * <b>double</b> NaN with exactly same bit pattern as the
-         * <b>long</b> argument.  IEEE 754 distinguishes between two
+         * <b>glong</b> argument.  IEEE 754 distinguishes between two
          * kinds of NaNs, quiet NaNs and <i>signaling NaNs</i>.
          * Arithmetic operations on signaling NaNs turn them into quiet NaNs with a different,
          * but often similar, bit
@@ -985,14 +985,14 @@ namespace core {
          * may perform this conversion.  So <b>longBitsToDouble</b>
          * may not be able to return a <b>double</b> with a
          * signaling NaN bit pattern.  Consequently, for some
-         * <b>long</b> values,
+         * <b>glong</b> values,
          * <b>doubleToRawLongBits(longBitsToDouble(start))</b> may
          * <i>not</i> equal <b>start</b>.  Moreover, which
          * particular bit patterns represent signaling NaNs is platform
          * dependent; although all NaN bit patterns, quiet or signaling,
          * must be in the NaN range identified above.
          *
-         * @param bits   any <b>long</b> integer.
+         * @param bits   any <b>glong</b> integer.
          */
         static gdouble fromLongBits(glong bits);
 

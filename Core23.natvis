@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-    <HResult Name="Core23">
-        <HRValue>2</HRValue>
-    </HResult>
+
     <!--    namespace core -->
+    <Type Name="core::Null">
+        <DisplayString Optional="true">null</DisplayString>
+    </Type>
+
     <Type Name="core::Boolean">
         <DisplayString>{value}</DisplayString>
         <Expand HideRawView="true">
@@ -66,28 +68,28 @@
     </Type>
     <Type Name="core::Complex">
         <!-- for non finite imaginary part -->
-        <DisplayString Condition="ivalue != ivalue || 1/ivalue == 0.0">{rvalue}+({ivalue})i</DisplayString>
+        <DisplayString Condition="ivalue != ivalue || (1/ivalue == 0.0 &amp;&amp; ivalue &gt; 0)">{rvalue}+({ivalue})i</DisplayString>
+        <DisplayString Condition="ivalue != ivalue || (1/ivalue == 0.0 &amp;&amp; ivalue &lt; 0)">{rvalue}-({-ivalue})i</DisplayString>
         <!-- for finite imaginary part -->
-        <DisplayString>{rvalue}+{ivalue}i</DisplayString>
+        <DisplayString Condition="ivalue &gt;= 0">{rvalue}+{ivalue}i</DisplayString>
+        <DisplayString Condition="ivalue &lt; 0">{rvalue}-{-ivalue}i</DisplayString>
         <Expand HideRawView="true">
             <Item Name="real">rvalue</Item>
             <Item Name="imag">ivalue</Item>
         </Expand>
     </Type>
     <Type Name="core::Trace">
-        <DisplayString>{clsName}.{metName}({fName}:{fLine})</DisplayString>
-        <Expand>
+        <Expand HideRawView="true">
             <Item Name="File">{fName}</Item>
             <Item Name="Line">{fLine}</Item>
-            <Item Name="Module" Condition="modVersion.len=0">{modName}</Item>
-            <Item Name="Module">{modName}@{modVersion}</Item>
+            <Item Name="Module">{modName}</Item>
             <Item Name="Class">{clsName}</Item>
             <Item Name="Method">{metName}</Item>
         </Expand>
     </Type>
     <Type Name="core::String">
         <DisplayString Optional="true" Condition="len==0||value==0">{u""}</DisplayString>
-        <DisplayString ExcludeView="" Optional="true">{((char16_t*) value),su}</DisplayString>
+        <DisplayString Optional="true">{((char16_t*) value),su}</DisplayString>
         <Expand HideRawView="true">
             <ArrayItems Condition="len != 0 &amp;&amp; value!=0">
                 <Size>(len * 2)</Size>
@@ -182,12 +184,13 @@
             </ArrayItems>
         </Expand>
     </Type>
-    <Type Name="core::native::ReferenceArray&lt;*&gt;">
+    <Type Name="core::native::ReferenceArray">
         <DisplayString Optional="true">Object[{len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems>
                 <Size>len</Size>
-                <ValueNode>value[$i][0]</ValueNode>
+                <ValueNode Condition="value[$i] != 0">value[$i][0]</ValueNode>
+                <ValueNode Condition="value[$i]">null</ValueNode>
             </IndexListItems>
         </Expand>
     </Type>
@@ -239,16 +242,17 @@
         </Expand>
     </Type>
     <Type Name="core::util::ArrayList&lt;*&gt;">
-        <DisplayString Optional="true">ArrayList[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">ArrayList[{len}]</DisplayString>
         <Expand HideRawView="true">
-            <IndexListItems>
+            <IndexListItems Optional="true">
                 <Size>len</Size>
-                <ValueNode>data[$i][0]</ValueNode>
+                <ValueNode Condition="data[$i] != 0">data[$i][0]</ValueNode>
+                <ValueNode Condition="data[$i] == 0">???</ValueNode>
             </IndexListItems>
         </Expand>
     </Type>
     <Type Name="core::util::ArrayList&lt;*&gt;::SubList&lt;*&gt;">
-        <DisplayString Optional="true">List[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">List[{len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems Optional="true">
                 <Size>len</Size>
@@ -257,33 +261,32 @@
         </Expand>
     </Type>
     <Type Name="core::util::ArrayList&lt;*&gt;::ListItr&lt;*&gt;">
-        <DisplayString Optional="true">cursor={cursor}</DisplayString>
+        <DisplayString Optional="true">Cursor={cursor}</DisplayString>
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::LinkedList&lt;*&gt;">
-        <DisplayString>LinkedList[{len}]{...}</DisplayString>
+        <DisplayString>LinkedList[{len}]</DisplayString>
         <Expand HideRawView="true">
-            <LinkedListItems>
+            <LinkedListItems Optional="true">
                 <HeadPointer>first</HeadPointer>
                 <NextPointer>next</NextPointer>
                 <ValueNode>item[0]</ValueNode>
-                <Size>len</Size>
             </LinkedListItems>
         </Expand>
     </Type>
     <Type Name="core::util::LinkedList&lt;*&gt;::ListItr&lt;*&gt;">
-        <DisplayString Optional="true">cursor={index}</DisplayString>
+        <DisplayString Optional="true">Cursor={index}</DisplayString>
         <Expand HideRawView="true"/>
     </Type>
 
     <!--    Queue<?> -->
     <Type Name="core::util::Queue&lt;*&gt;">
-        <DisplayString Optional="true">Queue[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">Queue[{len}]</DisplayString>
         <DisplayString Optional="true">Queue</DisplayString>
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::PriorityQueue&lt;*&gt;">
-        <DisplayString Optional="true">PriorityQueue[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">PriorityQueue[{len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems Optional="true">
                 <Size>len</Size>
@@ -302,14 +305,13 @@
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::TreeMap&lt;*,*&gt;">
-        <DisplayString Optional="true">TreeMap[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">TreeMap[{len}]</DisplayString>
         <Expand HideRawView="true">
             <TreeItems>
                 <HeadPointer>root</HeadPointer>
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
                 <ValueNode Name="{k[0]}">v[0]</ValueNode>
-                <Size>len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -321,7 +323,6 @@
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
                 <ValueNode>v[0]</ValueNode>
-                <Size>root.len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -333,7 +334,6 @@
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
                 <ValueNode>k[0]</ValueNode>
-                <Size>root.len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -345,7 +345,6 @@
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
                 <ValueNode>this[0]</ValueNode>
-                <Size>root.len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -357,7 +356,6 @@
                 <LeftPointer>right</LeftPointer>
                 <RightPointer>left</RightPointer>
                 <ValueNode>k[0]</ValueNode>
-                <Size>root.len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -369,7 +367,6 @@
                 <LeftPointer>right</LeftPointer>
                 <RightPointer>left</RightPointer>
                 <ValueNode>this[0]</ValueNode>
-                <Size>root.len</Size>
             </TreeItems>
         </Expand>
     </Type>
@@ -380,7 +377,7 @@
         </Expand>
     </Type>
     <Type Name="core::util::HashMap&lt;*,*&gt;">
-        <DisplayString Optional="true">HashMap[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">HashMap[{len}]</DisplayString>
         <Expand HideRawView="true">
             <CustomListItems Optional="true" Condition="len &gt; 0">
                 <Variable Name="tab" InitialValue="table"/>
@@ -396,7 +393,6 @@
                         </Loop>
                     </Loop>
                 </If>
-                <Size>len</Size>
             </CustomListItems>
         </Expand>
     </Type>
@@ -419,21 +415,17 @@
             <Item Name="hash">hash</Item>
             <Item Name="key">k[0]</Item>
             <Item Name="value">v[0]</Item>
-            <Item Name="left" Condition="left == 0">?</Item>
-            <Item Name="right" Condition="right == 0">?</Item>
-            <Item Name="left" Condition="left != 0">left[0]</Item>
-            <Item Name="right" Condition="right != 0">right[0]</Item>
         </Expand>
     </Type>
     <Type Name="core::util::HashMap&lt;*,*&gt;::Values">
-        <DisplayString Optional="true">Collection[{root.len}]{...}</DisplayString>
+        <DisplayString Optional="true">Collection[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <CustomListItems Optional="true" Condition="root.len &gt; 0">
                 <Variable Name="tab" InitialValue="root.table"/>
                 <Variable Name="index" InitialValue="0"/>
                 <Variable Name="e" InitialValue="root.table[0]"/>
 
-                <If Condition="len &gt;= 0 &amp;&amp; tab != 0">
+                <If Condition="root.len &gt;= 0 &amp;&amp; tab != 0">
                     <Loop Condition="index &lt; root.capacity">
                         <Exec>e = tab[index++]</Exec>
                         <Loop Condition="e != 0">
@@ -442,19 +434,18 @@
                         </Loop>
                     </Loop>
                 </If>
-                <Size>len</Size>
             </CustomListItems>
         </Expand>
     </Type>
     <Type Name="core::util::HashMap&lt;*,*&gt;::KeySet">
-        <DisplayString Optional="true">Set[{root.len}]{...}</DisplayString>
+        <DisplayString Optional="true">Set[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <CustomListItems Optional="true" Condition="root.len &gt; 0">
                 <Variable Name="tab" InitialValue="root.table"/>
                 <Variable Name="index" InitialValue="0"/>
                 <Variable Name="e" InitialValue="root.table[0]"/>
 
-                <If Condition="len &gt;= 0 &amp;&amp; tab != 0">
+                <If Condition="root.len &gt;= 0 &amp;&amp; tab != 0">
                     <Loop Condition="index &lt; root.capacity">
                         <Exec>e = tab[index++]</Exec>
                         <Loop Condition="e != 0">
@@ -463,19 +454,18 @@
                         </Loop>
                     </Loop>
                 </If>
-                <Size>len</Size>
             </CustomListItems>
         </Expand>
     </Type>
     <Type Name="core::util::HashMap&lt;*,*&gt;::EntrySet">
-        <DisplayString Optional="true">Set[{root.len}]{...}</DisplayString>
+        <DisplayString Optional="true">Set[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <CustomListItems Optional="true" Condition="root.len &gt; 0">
                 <Variable Name="tab" InitialValue="root.table"/>
                 <Variable Name="index" InitialValue="0"/>
                 <Variable Name="e" InitialValue="root.table[0]"/>
 
-                <If Condition="len &gt;= 0 &amp;&amp; tab != 0">
+                <If Condition="root.len &gt;= 0 &amp;&amp; tab != 0">
                     <Loop Condition="index &lt; root.capacity">
                         <Exec>e = tab[index++]</Exec>
                         <Loop Condition="e != 0">
@@ -484,30 +474,29 @@
                         </Loop>
                     </Loop>
                 </If>
-                <Size>len</Size>
             </CustomListItems>
         </Expand>
     </Type>
 
     <!--    Set<?> -->
     <Type Name="core::util::Set&lt;*&gt;">
-        <DisplayString Optional="true">Set[{len}]{...}</DisplayString>
+        <DisplayString Optional="true">Set[{len}]</DisplayString>
         <DisplayString Optional="true">Set</DisplayString>
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::TreeSet&lt;*&gt;">
-        <DisplayString Optional="true">TreeSet[{m.len}]{...}</DisplayString>
+        <DisplayString Optional="true">TreeSet[{m.len}]</DisplayString>
         <Expand HideRawView="true">
             <TreeItems>
                 <HeadPointer>m.root</HeadPointer>
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
-                <ValueNode>v[0]</ValueNode>
+                <ValueNode>k[0]</ValueNode>
             </TreeItems>
         </Expand>
     </Type>
     <Type Name="core::util::HashSet&lt;*&gt;">
-        <DisplayString Optional="true">TreeSet[{m.len}]{...}</DisplayString>
+        <DisplayString Optional="true">HashSet[{m.len}]</DisplayString>
         <Expand HideRawView="true">
             <CustomListItems Optional="true" Condition="m.len &gt; 0">
                 <Variable Name="tab" InitialValue="m.table"/>
@@ -518,12 +507,11 @@
                     <Loop Condition="index &lt; m.capacity">
                         <Exec>e = tab[index++]</Exec>
                         <Loop Condition="e != 0">
-                            <Item>e-&gt;v[0]</Item>
+                            <Item>e-&gt;k[0]</Item>
                             <Exec>e = e-&gt;next</Exec>
                         </Loop>
                     </Loop>
                 </If>
-                <Size>len</Size>
             </CustomListItems>
         </Expand>
     </Type>
@@ -539,6 +527,51 @@
     </Type>
 
     <!-- directory concurrent -->
+    <Type Name="core::util::AtomicInteger">
+        <DisplayString Optional="true">{value}</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::AtomicLong">
+        <DisplayString Optional="true">{value}</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::AtomicBoolean">
+        <DisplayString Optional="true">{value}</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::AtomicReference">
+        <DisplayString Optional="true">{*value}</DisplayString>
+        <DisplayString Optional="true">null</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+    <Type Name="core::util::AtomicIntegerArray">
+        <DisplayString Optional="true">int[{array.len}]</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems Optional="true">
+                <Size>array.len</Size>
+                <ValueNode>array.value[$i]</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
+    <Type Name="core::util::AtomicLongArray">
+        <DisplayString Optional="true">glong[{array.len}]</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems Optional="true">
+                <Size>array.len</Size>
+                <ValueNode>array.value[$i]</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
+    <Type Name="core::util::AtomicReferenceArray">
+        <DisplayString Optional="true">Object[{array.len}]</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems Optional="true">
+                <Size>array.len</Size>
+                <ValueNode Condition="array.value[$i] != 0">array.value[$i][0]</ValueNode>
+                <ValueNode>null</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
     <!-- directory function -->
     <!-- directory random -->
     <!-- directory regex -->

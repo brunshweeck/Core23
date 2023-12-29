@@ -22,7 +22,7 @@ namespace core {
      * Instances of two subclasses, <b>core::Error</b> and <b>core::Exception</b>, are conventionally
      * used to indicate that exceptional situations have occurred. Typically, these instances
      * are freshly created in the context of the exceptional situation so as to include relevant information
-     * (such as stack trace data).
+     * (such as stack trace array).
      *
      * <p>
      * A throwable contains a snapshot of the execution stack of its thread at the time it was created.
@@ -261,7 +261,7 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          *
          * It same to do throw X; for specific class X.
          */
-        CORE_NORETURN virtual void raise() && = 0;
+        CORE_NORETURN CORE_DEPRECATED virtual void raise() && = 0;
 
     public:
         /**

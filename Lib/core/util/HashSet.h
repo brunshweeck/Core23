@@ -96,7 +96,6 @@ namespace core {
              * the specified collection.
              *
              * @param c the collection whose elements are to be placed into this set
-             * @throws NullPointerException if the specified collection is null
              */
             template<class T>
             CORE_EXPLICIT HashSet(const Collection<Capture<T>> &c): m(Math::max(c.size(), 12)) {
@@ -109,7 +108,7 @@ namespace core {
              *
              * @apiNote
              * To create a <b> HashSet</b>  with an initial capacity that accommodates
-             * an expected number of elements, use <b style="color:orange;"> #newHashSet(int) newHashSet</b> .
+             * an expected number of elements, use <b style="color:orange;"> #newHashSet(gint) newHashSet</b> .
              *
              * @param      initialCapacity   the initial capacity of the hash map
              * @param      loadFactor        the load factor of the hash map
@@ -124,7 +123,7 @@ namespace core {
              *
              * @apiNote
              * To create a <b> HashSet</b>  with an initial capacity that accommodates
-             * an expected number of elements, use <b style="color:orange;"> #newHashSet(int) newHashSet</b> .
+             * an expected number of elements, use <b style="color:orange;"> #newHashSet(gint) newHashSet</b> .
              *
              * @param      initialCapacity   the initial capacity of the hash table
              * @throws     IllegalArgumentException if the initial capacity is less
@@ -209,7 +208,7 @@ namespace core {
             /**
              *
              */
-            ReferenceArray<E> toArray() const override { return m.keySet().toArray(); }
+            ReferenceArray toArray() const override { return m.keySet().toArray(); }
 
         };
 

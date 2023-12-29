@@ -13,7 +13,7 @@ namespace core {
         /**
          * UnicodeTable class contains many method read character properties
          */
-        class UnicodeTable final : public Object {
+        class UnicodeTable CORE_FINAL : public Object {
         private:
             CORE_FAST UnicodeTable() = default;
 

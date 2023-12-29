@@ -31,10 +31,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gint>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -53,7 +55,7 @@ namespace core {
             /**
              * Construct new empty Int Array
              */
-            IntArray() : IntArray(0) {}
+            CORE_FAST IntArray() = default;
 
             /**
              * Construct new IntArray with specified number
@@ -120,6 +122,8 @@ namespace core {
              */
             gint &get(gint index) override;
 
+            gint length() const override;
+
             /**
              * Return item at specified index
              *
@@ -129,7 +133,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gint get(gint index) const override;
+            gint get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -177,16 +181,16 @@ namespace core {
             /**
              * Construct new IntArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gint>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gint>::allIsTrue
                     (Class<T>::template isAssignable<gint>()...)> = true>
             static IntArray of(T &&...a) {
                 gint size = sizeof...(a);
                 IntArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gint>::valueExactAt(i + 1, 0, (gint) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

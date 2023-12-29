@@ -9,6 +9,7 @@
 #include <core/IndexException.h>
 #include <core/util/Preconditions.h>
 #include "StringArray.h"
+#include <new>
 
 namespace core {
     namespace native {
@@ -27,7 +28,7 @@ namespace core {
             CORE_FAST glong L(gint size) { return 1LL * size * (glong) sizeof(String); }
         }
 
-        StringArray::StringArray(gint length): Array<String>(0) {
+        StringArray::StringArray(gint length) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.StringArray"));
             if(length == 0) {
@@ -41,7 +42,7 @@ namespace core {
             }
         }
 
-        StringArray::StringArray(gint length, const String& initialValue) : Array<String>(length) {
+        StringArray::StringArray(gint length, const String& initialValue)  {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.StringArray"));
             if(length == 0){
@@ -55,9 +56,9 @@ namespace core {
             }
         }
 
-        StringArray::StringArray(const StringArray &array) : Array<String>(0) {
-            gint length = array.length();
-            if (len < 0)
+        StringArray::StringArray(const StringArray &array)  {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.StringArray"));
             if(array.len == 0){
                 value = null;
@@ -69,7 +70,7 @@ namespace core {
                 new (value + i) String(array.value[i]);
         }
 
-        StringArray::StringArray(StringArray &&array) CORE_NOTHROW: Array<String>(0) {
+        StringArray::StringArray(StringArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -77,7 +78,7 @@ namespace core {
 
         StringArray &StringArray::operator=(const StringArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -117,16 +118,16 @@ namespace core {
 
         String &StringArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<String>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.StringArray"));
             }
         }
 
-        const String StringArray::get(gint index) const {
+        const String &StringArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<String>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.StringArray"));
@@ -157,6 +158,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint StringArray::length() const {
+            return len;
         }
     } // core
 } // native

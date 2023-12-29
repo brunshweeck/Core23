@@ -6,8 +6,10 @@
 #define CORE23_LIST_H
 
 #include <core/util/Collection.h>
+#include <core/util/Preconditions.h>
 #include <core/util/ListIterator.h>
 #include <core/util/function/UnaryOperator.h>
+#include <core/IndexException.h>
 
 namespace core {
     namespace util {
@@ -114,7 +116,7 @@ namespace core {
              *
              * @return the number of elements in this list
              */
-            gint size() const override = 0;
+            using Collection<E>::size;
 
             /**
              * Returns <b> true</b> if this list contains the specified element.
@@ -127,7 +129,7 @@ namespace core {
              * @throws CastException if the type of the specified element
              *         is incompatible with this list (<a href="">optional</a>)
              */
-            gbool contains(const E &o) const override { return Collection<E>::contains(o); }
+            using Collection<E>::contains;
 
             /**
              * Returns an iterator over the elements in this list in proper sequence.
@@ -149,7 +151,7 @@ namespace core {
              * @return an array containing all of the elements in this list in proper
              *         sequence
              */
-            ReferenceArray<E> toArray() const override { return Collection<E>::toArray(); }
+            using Collection<E>::toArray;
 
             /**
              * Appends the specified element to the end of this list (optional operation).
@@ -206,7 +208,7 @@ namespace core {
              *
              * @see List.contains(Object)
              */
-            gbool containsAll(const Collection<E> &c) const override { return Collection<E>::containsAll(c); }
+            using Collection<E>::containsAll;
 
             /**
              * Appends all of the elements in the specified collection to the end of
@@ -260,7 +262,7 @@ namespace core {
                         modified = true;
                     }
                     return modified;
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
             /**
@@ -276,7 +278,7 @@ namespace core {
              * @see List.remove(Object)
              * @see List.contains(Object)
              */
-            gbool removeAll(const Collection<E> &c) override { return Collection<E>::removeAll(c); }
+            using Collection<E>::removeAll;
 
             /**
              * Retains only the elements in this list that are contained in the
@@ -293,7 +295,7 @@ namespace core {
              * @see List.remove(Object)
              * @see List.contains(Object)
              */
-            gbool retainAll(const Collection<E> &c) override { return Collection<E>::retainAll(c); }
+            using Collection<E>::retainAll;
 
             /**
              * Replaces each element of this list with the result of applying the
@@ -332,7 +334,7 @@ namespace core {
              * @throws UnsupportedMethodException if the <b> clear</b> operation
              *         is not supported by this list
              */
-            void clear() override { return Collection<E>::clear(); }
+            using Collection<E>::clear;
 
             /**
              * Compares the specified object with this list for equality.  Returns
@@ -513,7 +515,7 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            void forEach(const Consumer<E> &action) const override { Collection<E>::forEach(action); }
+            using Collection<E>::forEach;
 
             /**
              * Performs the given action for each element of the <b>Iterable</b>
@@ -552,9 +554,10 @@ namespace core {
              */
             virtual ListIterator<E> &iterator(gint index) {
                 try {
+                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexForAdding(index, size());
-                    return native::Unsafe::createInstance < ListItr < E >> ((List &) *this, 0);
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                    return U::createInstance < ListItr < E >> ((List &) *this, index);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
             /**
@@ -572,9 +575,10 @@ namespace core {
              */
             virtual ListIterator<const E> &iterator(gint index) const {
                 try {
+                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexForAdding(index, size());
-                    return native::Unsafe::createInstance<ListItr<const E>>((List &) *this, 0);
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                    return U::createInstance < ListItr < const E >> ((List &) *this, index);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
             /**
@@ -612,8 +616,9 @@ namespace core {
              */
             virtual List &subList(gint from, gint to) const {
                 try {
+                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexFromRange(from, to, size());
-                    return native::Unsafe::createInstance<SubList<>>((List &) *this, from, to);
+                    return U::createInstance<SubList<>>((List &) *this, from, to);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -646,19 +651,18 @@ namespace core {
              *
              * <p><b>Use of this field by subclasses is optional.</b> If a subclass
              * wishes to provide fail-fast iterators (and list iterators), then it
-             * merely has to increment this field in its <b>add(int, E)</b> and
-             * <b>remove(int)</b> methods (and any other methods that it overrides
+             * merely has to increment this field in its <b>add(gint, E)</b> and
+             * <b>remove(gint)</b> methods (and any other methods that it overrides
              * that result in structural modifications to the list).  A single call to
-             * <b>add(int, E)</b> or <b>remove(int)</b> must add no more than
+             * <b>add(gint, E)</b> or <b>remove(gint)</b> must add no more than
              * one to this field, or the iterators (and list iterators) will throw
              * bogus <b>ConcurrentExceptions</b>.  If an implementation
              * does not wish to provide fail-fast iterators, this field may be
              * ignored.
              */
-            gint modNum = 0;
+            gint modNum = {};
 
-            template<class T>
-            CORE_ALIAS(NativeListIterator, typename Collection<E>::template NativeIterator<T>);
+            CORE_ALIAS(Itr, typename Collection<E>::template Itr<E>);
 
         public:
 
@@ -674,9 +678,7 @@ namespace core {
              * to mark the beginning of foreach statement.
              * Unlike collection, all List sub-class support modification during each.
              */
-            inline NativeListIterator<E> begin() {
-                return NativeListIterator<E>(*this, toArray());
-            }
+            inline Itr begin() { return Itr(*this, toArray()); }
 
             /**
              * Return The native list iterator (The C iterator) used
@@ -690,9 +692,7 @@ namespace core {
              * to mark the ending of foreach statement.
              * Unlike collection, all List sub-class support modification during each.
              */
-            inline NativeListIterator<E> end() {
-                return NativeListIterator<E>(*this);
-            }
+            inline Itr end() { return Itr(*this); }
 
         private:
             template<class T>
@@ -723,78 +723,82 @@ namespace core {
                 gint modNum;
 
             public:
-                ListItr(List<E> &root, gint cursor) : root(root), cursor(cursor) {
-                    modNum = root.modNum;
-                }
+                ListItr(List<E> &root, gint cursor) : root(root), cursor(cursor), modNum(root.modNum) {}
 
-                gbool hasNext() const override {
-                    return cursor != root.size();
-                }
+                gbool hasNext() const override { return cursor != root.size(); }
 
                 T &next() override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
                         gint i = cursor;
                         T &retVal = root.get(i);
                         last = i;
                         cursor = i + 1;
                         return retVal;
-                    } catch (IndexException &ie) {
-                        if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    } catch (const IndexException &ie) {
+                        if (modNum != root.modNum)
+                            ConcurrentException().throws(__trace("core.util.List.ListItr"));
                         NoSuchItemException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
-                gbool hasPrevious() const override {
-                    return cursor != 0;
-                }
+                gbool hasPrevious() const override { return cursor != 0; }
 
                 T &previous() override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
                         gint i = cursor - 1;
                         T &retVal = root.get(i);
                         last = cursor = i;
                         return retVal;
-                    } catch (IndexException &ie) {
-                        if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    } catch (const IndexException &ie) {
+                        if (modNum != root.modNum)
+                            ConcurrentException().throws(__trace("core.util.List.ListItr"));
                         NoSuchItemException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
                 void remove() override {
-                    if (last < 0) StateException().throws(__trace("core.util.List.ListItr"));
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    if (last < 0)
+                        StateException().throws(__trace("core.util.List.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
                         root.removeAt(last);
                         if (last < cursor)
                             cursor -= 1;
                         last = -1;
                         modNum = root.modNum;
-                    } catch (IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
+                    } catch (const IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
                 }
 
                 void set(const T &e) override {
-                    if (last < 0) StateException().throws(__trace("core.util.List.ListItr"));
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    if (last < 0)
+                        StateException().throws(__trace("core.util.List.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
                         root.set(last, e);
                         modNum = root.modNum;
-                    } catch (IndexException &ie) {
-                        if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    } catch (const IndexException &ie) {
+                        if (modNum != root.modNum)
+                            ConcurrentException().throws(__trace("core.util.List.ListItr"));
                         NoSuchItemException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
                 void add(const T &e) override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
                         gint i = cursor;
                         root.add(i, e);
                         last = -1;
                         cursor = i + 1;
                         modNum = root.modNum;
-                    } catch (IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
+                    } catch (const IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
                 }
 
                 gbool equals(const Object &o) const override {
@@ -824,27 +828,23 @@ namespace core {
                  * Constructs a sublist of an arbitrary AbstractList, which is
                  * not a SubList itself.
                  */
-                SubList(List &root, gint from, gint to) : root(root), parent(*this) {
-                    modNum = root.modNum;
-                    offset = from;
-                    len = to - from;
-                }
+                SubList(List &root, gint from, gint to) :
+                        root(root), parent(*this), len(to - from), offset(from) { modNum = root.modNum; }
 
                 /**
                  * Constructs a sublist of another SubList.
                  */
-                SubList(SubList &parent, gint from, gint to) : root(parent.root), parent(parent) {
-                    modNum = parent.modNum;
-                    offset = from + parent.offset;
-                    len = to - from;
-                }
+                SubList(SubList &parent, gint from, gint to) :
+                        root(parent.root), parent(parent), len(to - from),
+                        offset(from + parent.offset) { modNum = parent.modNum; }
 
                 const E &set(gint index, const E &element) override {
                     try {
                         Preconditions::checkIndex(index, len);
-                        if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
+                        if (modNum != root.modNum)
+                            ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return root.set(index + offset, element);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 E &get(gint index) override {
@@ -852,7 +852,7 @@ namespace core {
                         Preconditions::checkIndex(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return root.get(index + offset);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 const E &get(gint index) const override {
@@ -860,7 +860,7 @@ namespace core {
                         Preconditions::checkIndex(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return root.get(index + offset);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 gint size() const override {
@@ -874,7 +874,7 @@ namespace core {
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         root.add(index + offset, element);
                         update(1);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 const E &removeAt(gint index) override {
@@ -884,7 +884,7 @@ namespace core {
                         const E &retVal = root.removeAt(index + offset);
                         update(-1);
                         return retVal;
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 gbool addAll(gint index, const Collection<E> &c) override {
@@ -896,7 +896,7 @@ namespace core {
                         root.addAll(index + offset, c);
                         update(cSize);
                         return true;
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 ListIterator<E> &iterator(gint index) override {
@@ -920,7 +920,7 @@ namespace core {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return native::Unsafe::createInstance<_$>((SubList &) *this, index);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
 
                 }
 
@@ -945,7 +945,7 @@ namespace core {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return native::Unsafe::createInstance<_$>((SubList &) *this, index);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 List &subList(gint from, gint to) const override {
@@ -953,7 +953,7 @@ namespace core {
                         Preconditions::checkIndexFromRange(from, to, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
                         return native::Unsafe::createInstance<SubList>((SubList &) *this, from, to);
-                    } catch (IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
+                    } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
                 void update(gint s) {

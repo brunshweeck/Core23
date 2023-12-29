@@ -12,13 +12,13 @@ namespace core {
 
     /**
      * The <b> Integer</b> class wraps a value of the native type
-     * <b> int</b> in an object. An object of type <b> Integer</b>
-     * contains a single field whose type is <b> int</b>.
+     * <b> gint</b> in an object. An object of type <b> Integer</b>
+     * contains a single field whose type is <b> gint</b>.
      *
      * <p>In addition, this class provides several methods for converting
-     * an <b> int</b> to a <b> String</b> and a <b> String</b> to an
-     * <b> int</b>, as well as other constants and methods useful when
-     * dealing with an <b> int</b>.
+     * an <b> gint</b> to a <b> String</b> and a <b> String</b> to an
+     * <b> gint</b>, as well as other constants and methods useful when
+     * dealing with an <b> gint</b>.
      *
      * <p>This is a <a href="">value-based</a>
      * class; programmers should treat instances that are
@@ -43,12 +43,12 @@ namespace core {
 
     public:
         /**
-         * A constant holding the maximum value a int can have, 2<sup>31</sup> - 1
+         * A constant holding the maximum value a gint can have, 2<sup>31</sup> - 1
          */
         static CORE_FAST gint MAX_VALUE = 0x7fffffff;
 
         /**
-         * A constant holding the minimum value a int can have, -2<sup>31</sup>
+         * A constant holding the minimum value a gint can have, -2<sup>31</sup>
          */
         static CORE_FAST gint MIN_VALUE = ~0x7fffffff;
 
@@ -62,7 +62,7 @@ namespace core {
 
         /**
          * Construct new Integer object that represent the specified
-         * int value
+         * gint value
          *
          * @param value
          *         The value of the Integer.
@@ -70,13 +70,13 @@ namespace core {
         CORE_FAST Integer(gint value) : value(value) {}
 
         /**
-         * Parses the string argument as a signed int in the base
+         * Parses the string argument as a signed gint in the base
          * specified by the second argument. The characters in the
          * string must all be digits, of the specified base except
          * that the first character may be an ASCII minus sign '-'
          * (U+002D) to indicate a negative value or an ASCII plus
          * sign '+' (U+002B) to indicate a positive value.  The
-         * resulting int value is returned.
+         * resulting gint value is returned.
          *
          * <p>
          * An exception of type FormatException is thrown if any of the
@@ -88,7 +88,7 @@ namespace core {
          *       except that the first character may be a minus sign '-' (U+002D)
          *       or plus sign '+' (U+002B) provided that the string is longer than
          *       length 1.
-         *  <li> The value represented by the string is not a value of type int
+         *  <li> The value represented by the string is not a value of type gint
          * </ol>
          *
          * <p>Examples:
@@ -108,27 +108,27 @@ namespace core {
          * </pre></blockquote>
          *
          * @param str
-         *        The String containing the int representation to be parsed.
+         *        The String containing the gint representation to be parsed.
          * @param base
          *         The base to be used while parsing string
          * @throws FormatException
-         *          If the string not contains parsable int
+         *          If the string not contains parsable gint
          */
         static gint parseInt(const String &str, gint base);
 
         /**
-         * Parses the string argument as a signed decimal int.
+         * Parses the string argument as a signed decimal gint.
          * The characters in the string must all be decimal digits,
          * except that the first character may be an ASCII minus sign
          * '-' (U+002D) to indicate a negative value or an ASCII plus
          * sign '+' (U+002B) to indicate a positive value. The resulting
-         * int value is returned, exactly as if the argument and the base
+         * gint value is returned, exactly as if the argument and the base
          * 10  were given as arguments to the parseInt(String, gint) method.
          *
          * @param str
-         *        The String containing the int representation to be parsed.
+         *        The String containing the gint representation to be parsed.
          * @throws FormatException
-         *          If the string not contains parsable int
+         *          If the string not contains parsable gint
          */
         static gint parseInt(const String &str);
 
@@ -155,7 +155,7 @@ namespace core {
          * provided that the string is longer than length 1.
          *
          * <li>The value represented by the string is larger than the
-         * largest unsigned int, 2<sup>32</sup>-1.
+         * largest unsigned gint, 2<sup>32</sup>-1.
          *
          * </ul>
          *
@@ -165,7 +165,7 @@ namespace core {
          * @param      base    the base  to be used while parsing str.
          * @return     the integer represented by the string argument in the
          *             specified base .
-         * @throws     NumberFormatException if the String does not contain a parsable int.
+         * @throws     NumberFormatException if the String does not contain a parsable gint.
          */
         static gint parseUnsignedInt(const String &str, gint base);
 
@@ -175,9 +175,9 @@ namespace core {
          * that the first character may be an ASCII plus sign
          * '+' ('\\u002B'). The resulting integer value
          * is returned, exactly as if the argument and the base  10 were
-         * given as arguments to the parseUnsignedInt(String, int) method.
+         * given as arguments to the parseUnsignedInt(String, gint) method.
          *
-         * @param str   a String containing the unsigned int representation to be parsed
+         * @param str   a String containing the unsigned gint representation to be parsed
          *
          * @throws FormatException  if the string does not contain a
          *            parsable unsigned integer.
@@ -187,31 +187,31 @@ namespace core {
         /**
          * Returns a Integer object holding the value extracted from the specified
          * String when parsed with the base given by the second argument. The
-         * first argument is interpreted as representing a signed int in
+         * first argument is interpreted as representing a signed gint in
          * the base specified by the second argument, exactly as if the
          * argument were given to the parseInt(String, gint) method. The result
-         * is a Integer object that represents the int value specified by the string.
+         * is a Integer object that represents the gint value specified by the string.
          *
          * @param str
          *        The string to be parsed
          * @param base
          *         The base to be used in interpreting str
          * @throws FormatException
-         *          If the String does not contain a parsable int.
+         *          If the String does not contain a parsable gint.
          */
         static Integer valueOf(const String &str, gint base);
 
         /**
          * Returns a Integer object holding the value given by the specified
          * String. The argument is interpreted as representing a signed
-         * decimal int, exactly as if the argument were given to the
+         * decimal gint, exactly as if the argument were given to the
          * parseInt(String) method. The result is a Integer object that
-         * represents the int value specified by the string.
+         * represents the gint value specified by the string.
          *
          * @param str
          *        The string to be parsed
          * @throws FormatException
-         *          If the String does not contain a parsable int.
+         *          If the String does not contain a parsable gint.
          */
         static Integer valueOf(const String &str);
 
@@ -254,9 +254,9 @@ namespace core {
          * @param str
          *        The String to decode.
          * @throws FormatException
-         *          If the String does not contain a parsable int.
+         *          If the String does not contain a parsable gint.
          *
-         * @see Integer.parseInt(String, int)
+         * @see Integer.parseInt(String, gint)
          */
         static Integer decode(const String &str);
 
@@ -276,7 +276,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Byte as int after
+         * Return the value of this Byte as gint after
          * widening native conversion
          */
         CORE_FAST gint intValue() const {
@@ -284,7 +284,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Byte as long after
+         * Return the value of this Byte as glong after
          * widening native conversion
          */
         CORE_FAST glong longValue() const {
@@ -315,11 +315,11 @@ namespace core {
         String toString() const override;
 
         /**
-         * Return the String object representing the specified int.
+         * Return the String object representing the specified gint.
          * The base is assumed to be 10.
          *
          * @param i
-         *        The int to be converted
+         *        The gint to be converted
          */
         static String toString(gint i);
 
@@ -500,7 +500,7 @@ namespace core {
         gint hash() const override { return hash(value); }
 
         /**
-         * Return the hash code of specified int value
+         * Return the hash code of specified gint value
          *
          * @param i
          *        The value to hash
@@ -526,64 +526,64 @@ namespace core {
         gint compareTo(const Integer &other) const override;
 
         /**
-         * Compares two int values numerically.
+         * Compares two gint values numerically.
          *
          * @param x
-         *        The first int to compare
+         *        The first gint to compare
          * @param y
-         *         The second int to compare
+         *         The second gint to compare
          */
         static CORE_FAST gint compare(gint x, gint y) { return (x == y) ? 0 : ((x < y) ? -1 : 1); }
 
         /**
-         * Compares two int values numerically.
+         * Compares two gint values numerically.
          *
          * @param x
-         *        The first int to compare
+         *        The first gint to compare
          * @param y
-         *         The second int to compare
+         *         The second gint to compare
          */
         static CORE_FAST gint compareUnsigned(gint x, gint y) { return compare(x + MIN_VALUE, y + MIN_VALUE); }
 
         /**
-         * Converts the argument to a long by an unsigned conversion.
-         * In an unsigned conversion to a long, the high-order 32 bits of
-         * the int are zero and the low-order 8 bits are equal to the bits
-         * of the int argument.
+         * Converts the argument to a glong by an unsigned conversion.
+         * In an unsigned conversion to a glong, the high-order 32 bits of
+         * the gint are zero and the low-order 8 bits are equal to the bits
+         * of the gint argument.
          *
          * <p>
-         * Consequently, zero and positive int values are mapped
-         * to a numerically equal int value and negative int values
-         * are mapped to an int value equal to the input plus 2<sup>32</sup>.
+         * Consequently, zero and positive gint values are mapped
+         * to a numerically equal gint value and negative gint values
+         * are mapped to an gint value equal to the input plus 2<sup>32</sup>.
          *
          * @param i
-         *        The value to convert to an unsigned int
+         *        The value to convert to an unsigned gint
          */
         static CORE_FAST glong toUnsignedLong(gint i) { return ((glong) i) & 0xffffffffLL; }
 
         /**
-         * Returns an <b> int</b> value with at most a single one-bit, in the
+         * Returns an <b> gint</b> value with at most a single one-bit, in the
          * position of the highest-order ("leftmost") one-bit in the specified
-         * <b> int</b> value.  Returns zero if the specified value has no
+         * <b> gint</b> value.  Returns zero if the specified value has no
          * one-bits in its two's complement binary representation, that is, if it
          * is equal to zero.
          *
          * @param i the value whose highest one bit is to be computed
-         * @return an <b> int</b> value with a single one-bit, in the position
+         * @return an <b> gint</b> value with a single one-bit, in the position
          *     of the highest-order one-bit in the specified value, or zero if
          *     the specified value is itself equal to zero.
          */
         static gint highestOneBit(gint i) { return i & (MIN_VALUE >> leadingZeros(i)); }
 
         /**
-         * Returns an <b> int</b> value with at most a single one-bit, in the
+         * Returns an <b> gint</b> value with at most a single one-bit, in the
          * position of the lowest-order ("rightmost") one-bit in the specified
-         * <b> int</b> value.  Returns zero if the specified value has no
+         * <b> gint</b> value.  Returns zero if the specified value has no
          * one-bits in its two's complement binary representation, that is, if it
          * is equal to zero.
          *
          * @param i the value whose lowest one bit is to be computed
-         * @return an <b> int</b> value with a single one-bit, in the position
+         * @return an <b> gint</b> value with a single one-bit, in the position
          *     of the lowest-order one-bit in the specified value, or zero if
          *     the specified value is itself equal to zero.
          */
@@ -595,7 +595,7 @@ namespace core {
         /**
          * Returns the number of zero bits preceding the highest-order
          * ("leftmost") one-bit in the two's complement binary representation
-         * of the specified int value.  Returns 32 if the
+         * of the specified gint value.  Returns 32 if the
          * specified value has no one-bits in its two's complement representation,
          * in other words if it is equal to zero.
          *
@@ -607,7 +607,7 @@ namespace core {
         /**
          * Returns the number of zero bits following the lowest-order ("rightmost")
          * one-bit in the two's complement binary representation of the specified
-         * int value.  Returns 32 if the specified value has no one-bits in its two's
+         * gint value.  Returns 32 if the specified value has no one-bits in its two's
          * complement representation, in other words if it is equal to zero.
          *
          * @param i
@@ -617,7 +617,7 @@ namespace core {
 
         /**
          * Returns the number of one-bits in the two's complement binary
-         * representation of the specified int value.  This function is
+         * representation of the specified gint value.  This function is
          * sometimes referred to as the <i>population count</i>.
          *
          * @param i
@@ -627,7 +627,7 @@ namespace core {
 
         /**
          * Returns the value obtained by rotating the two's complement binary
-         * representation of the specified int value left by the
+         * representation of the specified gint value left by the
          * specified number of bits.  (Bits shifted out of the left hand, or
          * high-order, side reenter on the right, or low-order.)
          *
@@ -646,7 +646,7 @@ namespace core {
 
         /**
          * Returns the value obtained by rotating the two's complement binary
-         * representation of the specified int value right by the
+         * representation of the specified gint value right by the
          * specified number of bits.  (Bits shifted out of the right hand, or
          * low-order, side reenter on the left, or high-order.)
          *
@@ -665,7 +665,7 @@ namespace core {
 
         /**
          * Returns the value obtained by reversing the order of the bits in the
-         * two's complement binary representation of the specified int value.
+         * two's complement binary representation of the specified gint value.
          *
          * @param i
          *        The value to be reversed
@@ -674,7 +674,7 @@ namespace core {
 
         /**
          * Returns the value obtained by reversing the order of the bytes in the
-         * two's complement representation of the specified int value.
+         * two's complement representation of the specified gint value.
          *
          * @param i
          *        The value whose bytes are to be reversed
@@ -687,7 +687,7 @@ namespace core {
         }
 
         /**
-         * Returns the signum function of the specified int value.  (The
+         * Returns the signum function of the specified gint value.  (The
          * return value is -1 if the specified value is negative; 0 if the
          * specified value is zero; and 1 if the specified value is positive.)
          *
@@ -707,7 +707,7 @@ namespace core {
         static CORE_FAST gint sum(gint x, gint y) { return x + y; }
 
         /**
-         * Returns the greater of two int values
+         * Returns the greater of two gint values
          *
          * @param x
          *        The first operand
@@ -717,7 +717,7 @@ namespace core {
         static CORE_FAST gint max(gint x, gint y) { return Math::max(x, y); }
 
         /**
-         * Returns the smaller of two int values
+         * Returns the smaller of two gint values
          *
          * @param x
          *        The first operand

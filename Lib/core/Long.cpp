@@ -159,8 +159,8 @@ namespace core {
                  *
                  * E) Conditions C, D, and result >= 0:
                  * C and D combined imply the mathematical result 2^63 < a*base + b < 2^64 + 2^63. The lower
-                 * bound is therefore negative as a signed long, but the upper bound is too small to overflow again after the
-                 * signed long overflows to positive above 2^64 - 1. Hence, result >= 0 implies overflow given C and D.
+                 * bound is therefore negative as a signed glong, but the upper bound is too small to overflow again after the
+                 * signed glong overflows to positive above 2^64 - 1. Hence, result >= 0 implies overflow given C and D.
                  */
                 NumberFormatException("Value out of range, for input \"" + str + "\".").throws(__trace("core.Long"));
             }
@@ -331,13 +331,11 @@ namespace core {
     }
 
     gint Long::leadingZeros(glong l) {
-        gint i = (gint) l;
-        return i == 0 ? 32 + Integer::leadingZeros((gint) (l >> 32)) : Integer::leadingZeros(i);
+        return (l >> 32) == 0 ? 32 + Integer::leadingZeros((gint) l) : Integer::leadingZeros((gint) (l >> 32));
     }
 
     gint Long::trailingZeros(glong l) {
-        gint i = (gint) (l >> 32);
-        return i == 0 ? 32 + Integer::leadingZeros((gint) l) : Integer::leadingZeros(i);
+        return ((gint) l) == 0 ? 32 + Integer::trailingZeros((gint) (l >> 32)) : Integer::trailingZeros((gint) l);
     }
 
     gint Long::bitCount(glong l) {

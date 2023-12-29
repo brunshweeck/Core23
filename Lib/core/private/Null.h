@@ -13,7 +13,7 @@ namespace core {
      * The class Null represent null address pointer (nullptr in c++) and
      * null Object (for json object, ...)
      */
-    class Null final : public Object {
+    class Null CORE_FINAL : public Object {
         /**
          * Construct new null object.
          * Note: This constructor is called one time only

@@ -8,6 +8,7 @@
 #include <core/CastException.h>
 #include <core/private/Unsafe.h>
 #include <core/util/HashMap.h>
+#include <core/util/StringTokenizer.h>
 
 namespace core {
 
@@ -17,13 +18,20 @@ namespace core {
         CORE_STATIC_ASSERT(Class<E>::isEnum(), "This template is not Enumerable type");
 
         CORE_ALIAS(U, native::Unsafe);
+        CORE_ALIAS(EnumCache, , util::HashMap<Enum, String>);
+        CORE_ALIAS(SystemCache, , util::HashMap<String, Object>);
 
         /**
          * The value of the Enum
          */
-        E value;
+        E value = {};
 
     public:
+
+        /**
+         * Construct new Enum object with default value
+         */
+        CORE_FAST Enum() = default;
 
         /**
          * Construct new Enum object with specified value
@@ -45,13 +53,24 @@ namespace core {
          *         an ordinal of zero).
          */
         CORE_EXPLICIT Enum(const String &name, gint ordinal) : Enum((E) ordinal) {
-            Object &cache = U::systemCache();
-            using util::HashMap;
-            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
-            String cls = Enum::classname();
-            HashMap<Enum, String> data = (HashMap<Enum, String> &)
-                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
-            data.put(*this, name);
+            EnumCache &cache = loadEnumCache();
+            Enum e = (E) ordinal;
+            cache.putIfAbsent(e, name);
+        }
+
+    private:
+        static EnumCache &loadEnumCache() {
+            static typename Class<EnumCache>::Ptr cache = null;
+            if (cache == null) {
+                // initialize cache (one time only)
+                SystemCache &systemCache = (SystemCache &) U::systemCache();
+                EnumCache &enumCache = U::createInstance<EnumCache>();
+                Enum e = {};
+                String &enumKey = U::createInstance<String>(e.classname());
+                systemCache.putIfAbsent(enumKey, enumCache);
+                cache = &enumCache;
+            }
+            return cache[0];
         }
 
     public:
@@ -62,7 +81,7 @@ namespace core {
          * an ordinal of zero).
          *
          * Most programmers will have no use for this method.  It is
-         * designed for use by sophisticated enum-based data structures.
+         * designed for use by sophisticated enum-based array structures.
          *
          * @return the ordinal of this enumeration constant
          */
@@ -74,7 +93,7 @@ namespace core {
          * an ordinal of zero).
          *
          * Most programmers will have no use for this method.  It is
-         * designed for use by sophisticated enum-based data structures.
+         * designed for use by sophisticated enum-based array structures.
          *
          * @return the ordinal of this enumeration constant
          */
@@ -170,13 +189,35 @@ namespace core {
          *         class object does not represent an enum class
          */
         static Enum valueOf(const String &name) {
-            Object &cache = U::systemCache();
-            using util::HashMap;
-            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
-            String cls = Enum::classname();
-            HashMap<Enum, String> data = (HashMap<Enum, String> &)
-                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
-            Enum &e = data.getOrDefault(name, {});
+            EnumCache &cache = loadEnumCache();
+            for (const typename util::Map<Enum, String>::Entry &e: cache.entrySet()) {
+                if (e.value().equals(name))
+                    return e.key();
+            }
+            // if value is not representable by one name
+            // we try split name ( iff name contains characters illegal identifier character )
+            using util::StringTokenizer;
+            StringTokenizer stoken = StringTokenizer(name, ",;:\'\"|-+*/&@~\\#^<>? \t.");
+            gint ord = 0;
+            while (stoken.hasMore()) {
+                String s = stoken.nextToken();
+                gbool found = false;
+                for (const typename util::Map<Enum, String>::Entry &e: cache.entrySet()) {
+                    if (e.value().equals(name)) {
+                        ord |= e.key().ordinal();
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    try{
+                        ord |= Integer::parseInt(s);
+                    } catch (const Exception &) {
+                        return {};
+                    }
+                }
+            }
+            return valueOf((E) ord);
         }
 
         /**
@@ -190,22 +231,27 @@ namespace core {
         String toString() const override { return toString(value); }
 
         static String toString(E value) {
-            Enum v = valueOf(value);
-            Object &cache = U::systemCache();
-            using util::HashMap;
-            HashMap<String, Object> &properties = (HashMap<String, Object> &) cache;
-            String cls = v.classname();
-            HashMap<Enum, String> data = (HashMap<Enum, String> &)
-                    properties.putIfAbsent(cls, HashMap<Enum, String>(12, 0.955));
-            for (const auto &e: data.entrySet()) {
-                if(e.key() == value)
+            EnumCache &cache = loadEnumCache();
+            for (const typename util::Map<Enum, String>::Entry &e: cache.entrySet()) {
+                if (e.key() == value)
                     return e.value();
             }
-            // String representation not found
-            // we will create for next usage
-            String fallback = String::valueOf(ordinal(value));
-            data.putIfAbsent(v, fallback);
-            return fallback;
+            // if value is not representable by one name
+            // we try to find the composed name
+            gint ord = ordinal(value);
+            StringBuffer sb = {};
+            for (const typename util::Map<Enum, String>::Entry &e: cache.entrySet()) {
+                gint ord2 = e.key().ordinal();
+                if((ord & ord2) == ord2 && ord != 0) {
+                    sb.append(e.value());
+                    ord = ord & ~ord2;
+                    if(ord != 0)
+                        sb.append('|');
+                }
+            }
+            if(ord != 0)
+                sb.append(ord);
+            return sb.toString();
         }
 
         /**

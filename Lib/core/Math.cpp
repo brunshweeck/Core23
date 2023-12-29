@@ -9,31 +9,37 @@
 #include "Double.h"
 #include "ArithmeticException.h"
 #include "AssertionError.h"
+
+#if !__has_builtin(__builtin_sqrt)
+#define StrictMath(op) __builtin_ ## op ## l
+#else
 #include <math.h>
+#define StrictMath(op) ::op ## l
+#endif
 
 namespace core {
     gdouble Math::sin(gdouble a) {
-        return (gdouble) ::sinl(a);
+        return (gdouble) StrictMath(sin)(a);
     }
 
     gdouble Math::cos(gdouble a) {
-        return (gdouble) ::cosl(a);
+        return (gdouble) StrictMath(cos)(a);
     }
 
     gdouble Math::tan(gdouble a) {
-        return (gdouble) ::tanl(a);
+        return (gdouble) StrictMath(tan)(a);
     }
 
     gdouble Math::asin(gdouble a) {
-        return (gdouble) ::asinl(a);
+        return (gdouble) StrictMath(asin)(a);
     }
 
     gdouble Math::acos(gdouble a) {
-        return (gdouble) ::acosl(a);
+        return (gdouble) StrictMath(acos)(a);
     }
 
     gdouble Math::atan(gdouble a) {
-        return (gdouble) ::atanl(a);
+        return (gdouble) StrictMath(atan)(a);
     }
 
     constexpr gdouble Math::toRadians(gdouble deg) {
@@ -45,166 +51,173 @@ namespace core {
     }
 
     gdouble Math::exp(gdouble a) {
-        return (gdouble) ::expl(a);
+        return (gdouble) StrictMath(exp)(a);
     }
 
     gdouble Math::log(gdouble a) {
-        return (gdouble) ::logl(a);
+        return (gdouble) StrictMath(log)(a);
     }
 
     gdouble Math::log10(gdouble a) {
-        return (gdouble) ::log10l(a);
+        return (gdouble) StrictMath(log10)(a);
     }
 
-    const gdouble Math::INF = INFINITY;
+    const gdouble Math::INF = 1.0 / 0.0;
 
-    const gdouble Math::NaN = NAN;
+    const gdouble Math::NaN = 0.0 / 0.0;
 
     gdouble Math::sqrt(gdouble a) {
-        return (gdouble) ::sqrtl(a);
+        return (gdouble) StrictMath(sqrt)(a);
     }
 
     gdouble Math::cbrt(gdouble a) {
-        return (gdouble) ::cbrtl(a);
+        return (gdouble) StrictMath(cbrt)(a);
     }
 
     namespace {
         CORE_FAST gdouble powerOfTenD(gint n) {
-            return n < 0 ? 1 / powerOfTenD(-n) :
-                   n >= 100 ? 1e+100 * powerOfTenD(n - 100) :
-                   n >= 50 ? 1e10 * powerOfTenD(n - 50) :
-                   n >= 10 ? 1e10 * powerOfTenD(n - 10) :
-                   n >= 5 ? 1e10 * powerOfTenD(n - 5) :
-                   n >= 1 ? 1e+001 * powerOfTenD(n - 1) :
-                   1;
+//            return n < 0 ? 1 / powerOfTenD(-n) :
+//                   n >= 100 ? 1e+100 * powerOfTenD(n - 100) :
+//                   n >= 50 ? 1e10 * powerOfTenD(n - 50) :
+//                   n >= 10 ? 1e10 * powerOfTenD(n - 10) :
+//                   n >= 5 ? 1e10 * powerOfTenD(n - 5) :
+//                   n >= 1 ? 1e+001 * powerOfTenD(n - 1) :
+//                   1;
+            return (gdouble) StrictMath(pow)(10.0, n);
         }
     }
 
     gdouble Math::fmod(gdouble f1, gdouble f2) {
-        gdouble q = f1 / f2;
-        if ((gdouble) Long::MIN_VALUE <= q && q <= (gdouble) Long::MAX_VALUE) {
-            glong ql = (glong) q;
-            return f1 - f2 * (gdouble) ql;
-        }
-        gint e = exponent(q);
-        // or 2^e = 10^n => n = e/3
-        gdouble pow10 = powerOfTenD(e / 3);
-        return q >= 0 ? fmod(f1 - (pow10 * f2), f2) : q < 0 ? fmod(f1 + (pow10 * f2), f2) : Double::NaN;
+//        gdouble q = f1 / f2;
+//        if ((gdouble) Long::MIN_VALUE <= q && q <= (gdouble) Long::MAX_VALUE) {
+//            glong ql = (glong) q;
+//            return f1 - f2 * (gdouble) ql;
+//        }
+//        gint e = exponent(q);
+//        // or 2^e = 10^n => n = e/3
+//        gdouble pow10 = powerOfTenD(e / 3);
+//        return q >= 0 ? fmod(f1 - (pow10 * f2), f2) : q < 0 ? fmod(f1 + (pow10 * f2), f2) : Double::NaN;
+        return StrictMath(fmod)(f1, f2);
     }
 
     gdouble Math::ceil(gdouble a) {
-        if (!Double::isFinite(a) || a == 0.0)
-            return a;
-        if (a < 0 && a > -1)
-            return -0.0;
-        if (a < 0)
-            return -Math::floor(-a);
-        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
-            glong al = (glong) a;
-            if (a > 0 && a > (gdouble) al)
-                return (gdouble) al + 1.0;
-            return (gdouble) al;
-        }
-        gint e = exponent(a);
-        // or 2^e = 10^n => n = e/3
-        gdouble pow10 = powerOfTenD(e / 3);
-        while (pow10 > a)
-            pow10 /= 10;
-        return pow10 + ceil(a - pow10);
+//        if (!Double::isFinite(a) || a == 0.0)
+//            return a;
+//        if (a < 0 && a > -1)
+//            return -0.0;
+//        if (a < 0)
+//            return -Math::floor(-a);
+//        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
+//            glong al = (glong) a;
+//            if (a > 0 && a > (gdouble) al)
+//                return (gdouble) al + 1.0;
+//            return (gdouble) al;
+//        }
+//        gint e = exponent(a);
+//        // or 2^e = 10^n => n = e/3
+//        gdouble pow10 = powerOfTenD(e / 3);
+//        while (pow10 > a)
+//            pow10 /= 10;
+//        return pow10 + ceil(a - pow10);
+        return StrictMath(ceil)(a);
     }
 
     gdouble Math::floor(gdouble a) {
-        if (!Double::isFinite(a) || a == 0.0)
-            return a;
-        if (a < 0 && a > -1)
-            return -0.0;
-        if (a < 0)
-            return -Math::ceil(-a);
-        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
-            glong al = (glong) a;
-            if (a < 0 && a < (gdouble) al)
-                return (gdouble) al - 1.0;
-            return (gdouble) al;
-        }
-        gint e = exponent(a);
-        // or 2^e = 10^n => n = e/3
-        gdouble pow10 = powerOfTenD(e / 3);
-        return copySign(pow10, a) + floor(a - ((a >= 0) ? pow10 : -pow10));
+//        if (!Double::isFinite(a) || a == 0.0)
+//            return a;
+//        if (a < 0 && a > -1)
+//            return -0.0;
+//        if (a < 0)
+//            return -Math::ceil(-a);
+//        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
+//            glong al = (glong) a;
+//            if (a < 0 && a < (gdouble) al)
+//                return (gdouble) al - 1.0;
+//            return (gdouble) al;
+//        }
+//        gint e = exponent(a);
+//        // or 2^e = 10^n => n = e/3
+//        gdouble pow10 = powerOfTenD(e / 3);
+//        return copySign(pow10, a) + floor(a - ((a >= 0) ? pow10 : -pow10));
+        return StrictMath(floor)(a);
     }
 
     gdouble Math::rint(gdouble a) {
-        if (!Double::isFinite(a) || a == 0.0)
-            return a;
-        if (a < 0 && a > -1)
-            return -0.0;
-        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
-            glong al = (glong) a;
-            return (gdouble) al;
-        }
-        gint e = exponent(a);
-        // or 2^e = 10^n => n = e/3
-        gdouble pow10 = powerOfTenD(e / 3);
-        return copySign(pow10, a) + rint(a - ((a >= 0) ? pow10 : -pow10));
+//        if (!Double::isFinite(a) || a == 0.0)
+//            return a;
+//        if (a < 0 && a > -1)
+//            return -0.0;
+//        if ((gdouble) Long::MIN_VALUE <= a && a <= (gdouble) Long::MAX_VALUE) {
+//            glong al = (glong) a;
+//            return (gdouble) al;
+//        }
+//        gint e = exponent(a);
+//        // or 2^e = 10^n => n = e/3
+//        gdouble pow10 = powerOfTenD(e / 3);
+//        return copySign(pow10, a) + rint(a - ((a >= 0) ? pow10 : -pow10));
+        return StrictMath(rint)(a);
     }
 
     gdouble Math::atan2(gdouble y, gdouble x) {
-        return (gdouble) ::atan2l(y, x);
+        return (gdouble) StrictMath(atan2)(y, x);
     }
 
     gdouble Math::pow(gdouble a, gdouble b) {
-        return (gdouble) ::powl(a, b);
+        return (gdouble) StrictMath(pow)(a, b);
     }
 
     gint Math::round(gfloat a) {
-        gint intBits = Float::toIntBits(a);
-        gint biasedExp = (intBits & Float::EXPONENT_BIT_MASK) >> (Float::SIGNIFICAND_WIDTH - 1);
-        gint shift = (Float::SIGNIFICAND_WIDTH - 2 + Float::EXPONENT_BIAS) - biasedExp;
-        if ((shift & -32) == 0) { // shift >= 0 && shift < 32
-            // 'a' is a finite number such that pow(2,-32) <= ulp(a) < 1
-            gint r = ((intBits & Float::SIGNIFICAND_BIT_MASK) | (Float::SIGNIFICAND_BIT_MASK + 1));
-            if (intBits < 0) {
-                r = -r;
-            }
-            // In the comments below each expression evaluates to the value
-            // the corresponding mathematical expression:
-            // (r) evaluates to a / ulp(a)
-            // (r >> shift) evaluates to floor(a * 2)
-            // ((r >> shift) + 1) evaluates to floor((a + 1/2) * 2)
-            // (((r >> shift) + 1) >> 1) evaluates to floor(a + 1/2)
-            return ((r >> shift) + 1) >> 1;
-        } else {
-            // is either
-            // - a finite number with abs(a) < exp(2,FloatConsts.SIGNIFICAND_WIDTH-32) < 1/2
-            // - a finite number with ulp(a) >= 1 and hence 'a' is a mathematical integer
-            // - an infinity or NaN
-            return (gint) a;
-        }
+//        gint intBits = Float::toIntBits(a);
+//        gint biasedExp = (intBits & Float::EXPONENT_BIT_MASK) >> (Float::SIGNIFICAND_WIDTH - 1);
+//        gint shift = (Float::SIGNIFICAND_WIDTH - 2 + Float::EXPONENT_BIAS) - biasedExp;
+//        if ((shift & -32) == 0) { // shift >= 0 && shift < 32
+//            // 'a' is a finite number such that pow(2,-32) <= ulp(a) < 1
+//            gint r = ((intBits & Float::SIGNIFICAND_BIT_MASK) | (Float::SIGNIFICAND_BIT_MASK + 1));
+//            if (intBits < 0) {
+//                r = -r;
+//            }
+//            // In the comments below each expression evaluates to the value
+//            // the corresponding mathematical expression:
+//            // (r) evaluates to a / ulp(a)
+//            // (r >> shift) evaluates to floor(a * 2)
+//            // ((r >> shift) + 1) evaluates to floor((a + 1/2) * 2)
+//            // (((r >> shift) + 1) >> 1) evaluates to floor(a + 1/2)
+//            return ((r >> shift) + 1) >> 1;
+//        } else {
+//            // is either
+//            // - a finite number with abs(a) < exp(2,FloatConsts.SIGNIFICAND_WIDTH-32) < 1/2
+//            // - a finite number with ulp(a) >= 1 and hence 'a' is a mathematical integer
+//            // - an infinity or NaN
+//            return (gint) a;
+//        }
+        return (gint) StrictMath(round)(a);
     }
 
     glong Math::round(gdouble a) {
-        glong longBits = Double::toLongBits(a);
-        glong biasedExp = (longBits & Double::EXPONENT_BIT_MASK) >> (Double::SIGNIFICAND_WIDTH - 1);
-        glong shift = (Double::SIGNIFICAND_WIDTH - 2 + Double::EXPONENT_BIAS) - biasedExp;
-        if ((shift & -64) == 0) { // shift >= 0 && shift < 64
-            // 'a' is a finite number such that pow(2,-64) <= ulp(a) < 1
-            glong r = ((longBits & Double::SIGNIFICAND_BIT_MASK) | (Double::SIGNIFICAND_BIT_MASK + 1));
-            if (longBits < 0) {
-                r = -r;
-            }
-            // In the comments below each expression evaluates to the value
-            // the corresponding mathematical expression:
-            // (r) evaluates to a / ulp(a)
-            // (r >> shift) evaluates to floor(a * 2)
-            // ((r >> shift) + 1) evaluates to floor((a + 1/2) * 2)
-            // (((r >> shift) + 1) >> 1) evaluates to floor(a + 1/2)
-            return ((r >> shift) + 1) >> 1;
-        } else {
-            // 'a' is either
-            // - a finite number with abs(a) < exp(2,DoubleConsts.SIGNIFICAND_WIDTH-64) < 1/2
-            // - a finite number with ulp(a) >= 1 and hence 'a' is a mathematical integer
-            // - an infinity or NaN
-            return (glong) a;
-        }
+//        glong longBits = Double::toLongBits(a);
+//        glong biasedExp = (longBits & Double::EXPONENT_BIT_MASK) >> (Double::SIGNIFICAND_WIDTH - 1);
+//        glong shift = (Double::SIGNIFICAND_WIDTH - 2 + Double::EXPONENT_BIAS) - biasedExp;
+//        if ((shift & -64) == 0) { // shift >= 0 && shift < 64
+//            // 'a' is a finite number such that pow(2,-64) <= ulp(a) < 1
+//            glong r = ((longBits & Double::SIGNIFICAND_BIT_MASK) | (Double::SIGNIFICAND_BIT_MASK + 1));
+//            if (longBits < 0) {
+//                r = -r;
+//            }
+//            // In the comments below each expression evaluates to the value
+//            // the corresponding mathematical expression:
+//            // (r) evaluates to a / ulp(a)
+//            // (r >> shift) evaluates to floor(a * 2)
+//            // ((r >> shift) + 1) evaluates to floor((a + 1/2) * 2)
+//            // (((r >> shift) + 1) >> 1) evaluates to floor(a + 1/2)
+//            return ((r >> shift) + 1) >> 1;
+//        } else {
+//            // 'a' is either
+//            // - a finite number with abs(a) < exp(2,DoubleConsts.SIGNIFICAND_WIDTH-64) < 1/2
+//            // - a finite number with ulp(a) >= 1 and hence 'a' is a mathematical integer
+//            // - an infinity or NaN
+//            return (glong) a;
+//        }
+        return StrictMath(round)(a);
     }
 
     gdouble Math::random() {
@@ -213,7 +226,7 @@ namespace core {
     }
 
     gint Math::addExact(gint x, gint y) {
-        gint r = x + y;
+        gint const r = x + y;
         // HD 2-12 Overflow iff both arguments have the opposite sign of the result
         if (((x ^ r) & (y ^ r)) < 0) {
             ArithmeticException("Integer overflow").throws(__trace("core.Math"));
@@ -222,7 +235,7 @@ namespace core {
     }
 
     glong Math::addExact(glong x, glong y) {
-        glong r = x + y;
+        glong const r = x + y;
         // HD 2-12 Overflow iff both arguments have the opposite sign of the result
         if (((x ^ r) & (y ^ r)) < 0) {
             ArithmeticException("Long overflow").throws(__trace("core.Math"));
@@ -231,7 +244,7 @@ namespace core {
     }
 
     gint Math::subtractExact(gint x, gint y) {
-        gint r = x - y;
+        gint const r = x - y;
         // HD 2-12 Overflow iff the arguments have different signs and
         // the sign of the result is different from the sign of x
         if (((x ^ y) & (x ^ r)) < 0) {
@@ -241,7 +254,7 @@ namespace core {
     }
 
     glong Math::subtractExact(glong x, glong y) {
-        glong r = x - y;
+        glong const r = x - y;
         // HD 2-12 Overflow iff the arguments have different signs and
         // the sign of the result is different from the sign of x
         if (((x ^ y) & (x ^ r)) < 0) {
@@ -251,7 +264,7 @@ namespace core {
     }
 
     gint Math::multiplyExact(gint x, gint y) {
-        glong r = (glong) x * (glong) y;
+        glong const r = (glong) x * (glong) y;
         if ((gint) r != r) {
             ArithmeticException("Integer overflow").throws(__trace("core.Math"));
         }
@@ -263,9 +276,9 @@ namespace core {
     }
 
     glong Math::multiplyExact(glong x, glong y) {
-        glong r = x * y;
-        glong ax = Math::abs(x);
-        glong ay = Math::abs(y);
+        glong const r = x * y;
+        glong const ax = Math::abs(x);
+        glong const ay = Math::abs(y);
         if (((ax | ay) >> 31 != 0)) {
             // Some bits greater than 2^31 that might cause overflow
             // Check the result using the divide operator
@@ -278,7 +291,7 @@ namespace core {
     }
 
     gint Math::divideExact(gint x, gint y) {
-        gint q = x / y;
+        gint const q = x / y;
         if ((x & y & q) >= 0) {
             return q;
         }
@@ -286,7 +299,7 @@ namespace core {
     }
 
     glong Math::divideExact(glong x, glong y) {
-        glong q = x / y;
+        glong const q = x / y;
         if ((x & y & q) >= 0) {
             return q;
         }
@@ -294,7 +307,7 @@ namespace core {
     }
 
     gint Math::floorDivExact(gint x, gint y) {
-        gint q = x / y;
+        gint const q = x / y;
         if ((x & y & q) >= 0) {
             // if the signs are different and modulo not zero, round down
             if ((x ^ y) < 0 && (q * y != x)) {
@@ -306,7 +319,7 @@ namespace core {
     }
 
     glong Math::floorDivExact(glong x, glong y) {
-        glong q = x / y;
+        glong const q = x / y;
         if ((x & y & q) >= 0) {
             // if the signs are different and modulo not zero, round down
             if ((x ^ y) < 0 && (q * y != x)) {
@@ -318,7 +331,7 @@ namespace core {
     }
 
     gint Math::ceilDivExact(gint x, gint y) {
-        gint q = x / y;
+        gint const q = x / y;
         if ((x & y & q) >= 0) {
             // if the signs are the same and modulo not zero, round up
             if ((x ^ y) >= 0 && (q * y != x)) {
@@ -330,7 +343,7 @@ namespace core {
     }
 
     glong Math::ceilDivExact(glong x, glong y) {
-        glong q = x / y;
+        glong const q = x / y;
         if ((x & y & q) >= 0) {
             // if the signs are the same and modulo not zero, round up
             if ((x ^ y) >= 0 && (q * y != x)) {
@@ -397,15 +410,15 @@ namespace core {
     glong Math::multiplyHigh(glong x, glong y) {
         // Use technique from section 8-2 of Henry S. Warren, Jr.,
         // Hacker's Delight (2nd ed.) (Addison Wesley, 2013), 173-174.
-        glong x1 = x >> 32;
-        glong x2 = x & 0xFFFFFFFFL;
-        glong y1 = y >> 32;
-        glong y2 = y & 0xFFFFFFFFL;
+        glong const x1 = x >> 32;
+        glong const x2 = x & 0xFFFFFFFFL;
+        glong const y1 = y >> 32;
+        glong const y2 = y & 0xFFFFFFFFL;
 
-        glong z2 = x2 * y2;
-        glong t = x1 * y2 + (z2 >> 32);
+        glong const z2 = x2 * y2;
+        glong const t = x1 * y2 + (z2 >> 32);
         glong z1 = t & 0xFFFFFFFFL;
-        glong z0 = t >> 32;
+        glong const z0 = t >> 32;
         z1 += x2 * y1;
 
         return x1 * y1 + z0 + (z1 >> 32);
@@ -420,7 +433,7 @@ namespace core {
     }
 
     gint Math::floorDiv(gint x, gint y) {
-        gint q = x / y;
+        gint const q = x / y;
         // if the signs are different and modulo not zero, round down
         if ((x ^ y) < 0 && (q * y != x)) {
             return q - 1;
@@ -433,7 +446,7 @@ namespace core {
     }
 
     glong Math::floorDiv(glong x, glong y) {
-        glong q = x / y;
+        glong const q = x / y;
         // if the signs are different and modulo not zero, round down
         if ((x ^ y) < 0 && (q * y != x)) {
             return q - 1;
@@ -442,7 +455,7 @@ namespace core {
     }
 
     gint Math::floorMod(gint x, gint y) {
-        gint r = x % y;
+        gint const r = x % y;
         // if the signs are different and modulo not zero, adjust result
         if ((x ^ y) < 0 && r != 0) {
             return r + y;
@@ -451,12 +464,12 @@ namespace core {
     }
 
     gint Math::floorMod(glong x, gint y) {
-        // Result cannot overflow the range of int.
+        // Result cannot overflow the range of gint.
         return (gint) floorMod(x, (glong) y);
     }
 
     glong Math::floorMod(glong x, glong y) {
-        glong r = x % y;
+        glong const r = x % y;
         // if the signs are different and modulo not zero, adjust result
         if ((x ^ y) < 0 && r != 0) {
             return r + y;
@@ -465,7 +478,7 @@ namespace core {
     }
 
     gint Math::ceilDiv(gint x, gint y) {
-        gint q = x / y;
+        gint const q = x / y;
         // if the signs are the same and modulo not zero, round up
         if ((x ^ y) >= 0 && (q * y != x)) {
             return q + 1;
@@ -478,7 +491,7 @@ namespace core {
     }
 
     glong Math::ceilDiv(glong x, glong y) {
-        glong q = x / y;
+        glong const q = x / y;
         // if the signs are the same and modulo not zero, round up
         if ((x ^ y) >= 0 && (q * y != x)) {
             return q + 1;
@@ -487,7 +500,7 @@ namespace core {
     }
 
     gint Math::ceilMod(gint x, gint y) {
-        gint r = x % y;
+        gint const r = x % y;
         // if the signs are the same and modulo not zero, adjust result
         if ((x ^ y) >= 0 && r != 0) {
             return r - y;
@@ -496,12 +509,12 @@ namespace core {
     }
 
     gint Math::ceilMod(glong x, gint y) {
-        // Result cannot overflow the range of int.
+        // Result cannot overflow the range of gint.
         return (gint) ceilMod(x, (glong) y);
     }
 
     glong Math::ceilMod(glong x, glong y) {
-        glong r = x % y;
+        glong const r = x % y;
         // if the signs are the same and modulo not zero, adjust result
         if ((x ^ y) >= 0 && r != 0) {
             return r - y;
@@ -559,7 +572,7 @@ namespace core {
 
     gfloat Math::min(gfloat a, gfloat b) {
         if (a != a) return a;   // is NaN
-        if ((a == 0.0F) && (b == 0.0F) && (Float::toIntBits(b) == Float::toIntBits(-0.0f))) {
+        if ((a == 0.0F) && (b == 0.0F) && (Float::toIntBits(b) == Float::toIntBits(-0.0F))) {
             // Raw conversion ok since NaN can't map to -0.0.
             return b;
         }
@@ -628,35 +641,35 @@ namespace core {
     }
 
     gfloat Math::signum(gfloat f) {
-        return (f == 0.0f || Float::isNaN(f)) ? f : copySign(1.0f, f);
+        return (f == 0.0F || Float::isNaN(f)) ? f : copySign(1.0F, f);
     }
 
     gdouble Math::sinh(gdouble a) {
-        return (gdouble) ::sinhl(a);
+        return (gdouble) StrictMath(sinh)(a);
     }
 
     gdouble Math::cosh(gdouble a) {
-        return (gdouble) ::coshl(a);
+        return (gdouble) StrictMath(cosh)(a);
     }
 
     gdouble Math::tanh(gdouble x) {
-        return (gdouble) ::tanhl(x);
+        return (gdouble) StrictMath(tanh)(x);
     }
 
     gdouble Math::asinh(gdouble x) {
-        return (gdouble) ::asinhl(x);
+        return (gdouble) StrictMath(asinh)(x);
     }
 
     gdouble Math::acosh(gdouble x) {
-        return (gdouble) ::acoshl(x);
+        return (gdouble) StrictMath(acosh)(x);
     }
 
     gdouble Math::atanh(gdouble x) {
-        return (gdouble) ::atanhl(x);
+        return (gdouble) StrictMath(atanh)(x);
     }
 
     gdouble Math::hypot(gdouble x, gdouble y) {
-        return (gdouble) ::hypotl(x, y);
+        return (gdouble) StrictMath(hypot)(x, y);
     }
 
     gdouble Math::copySign(gdouble magnitude, gdouble sign) {
@@ -683,7 +696,7 @@ namespace core {
 
     gint Math::exponent(gdouble d) {
         /*
-         * Bitwise convert d to long, mask out exponent bits, shift
+         * Bitwise convert d to glong, mask out exponent bits, shift
          * to the right and then subtract out double's bias adjust to
          * get true exponent value.
          */
@@ -695,7 +708,7 @@ namespace core {
         // Use a single conditional and handle the likely cases first.
         if (d < Double::POSITIVE_INFINITY) {
             // Add +0.0 to get rid of a -0.0 (+0.0 + -0.0 => +0.0).
-            glong transducer = Double::toLongBits(d + 0.0);
+            glong const transducer = Double::toLongBits(d + 0.0);
             return Double::fromLongBits(transducer + ((transducer >= 0L) ? 1L : -1L));
         } else { // d is NaN or +Infinity
             return d;
@@ -706,7 +719,7 @@ namespace core {
         // Use a single conditional and handle the likely cases first.
         if (f < Float::POSITIVE_INFINITY) {
             // Add +0.0 to get rid of a -0.0 (+0.0 + -0.0 => +0.0).
-            gint transducer = Float::toIntBits(f + 0.0F);
+            gint const transducer = Float::toIntBits(f + 0.0F);
             return Float::fromIntBits(transducer + ((transducer >= 0) ? 1 : -1));
         } else { // f is NaN or +Infinity
             return f;
@@ -728,7 +741,7 @@ namespace core {
         if (Float::isNaN(f) || f == Float::NEGATIVE_INFINITY)
             return f;
         else {
-            if (f == 0.0f)
+            if (f == 0.0F)
                 return -Float::MIN_VALUE;
             else
                 return Float::fromIntBits(Float::toIntBits(f) + ((f > 0.0f) ? -1 : +1));
@@ -778,7 +791,7 @@ namespace core {
 
         // Calculate (scaleFactor % +/-512), 512 = 2^9, using
         // technique from "Hacker's Delight" section 10-2.
-        gint t = (scaleFactor >> (9 - 1)) >> (32 - 9);
+        gint const t = (scaleFactor >> (9 - 1)) >> (32 - 9);
         exp_adjust = ((scaleFactor + t) & (512 - 1)) - t;
 
         d *= powerOfTwoD(exp_adjust);

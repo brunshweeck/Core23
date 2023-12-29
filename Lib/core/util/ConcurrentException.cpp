@@ -10,12 +10,14 @@ namespace core {
 
         CORE_ALIAS(U, native::Unsafe);
 
-        Object &ConcurrentException::clone() const {
-            return U::createInstance<ConcurrentException>(*this);
-        }
+        Object &ConcurrentException::clone() const { return U::createInstance<ConcurrentException>(*this); }
 
-        void ConcurrentException::raise() &&{
-            throw *this;
-        }
+        void ConcurrentException::raise() &&{ throw *this; }
+
+        ConcurrentException::ConcurrentException(String message) CORE_NOTHROW:
+                RuntimeException(U::moveInstance(message)) {}
+
+        ConcurrentException::ConcurrentException(String message, const Throwable &cause) CORE_NOTHROW:
+                RuntimeException(U::moveInstance(message), cause) {}
     } // core
 } // util

@@ -33,7 +33,7 @@ namespace core {
      * Character information is based on the Unicode Standard, version 15.0.
      * <h2><a id="unicode">Unicode Character Representations</a></h2>
      *
-     * <p>The <b> gchar</b> data type (and therefore the value that a
+     * <p>The <b> gchar</b> array type (and therefore the value that a
      * <b> Character</b> object encapsulates) are based on the
      * original Unicode specification, which defined characters as
      * fixed-width 16-bit entities. The Unicode Standard has since been
@@ -59,9 +59,9 @@ namespace core {
      * <p>A <b> gchar</b> value, therefore, represents Basic
      * Multilingual Plane (BMP) code points, including the surrogate
      * code points, or code units of the UTF-16 encoding. An
-     * <b> int</b> value represents all Unicode code points,
+     * <b> gint</b> value represents all Unicode code points,
      * including supplementary code points. The lower (least significant)
-     * 21 bits of <b> int</b> are used to represent Unicode code
+     * 21 bits of <b> gint</b> are used to represent Unicode code
      * points and the upper (most significant) 11 bits must be zero.
      * Unless otherwise specified, the behavior with respect to
      * supplementary characters and surrogate <b> gchar</b> values is
@@ -75,7 +75,7 @@ namespace core {
      * this specific value if followed by any low-surrogate value in a string
      * would represent a letter.
      *
-     * <li>The methods that accept an <b> int</b> value support all
+     * <li>The methods that accept an <b> gint</b> value support all
      * Unicode characters, including supplementary characters. For
      * example, <b> Character.isLetter(0x2F81A)</b> returns
      * <b> true</b> because the code point value represents a letter
@@ -190,7 +190,7 @@ namespace core {
         /**
          *  General character categories
          */
-        enum class Category {
+        enum class Category: gbyte {
             /**
             * General category "Cn" in the Unicode specification.
             *
@@ -376,7 +376,7 @@ namespace core {
         /**
          *  Directionality of character
          */
-        enum class Directionality {
+        enum class Directionality: gbyte {
             /**
             * Undefined Directionality character type. Undefined character
             * values have undefined directionality in the Unicode specification.
@@ -511,7 +511,7 @@ namespace core {
          * <b style="color: orange"> Common</b> or
          * <b style="color: orange"> Unknown</b>.
          */
-        enum class UnicodeScript {
+        enum class UnicodeScript: native::GENERIC_UINT8 {
 
             /**
              * Unicode script "Common".
@@ -1412,7 +1412,7 @@ namespace core {
          * used for a specific script or purpose. A character is contained by
          * at most one Unicode block.
          */
-        enum class UnicodeBlock {
+        enum class UnicodeBlock: gshort {
 
             /**
              * Constant for the "Basic Latin" Unicode character block.
@@ -3175,7 +3175,7 @@ namespace core {
         /**
          *  Character decomposition style
          */
-        enum class Decomposition {
+        enum class Decomposition: gbyte {
             /**
              * Undefined specify that character is not decomposable or iterator is invalid character
              */
@@ -3223,7 +3223,7 @@ namespace core {
         /**
          * Character combining class
          */
-        enum class CombiningClass {
+        enum class CombiningClass: native::GENERIC_UINT8 {
             UNDEFINED = 0,
 
             BELOW_LEFT_ATTACHED = 200,
@@ -3276,9 +3276,7 @@ namespace core {
          * @return  the native <b> gchar</b> value represented by
          *          this object.
          */
-        CORE_FAST gchar charValue() const {
-            return value;
-        }
+        CORE_FAST gchar charValue() const { return value; }
 
         /**
          * Returns a hash code for this <b> Character</b>; equal to the result
@@ -3295,9 +3293,7 @@ namespace core {
          * @param value The <b> gchar</b> for which to return a hash code.
          * @return a hash code value for a <b> gchar</b> value.
          */
-        static CORE_FAST gint hash(gchar c) {
-            return (gint) c;
-        }
+        static CORE_FAST gint hash(gchar c) { return (gint) c; }
 
         /**
          * Compares two <b> Character</b> objects numerically.
@@ -3327,9 +3323,7 @@ namespace core {
          *         a value less than <b> 0</b> if <b> x < y</b>; and
          *         a value greater than <b> 0</b> if <b> x > y</b>
          */
-        static CORE_FAST gint compare(gchar x, gchar y) {
-            return x - y;
-        }
+        static CORE_FAST gint compare(gchar x, gchar y) { return x - y; }
 
         /**
          * Compares this object against the specified object.
@@ -3362,7 +3356,7 @@ namespace core {
          * @apiNote This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> #toString(int)</b> method.
+         * the <b style="color: orange"> #toString(gint)</b> method.
          *
          * @param c the <b> gchar</b> to be converted
          * @return the string representation of the specified <b> gchar</b>
@@ -3444,7 +3438,7 @@ namespace core {
          *         <b style="color: orange"> #MAX_HIGH_SURROGATE</b> inclusive;
          *         <b> false</b> otherwise.
          * @see    Character.isLowSurrogate(gchar)
-         * @see    Character.UnicodeBlock#of(int)
+         * @see    Character.UnicodeBlock#of(gint)
          */
         static CORE_FAST gbool isHighSurrogate(gchar ch) {
             return MIN_HIGH_SURROGATE <= ch && ch < MAX_HIGH_SURROGATE + 1;
@@ -3529,7 +3523,7 @@ namespace core {
          *
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  2 if the character is a valid supplementary character; 1 otherwise.
-         * @see     Character.isSupplementaryCodePoint(int)
+         * @see     Character.isSupplementaryCodePoint(gint)
          */
         static CORE_FAST gint charCount(gint codePoint) {
             return codePoint < MIN_SUPPLEMENTARY ? 1 : 2;
@@ -3594,7 +3588,7 @@ namespace core {
          * <b style="color: orange"> isSupplementary(x)</b>
          * is <b> true</b>, then
          * <b style="color: orange"> isLowSurrogate</b><b> (lowSurrogate(x))</b> and
-         * <b style="color: orange"> #toCodePoint toCodePoint</b><b> (</b><b style="color: orange"> #highSurrogate highSurrogate</b><b> (x), lowSurrogate(x)) == x</b>
+         * <b style="color: orange"> #toCodePoint toCodePoint</b><b> (</b><b style="color: orange"> highSurrogate highSurrogate</b><b> (x), lowSurrogate(x)) == x</b>
          * are also always <b> true</b>.
          *
          * @param   codePoint a supplementary character (Unicode code point)
@@ -3626,7 +3620,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isLowerCase(int)</b> method.
+         * the <b style="color: orange"> isLowerCase(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is lowercase;
@@ -3660,10 +3654,10 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is lowercase;
          *          <b> false</b> otherwise.
-         * @see     Character.isLowerCase(int)
-         * @see     Character.isTitleCase(int)
-         * @see     Character.toLowerCase(int)
-         * @see     Character.category(int)
+         * @see     Character.isLowerCase(gint)
+         * @see     Character.isTitleCase(gint)
+         * @see     Character.toLowerCase(gint)
+         * @see     Character.category(gint)
          */
         static gbool isLowerCase(gint codePoint);
 
@@ -3687,7 +3681,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isUpperCase(int)</b> method.
+         * the <b style="color: orange"> isUpperCase(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is uppercase;
@@ -3719,10 +3713,10 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is uppercase;
          *          <b> false</b> otherwise.
-         * @see     Character.isLowerCase(int)
-         * @see     Character.isTitleCase(int)
-         * @see     Character.toUpperCase(int)
-         * @see     Character.category(int)
+         * @see     Character.isLowerCase(gint)
+         * @see     Character.isTitleCase(gint)
+         * @see     Character.toUpperCase(gint)
+         * @see     Character.category(gint)
          */
         static gbool isUpperCase(gint codePoint);
 
@@ -3752,7 +3746,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isTitleCase(int)</b> method.
+         * the <b style="color: orange"> isTitleCase(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is titlecase;
@@ -3790,10 +3784,10 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is titlecase;
          *          <b> false</b> otherwise.
-         * @see     Character.isLowerCase(int)
-         * @see     Character.isUpperCase(int)
-         * @see     Character.toTitleCase(int)
-         * @see     Character.category(int)
+         * @see     Character.isLowerCase(gint)
+         * @see     Character.isUpperCase(gint)
+         * @see     Character.toTitleCase(gint)
+         * @see     Character.category(gint)
          */
         static gbool isTitleCase(gint codePoint);
 
@@ -3823,13 +3817,13 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isDigit(int)</b> method.
+         * the <b style="color: orange"> isDigit(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is a digit;
          *          <b> false</b> otherwise.
-         * @see     Character.digit(gchar, int)
-         * @see     Character.forDigit(int, int)
+         * @see     Character.digit(gchar, gint)
+         * @see     Character.forDigit(gint, gint)
          * @see     Character.category(gchar)
          */
         static gbool isDigit(gchar ch);
@@ -3860,8 +3854,8 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is a digit;
          *          <b> false</b> otherwise.
-         * @see     Character.forDigit(int, int)
-         * @see     Character.category(int)
+         * @see     Character.forDigit(gint, gint)
+         * @see     Character.category(gint)
          */
         static gbool isDigit(gint codePoint);
 
@@ -3885,7 +3879,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isLetter(int)</b> method.
+         * the <b style="color: orange"> isLetter(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is a letter;
@@ -3919,12 +3913,12 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is a letter;
          *          <b> false</b> otherwise.
-         * @see     Character.isDigit(int)
-         * @see     Character.isLetterOrDigit(int)
-         * @see     Character.isLowerCase(int)
-         * @see     Character.isTitleCase(int)
-         * @see     Character.isUnicodeIdentifierStart(int)
-         * @see     Character.isUpperCase(int)
+         * @see     Character.isDigit(gint)
+         * @see     Character.isLetterOrDigit(gint)
+         * @see     Character.isLowerCase(gint)
+         * @see     Character.isTitleCase(gint)
+         * @see     Character.isUnicodeIdentifierStart(gint)
+         * @see     Character.isUpperCase(gint)
          */
         static gbool isLetter(gint codePoint);
 
@@ -3943,7 +3937,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isLetterOrDigit(int)</b> method.
+         * the <b style="color: orange"> isLetterOrDigit(gint)</b> method.
          *
          * @param   ch   the character to be tested.
          * @return  <b> true</b> if the character is a letter or digit;
@@ -3958,16 +3952,16 @@ namespace core {
          * Determines if the specified character (Unicode code point) is a letter or digit.
          * <p>
          * A character is considered to be a letter or digit if either
-         * <b style="color: orange"> isLetter(int) isLetter(codePoint)</b> or
-         * <b style="color: orange"> isDigit(int) isDigit(codePoint)</b> returns
+         * <b style="color: orange"> isLetter(gint) isLetter(codePoint)</b> or
+         * <b style="color: orange"> isDigit(gint) isDigit(codePoint)</b> returns
          * <b> true</b> for the character.
          *
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is a letter or digit;
          *          <b> false</b> otherwise.
-         * @see     Character.isDigit(int)
-         * @see     Character.isLetter(int)
-         * @see     Character.isUnicodeIdentifierPart(int)
+         * @see     Character.isDigit(gint)
+         * @see     Character.isLetter(gint)
+         * @see     Character.isUnicodeIdentifierPart(gint)
          */
         static gbool isLetterOrNumber(gint codePoint);
 
@@ -4136,7 +4130,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isSpace(int)</b> method.
+         * the <b style="color: orange"> isSpace(gint)</b> method.
          *
          * @param   ch the character to be tested.
          * @return  <b> true</b> if the character is a whitespace
@@ -4169,7 +4163,7 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is a whitespace
          *          character; <b> false</b> otherwise.
-         * @see     Character.isSpaceChar(int)
+         * @see     Character.isSpaceChar(gint)
          */
         static gbool isSpace(gint codePoint);
 
@@ -4183,8 +4177,8 @@ namespace core {
          * @param   codePoint the character (Unicode code point) to be tested.
          * @return  <b> true</b> if the character is an ISO control character;
          *          <b> false</b> otherwise.
-         * @see     Character.isSpaceChar(int)
-         * @see     Character.isWhitespace(int)
+         * @see     Character.isSpaceChar(gint)
+         * @see     Character.isWhitespace(gint)
          */
          static gbool isControl(gint codePoint);
 
@@ -4246,7 +4240,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> #toLowerCase(int)</b> method.
+         * the <b style="color: orange"> #toLowerCase(gint)</b> method.
          *
          * @param   ch   the character to be converted.
          * @return  the lowercase equivalent of the character, if any;
@@ -4276,7 +4270,7 @@ namespace core {
          * @param   codePoint   the character (Unicode code point) to be converted.
          * @return  the lowercase equivalent of the character (Unicode code
          *          point), if any; otherwise, the character itself.
-         * @see     Character.isLowerCase(int)
+         * @see     Character.isLowerCase(gint)
          * @see     String#toLowerCase()
          */
         static gint toLowerCase(gint codePoint);
@@ -4300,7 +4294,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> #toUpperCase(int)</b> method.
+         * the <b style="color: orange"> #toUpperCase(gint)</b> method.
          *
          * @param   ch   the character to be converted.
          * @return  the uppercase equivalent of the character, if any;
@@ -4330,7 +4324,7 @@ namespace core {
          * @param   codePoint   the character (Unicode code point) to be converted.
          * @return  the uppercase equivalent of the character, if any;
          *          otherwise, the character itself.
-         * @see     Character.isUpperCase(int)
+         * @see     Character.isUpperCase(gint)
          * @see     String#toUpperCase()
          */
         static gint toUpperCase(gint codePoint);
@@ -4353,7 +4347,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> #toTitleCase(int)</b> method.
+         * the <b style="color: orange"> #toTitleCase(gint)</b> method.
          *
          * @param   ch   the character to be converted.
          * @return  the titlecase equivalent of the character, if any;
@@ -4382,9 +4376,9 @@ namespace core {
          * @param   codePoint   the character (Unicode code point) to be converted.
          * @return  the titlecase equivalent of the character, if any;
          *          otherwise, the character itself.
-         * @see     Character.isTitleCase(int)
-         * @see     Character.toLowerCase(int)
-         * @see     Character.toUpperCase(int)
+         * @see     Character.isTitleCase(gint)
+         * @see     Character.toLowerCase(gint)
+         * @see     Character.toUpperCase(gint)
          */
         static gint toTitleCase(gint codePoint);
 
@@ -4393,10 +4387,10 @@ namespace core {
         static gint toCaseFold(gint codePoint);
 
         /**
-         * Returns the <b> int</b> value that the specified Unicode
+         * Returns the <b> gint</b> value that the specified Unicode
          * character represents. For example, the character
          * <b> '&#92;u216C'</b> (the roman numeral fifty) will return
-         * an int with a value of 50.
+         * an gint with a value of 50.
          * <p>
          * The letters A-Z in their uppercase (<b> '&#92;u0041'</b> through
          * <b> '&#92;u005A'</b>), lowercase
@@ -4416,14 +4410,14 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> numericValue(int)</b> method.
+         * the <b style="color: orange"> numericValue(gint)</b> method.
          *
          * @param   ch      the character to be converted.
-         * @return  the numeric value of the character, as a nonnegative <b> int</b>
+         * @return  the numeric value of the character, as a nonnegative <b> gint</b>
          *          value; -2 if the character has a numeric value but the value
-         *          can not be represented as a nonnegative <b> int</b> value;
+         *          can not be represented as a nonnegative <b> gint</b> value;
          *          -1 if the character has no numeric value.
-         * @see     Character.forDigit(int, int)
+         * @see     Character.forDigit(gint, gint)
          * @see     Character.isDigit(gchar)
          */
         static gint numericValue(gchar ch);
@@ -4469,22 +4463,22 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> #digit(int, int)</b> method.
+         * the <b style="color: orange"> #digit(gint, gint)</b> method.
          *
          * @param   ch      the character to be converted.
          * @param   base   the base.
          * @return  the numeric value represented by the character in the
          *          specified base.
-         * @see     Character.forDigit(int, int)
+         * @see     Character.forDigit(gint, gint)
          * @see     Character.isDigit(gchar)
          */
         static gint numericValue(gchar ch, gint base);
 
         /**
-         * Returns the <b> int</b> value that the specified
+         * Returns the <b> gint</b> value that the specified
          * character (Unicode code point) represents. For example, the character
          * <b> '&#92;u216C'</b> (the Roman numeral fifty) will return
-         * an <b> int</b> with a value of 50.
+         * an <b> gint</b> with a value of 50.
          * <p>
          * The letters A-Z in their uppercase (<b> '&#92;u0041'</b> through
          * <b> '&#92;u005A'</b>), lowercase
@@ -4502,12 +4496,12 @@ namespace core {
          * is returned.
          *
          * @param   codePoint the character (Unicode code point) to be converted.
-         * @return  the numeric value of the character, as a nonnegative <b> int</b>
+         * @return  the numeric value of the character, as a nonnegative <b> gint</b>
          *          value; -2 if the character has a numeric value but the value
-         *          can not be represented as a nonnegative <b> int</b> value;
+         *          can not be represented as a nonnegative <b> gint</b> value;
          *          -1 if the character has no numeric value.
-         * @see     Character.forDigit(int, int)
-         * @see     Character.isDigit(int)
+         * @see     Character.forDigit(gint, gint)
+         * @see     Character.isDigit(gint)
          */
         static gint numericValue(gint codePoint);
 
@@ -4555,8 +4549,8 @@ namespace core {
          * @param   base   the base.
          * @return  the numeric value represented by the character in the
          *          specified base.
-         * @see     Character.forDigit(int, int)
-         * @see     Character.isDigit(int)
+         * @see     Character.forDigit(gint, gint)
+         * @see     Character.isDigit(gint)
          */
         static gint numericValue(gint codePoint, gint base);
 
@@ -4566,10 +4560,10 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> category(int)</b> method.
+         * the <b style="color: orange"> category(gint)</b> method.
          *
          * @param   ch      the character to be tested.
-         * @return  a value of type <b> int</b> representing the
+         * @return  a value of type <b> gint</b> representing the
          *          character's general category.
          * @see     Character::Category::COMBINING_SPACING_MARK
          * @see     Character::Category::CONNECTOR_PUNCTUATION
@@ -4608,7 +4602,7 @@ namespace core {
          * Returns a value indicating a character's general category.
          *
          * @param   codePoint the character (Unicode code point) to be tested.
-         * @return  a value of type <b> int</b> representing the
+         * @return  a value of type <b> gint</b> representing the
          *          character's general category.
          * @see     Character::Category::COMBINING_SPACING_MARK
          * @see     Character::Category::CONNECTOR_PUNCTUATION
@@ -4665,7 +4659,7 @@ namespace core {
          *          in the specified base.
          * @see     Character.MIN_BASE
          * @see     Character.MAX_BASE
-         * @see     Character.digit(gchar, int)
+         * @see     Character.digit(gchar, gint)
          */
          static gchar forDigit(gint digit, gint base) {
             if ((digit >= base) || (digit < 0)) {
@@ -4689,7 +4683,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> directionality(int)</b> method.
+         * the <b style="color: orange"> directionality(gint)</b> method.
          *
          * @param  ch <b> gchar</b> for which the directionality property
          *            is requested.
@@ -4778,7 +4772,7 @@ namespace core {
          * <p><b>Note:</b> This method cannot handle <a
          * href="#supplementary"> supplementary characters</a>. To support
          * all Unicode characters, including supplementary characters, use
-         * the <b style="color: orange"> isMirrored(int)</b> method.
+         * the <b style="color: orange"> isMirrored(gint)</b> method.
          *
          * @param  ch <b> gchar</b> for which the mirrored property is requested
          * @return <b> true</b> if the gchar is mirrored, <b> false</b>

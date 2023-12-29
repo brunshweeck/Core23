@@ -163,7 +163,7 @@ namespace core {
          * @throws FormatException
          *          If the String does not contain a parsable byte.
          *
-         * @see Byte.parseByte(String, int)
+         * @see Byte.parseByte(String, gint)
          */
         static Byte decode(const String &s);
 
@@ -179,13 +179,13 @@ namespace core {
         CORE_FAST gshort shortValue() const { return (gshort) value; }
 
         /**
-         * Return the value of this Byte as int after
+         * Return the value of this Byte as gint after
          * widening native conversion
          */
         CORE_FAST gint intValue() const { return (gint) value; }
 
         /**
-         * Return the value of this Byte as long after
+         * Return the value of this Byte as glong after
          * widening native conversion
          */
         CORE_FAST glong longValue() const { return (glong) value; }
@@ -270,34 +270,34 @@ namespace core {
         static CORE_FAST gint compareUnsigned(gbyte x, gbyte y) { return toUnsignedInt(x) - toUnsignedInt(y); }
 
         /**
-         * Converts the argument to an int by an unsigned conversion.
-         * In an unsigned conversion to an int, the high-order 24 bits of
-         * the int are zero and the low-order 8 bits are equal to the bits
+         * Converts the argument to an gint by an unsigned conversion.
+         * In an unsigned conversion to an gint, the high-order 24 bits of
+         * the gint are zero and the low-order 8 bits are equal to the bits
          * of the byte argument.
          *
          * <p>
          * Consequently, zero and positive byte values are mapped
-         * to a numerically equal int value and negative byte values
-         * are mapped to an int value equal to the input plus 2<sup>8</sup>.
+         * to a numerically equal gint value and negative byte values
+         * are mapped to an gint value equal to the input plus 2<sup>8</sup>.
          *
          * @param b
-         *        The value to convert to an unsigned int
+         *        The value to convert to an unsigned gint
          */
         static CORE_FAST gint toUnsignedInt(gbyte b) { return ((gint) b) & 0xff; }
 
         /**
-         * Converts the argument to a long by an unsigned conversion.
-         * In an unsigned conversion to a long, the high-order 56 bits of
-         * the int are zero and the low-order 8 bits are equal to the bits
+         * Converts the argument to a glong by an unsigned conversion.
+         * In an unsigned conversion to a glong, the high-order 56 bits of
+         * the gint are zero and the low-order 8 bits are equal to the bits
          * of the byte argument.
          *
          * <p>
          * Consequently, zero and positive byte values are mapped
-         * to a numerically equal int value and negative byte values
-         * are mapped to an int value equal to the input plus 2<sup>8</sup>.
+         * to a numerically equal gint value and negative byte values
+         * are mapped to an gint value equal to the input plus 2<sup>8</sup>.
          *
          * @param b
-         *        The value to convert to an unsigned int
+         *        The value to convert to an unsigned gint
          */
         static CORE_FAST glong toUnsignedLong(gbyte b) { return ((glong) b) & 0xffLL; }
 

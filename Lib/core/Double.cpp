@@ -17,7 +17,7 @@ namespace core {
     gdouble Double::parseDouble(const String &str) {
         if (str.isEmpty())
             NumberFormatException("Invalid number format for input \"\".").throws(__trace("core.Double"));
-        gint len = str.length();
+        gint const len = str.length();
         gint sign = +1;
         gint base = 10;
         gint next = 0;
@@ -67,17 +67,17 @@ namespace core {
             case 'I':
                 // inf or infinity
                 if (len - next == 3) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
                     if ((ch2 == 'n' || ch2 == 'N') && (ch3 == 'f' || ch3 == 'F'))
                         return sign * Math::INF;
                 } else if (len - next == 8) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
-                    gchar ch4 = str.charAt(next + 3);
-                    gchar ch5 = str.charAt(next + 4);
-                    gchar ch6 = str.charAt(next + 5);
-                    gchar ch7 = str.charAt(next + 6);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
+                    gchar const ch4 = str.charAt(next + 3);
+                    gchar const ch5 = str.charAt(next + 4);
+                    gchar const ch6 = str.charAt(next + 5);
+                    gchar const ch7 = str.charAt(next + 6);
                     if ((ch2 == 'n' || ch2 == 'N') && (ch3 == 'f' || ch3 == 'F') && (ch4 == 'i' || ch4 == 'I') &&
                         (ch5 == 'f' || ch5 == 'F') && (ch6 == 'i' || ch6 == 'I') && (ch7 == 'y' || ch7 == 'Y'))
                         return sign * Math::INF;
@@ -87,8 +87,8 @@ namespace core {
             case 'N':
                 // NaN
                 if (len - next == 3) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
                     if ((ch2 == 'a' || ch2 == 'A') && (ch3 == 'n' || ch3 == 'N'))
                         return sign * Math::INF;
                 }
@@ -104,7 +104,7 @@ namespace core {
                     ch = str.charAt(next);
                     if (ch < '0' || ch > '9')
                         goto throwIllegalFormat;
-                    gchar digit = ch - '0';
+                    gchar const digit = ch - '0';
                     retVal = retVal * base + digit;
                     next += 1;
                 }
@@ -190,10 +190,8 @@ namespace core {
             case 16: {
                 glong bit64 = 0;
                 gint shift = PRECISION - 1;
-                gbool leadingZeros = true;
                 gbool rounded = false;
                 gbool sticky = false;
-                gint exponentBitsLen = 0; // after 'p'
                 gint decimalBitsLen = 0; // after '.'
                 gint integerBitsLen = 0; // before '.'
                 // hex format
@@ -202,9 +200,9 @@ namespace core {
                     gchar digit = -1;
                     if (ch >= '0' && ch <= '9')
                         digit = ch - '0';
-                    else if (ch >= 'a' && ch <= 'z')
+                    else if (ch >= 'a' && ch <= 'f')
                         digit = ch - 'a';
-                    else if (ch >= 'A' && ch <= 'Z')
+                    else if (ch >= 'A' && ch <= 'F')
                         digit = ch - 'A';
                     else if (ch == 'p' || ch == 'P' || ch == '.')
                         break;
@@ -270,13 +268,10 @@ namespace core {
                 {
                     gint digit = 0;
                     next += 1;
-                    gint decimal = 0;
                     gint exponent = 0;
                     gint sign2 = +1;
-                    gint count = 0;
                     if (ch == '.') {
                         // decimal part
-                        gint maxCount = 9;
                         while (next < len) {
                             ch = str.charAt(next);
                             if (ch == 'p' || ch == 'P')
@@ -364,14 +359,14 @@ namespace core {
                         } else if (eBit64 < (MIN_EXPONENT - 52)) {
                             sticky |= rounded;
                             rounded = false;
-                            glong var = 53 - (eBit64 - (MIN_EXPONENT - 52) + 1);
-                            rounded = (bit64 & (1 << (var - 1))) != 0;
+                            glong const var = 53 - (eBit64 - (MIN_EXPONENT - 52) + 1);
+                            rounded = (bit64 & (1LL << (var - 1))) != 0;
                             if (var > 1)
                                 sticky = sticky || (bit64 & ~((~0) << (var - 1))) != 0;
                             bit64 = bit64 >> var;
                             eBit64 = (glong) (MIN_EXPONENT - 1 + EXPONENT_BIAS) << 52;
                         }
-                        if (((bit64 & 1) != 0 && rounded && sticky) || (!(bit64 & 1) && rounded))
+                        if (((bit64 & 1) != 0 && rounded && sticky) || (((bit64 & 1) == 0) && rounded))
                             bit64 += 1;
                         if (sign < 0)
                             bit64 |= SIGN_BIT_MASK;
@@ -389,7 +384,7 @@ namespace core {
     Double Double::valueOf(const String &str) {
         try {
             return valueOf(parseDouble(str));
-        } catch (NumberFormatException &nfe) { nfe.throws(__trace("core.Double")); }
+        } catch (const NumberFormatException &nfe) { nfe.throws(__trace("core.Double")); }
     }
 
     Double Double::valueOf(gdouble d) {
@@ -417,7 +412,7 @@ namespace core {
                 12, 12, 12, 12,
                 13, 13, 13,
                 14, 14, 14,
-                15, 15, 15,
+                15, 15, 15, 15
         };
 
         CORE_FAST glong powerOfTeen[] = {
@@ -461,7 +456,7 @@ namespace core {
             // bit64 = 1 00000000000 0000000000000000000000000000000000000000000000000000.
             return "-0.0";
         // find the binary precision
-        gint binaryPrecision = (SIGNIFICAND_WIDTH - Long::trailingZeros(bit64 & SIGN_BIT_MASK)) % 20;
+        gint const binaryPrecision = (SIGNIFICAND_WIDTH - Long::trailingZeros(bit64 & SIGNIFICAND_BIT_MASK));
         // conversion of binary precision to decimal precision
         gint decimalPrecision = b2dPrecision[binaryPrecision];
         if (powerOfTeen[decimalPrecision] < (1LL << binaryPrecision))
@@ -474,7 +469,7 @@ namespace core {
             bit64 &= ~SIGN_BIT_MASK;
         }
         // we leave one character used for rounding
-        gint placeholder = next;
+        gint const placeholder = next;
         digits[next++] = '0';
         gdouble uVal = fromLongBits(bit64);
         gint exponent = 0;
@@ -485,15 +480,17 @@ namespace core {
             updater = -1;
             divider = 0.1;
         }
-        while (uVal > 10 || uVal < 1) {
+        gdouble const tmp = uVal;
+        while (uVal >= 10 || uVal < 1) {
             uVal /= divider;
             exponent += updater;
         }
-        if (uVal > 1.e+7 || uVal < 1.e-3) {
+        if (tmp > 1.e+7 || tmp < 1.e-3) {
             // scientific format (x.y x10^z)
             digit = (gint) uVal;
             digits[next++] = DIGITS[digit];
             digits[next++] = '.';
+            decimalPrecision -= decimalPrecision > 10 ? 2 : 1;
             do {
                 uVal = (uVal - digit) * 10;
                 digit = (gint) uVal;
@@ -504,17 +501,28 @@ namespace core {
             uVal = (uVal - digit) * 10;
             digit = (gint) uVal;
             if (digit >= 5) {
-                // is possible to round
+                // round value and remove all trailing zeros
                 gbool finished = false;
                 while (!finished && next > 0) {
-                    if (digits[next - 1] != '.') {
-                        digit = digits[next - 1] - 48;
-                        digits[next - 1] = DIGITS[(digit + 1) % 10];
+                    next -= 1;
+                    if (digits[next] != '.') {
+                        digit = digits[next] - 48;
+                        digits[next] = DIGITS[(digit + 1) % 10];
                         finished = digit != 9;
                     }
-                    next -= 1;
                 }
+            } else if (digits[next - 1] == '0') {
+                // remove all trailing zeros
+                next -= 1;
+                while (digits[next] == '0')
+                    next -= 1;
+                if (digits[next] == '.')
+                    next -= 1;
+            } else {
+                // no problems found
+                next -= 1;
             }
+            next += 1;
             digits[next++] = 'E';
             digits[next++] = exponent < 0 ? '-' : '+';
             exponent = Math::abs(exponent);
@@ -528,11 +536,24 @@ namespace core {
             digits[next] = 0;
         } else {
             // decimal format
-            if (d < 1)
-                uVal = fromLongBits(bit64);
-            digit = (gint) uVal;
-            digits[next++] = DIGITS[digit];
-            digits[next++] = '.';
+            if (tmp < 1) {
+                digits[next++] = '0';
+                digits[next++] = '.';
+                digit = 0;
+                uVal = tmp;
+            } else {
+                digit = (gint) uVal;
+                digits[next++] = DIGITS[digit];
+                decimalPrecision -= 1;
+                while (exponent > 0) {
+                    uVal = (uVal - digit) * 10;
+                    digit = (gint) uVal;
+                    digits[next++] = DIGITS[digit];
+                    exponent -= 1;
+                    decimalPrecision -= 1;
+                }
+                digits[next++] = '.';
+            }
             do {
                 uVal = (uVal - digit) * 10;
                 digit = (gint) uVal;
@@ -543,16 +564,26 @@ namespace core {
             uVal = (uVal - digit) * 10;
             digit = (gint) uVal;
             if (digit >= 5) {
-                // is possible to round
+                // round value and remove all trailing zeros
                 gbool finished = false;
                 while (!finished && next > 0) {
-                    if (digits[next - 1] != '.') {
-                        digit = digits[next - 1] - 48;
-                        digits[next - 1] = DIGITS[(digit + 1) % 10];
+                    next -= 1;
+                    if (digits[next] != '.') {
+                        digit = digits[next] - 48;
+                        digits[next] = DIGITS[(digit + 1) % 10];
                         finished = digit != 9;
                     }
-                    next -= 1;
                 }
+            } else if (digits[next - 1] == '0') {
+                // remove all trailing zeros
+                next -= 1;
+                while (digits[next] == '0')
+                    next -= 1;
+                if (digits[next] == '.')
+                    next -= 1;
+            } else {
+                // no problems found
+                next -= 1;
             }
         }
         gint begin = 0;
@@ -562,18 +593,18 @@ namespace core {
                 digits[placeholder] = digits[placeholder - 1];
                 begin = placeholder;
             } else
-                begin = placeholder + 1;
+                begin = 1;
         }
-        return String(digits, begin, next - begin);
+        return String(digits+0, begin, digits[next + 1] != '.' ? next + 1 : next);
     }
 
     String Double::toHexString(gdouble d) {
         if (!isFinite(d))
             return toString(d);
-        glong bit64 = toLongBits(d);
+        glong const bit64 = toLongBits(d);
         gchar digits[32] = {};
         gint next = 0;
-        gdouble uVal = fromLongBits(bit64 & ~SIGN_BIT_MASK);
+        gdouble const uVal = fromLongBits(bit64 & ~SIGN_BIT_MASK);
         if ((bit64 & SIGN_BIT_MASK) != 0)
             digits[next++] = '-';
         digits[next++] = DIGITS[0];
@@ -628,11 +659,11 @@ namespace core {
     }
 
     glong Double::toLongBits(gdouble d) {
-        return U::getLong((glong) &d);
+        return *((glong *) &d);
     }
 
     gdouble Double::fromLongBits(glong bits) {
-        return U::getDouble((glong) &bits);
+        return *((gdouble *) &bits);
     }
 
     Object &Double::clone() const {

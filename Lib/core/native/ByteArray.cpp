@@ -27,7 +27,7 @@ namespace core {
 
         ByteArray::ByteArray(gint length) : ByteArray(length, (gbyte) 0) {}
 
-        ByteArray::ByteArray(gint length, gbyte initialValue) : Array<Byte>(length) {
+        ByteArray::ByteArray(gint length, gbyte initialValue) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.ByteArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,17 +36,16 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        ByteArray::ByteArray(const ByteArray &array) : Array<Byte>(0) {
-            gint length = array.length();
-            if (len < 0)
+        ByteArray::ByteArray(const ByteArray &array) {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.ByteArray"));
-            value = (STORAGE) U::allocateMemory(L(length));
-            len = length;
+            value = (STORAGE) U::allocateMemory(L(len = length));
             for (gint i = 0; i < length; ++i)
                 value[i] = array.value[i];
         }
 
-        ByteArray::ByteArray(ByteArray &&array) CORE_NOTHROW: Array<Byte>(0) {
+        ByteArray::ByteArray(ByteArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +53,7 @@ namespace core {
 
         ByteArray &ByteArray::operator=(const ByteArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +87,16 @@ namespace core {
 
         gbyte &ByteArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Byte>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.ByteArray"));
             }
         }
 
-        const gbyte ByteArray::get(gint index) const {
+        gbyte ByteArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Byte>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.ByteArray"));
@@ -125,6 +124,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint ByteArray::length() const {
+            return len;
         }
     } // core
 } // native

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkName" value="Python 3.11 (Core23)" />
+  </component>
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="ProjectResources">
     <resource url="http://schemas.microsoft.com/vstudio/debugger/natvis/2010" location="$PROJECT_DIR$/../../../../Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/Xml/Schemas/1036/natvis.xsd" />

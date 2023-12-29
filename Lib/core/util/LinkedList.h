@@ -71,17 +71,17 @@ namespace core {
             /**
              * The number of node created in this list
              */
-            gint len;
+            gint len = {};
 
             /**
              * The link to fist node
              */
-            LnkNode first;
+            LnkNode first = {};
 
             /**
              * The link to last node
              */
-            LnkNode last;
+            LnkNode last = {};
 
             using List<E>::modNum;
 
@@ -99,7 +99,7 @@ namespace core {
             /**
              * Constructs an empty list.
              */
-            CORE_FAST LinkedList() : len(0), first(null), last(null) {}
+            CORE_FAST LinkedList() = default;
 
             /**
              * Constructs a list containing the elements of the specified
@@ -108,10 +108,8 @@ namespace core {
              *
              * @param  c the collection whose elements are to be placed into this list
              */
-            template<class T>
-            CORE_EXPLICIT LinkedList(const Collection<Capture<T>> &c) : len(0), first(null), last(null) {
-                addAll<T>(c);
-            }
+            template<class T = E>
+            CORE_EXPLICIT LinkedList(const Collection<Capture<T>> &c) { addAll<T>(c); }
 
             /**
              * Constructs a list containing the elements of the specified
@@ -120,7 +118,7 @@ namespace core {
              *
              * @param  ll the collection whose elements are to be placed into this list
              */
-            LinkedList(const LinkedList &ll) : len(0), first(null), last(null) { addAll(ll); }
+            LinkedList(const LinkedList &ll) { addAll(ll); }
 
             /**
              * Constructs a list containing the elements of the specified
@@ -129,11 +127,10 @@ namespace core {
              *
              * @param  ll the collection whose elements are to be placed into this list
              */
-            LinkedList(LinkedList &&ll) CORE_NOTHROW: len(ll.len), first(ll.first), last(ll.last) {
-                ll.len = 0;
-                ll.first = ll.last = null;
-                modNum = ll.modNum;
-                ll.modNum = 0;
+            LinkedList(LinkedList &&ll) CORE_NOTHROW {
+                U::swapValues(len, ll.len);
+                U::swapValues(first, ll.first);
+                U::swapValues(last, ll.last);
             }
 
             /**
@@ -188,14 +185,11 @@ namespace core {
              * @param  ll the collection whose elements are to be placed into this list
              */
             LinkedList &operator=(LinkedList &&ll) CORE_NOTHROW {
-                LnkNode fst = first, lst = last;
-                gint size = len;
-                first = ll.first;
-                last = ll.last;
-                len = ll.len;
-                ll.first = fst;
-                ll.last = lst;
-                ll.len = size;
+                if (this == &ll) {
+                    U::swapValues(len, ll.len);
+                    U::swapValues(first, ll.first);
+                    U::swapValues(last, ll.last);
+                }
                 return *this;
             }
 
@@ -319,10 +313,10 @@ namespace core {
             /**
              * Appends the specified element to the end of this list.
              *
-             * <p>This method is equivalent to <b style="color:orange;">#addLast</b>.
+             * <p>This method is equivalent to <b style="color:orange;">addLast</b>.
              *
              * @param e element to be appended to this list
-             * @return <b>true</b> (as specified by <b style="color:orange;">Collection#add</b>)
+             * @return <b>true</b> (as specified by <b style="color:orange;">Collection::add</b>)
              */
             gbool add(const E &e) override {
                 linkLast(U::copyInstance(e, true));
@@ -413,10 +407,11 @@ namespace core {
             gbool addAll(gint index, const Collection<Capture<T>> &c) {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    ReferenceArray<T> a = c.toArray();
-                    gint aSize = a.length();
+                    ReferenceArray a = c.toArray();
+                    gint const aSize = a.length();
                     if (aSize == 0) return false;
-                    LnkNode pred, succ;
+                    LnkNode succ = {};
+                    LnkNode pred = {};
                     if (index == len) {
                         succ = null;
                         pred = last;
@@ -424,14 +419,15 @@ namespace core {
                         succ = nodeAt(index);
                         pred = succ->prev;
                     }
-                    for (T &t: a) {
+                    for (Object &t: a) {
                         E &e = (E &) t;
                         LnkNode newNode = &U::createInstance<Node>(pred, e, null);
                         if (pred == null) first = newNode; else pred->next = newNode;
                         pred = newNode;
                     }
 
-                    if (succ == null) last = pred;
+                    if (succ == null)
+                        last = pred;
                     else {
                         pred->next = succ;
                         succ->prev = pred;
@@ -439,7 +435,7 @@ namespace core {
                     len += aSize;
                     modNum += 1;
                     return true;
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
@@ -474,7 +470,7 @@ namespace core {
                 try {
                     Preconditions::checkIndex(index, len);
                     return *nodeAt(index)->item;
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
@@ -488,7 +484,7 @@ namespace core {
                 try {
                     Preconditions::checkIndex(index, len);
                     return *nodeAt(index)->item;
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
@@ -507,7 +503,7 @@ namespace core {
                     E &oldValue = *x->item;
                     x->item = &U::copyInstance(element, true);
                     return oldValue;
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
@@ -524,7 +520,7 @@ namespace core {
                     Preconditions::checkIndexForAdding(index, len);
                     if (index == len) linkLast(U::copyInstance(element, true));
                     else linkBefore(U::copyInstance(element, true), nodeAt(index));
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
@@ -540,7 +536,7 @@ namespace core {
                 try {
                     Preconditions::checkIndex(index, len);
                     return unlink(nodeAt(index));
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
         private:
@@ -606,7 +602,7 @@ namespace core {
             /**
              * Returns a list-iterator of the elements in this list (in proper
              * sequence), starting at the specified position in the list.
-             * Obeys the general contract of <b>List.listIterator(int)</b>.<p>
+             * Obeys the general contract of <b>List.listIterator(gint)</b>.<p>
              *
              * The list-iterator is <i>fail-fast</i>: if the list is structurally
              * modified at any time after the Iterator is created, in any way except
@@ -622,19 +618,19 @@ namespace core {
              * @return a ListIterator of the elements in this list (in proper
              *         sequence), starting at the specified position in the list
              * @throws IndexException 
-             * @see List#listIterator(int)
+             * @see List::iterator(gint)
              */
             ListIterator<E> &iterator(gint index) override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::createInstance<ListItr<E >>((LinkedList &) *this, index);
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                    return U::createInstance < ListItr < E >> ((LinkedList &) *this, index);
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
             /**
              * Returns a list-iterator of the elements in this list (in proper
              * sequence), starting at the specified position in the list.
-             * Obeys the general contract of <b>List.listIterator(int)</b>.<p>
+             * Obeys the general contract of <b>List.listIterator(gint)</b>.<p>
              *
              * The list-iterator is <i>fail-fast</i>: if the list is structurally
              * modified at any time after the Iterator is created, in any way except
@@ -650,13 +646,13 @@ namespace core {
              * @return a ListIterator of the elements in this list (in proper
              *         sequence), starting at the specified position in the list
              * @throws IndexException 
-             * @see List#listIterator(int)
+             * @see List::iterator(gint)
              */
             ListIterator<const E> &iterator(gint index) const override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
                     return U::createInstance<ListItr<const E>>((LinkedList &) *this, index);
-                } catch (IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
         private:
@@ -667,55 +663,54 @@ namespace core {
                 /**
                  * The position of last returned element.
                  */
-                LnkNode last;
+                LnkNode last = {};
 
                 /**
                  * The position of current element
                  */
-                LnkNode cursor;
+                LnkNode cursor = {};
 
-                gint index;
+                gint index = {};
 
                 LinkedList &root;
 
-                gint modNum;
+                gint modNum = {};
 
             public:
-                ListItr(LinkedList &root, gint index) : root(root), index(index) {
-                    // CORE_ASSERT(index >= 0 && index <= root.size(), "core.util.LinkedList.ListItr");
-                    last = null;
-                    cursor = index == root.len ? null : root.nodeAt(index);
-                    modNum = root.modNum;
-                }
+                ListItr(LinkedList &root, gint index) :
+                        cursor(index == root.len ? null : root.nodeAt(index)), root(root), index(index),
+                        modNum(root.modNum) {}
 
-                gbool hasNext() const override {
-                    return index < root.len;
-                }
+                gbool hasNext() const override { return index < root.len; }
 
                 T &next() override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
-                    if (!hasNext()) NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (!hasNext())
+                        NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = cursor;
                     cursor = cursor->next;
                     index += 1;
                     return *last->item;
                 }
 
-                gbool hasPrevious() const override {
-                    return index > 0;
-                }
+                gbool hasPrevious() const override { return index > 0; }
 
                 T &previous() override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
-                    if (!hasNext()) NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (!hasNext())
+                        NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = cursor = (cursor == null) ? root.last : cursor->prev;
                     index -= 1;
                     return *last->item;
                 }
 
                 void remove() override {
-                    if (last == null) StateException().throws(__trace("core.util.LinkedList.ListItr"));
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (last == null)
+                        StateException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     LnkNode lastNext = last->next;
                     root.unlink(last);
                     if (cursor == last) cursor = lastNext; else index -= 1;
@@ -724,16 +719,21 @@ namespace core {
                 }
 
                 void set(const T &e) override {
-                    if (last == null) StateException().throws(__trace("core.util.LinkedList.ListItr"));
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (last == null)
+                        StateException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     last->item = &U::copyInstance(e, true);
                 }
 
                 void add(const T &e) override {
-                    if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
+                    if (modNum != root.modNum)
+                        ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = null;
-                    if (cursor == null) root.linkLast(U::copyInstance(e, true));
-                    else root.linkBefore(U::copyInstance(e, true), cursor);
+                    if (cursor == null)
+                        root.linkLast(U::copyInstance(e, true));
+                    else
+                        root.linkBefore(U::copyInstance(e, true), cursor);
                     index += 1;
                     modNum = root.modNum;
                 }
@@ -775,10 +775,11 @@ namespace core {
              * @return an array containing all of the elements in this list
              *         in proper sequence
              */
-            ReferenceArray<E> toArray() const override {
-                ReferenceArray<E> a = ReferenceArray<E>(len);
+            ReferenceArray toArray() const override {
+                ReferenceArray a = ReferenceArray(len);
                 gint i = 0;
-                for (LnkNode x = first; x != null; x = x->next) a.set(i++, *x->item);
+                for (LnkNode x = first; x != null; x = x->next)
+                    a.set(i++, *x->item);
                 return a;
             }
 

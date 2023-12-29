@@ -27,7 +27,7 @@ namespace core {
 
         DoubleArray::DoubleArray(gint length) : DoubleArray(length, 0.0) {}
 
-        DoubleArray::DoubleArray(gint length, gdouble initialValue) : Array<Double>(length) {
+        DoubleArray::DoubleArray(gint length, gdouble initialValue)  {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.DoubleArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        DoubleArray::DoubleArray(const DoubleArray &array) : Array<Double>(0) {
-            gint length = array.length();
-            if (len < 0)
+        DoubleArray::DoubleArray(const DoubleArray &array)  {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.DoubleArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        DoubleArray::DoubleArray(DoubleArray &&array) CORE_NOTHROW: Array<Double>(0) {
+        DoubleArray::DoubleArray(DoubleArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         DoubleArray &DoubleArray::operator=(const DoubleArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +88,16 @@ namespace core {
 
         gdouble &DoubleArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Double>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.DoubleArray"));
             }
         }
 
-        const gdouble DoubleArray::get(gint index) const {
+        gdouble DoubleArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Double>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.DoubleArray"));
@@ -125,6 +125,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint DoubleArray::length() const {
+            return len;
         }
     } // core
 } // native

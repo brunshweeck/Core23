@@ -150,7 +150,7 @@ namespace core {
              * Returns an iterator over the elements in this set in descending order.
              *
              * @return an iterator over the elements in this set in descending order
-             * @since 1.6
+             *
              */
             virtual Iterator<const E> &reversedIterator() { return m.reversedKeySet().iterator(); }
 
@@ -245,7 +245,7 @@ namespace core {
                         return true;
                     }
                 }
-                return Set<E>::addAll<T>(c);
+                return Set<E>::addAll(c);
             }
 
             /**

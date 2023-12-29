@@ -5,8 +5,9 @@
 #ifndef CORE23_PRIORITYQUEUE_H
 #define CORE23_PRIORITYQUEUE_H
 
-#include <core/private/ArraysSupport.h>
 #include <core/util/Queue.h>
+#include <core/private/ArraysSupport.h>
+#include <core/util/ArrayList.h>
 
 namespace core {
     namespace util {
@@ -66,8 +67,8 @@ namespace core {
              */
             static CORE_FAST gint DEFAULT_CAPACITY = 11;
 
-            CORE_ALIAS(REFERENCE, typename Class<E>::Ptr);
-            CORE_ALIAS(ARRAY, typename Class<REFERENCE>::Ptr);
+            CORE_ALIAS(VRef, typename Class<E>::Ptr);
+            CORE_ALIAS(ARRAY, typename Class<VRef>::Ptr);
             CORE_ALIAS(COMPARATOR, typename Class<Comparator<E>>::Ptr);
 
             CORE_ALIAS(U, native::Unsafe);
@@ -147,8 +148,8 @@ namespace core {
              *         natural ordering</b> of the elements will be used.
              */
             template<class T = E>
-            CORE_EXPLICIT PriorityQueue(const Comparator<Capture<T>> &comparator) {
-                cmp = (COMPARATOR) &Comparator<E>::copyOf(comparator);
+            CORE_EXPLICIT PriorityQueue(const Comparator<Capture<T>> &comparator) :
+                    cmp((COMPARATOR) &Comparator<E>::copyOf(comparator)) {
                 queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, DEFAULT_CAPACITY)));
             }
 
@@ -199,7 +200,7 @@ namespace core {
                     cmp = (COMPARATOR) &Comparator<E>::naturalOrder();
                     doHeapify = true;
                 }
-                ReferenceArray<T> ra = c.toArray();
+                ReferenceArray ra = c.toArray();
                 if (ra.length() == 0)
                     queue = (ARRAY) U::allocateMemory(L(capacity = 1));
                 else {
@@ -308,7 +309,7 @@ namespace core {
             void resize(gint minCapacity) {
                 gint oldCapacity = capacity;
                 // Double size if small; else grow by 50%
-                gint newCapacity = ArraysSupport::newLength(
+                gint const newCapacity = ArraysSupport::newLength(
                         oldCapacity,
                         minCapacity - oldCapacity, /* minimum growth */
                         oldCapacity < 64 ? oldCapacity + 2 : oldCapacity >> 1/* preferred growth */);
@@ -342,7 +343,8 @@ namespace core {
             gbool push(const E &e) override {
                 gint qSize = len;
                 modNum += 1;
-                if (qSize >= capacity) resize(qSize + 1);
+                if (qSize >= capacity)
+                    resize(qSize + 1);
                 // find the reusable perfect copy of e
                 E &x = U::copyInstance(e, true);
                 shiftUp(qSize, x);
@@ -351,19 +353,23 @@ namespace core {
             }
 
             E &get() override {
-                if (len == 0) NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
+                if (len == 0)
+                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
                 return elementAt(queue, 0);
             }
 
             const E &get() const override {
-                if (len == 0) NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
+                if (len == 0)
+                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
                 return elementAt(queue, 0);
             }
 
         private:
             gint indexOf(const E &o) const {
                 ARRAY es = queue;
-                for (gint i = 0, n = len; i < n; i++) if (o.equals(elementAt(es, i))) return i;
+                for (gint i = 0, n = len; i < n; i++)
+                    if (o.equals(elementAt(es, i)))
+                        return i;
                 return -1;
             }
 
@@ -382,7 +388,8 @@ namespace core {
              */
             gbool remove(const E &o) override {
                 gint i = indexOf(o);
-                if (i == -1) return false;
+                if (i == -1)
+                    return false;
                 removeAt(i);
                 return true;
             }
@@ -410,8 +417,8 @@ namespace core {
              *
              * @return an array containing all of the elements in this queue
              */
-            ReferenceArray<E> toArray() const override {
-                ReferenceArray<E> ra = ReferenceArray<E>(len);
+            ReferenceArray toArray() const override {
+                ReferenceArray ra = ReferenceArray(len);
                 arraycopy(queue, 0, ra.value, 0, len);
                 return ra;
             }
@@ -465,7 +472,7 @@ namespace core {
 
                 ArrayList<E> forgetMeNot = {};
 
-                REFERENCE lastRef = {};
+                VRef lastRef = {};
 
             public:
                 CORE_FAST Itr(PriorityQueue<E> &root) : root(root), modNum(root.modNum) {}
@@ -606,7 +613,7 @@ namespace core {
             void shiftDown(gint k, E &x) {
                 gint n = len;
                 ARRAY es = queue;
-                gint half = n >> 1;
+                gint const half = n >> 1;
                 Comparator<E> &comparator = cmp[0];
                 while (k < half) {
                     gint child = (k << 1) + 1;
@@ -767,6 +774,143 @@ namespace core {
                 PriorityQueue<E> &pq = (PriorityQueue<E> &) o;
                 if (len != pq.len) return false;
                 return pq.containsAll(*this);
+            }
+
+            static PriorityQueue of() { return {}; }
+
+            static PriorityQueue of(const E &v1) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue of(const E &v1, const E &v2) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    pq.add(v5);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    pq.add(v5);
+                    pq.add(v6);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue
+            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    pq.add(v5);
+                    pq.add(v6);
+                    pq.add(v7);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue
+            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    pq.add(v5);
+                    pq.add(v6);
+                    pq.add(v7);
+                    pq.add(v8);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            static PriorityQueue
+            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8,
+               const E &v9) {
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.add(v1);
+                    pq.add(v2);
+                    pq.add(v3);
+                    pq.add(v4);
+                    pq.add(v5);
+                    pq.add(v6);
+                    pq.add(v7);
+                    pq.add(v8);
+                    pq.add(v9);
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
+            }
+
+            template<class ...T>
+            static PriorityQueue
+            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8,
+               const E &v9, T &&...others) {
+                CORE_STATIC_ASSERT(Class<E>::allIsTrue(
+                        (Class<E>::template isSuper<T>() || Class<E>::template isConstructible<T>())...),
+                                   "Illegal value");
+                try {
+                    PriorityQueue<E> pq{1};
+                    pq.push(v1);
+                    pq.push(v2);
+                    pq.push(v3);
+                    pq.push(v4);
+                    pq.push(v5);
+                    pq.push(v6);
+                    pq.push(v7);
+                    pq.push(v8);
+                    pq.push(v9);
+                    pq.addAll(of(others...));
+                    return pq;
+                } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
             }
 
         };

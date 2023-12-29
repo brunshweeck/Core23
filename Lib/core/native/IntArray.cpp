@@ -27,7 +27,7 @@ namespace core {
 
         IntArray::IntArray(gint length) : IntArray(length, 0) {}
 
-        IntArray::IntArray(gint length, gint initialValue) : Array<Integer>(length) {
+        IntArray::IntArray(gint length, gint initialValue)  {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.IntArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        IntArray::IntArray(const IntArray &array) : Array<Integer>(0) {
-            gint length = array.length();
-            if (len < 0)
+        IntArray::IntArray(const IntArray &array)  {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.IntArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        IntArray::IntArray(IntArray &&array) CORE_NOTHROW: Array<Integer>(0) {
+        IntArray::IntArray(IntArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         IntArray &IntArray::operator=(const IntArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +88,16 @@ namespace core {
 
         gint &IntArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Integer>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.IntArray"));
             }
         }
 
-        const gint IntArray::get(gint index) const {
+        gint IntArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Integer>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.IntArray"));
@@ -125,6 +125,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint IntArray::length() const {
+            return len;
         }
     } // core
 } // native

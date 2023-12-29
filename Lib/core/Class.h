@@ -144,7 +144,7 @@ namespace core {
         /**
          * Non Pointer version of template type
          */
-        CORE_ALIAS(NoPointer, MODIFY_RESULT<-5,, NoReference>);
+        CORE_ALIAS(NoPointer, MODIFY_RESULT<-5,, NoReference >);
 
         /**
          * Mutable and Non Volatile version of template type
@@ -188,7 +188,7 @@ namespace core {
          * static Array version of template type
          */
         template<gint Size>
-        CORE_ALIAS(Array, ARRAY_MODIFY_RESULT<9,, NoReference , Size >);
+        CORE_ALIAS(Array, ARRAY_MODIFY_RESULT<9,, NoReference, Size >);
 
         /**
          * Array Item type of template type
@@ -360,7 +360,11 @@ namespace core {
          * @tparam To The Destination type
          */
         template<class To>
-        static CORE_FAST gbool isConvertible() { return MULTI_TEST_RESULT<21, T, To>(); }
+        static CORE_FAST gbool isConvertible() {
+            return (isVoid() || Class<To>::isArray() || Class<To>::isFunction()) && Class<To>::isVoid() ||
+                   (!isArray() && !isVoid() && isSimilar<To>()) ||
+                   MULTI_TEST_RESULT<21, T, To>();
+        }
 
         /**
          * Return true if this type is not overridable or is marked final (is available for class or union types only)
@@ -410,7 +414,7 @@ namespace core {
         /**
          * Return true if this type is native boolean type
          */
-        static CORE_FAST gbool isVoid() { return isSimilar<void>(); }
+        static CORE_FAST gbool isVoid() { return Class<NCVol>::template isSimilar<void>(); }
 
         /**
          * Return true if instance of this type is callable with values of specified type
@@ -507,6 +511,7 @@ namespace core {
          * In other word return true if all of given values is true.
          */
         static CORE_FAST gbool allIsTrue() { return true; }
+
         static CORE_FAST gbool allIsTrue(gbool b) { return b; }
 
         /**
@@ -514,6 +519,7 @@ namespace core {
          * In other word return true if any of given values is true.
          */
         static CORE_FAST gbool oneIsTrue() { return false; }
+
         static CORE_FAST gbool oneIsTrue(gbool b) { return b; }
 
         /**

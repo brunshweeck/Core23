@@ -32,10 +32,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gbool>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -110,6 +112,8 @@ namespace core {
              */
             BooleanArray &operator=(BooleanArray &&array) CORE_NOTHROW;
 
+            gint length() const override;
+
             /**
              * Return item at specified index
              *
@@ -130,7 +134,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gbool get(gint index) const override;
+            gbool get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -178,16 +182,16 @@ namespace core {
             /**
              * Construct new BooleanArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gbool>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gbool>::allIsTrue
                     (Class<T>::template isAssignable<gbool>()...)> = true>
             static BooleanArray of(T &&...a) {
                 gint size = sizeof...(a);
                 BooleanArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gbool>::valueExactAt(i + 1, false, (gbool) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

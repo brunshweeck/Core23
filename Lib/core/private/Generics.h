@@ -41,7 +41,6 @@ namespace core {
 
         class StringArray;
 
-        template<class T>
         class ReferenceArray;
     }
 
@@ -114,12 +113,17 @@ namespace core {
         extern "C" {
 
         typedef signed char GENERIC_INT8;
+        typedef unsigned char GENERIC_UINT8;
         typedef signed short int GENERIC_INT16;
+        typedef unsigned short int GENERIC_UINT16;
         typedef signed int GENERIC_INT32;
+        typedef unsigned int GENERIC_UINT32;
 #if __WORDSIZE == 64
         typedef signed long int GENERIC_INT64;
+        typedef unsigned long int GENERIC_UINT64;
 #else
         typedef signed long long int GENERIC_INT64;
+        typedef unsigned long long int GENERIC_UINT64;
 #endif //
         typedef float GENERIC_FLT32;
         typedef double GENERIC_FLT64;

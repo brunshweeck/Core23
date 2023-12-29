@@ -31,10 +31,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<glong>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -53,7 +55,7 @@ namespace core {
             /**
              * Construct new empty Long Array
              */
-            LongArray() : LongArray(0) {}
+            CORE_FAST LongArray() = default;
 
             /**
              * Construct new LongArray with specified number
@@ -109,6 +111,8 @@ namespace core {
              */
             LongArray &operator=(LongArray &&array) CORE_NOTHROW;
 
+            gint length() const override;
+
             /**
              * Return item at specified index
              *
@@ -129,7 +133,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const glong get(gint index) const override;
+            glong get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -177,16 +181,16 @@ namespace core {
             /**
              * Construct new LongArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<glong>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<glong>::allIsTrue
                     (Class<T>::template isAssignable<glong>()...)> = true>
             static LongArray of(T &&...a) {
                 gint size = sizeof...(a);
                 LongArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<glong>::valueExactAt(i + 1, 0L, (glong) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

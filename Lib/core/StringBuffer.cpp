@@ -202,7 +202,7 @@ namespace core {
         try {
             Preconditions::checkIndex(index, length());
             putChar(value, index, ch);
-        } catch (const Throwable &thr) { thr.throws(__trace("core.StringBuffer")); }
+        } catch (const Exception &ex) { ex.throws(__trace("core.StringBuffer")); }
     }
 
     StringBuffer &StringBuffer::append(const Object &obj) {
@@ -267,14 +267,14 @@ namespace core {
     }
 
     StringBuffer &StringBuffer::append(gint i) {
-        gint oldLen = len;
+        gint const oldLen = len;
         // check number of chars necessary
         gint offset = i < 0 ? 1 : 0;
         gint a = Math::abs(i);
-        while (a > 0) {
+        do {
             offset++;
             a /= 10;
-        }
+        } while (a > 0);
         resize(len + offset);
         a = Math::abs(i);
         do {
@@ -288,14 +288,14 @@ namespace core {
     }
 
     StringBuffer &StringBuffer::append(glong l) {
-        gint oldLen = len;
+        gint const oldLen = len;
         // check number of chars necessary
         gint offset = l < 0 ? 1 : 0;
         glong a = Math::abs(l);
-        while (a > 0) {
+        do {
             offset++;
             a /= 10;
-        }
+        } while (a > 0);
         resize(len + offset);
         a = Math::abs(l);
         do {
@@ -803,6 +803,14 @@ namespace core {
             len -= endIndex - startIndex;
             return *this;
         } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
+    }
+
+    StringBuffer::~StringBuffer() {
+        if(len > 0){
+            len = 0;
+            U::freeMemory((glong) value);
+        }
+        value = null;
     }
 
 } // core

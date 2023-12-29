@@ -4,6 +4,7 @@
 
 #include <core/private/Unsafe.h>
 #include <core/NoSuchItemException.h>
+#include <core/native/IntArray.h>
 #include "StringTokenizer.h"
 
 namespace core {
@@ -12,7 +13,7 @@ namespace core {
         CORE_ALIAS(U, native::Unsafe);
 
         void StringTokenizer::setMaxDelimiter() {
-            gint dSize = delimiters.length();
+            gint const dSize = delimiters.length();
             if (dSize == 0) {
                 maxDelim = 0;
                 return;
@@ -20,7 +21,7 @@ namespace core {
             gint m = 0;
             gint c = {};
             gint count = 0;
-            for (int i = 0; i < dSize; i += Character::charCount(c)) {
+            for (gint i = 0; i < dSize; i += Character::charCount(c)) {
                 c = delimiters.charAt(i);
                 if (c >= Character::MIN_HIGH_SURROGATE && c <= Character::MAX_LOW_SURROGATE) {
                     c = delimiters.codePointAt(i);
@@ -35,7 +36,7 @@ namespace core {
 
             if (hasSurrogates) {
                 delims = IntArray(count);
-                for (int i = 0, j = 0; i < count; i++, j += Character::charCount(c)) {
+                for (gint i = 0, j = 0; i < count; i++, j += Character::charCount(c)) {
                     c = delimiters.codePointAt(j);
                     delims[i] = c;
                 }
@@ -52,15 +53,15 @@ namespace core {
         StringTokenizer::StringTokenizer(const String &str) : StringTokenizer(str, " \t\n\r\f", false) {}
 
         gint StringTokenizer::skipDelimiter(gint startPos) const {
-            int position = startPos;
+            gint position = startPos;
             while (!retDelims && position < limit) {
                 if (!hasSurrogates) {
-                    gchar c = str.charAt(position);
+                    gchar const c = str.charAt(position);
                     if ((c > maxDelim) || (delimiters.indexOf(c) < 0))
                         break;
                     position++;
                 } else {
-                    int c = str.codePointAt(position);
+                    gint const c = str.codePointAt(position);
                     if ((c > maxDelim) || !isDelimiter(c)) {
                         break;
                     }
@@ -71,15 +72,15 @@ namespace core {
         }
 
         gint StringTokenizer::scanToken(gint startPos) const {
-            int position = startPos;
+            gint position = startPos;
             while (position < limit) {
                 if (!hasSurrogates) {
-                    gchar c = str.charAt(position);
+                    gchar const c = str.charAt(position);
                     if ((c <= maxDelim) && (delimiters.indexOf(c) >= 0))
                         break;
                     position++;
                 } else {
-                    int c = str.codePointAt(position);
+                    gint const c = str.codePointAt(position);
                     if ((c <= maxDelim) && isDelimiter(c))
                         break;
                     position += Character::charCount(c);
@@ -87,11 +88,11 @@ namespace core {
             }
             if (retDelims && (startPos == position)) {
                 if (!hasSurrogates) {
-                    gchar c = str.charAt(position);
+                    gchar const c = str.charAt(position);
                     if ((c <= maxDelim) && (delimiters.indexOf(c) >= 0))
                         position++;
                 } else {
-                    int c = str.codePointAt(position);
+                    gint const c = str.codePointAt(position);
                     if ((c <= maxDelim) && isDelimiter(c))
                         position += Character::charCount(c);
                 }
@@ -100,7 +101,7 @@ namespace core {
         }
 
         gbool StringTokenizer::isDelimiter(gint ch) const {
-            for (int delimiterCodePoint: delims) {
+            for (gint const delimiterCodePoint: delims) {
                 if (delimiterCodePoint == ch) {
                     return true;
                 }
@@ -134,7 +135,7 @@ namespace core {
 
             if (cursor >= limit)
                 NoSuchItemException().throws(__trace("core.util.StringTokenizer"));
-            int start = cursor;
+            gint const start = cursor;
             cursor = scanToken(cursor);
             return str.subString(start, cursor);
         }
@@ -150,8 +151,8 @@ namespace core {
         }
 
         gint StringTokenizer::countTokens() const {
-            int count = 0;
-            int currentPos = cursor;
+            gint count = 0;
+            gint currentPos = cursor;
             while (currentPos < limit) {
                 currentPos = skipDelimiter(currentPos);
                 if (currentPos >= limit)

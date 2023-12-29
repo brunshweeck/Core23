@@ -27,7 +27,7 @@ namespace core {
 
         BooleanArray::BooleanArray(gint length) : BooleanArray(length, false) {}
 
-        BooleanArray::BooleanArray(gint length, gbool initialValue) : Array<Boolean>(length) {
+        BooleanArray::BooleanArray(gint length, gbool initialValue) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.BooleanArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        BooleanArray::BooleanArray(const BooleanArray &array) : Array<Boolean>(0) {
-            gint length = array.length();
-            if (len < 0)
+        BooleanArray::BooleanArray(const BooleanArray &array) {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.BooleanArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        BooleanArray::BooleanArray(BooleanArray &&array) CORE_NOTHROW: Array<Boolean>(0) {
+        BooleanArray::BooleanArray(BooleanArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         BooleanArray &BooleanArray::operator=(const BooleanArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,16 +88,16 @@ namespace core {
 
         gbool &BooleanArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Boolean>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.BooleanArray"));
             }
         }
 
-        const gbool BooleanArray::get(gint index) const {
+        gbool BooleanArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Boolean>::length());
+                Preconditions::checkIndex(index, len);
                 return value[index];
             } catch (const IndexException &ie) {
                 ie.throws(__trace("core.native.BooleanArray"));
@@ -125,6 +125,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint BooleanArray::length() const {
+            return len;
         }
     } // core
 } // native

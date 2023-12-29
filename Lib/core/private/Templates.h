@@ -49,7 +49,7 @@ namespace core {
 
             /////////////////////////////////[Similarity]/////////////////////////////////////
 
-#if __has_builtin(__is_same) || defined(__clang__)
+#if __has_builtin(__is_same) || defined(__clang__) || defined(_GLIBCXX_HAVE_BUILTIN_IS_SAME)
             template<class T, class U>
             interface TEST<1, T, U>: CONSTANT<__is_same(T, U)> {};
 #else
@@ -355,6 +355,43 @@ namespace core {
             template<class T, class U>
             interface TEST<20, T, U> : CONSTANT<__is_base_of(T, U)> {
             };
+            template<>
+            interface TEST<20, Object, Object> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Void> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Byte> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Short> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Integer> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Long> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Float> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Double> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Character> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, Complex> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, String> : ALWAYS_TRUE {
+            };
+            template<class E>
+            interface TEST<20, Object, Enum<E>> : ALWAYS_TRUE {
+            };
+
 
             /////////////////////////////////[Conditional]/////////////////////////////////////
 
@@ -384,13 +421,13 @@ namespace {
 
 
 #ifdef CORE_COMPILER_MSVC
-    #ifdef _DComplex
-        CORE_ALIAS(GENERIC_CPLEX, _DComplex);
-    #elif !defined(__clang__)
-        CORE_ALIAS(GENERIC_CPLEX, ::_C_double_complex);
-    #else
-        CORE_ALIAS(GENERIC_CPLEX, _Complex double);
-    #endif //_DComplex
+#ifdef _DComplex
+    CORE_ALIAS(GENERIC_CPLEX, _DComplex);
+#elif !defined(__clang__)
+    CORE_ALIAS(GENERIC_CPLEX, ::_C_double_complex);
+#else
+    CORE_ALIAS(GENERIC_CPLEX, _Complex double);
+#endif //_DComplex
 #else
     CORE_ALIAS(GENERIC_CPLEX, _Complex double);
 #endif
@@ -410,10 +447,10 @@ namespace core {
                 static U UNSAFE_DECLARATION(gint);
 
                 template<class T>
-                static T UNSAFE_DECLARATION(glong);
+                static T UNSAFE_DECLARATION(...);
 
                 template<class T>
-                static decltype(UNSAFE_DECLARATION<T>(0)) FALSE_DECLARATION();
+                static decltype(UNSAFE_DECLARATION<T>(0)) FALSE_DECLARATION() CORE_NOTHROW;
 
             }
 
@@ -424,18 +461,23 @@ namespace core {
             interface TEST<21, From, To> : CONSTANT<__is_convertible_to(From, To)> {
             };
 #else
+            CORE_WARNING_PUSH
+            CORE_WARNING_DISABLE_GCC("-Wctor-dtor-privacy")
+
             namespace {
                 template<class T>
-                void UNSAFE_IMPLICIT_CONVERTER(T);
+                void UNSAFE_IMPLICIT_CONVERTER(T) CORE_NOTHROW;
 
-                template<class From, class To, class = decltype(UNSAFE_IMPLICIT_CONVERTER<To>(
-                        UNSAFE_DECLARATION<From>()))>
+                template<class From, class To,
+                        class = decltype(UNSAFE_IMPLICIT_CONVERTER<To>(UNSAFE_DECLARATION<From>()))>
                 static ALWAYS_TRUE UNSAFE_IMPLICIT_CONVERTER_TEST(gint);
 
                 template<class, class>
-                static ALWAYS_FALSE UNSAFE_IMPLICIT_CONVERTER_TEST(glong);
+                static ALWAYS_FALSE UNSAFE_IMPLICIT_CONVERTER_TEST(...);
 
             }
+            CORE_WARNING_POP
+
             template<class From, class To>
             interface TEST<21, From, To> : decltype(UNSAFE_IMPLICIT_CONVERTER_TEST<From, To>(0)) {
             };
@@ -471,7 +513,7 @@ namespace core {
                 static ALWAYS_TRUE SIZE_COMPUTE_TESTER(gint);
 
                 template<class T>
-                static ALWAYS_FALSE SIZE_COMPUTE_TESTER(glong);
+                static ALWAYS_FALSE SIZE_COMPUTE_TESTER(...);
 
             }
 
@@ -643,21 +685,21 @@ namespace core {
                 UNSAFE_FUNCTION_TESTER(gint);
 
                 template<class ...>
-                static ALWAYS_FALSE UNSAFE_FUNCTION_TESTER(glong);
+                static ALWAYS_FALSE UNSAFE_FUNCTION_TESTER(...);
 
                 template<class T, class U, class ...V>
                 static ALWAYS<decltype((FALSE_DECLARATION<U>().*FALSE_DECLARATION<T>())(
                         FALSE_DECLARATION<V>()...))> UNSAFE_METHOD_TESTER(gint);
 
                 template<class ...>
-                static ALWAYS_FALSE UNSAFE_METHOD_TESTER(glong);
+                static ALWAYS_FALSE UNSAFE_METHOD_TESTER(...);
 
                 template<class T, class U, class ...V>
                 static ALWAYS<decltype(((*FALSE_DECLARATION<U>()).*FALSE_DECLARATION<T>())(
                         FALSE_DECLARATION<V>()...))> UNSAFE_MEMBER_TESTER(gint);
 
                 template<class ...>
-                static ALWAYS_FALSE UNSAFE_MEMBER_TESTER(glong);
+                static ALWAYS_FALSE UNSAFE_MEMBER_TESTER(...);
             }
 
             template<class T, class...U>
@@ -709,7 +751,7 @@ namespace core {
                 static ALWAYS_TRUE UNSAFE_EQUAL_TESTER(gint);
 
                 template<class ...>
-                static CORE_FAST ALWAYS_FALSE UNSAFE_EQUAL_TESTER(glong);
+                static CORE_FAST ALWAYS_FALSE UNSAFE_EQUAL_TESTER(...);
             }
 
             template<class T>
@@ -722,7 +764,7 @@ namespace core {
                 static CORE_FAST ALWAYS_TRUE UNSAFE_LT_TESTER(gint);
 
                 template<class ...>
-                static CORE_FAST ALWAYS_FALSE UNSAFE_LT_TESTER(glong);
+                static CORE_FAST ALWAYS_FALSE UNSAFE_LT_TESTER(...);
             }
 
             template<class T>
@@ -736,7 +778,7 @@ namespace core {
                 static CORE_FAST ALWAYS_TRUE UNSAFE_DESTRUCTOR_TESTER(gint);
 
                 template<class ...>
-                static CORE_FAST ALWAYS_FALSE UNSAFE_DESTRUCTOR_TESTER(glong);
+                static CORE_FAST ALWAYS_FALSE UNSAFE_DESTRUCTOR_TESTER(...);
             }
 
             template<class T>

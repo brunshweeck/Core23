@@ -10,9 +10,13 @@ SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 IF (WIN32)
 #    The Operating System is Windows (Vista, MS-DOS, MS-Windows, ...)
     SET(SYSTEM_LIBDIR WinLib)
+    IF (MINGW)
+        ADD_COMPILE_OPTIONS(--save-temps)
+    ENDIF ()
 ELSE ()
 #    The Operating System is Unix (Unix, Linux, Apple, Android, ...)
     SET(SYSTEM_LIBDIR UnixLib)
+    ADD_COMPILE_OPTIONS(--save-temps)
 ENDIF ()
 
 FILE(GLOB Core23
@@ -57,15 +61,20 @@ FILE(GLOB Core23
         ${SYSTEM_LIBDIR}/core/native/*.c??
         ${SYSTEM_LIBDIR}/core/private/*.h
         ${SYSTEM_LIBDIR}/core/private/*.c??
+        ${SYSTEM_LIBDIR}/core/time/*.h
+        ${SYSTEM_LIBDIR}/core/time/*.c??
 )
 
-ADD_LIBRARY(Core23 STATIC ${Core23}
-        Lib/core/util/SortedStruct.cpp
-        Lib/core/util/SortedStruct.h
-        Lib/core/util/StringTokenizer.cpp
-        Lib/core/util/StringTokenizer.h
-        Lib/core/native/StringArray.cpp
-        Lib/core/native/StringArray.h)
+ADD_LIBRARY(Core23 SHARED ${Core23}
+        Lib/core/io/native/NativeBuffer.cpp
+        Lib/core/io/native/NativeBuffer.h
+        Lib/core/AutoClosable.h
+        Lib/core/io/FileDescriptor.cpp
+        Lib/core/io/FileDescriptor.h
+        Lib/core/io/Closeable.cpp
+        Lib/core/io/Closeable.h
+        Lib/core/io/FileArray.cpp
+        Lib/core/io/FileArray.h)
 
 INCLUDE_DIRECTORIES("Lib")
 
@@ -75,3 +84,5 @@ ADD_EXECUTABLE(Main23 Main.cpp)
 
 TARGET_LINK_LIBRARIES(Main23 PUBLIC Core23)
 
+SET(CMAKE_GNUtoMS ON)
+SET(CMAKE_AIX_EXPORT_ALL_SYMBOLS  ON)

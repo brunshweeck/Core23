@@ -36,197 +36,16 @@ namespace core {
         template<class E>
         class Array : public Object {
 
-            CORE_STATIC_ASSERT(
-                    Class<E>::template isSimilar<Boolean>() || // -> BooleanArray
-                    Class<E>::template isSimilar<Byte>() || // -> ByteArray
-                    Class<E>::template isSimilar<Short>() || // -> ShortArray
-                    Class<E>::template isSimilar<Character>() || // -> CharArray
-                    Class<E>::template isSimilar<Integer>() || // -> IntArray
-                    Class<E>::template isSimilar<Long>() || // LongArray
-                    Class<E>::template isSimilar<Float>() || // LongArray
-                    Class<E>::template isSimilar<Double>() || // DoubleArray
-                    Class<E>::template isSimilar<String>() // StringArray
-                            , "Template is not permitted");
-
         private:
-            /**
-             * The length of array
-             */
-            gint len = 0;
+            CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(), "Template is not permitted");
+            CORE_STATIC_ASSERT(!Class<E>::isConstant(), "Template is not permitted");
+            CORE_STATIC_ASSERT(!Class<E>::isReference(), "Template is not permitted");
+            CORE_STATIC_ASSERT(!Class<E>::isVolatile(), "Template is not permitted");
 
             CORE_ALIAS(Es, typename Class<E>::Primitive);
+            CORE_ALIAS(V, , Es &);
+            CORE_ALIAS(Vc, , typename Class<Es>::template IfElse<Class<Es>::isPrimitive(), const E &>);
 
-            friend BooleanArray;
-            friend ByteArray;
-            friend ShortArray;
-            friend CharArray;
-            friend IntArray;
-            friend LongArray;
-            friend FloatArray;
-            friend DoubleArray;
-            friend StringArray;
-
-        public:
-
-            /**
-             * Construct new Array with specified length
-             *
-             * @param length The number of element in this Array
-             */
-            CORE_FAST Array(gint length) : len(length < 0 ? 0 : length) {}
-
-            /**
-             * Return number of element in This array
-             */
-            CORE_FAST gint length() const { return len; }
-
-            /**
-             * Test if this array has no element
-             */
-            CORE_FAST gbool isEmpty() const { return length() == 0; }
-
-            /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             */
-            virtual Es &get(gint index) = 0;
-
-            /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             */
-            virtual const Es get(gint index) const { return CORE_CAST(Array &, *this)[index]; }
-
-            /**
-             * Set the value at specified index with specified new value
-             *
-             * @param index
-             *          The Position of desired value
-             * @param newValue
-             *          The replacement value
-             * @throws IndexException
-             *          If index out of bounds
-             */
-            virtual const Es set(gint index, Es newValue) {
-                Es es = get(index);
-                (*this)[index] = newValue;
-                return es;
-            }
-
-            /**
-             * Return true iff specified object is array instance of same type
-             * that has same items as this.
-             *
-             * @param object
-             *          The object to be compared
-             */
-            gbool equals(const Object &object) const override {
-                if (Object::equals(object))
-                    return true;
-                if (!Class<Array>::hasInstance(object))
-                    return false;
-                const Array &a = CORE_DYN_CAST(const Array &, object);
-                if (len != a.len)
-                    return false;
-                else
-                    for (gint i = 0; i < len; ++i) {
-                        if ((*this)[0] != a[i])
-                            return false;
-                    }
-                return true;
-            }
-
-            /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             */
-            Es &operator[](gint index) { return get(index); }
-
-            /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             */
-            const Es operator[](gint index) const { return get(index); }
-
-        private:
-            /**
-             * The each operations
-             */
-            template<class T>
-            class NativeArrayIterator : public Object {
-            private:
-                Array<E> &root;
-                gint cursor;
-
-            public:
-                /**
-                 * Construct new Native iterator instance
-                 */
-                NativeArrayIterator(Array<E> &root, gbool begin) :
-                        root(root), cursor(begin ? 0 : root.len) {}
-
-                inline NativeArrayIterator &operator++() { return *this; }
-
-                inline T &operator*() { return root[cursor++]; }
-
-                gbool equals(const Object &o) const override {
-                    if (this == &o)
-                        return true;
-                    if (!Class<NativeArrayIterator>::hasInstance(o))
-                        return false;
-                    NativeArrayIterator &nitr = CORE_CAST(NativeArrayIterator &, o);
-                    return (&nitr.root == &root) &&
-                           ((nitr.cursor == cursor) || ((cursor >= root.len) && (nitr.cursor >= root.len)));
-                }
-            };
-
-        public:
-            /**
-             * Return The native iterator (The C iterator) used
-             * to mark the beginning of foreach statement.
-             */
-            NativeArrayIterator<Es> begin() { return NativeArrayIterator<Es>(*this, true); }
-
-            /**
-             * Return The native iterator (The C iterator) used
-             * to mark the beginning of foreach statement.
-             */
-            NativeArrayIterator<const Es> begin() const { return NativeArrayIterator<const Es>((Array &) *this, true); }
-            /**
-             * Return The native iterator (The C iterator) used
-             * to mark the ending of foreach statement.
-             */
-            NativeArrayIterator<Es> end() { return NativeArrayIterator<Es>(*this, false); }
-
-            /**
-             * Return The native iterator (The C iterator) used
-             * to mark the ending of foreach statement.
-             */
-            NativeArrayIterator<const Es> end() const { return NativeArrayIterator<const Es>((Array &) *this, false); }
-        };
-
-        template<>
-        class Array<Object> : public Object {
         public:
 
             /**
@@ -237,42 +56,7 @@ namespace core {
             /**
              * Test if this array has no element
              */
-            gbool isEmpty() const { return length() == 0; }
-
-            /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             *
-             * @throws StateException If the value is not set
-             */
-            virtual Object &get(gint index) = 0;
-
-            /**
-             * Return item at specified index iff it exist
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
-             * @throws StateException If the value is not set
-             */
-            virtual const Object &get(gint index) const { return CORE_CAST(Array<Object> &, *this).get(index); }
-
-            /**
-             * Return true if the reference at the given index exists (is not null)
-             */
-            virtual gbool isSet(gint index) const = 0;
-
-            /**
-             * mark the reference at the given index like not exist (null)
-             */
-            virtual void unset(gint index) = 0;
+            inline gbool isEmpty() const { return length() == 0; }
 
             /**
              * Return item at specified index
@@ -283,7 +67,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual Object &operator[](gint index) { return get(index); }
+            virtual V get(gint index) = 0;
 
             /**
              * Return item at specified index
@@ -294,44 +78,79 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            virtual const Object &operator[](gint index) const { return get(index); }
+            virtual Vc get(gint index) const = 0;
+
+            /**
+             * Return item at specified index
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             */
+            V operator[](gint index) { return get(index); }
+
+            /**
+             * Return item at specified index
+             *
+             * @param index
+             *              The position of item
+             *
+             * @throws IndexException
+             *              If index out of bounds.
+             */
+            Vc operator[](gint index) const { return get(index); }
+
+            /**
+             * Return true if specified array has same elements
+             * with this array.
+             *
+             * @param o The other array.
+             */
+            gbool equals(const Object &o) const override {
+                if (!Class<Array>::hasInstance(o))
+                    return false;
+                Array const &a = (Array &) o;
+                gint size1 = length();
+                gint size2 = a.length();
+                if (size1 != size2)
+                    return false;
+                for (gint i = 0; i < size1; ++i) {
+                    if (get(i) != a.get(i))
+                        return false;
+                }
+                return true;
+            }
 
         private:
-
             /**
              * The each operations
              */
             template<class T>
-            class NativeArrayIterator : public Object {
+            class Itr : public Object {
             private:
-                Array &root;
+                Array &array;
                 gint cursor;
 
             public:
                 /**
                  * Construct new Native iterator instance
                  */
-                NativeArrayIterator(Array &root, gbool begin) :
-                        root(root), cursor(begin ? 0 : Integer::MAX_VALUE) {}
+                CORE_EXPLICIT Itr(Array &array, gbool fromStart) :
+                        array(array), cursor(fromStart ? 0 : array.length()) {}
 
-                inline NativeArrayIterator &operator++() { return *this; }
+                Itr &operator++() { return *this; }
 
-                inline T &operator*() {
-                    if (!root.isSet(cursor)){
-                        cursor++;
-                        return null;
-                    }
-                    return root[cursor++];
-                }
+                T operator*() { return array[cursor++]; }
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
                         return true;
-                    if (!Class<NativeArrayIterator>::hasInstance(o))
+                    if (!Class<Itr>::hasInstance(o))
                         return false;
-                    NativeArrayIterator &nitr = CORE_CAST(NativeArrayIterator &, o);
-                    return (&nitr.root == &root) &&
-                           ((nitr.cursor == cursor) || (cursor >= root.length() && (nitr.cursor >= root.length())));
+                    Itr const &it = (Itr &) o;
+                    return (&it.array == &array) && (it.cursor == cursor);
                 }
             };
 
@@ -340,24 +159,25 @@ namespace core {
              * Return The native iterator (The C iterator) used
              * to mark the beginning of foreach statement.
              */
-            NativeArrayIterator<Object> begin() { return NativeArrayIterator<Object>(*this, true); }
+            Itr<V> begin() { return Itr<V>(*this, true); }
 
             /**
              * Return The native iterator (The C iterator) used
              * to mark the beginning of foreach statement.
              */
-            NativeArrayIterator<const Object> begin() const { return NativeArrayIterator<const Object>((Array &) *this, true); }
-            /**
-             * Return The native iterator (The C iterator) used
-             * to mark the ending of foreach statement.
-             */
-            NativeArrayIterator<Object> end() { return NativeArrayIterator<Object>(*this, false); }
+            Itr<Vc> begin() const { return Itr<Vc>((Array &) *this, true); }
 
             /**
              * Return The native iterator (The C iterator) used
              * to mark the ending of foreach statement.
              */
-            NativeArrayIterator<const Object> end() const { return NativeArrayIterator<const Object>((Array &) *this, false); }
+            Itr<V> end() { return Itr<V>(*this, false); }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             */
+            Itr<Vc> end() const { return Itr<Vc>((Array &) *this, false); }
         };
 
     } // core

@@ -1301,7 +1301,7 @@
 #if defined(CORE_NO_WARNINGS)
 #if defined(CORE_COMPILER_MSVC)
 CORE_WARNING_DISABLE_MSVC(4251) /* class 'type' needs to have dll-interface to be used by clients of class 'type2' */
-CORE_WARNING_DISABLE_MSVC(4244) /* conversion from 'type1' to 'type2', possible loss of data */
+CORE_WARNING_DISABLE_MSVC(4244) /* conversion from 'type1' to 'type2', possible loss of array */
 CORE_WARNING_DISABLE_MSVC(4275) /* non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier' */
 CORE_WARNING_DISABLE_MSVC(4514) /* unreferenced inline function has been removed */
 CORE_WARNING_DISABLE_MSVC(4800) /* 'type' : forcing value to bool 'true' or 'false' (performance warning) */

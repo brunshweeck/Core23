@@ -17,7 +17,7 @@ namespace core {
     gfloat Float::parseFloat(const String &str) {
         if (str.isEmpty())
             NumberFormatException("Invalid number format for input \"\".").throws(__trace("core.Float"));
-        gint len = str.length();
+        gint const len = str.length();
         gint sign = +1;
         gint base = 10;
         gint next = 0;
@@ -32,7 +32,8 @@ namespace core {
                     NumberFormatException("Invalid number format for input \" " + str + "\".")
                             .throws(__trace("core.Float"));
                 ch = str.charAt(next);
-            default: break;
+            default:
+                break;
         }
         switch (ch) {
             case '0':
@@ -66,17 +67,17 @@ namespace core {
             case 'I':
                 // inf or infinity
                 if (len - next == 3) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
                     if ((ch2 == 'n' || ch2 == 'N') && (ch3 == 'f' || ch3 == 'F'))
                         return (gfloat) (sign * Math::INF);
                 } else if (len - next == 8) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
-                    gchar ch4 = str.charAt(next + 3);
-                    gchar ch5 = str.charAt(next + 4);
-                    gchar ch6 = str.charAt(next + 5);
-                    gchar ch7 = str.charAt(next + 6);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
+                    gchar const ch4 = str.charAt(next + 3);
+                    gchar const ch5 = str.charAt(next + 4);
+                    gchar const ch6 = str.charAt(next + 5);
+                    gchar const ch7 = str.charAt(next + 6);
                     if ((ch2 == 'n' || ch2 == 'N') && (ch3 == 'f' || ch3 == 'F') && (ch4 == 'i' || ch4 == 'I') &&
                         (ch5 == 'f' || ch5 == 'F') && (ch6 == 'i' || ch6 == 'I') && (ch7 == 'y' || ch7 == 'Y'))
                         return (gfloat) (sign * Math::INF);
@@ -86,13 +87,14 @@ namespace core {
             case 'N':
                 // NaN
                 if (len - next == 3) {
-                    gchar ch2 = str.charAt(next + 1);
-                    gchar ch3 = str.charAt(next + 2);
+                    gchar const ch2 = str.charAt(next + 1);
+                    gchar const ch3 = str.charAt(next + 2);
                     if ((ch2 == 'a' || ch2 == 'A') && (ch3 == 'n' || ch3 == 'N'))
                         return (gfloat) (sign * Math::INF);
                 }
                 goto throwIllegalFormat;
-            default: break;
+            default:
+                break;
         }
         switch (base) {
             case 2:
@@ -102,7 +104,7 @@ namespace core {
                     ch = str.charAt(next);
                     if (ch < '0' || ch > '9')
                         goto throwIllegalFormat;
-                    gchar digit = ch - '0';
+                    gchar const digit = ch - '0';
                     retVal = retVal * (gfloat) base + (gfloat) digit;
                     next += 1;
                 }
@@ -164,7 +166,8 @@ namespace core {
                                     next += 1;
                                     if (next == len)
                                         goto throwIllegalFormat;
-                                default: break;
+                                default:
+                                    break;
                             }
                             while (next < len) {
                                 ch = str.charAt(next);
@@ -188,10 +191,9 @@ namespace core {
             case 16: {
                 gint bit32 = 0;
                 gint shift = PRECISION - 1;
-                gbool leadingZeros = true;
                 gbool rounded = false;
                 gbool sticky = false;
-                gint exponentBitsLen = 0; // after 'p'
+                // after 'p'
                 gint decimalBitsLen = 0; // after '.'
                 gint integerBitsLen = 0; // before '.'
                 // hex format
@@ -200,9 +202,9 @@ namespace core {
                     gchar digit = -1;
                     if (ch >= '0' && ch <= '9')
                         digit = ch - '0';
-                    else if (ch >= 'a' && ch <= 'z')
+                    else if (ch >= 'a' && ch <= 'f')
                         digit = ch - 'a';
-                    else if (ch >= 'A' && ch <= 'Z')
+                    else if (ch >= 'A' && ch <= 'F')
                         digit = ch - 'A';
                     else if (ch == 'p' || ch == 'P' || ch == '.')
                         break;
@@ -268,13 +270,10 @@ namespace core {
                 {
                     gint digit = 0;
                     next += 1;
-                    gint decimal = 0;
                     gint exponent = 0;
                     gint sign2 = +1;
-                    gint count = 0;
                     if (ch == '.') {
                         // decimal part
-                        gint maxCount = 9;
                         while (next < len) {
                             ch = str.charAt(next);
                             if (ch == 'p' || ch == 'P')
@@ -331,7 +330,8 @@ namespace core {
                                 next += 1;
                                 if (next == len)
                                     goto throwIllegalFormat;
-                            default: break;
+                            default:
+                                break;
                         }
                         while (next < len) {
                             ch = str.charAt(next);
@@ -361,8 +361,8 @@ namespace core {
                         } else if (eBit32 < (MIN_EXPONENT - 23)) {
                             sticky |= rounded;
                             rounded = false;
-                            gint var = 24 - (eBit32 - (MIN_EXPONENT - 23) + 1);
-                            rounded = (bit32 & (1 << (var - 1))) != 0;
+                            gint const var = 24 - (eBit32 - (MIN_EXPONENT - 23) + 1);
+                            rounded = (bit32 & (1LL << (var - 1))) != 0;
                             if (var > 1)
                                 sticky = sticky || (bit32 & ~((~0) << (var - 1))) != 0;
                             bit32 = bit32 >> var;
@@ -386,7 +386,7 @@ namespace core {
     Float Float::valueOf(const String &str) {
         try {
             return valueOf(parseFloat(str));
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Float"));
         }
     }
@@ -408,15 +408,7 @@ namespace core {
                 4, 4, 4,
                 5, 5, 5,
                 6, 6, 6, 6,
-                7, 7, 7,
-                8, 8, 8,
-                9, 9, 9, 9,
-                10, 10, 10,
-                11, 11, 11,
-                12, 12, 12, 12,
-                13, 13, 13,
-                14, 14, 14,
-                15, 15, 15,
+                7,
         };
 
         CORE_FAST gint powerOfTeen[] = {
@@ -451,7 +443,7 @@ namespace core {
             // bit32 = 1 00000000 00000000000000000000000.
             return "-0.0";
         // find the binary precision
-        gint binaryPrecision = (SIGNIFICAND_WIDTH - Integer::trailingZeros(bit32 & SIGN_BIT_MASK)) % 20;
+        gint const binaryPrecision = (SIGNIFICAND_WIDTH - Integer::trailingZeros(bit32 & SIGNIFICAND_BIT_MASK));
         // conversion of binary precision to decimal precision
         gint decimalPrecision = b2dPrecision[binaryPrecision];
         if (powerOfTeen[decimalPrecision] < (1 << binaryPrecision))
@@ -464,7 +456,7 @@ namespace core {
             bit32 &= ~SIGN_BIT_MASK;
         }
         // we leave one character used for rounding
-        gint placeholder = next;
+        gint const placeholder = next;
         digits[next++] = '0';
         gfloat uVal = fromIntBits(bit32);
         gint exponent = 0;
@@ -475,15 +467,17 @@ namespace core {
             updater = -1;
             divider = 0.1;
         }
-        while (uVal > 10 || uVal < 1) {
+        gfloat const tmp = uVal;
+        while (uVal >= 10 || uVal < 1) {
             uVal /= divider;
             exponent += updater;
         }
-        if (uVal > 1.e+7 || uVal < 1.e-3) {
+        if (tmp > 1.e+7 || tmp < 1.e-3) {
             // scientific format (x.y x10^z)
             digit = (gint) uVal;
             digits[next++] = DIGITS[digit];
             digits[next++] = '.';
+            decimalPrecision -= decimalPrecision > 7 ? 2 : 1;
             do {
                 uVal = (uVal - (gfloat) digit) * 10;
                 digit = (gint) uVal;
@@ -494,17 +488,28 @@ namespace core {
             uVal = (uVal - (gfloat) digit) * 10;
             digit = (gint) uVal;
             if (digit >= 5) {
-                // is possible to round
+                // round value and remove all trailing zeros
                 gbool finished = false;
                 while (!finished && next > 0) {
-                    if (digits[next - 1] != '.') {
-                        digit = digits[next - 1] - 48;
-                        digits[next - 1] = DIGITS[(digit + 1) % 10];
+                    next -= 1;
+                    if (digits[next] != '.') {
+                        digit = digits[next] - 48;
+                        digits[next] = DIGITS[(digit + 1) % 10];
                         finished = digit != 9;
                     }
-                    next -= 1;
                 }
+            } else if (digits[next - 1] == '0') {
+                // remove all trailing zeros
+                next -= 1;
+                while (digits[next] == '0')
+                    next -= 1;
+                if (digits[next] == '.')
+                    next -= 1;
+            } else {
+                // no problems found
+                next -= 1;
             }
+            next += 1;
             digits[next++] = 'E';
             digits[next++] = exponent < 0 ? '-' : '+';
             exponent = Math::abs(exponent);
@@ -518,11 +523,24 @@ namespace core {
             digits[next] = 0;
         } else {
             // decimal format
-            if (d < 1)
-                uVal = fromIntBits(bit32);
-            digit = (gint) uVal;
-            digits[next++] = DIGITS[digit];
-            digits[next++] = '.';
+            if (tmp < 1) {
+                digits[next++] = '0';
+                digits[next++] = '.';
+                digit = 0;
+                uVal = tmp;
+            } else {
+                digit = (gint) uVal;
+                digits[next++] = DIGITS[digit];
+                decimalPrecision -= 1;
+                while (exponent > 0) {
+                    uVal = (uVal - (gfloat) digit) * 10;
+                    digit = (gint) uVal;
+                    digits[next++] = DIGITS[digit];
+                    exponent -= 1;
+                    decimalPrecision -= 1;
+                }
+                digits[next++] = '.';
+            }
             do {
                 uVal = (uVal - (gfloat) digit) * 10;
                 digit = (gint) uVal;
@@ -533,16 +551,26 @@ namespace core {
             uVal = (uVal - (gfloat) digit) * 10;
             digit = (gint) uVal;
             if (digit >= 5) {
-                // is possible to round
+                // round value and remove all trailing zeros
                 gbool finished = false;
                 while (!finished && next > 0) {
-                    if (digits[next - 1] != '.') {
-                        digit = digits[next - 1] - 48;
-                        digits[next - 1] = DIGITS[(digit + 1) % 10];
+                    next -= 1;
+                    if (digits[next] != '.') {
+                        digit = digits[next] - 48;
+                        digits[next] = DIGITS[(digit + 1) % 10];
                         finished = digit != 9;
                     }
-                    next -= 1;
                 }
+            } else if (digits[next - 1] == '0') {
+                // remove all trailing zeros
+                next -= 1;
+                while (digits[next] == '0')
+                    next -= 1;
+                if (digits[next] == '.')
+                    next -= 1;
+            } else {
+                // no problems found
+                next -= 1;
             }
         }
         gint begin = 0;
@@ -552,18 +580,18 @@ namespace core {
                 digits[placeholder] = digits[placeholder - 1];
                 begin = placeholder;
             } else
-                begin = placeholder + 1;
+                begin = 1;
         }
-        return String(digits, begin, next - begin);
+        return String(digits + 0, begin, digits[next + 1] != '.' ? next + 1 : next);
     }
 
     String Float::toHexString(gfloat d) {
         if (!isFinite(d))
             return toString(d);
-        gint bit32 = toIntBits(d);
+        gint const bit32 = toIntBits(d);
         gchar digits[32] = {};
         gint next = 0;
-        gfloat uVal = fromIntBits(bit32 & ~SIGN_BIT_MASK);
+        gfloat const uVal = fromIntBits(bit32 & ~SIGN_BIT_MASK);
         if ((bit32 & SIGN_BIT_MASK) != 0)
             digits[next++] = '-';
         digits[next++] = DIGITS[0];
@@ -606,16 +634,16 @@ namespace core {
         return false;
     }
 
-    gint Float::compareTo(const Float& other) const {
+    gint Float::compareTo(const Float &other) const {
         return compare(value, other.value);
     }
 
     gint Float::toIntBits(gfloat d) {
-        return U::getInt((glong) &d);
+        return *((gint *) &d);
     }
 
     gfloat Float::fromIntBits(gint bits) {
-        return U::getFloat((glong) &bits);
+        return *((gfloat *) &bits);
     }
 
     Object &Float::clone() const {
@@ -623,8 +651,8 @@ namespace core {
     }
 
     gshort Float::toShortBits(gfloat f) {
-        gint bit32 = toIntBits(f);
-        gshort sign = (gshort) ((bit32 & SIGN_BIT_MASK) >> 16);
+        gint const bit32 = toIntBits(f);
+        gshort const sign = (gshort) ((bit32 & SIGN_BIT_MASK) >> 16);
         if (isNaN(f)) {
             // Preserve sign and attempt to preserve significand bits
             return (gshort) (
@@ -636,9 +664,9 @@ namespace core {
                     | (bit32 & 0x007fe000) >> 13 // 10 bits
                     | (bit32 & 0x00001ff0) >> 4  //  9 bits
                     | (bit32 & 0x0000000f)       // 4 bits
-                    );
+            );
         }
-        gfloat uVal = Math::abs(f);
+        gfloat const uVal = Math::abs(f);
         // The overflow threshold is binary16 MAX_VALUE + 1/2 ulp
         if (uVal >= (0x1.ffcp15F + 0x0.002p15F))
             return (gshort) (sign | 0x7c00); // Positive or negative infinity
@@ -650,7 +678,7 @@ namespace core {
         // Dealing with finite values in exponent range of binary16
         // (when rounding is done, could still round up)
         gint exp = ((toIntBits(f) & EXPONENT_BIT_MASK) >> (SIGNIFICAND_WIDTH - 1)) - EXPONENT_BIAS;
-        CORE_ASSERT(-25 <= exp && exp <= 15, "core.Float");
+//        CORE_ASSERT(-25 <= exp && exp <= 15, "core.Float");
         // For binary16 subNormals, beside forcing exp to -15, retain
         // the difference exponentDiff = E_min - exp.  This is the excess
         // shift value, in addition to 13, to be used in the
@@ -663,7 +691,7 @@ namespace core {
             exp = -15;
             msb = 0x00800000;
         }
-        gint fSignificandBits = bit32 & 0x007fffff | msb;
+        gint const fSignificandBits = bit32 & 0x007fffff | msb;
 
         // Significand bits as if using rounding to zero (truncation).
         gshort significandBits = (gshort) (fSignificandBits >> (13 + exponentDiff));
@@ -680,9 +708,9 @@ namespace core {
         // 1    1     0
         // 1    1     1
         // See "Computer Arithmetic Algorithms," Koren, Table 4.9
-        gint lsb = fSignificandBits & (1 << (13 + exponentDiff));
-        gint round = fSignificandBits & (1 << (12 + exponentDiff));
-        gint sticky = fSignificandBits & ((1 << (12 + exponentDiff)) - 1);
+        gint const lsb = fSignificandBits & (1 << (13 + exponentDiff));
+        gint const round = fSignificandBits & (1 << (12 + exponentDiff));
+        gint const sticky = fSignificandBits & ((1 << (12 + exponentDiff)) - 1);
 
         if (round != 0 && ((lsb | sticky) != 0))
             significandBits++;
@@ -690,7 +718,7 @@ namespace core {
         // No bits set in significand beyond the *first* exponent bit,
         // not just the significant; quantity is added to the exponent
         // to implement a carry-out from rounding the significand.
-         CORE_ASSERT((0xf800 & significandBits) == 0x0, "core.Float");
+        CORE_ASSERT((0xf800 & significandBits) == 0x0, "core.Float");
         return (gshort) (sign | (((exp + 15) << 10) + significandBits));
     }
 
@@ -699,22 +727,22 @@ namespace core {
          * The binary16 format has 1 sign bit, 5 exponent bits, and 10
          * significand bits. The exponent bias is 15.
          */
-        gint bin16arg = (gint) bits;
-        gint bin16SignBit = 0x8000 & bin16arg;
-        gint bin16ExpBits = 0x7c00 & bin16arg;
-        gint bin16SignificandBits = 0x03FF & bin16arg;
+        gint const bin16arg = (gint) bits;
+        gint const bin16SignBit = 0x8000 & bin16arg;
+        gint const bin16ExpBits = 0x7c00 & bin16arg;
+        gint const bin16SignificandBits = 0x03FF & bin16arg;
 
         // Shift left difference in the number of significand bits in
         // the float and binary16 formats
         CORE_FAST gint SIGNIFICAND_SHIFT = (SIGNIFICAND_WIDTH - 11);
 
-        float sign = (bin16SignBit != 0) ? -1.0F : 1.0F;
+        float const sign = (bin16SignBit != 0) ? -1.0F : 1.0F;
 
         // Extract binary16 exponent, remove its bias, add in the bias
         // of a float exponent and shift to correct bit location
         // (significand width includes the implicit bit so shift one
         // less).
-        gint bin16Exp = (bin16ExpBits >> 10) - 15;
+        gint const bin16Exp = (bin16ExpBits >> 10) - 15;
         if (bin16Exp == -15) {
             // For subnormal binary16 values and 0, the numerical
             // value is 2^24 * the significand as an integer (no
@@ -726,14 +754,15 @@ namespace core {
                                // Preserve NaN significand bits
                                (bin16SignificandBits << SIGNIFICAND_SHIFT));
         }
-        CORE_ASSERT(-15 < bin16Exp && bin16Exp < 16, "Core::Float");
-        gint floatExpBits = (bin16Exp + EXPONENT_BIAS) << (SIGNIFICAND_WIDTH - 1);
+//        CORE_ASSERT(-15 < bin16Exp && bin16Exp < 16, "Core::Float");
+        gint const floatExpBits = (bin16Exp + EXPONENT_BIAS) << (SIGNIFICAND_WIDTH - 1);
 
         // Compute and combine result sign, exponent, and significand bits.
         return fromIntBits((bin16SignBit << 16) | floatExpBits | (bin16SignificandBits << SIGNIFICAND_SHIFT));
     }
 
-    const gfloat Float::NaN = 0.0F/0.0F;
-    const gfloat Float::POSITIVE_INFINITY = 1.0F/0.0F;
-    const gfloat Float::NEGATIVE_INFINITY = -1.0F/0.0F;
+    const gfloat Float::NaN = 0.0F / 0.0F;
+    const gfloat Float::POSITIVE_INFINITY = 1.0F / 0.0F;
+    const gfloat Float::NEGATIVE_INFINITY = -1.0F / 0.0F;
+
 } // core

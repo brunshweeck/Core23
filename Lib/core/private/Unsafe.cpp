@@ -3,9 +3,9 @@
 //
 
 #include <core/ArgumentException.h>
-#include <core/Character.h>
 #include <core/Byte.h>
 #include <core/Short.h>
+#include <core/Character.h>
 #include <core/Integer.h>
 #include <core/Long.h>
 #include <core/Float.h>
@@ -20,23 +20,231 @@
 #include <core/native/ReferenceArray.h>
 #include "Unsafe.h"
 
+
+#if defined(__GNUC__)
+#define USE_INTERLOCKED_FUNCTION 0
+
+#elif defined(CORE_COMPILER_MSVC) || __has_include(<intrin.h>)
+
+#include <intrin.h>
+
+
+// use compiler intrinsics for all atomic functions
+# define CORE_INTERLOCKED_PREFIX _
+# define CORE_INTERLOCKED_PROTOTYPE
+# define CORE_INTERLOCKED_DECLARE_PROTOTYPES
+# define CORE_INTERLOCKED_INTRINSIC
+# define CORE_ATOMIC_INT16_IS_SUPPORTED
+
+# ifdef _WIN64
+#  define CORE_ATOMIC_INT64_IS_SUPPORTED
+# endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Prototype declaration
+
+#define CORE_INTERLOCKED_CONCAT_I(prefix, suffix) \
+    prefix ## suffix
+#define CORE_INTERLOCKED_CONCAT(prefix, suffix) \
+    CORE_INTERLOCKED_CONCAT_I(prefix, suffix)
+
+// MSVC intrinsics prefix function names with an underscore. Also, if platform
+// SDK headers have been included, the Interlocked names may be defined as
+// macros.
+// To avoid double underscores, we paste the prefix with Interlocked first and
+// then the remainder of the function name.
+#define CORE_INTERLOCKED_FUNCTION(name) \
+    CORE_INTERLOCKED_CONCAT(CORE_INTERLOCKED_CONCAT(CORE_INTERLOCKED_PREFIX, Interlocked), name)
+
+#ifndef CORE_INTERLOCKED_VOLATILE
+# define CORE_INTERLOCKED_VOLATILE volatile
+#endif
+
+#ifndef CORE_INTERLOCKED_PREFIX
+#define CORE_INTERLOCKED_PREFIX
+#endif
+
+#ifndef CORE_INTERLOCKED_PROTOTYPE
+#define CORE_INTERLOCKED_PROTOTYPE
+#endif
+
+#ifdef CORE_INTERLOCKED_DECLARE_PROTOTYPES
+#undef CORE_INTERLOCKED_DECLARE_PROTOTYPES
+
+extern "C" {
+
+long CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Increment)(long CORE_INTERLOCKED_VOLATILE *);
+long CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Decrement)(long CORE_INTERLOCKED_VOLATILE *);
+long CORE_INTERLOCKED_PROTOTYPE
+CORE_INTERLOCKED_FUNCTION(CompareExchange)(long CORE_INTERLOCKED_VOLATILE *, long, long);
+long CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Exchange)(long CORE_INTERLOCKED_VOLATILE *, long);
+long CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(ExchangeAdd)(long CORE_INTERLOCKED_VOLATILE *, long);
+typedef long CORE_INTERLOCKED_VOLATILE *XADDRESS;
+typedef long CORE_INTERLOCKED_VOLATILE XVALUE;
+
+# if !defined(__i386__) && !defined(_M_IX86)
+void *CORE_INTERLOCKED_FUNCTION(CompareExchangePointer)(void *CORE_INTERLOCKED_VOLATILE *, void *, void *);
+void *CORE_INTERLOCKED_FUNCTION(ExchangePointer)(void *CORE_INTERLOCKED_VOLATILE *, void *);
+__int64 CORE_INTERLOCKED_FUNCTION(ExchangeAdd64)(__int64 CORE_INTERLOCKED_VOLATILE *, __int64);
+# endif
+
+# ifdef CORE_ATOMIC_INT16_IS_SUPPORTED
+short CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Increment16)(short CORE_INTERLOCKED_VOLATILE *);
+short CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Decrement16)(short CORE_INTERLOCKED_VOLATILE *);
+short CORE_INTERLOCKED_PROTOTYPE
+CORE_INTERLOCKED_FUNCTION(CompareExchange16)(short CORE_INTERLOCKED_VOLATILE *, short, short);
+short CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Exchange16)(short CORE_INTERLOCKED_VOLATILE *, short);
+short CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(ExchangeAdd16)(short CORE_INTERLOCKED_VOLATILE *, short);
+
+# endif
+# ifdef CORE_ATOMIC_INT64_IS_SUPPORTED
+__int64 CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Increment64)(__int64 CORE_INTERLOCKED_VOLATILE *);
+__int64 CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Decrement64)(__int64 CORE_INTERLOCKED_VOLATILE *);
+__int64 CORE_INTERLOCKED_PROTOTYPE
+CORE_INTERLOCKED_FUNCTION(CompareExchange64)(__int64 CORE_INTERLOCKED_VOLATILE *, __int64, __int64);
+__int64 CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION(Exchange64)(__int64 CORE_INTERLOCKED_VOLATILE *, __int64);
+//above already: glong CORE_INTERLOCKED_PROTOTYPE CORE_INTERLOCKED_FUNCTION( ExchangeAdd64 )(glong CORE_INTERLOCKED_VOLATILE *, glong);
+# endif
+}
+
+#endif // CORE_INTERLOCKED_DECLARE_PROTOTYPES
+
+#undef CORE_INTERLOCKED_PROTOTYPE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifdef CORE_INTERLOCKED_INTRINSIC
+#undef CORE_INTERLOCKED_INTRINSIC
+
+# pragma intrinsic (_InterlockedIncrement)
+# pragma intrinsic (_InterlockedDecrement)
+# pragma intrinsic (_InterlockedExchange)
+# pragma intrinsic (_InterlockedCompareExchange)
+# pragma intrinsic (_InterlockedExchangeAdd)
+
+# if !defined(_M_IX86)
+#pragma intrinsic (_InterlockedCompareExchangePointer)
+#pragma intrinsic (_InterlockedExchangePointer)
+#pragma intrinsic (_InterlockedExchangeAdd64)
+# endif
+
+#endif // CORE_INTERLOCKED_INTRINSIC
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Interlocked* replacement macros
+
+#if defined(__i386__) || defined(_M_IX86)
+
+# define CORE_INTERLOCKED_COMPARE_EXCHANGE_POINTER(value, newValue, expectedValue) \
+    (void*)(CORE_INTERLOCKED_FUNCTION(CompareExchange)((long CORE_INTERLOCKED_VOLATILE *)(value), long(newValue), long(expectedValue)))
+
+# define CORE_INTERLOCKED_EXCHANGE_POINTER(value, newValue) \
+    CORE_INTERLOCKED_FUNCTION(Exchange)((long CORE_INTERLOCKED_VOLATILE *)(value), long(newValue))
+
+# define CORE_INTERLOCKED_EXCHANGE_ADD_POINTER(value, valueToAdd) \
+    CORE_INTERLOCKED_FUNCTION(ExchangeAdd)( (long CORE_INTERLOCKED_VOLATILE *)(value), (valueToAdd))
+
+#else // !defined(__i386__) && !defined(_M_IX86)
+
+# define CORE_INTERLOCKED_COMPARE_EXCHANGE_POINTER(value, newValue, expectedValue) \
+    CORE_INTERLOCKED_FUNCTION(CompareExchangePointer)((void * CORE_INTERLOCKED_VOLATILE *)(value), (void *) (newValue), (void *) (expectedValue))
+
+# define CORE_INTERLOCKED_EXCHANGE_POINTER(value, newValue) \
+    CORE_INTERLOCKED_FUNCTION(ExchangePointer)((void * CORE_INTERLOCKED_VOLATILE *)(value), (void *) (newValue))
+
+# define CORE_INTERLOCKED_EXCHANGE_ADD_POINTER(value, valueToAdd) \
+    CORE_INTERLOCKED_FUNCTION(ExchangeAdd64)((glong CORE_INTERLOCKED_VOLATILE *)(value), (valueToAdd))
+
+#endif // !defined(__i386__) && !defined(_M_IX86)
+
+
+#define USE_INTERLOCKED_FUNCTION 1
+
+#endif
+
+
+#ifdef CORE_COMPILER_GNU_ONLY
+// gcc, mingw, clang (unix)
+
+#if CORE_COMPILER_GNU > 405
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) gnu
+
+#else
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) ex_gnu
+
+#endif
+
+#else
+
+#if __has_builtin(__atomic_load_n)
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) gnu
+
+#elif __has_builtin(__sync_fetch_and_add)
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) ex_gnu
+
+#elif USEUSE_INTERLOCKED_FUNCTION
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) interLocker
+
+#else
+#define CORE_EXPR(ex_gnu, gnu, interLocker, def) def
+
+#endif
+
+#endif
+
+#ifdef CORE_COMPILER_MSVC
+#define CORE_BARRIER(expr) \
+    CORE_WARNING_PUSH      \
+    CORE_WARNING_DISABLE_MSVC(4996) \
+    _ReadWriteBarrier();   \
+    CORE_WARNING_POP       \
+    expr
+#else
+#define CORE_BARRIER(expr) \
+    expr
+#endif
+
 namespace core {
     CORE_ALIAS(U, native::Unsafe);
 
+    namespace {
+        CORE_FAST gbyte b2byte(gbool b) { return b ? 1 : 0; }
+
+        CORE_FAST gbool b2bool(gbyte b) { return b != 0; }
+
+        CORE_FAST gshort c2s(gchar c) { return (gshort) c; }
+
+        CORE_FAST gchar s2c(gshort s) { return (gchar) s; }
+
+        gint f2i(gfloat f) { return Float::toIntBits(f); }
+
+        glong d2l(gdouble d) { return Double::toLongBits(d); }
+
+        gfloat i2f(gint i) { return Float::fromIntBits(i); }
+
+        gdouble l2d(glong l) { return Double::fromLongBits(l); }
+
+        glong o2l(const Object &o) { return o == null ? 0 : (glong) &o; }
+
+        Object &l2o(glong l) { return l == 0 ? (Object &) null : *((Object *) l); }
+    }
+
     namespace native {
 
-
+        CORE_WARNING_PUSH
+        CORE_WARNING_DISABLE_INVALID_OFFSETOF
         const gint Unsafe::ADDRESS_SIZE = CORE_ADDRESS_SIZE;
         const gbool Unsafe::BIG_ENDIAN = CORE_BYTE_ORDER == CORE_BIG_ENDIAN;
-        const gint Unsafe::ARRAY_BOOLEAN_BASE_OFFSET = (gint) sizeof(((BooleanArray *) 0)->value);
-        const gint Unsafe::ARRAY_BYTE_BASE_OFFSET = (gint) sizeof(((ByteArray *) 0)->value);
-        const gint Unsafe::ARRAY_CHAR_BASE_OFFSET = (gint) sizeof(((CharArray *) 0)->value);
-        const gint Unsafe::ARRAY_SHORT_BASE_OFFSET = (gint) sizeof(((ShortArray *) 0)->value);
-        const gint Unsafe::ARRAY_INT_BASE_OFFSET = (gint) sizeof(((IntArray *) 0)->value);
-        const gint Unsafe::ARRAY_LONG_BASE_OFFSET = (gint) sizeof(((LongArray *) 0)->value);
-        const gint Unsafe::ARRAY_FLOAT_BASE_OFFSET = (gint) sizeof(((FloatArray *) 0)->value);
-        const gint Unsafe::ARRAY_DOUBLE_BASE_OFFSET = (gint) sizeof(((DoubleArray *) 0)->value);
-        const gint Unsafe::ARRAY_REFERENCE_BASE_OFFSET = (gint) sizeof(((ReferenceArray<Object> *) 0)->value);
+        const gint Unsafe::ARRAY_BOOLEAN_BASE_OFFSET = CORE_OFFSETOF(BooleanArray, value);
+        const gint Unsafe::ARRAY_BYTE_BASE_OFFSET = CORE_OFFSETOF(ByteArray, value);
+        const gint Unsafe::ARRAY_CHAR_BASE_OFFSET = CORE_OFFSETOF(CharArray, value);
+        const gint Unsafe::ARRAY_SHORT_BASE_OFFSET = CORE_OFFSETOF(ShortArray, value);
+        const gint Unsafe::ARRAY_INT_BASE_OFFSET =  CORE_OFFSETOF(IntArray, value);
+        const gint Unsafe::ARRAY_LONG_BASE_OFFSET = CORE_OFFSETOF(LongArray, value);
+        const gint Unsafe::ARRAY_FLOAT_BASE_OFFSET = CORE_OFFSETOF(FloatArray, value);
+        const gint Unsafe::ARRAY_DOUBLE_BASE_OFFSET = CORE_OFFSETOF(DoubleArray, value);
+        const gint Unsafe::ARRAY_REFERENCE_BASE_OFFSET = CORE_OFFSETOF(ReferenceArray, value);
+        CORE_WARNING_POP
 
         const gint Unsafe::ARRAY_BOOLEAN_INDEX_SCALE = sizeof(gbool);
         const gint Unsafe::ARRAY_BYTE_INDEX_SCALE = sizeof(gbyte);
@@ -48,22 +256,22 @@ namespace core {
         const gint Unsafe::ARRAY_DOUBLE_INDEX_SCALE = sizeof(gdouble);
         const gint Unsafe::ARRAY_REFERENCE_INDEX_SCALE = sizeof(void *);
 
-        interface UnsafeImpl {
+        namespace {
 
-            static gbool is32Bits(glong size) {
-                return (size >> 32) == 0;
-            }
+            CORE_FAST gbool is32Bits(glong size) { return (size >> 32) == 0; }
 
-            static gbool checkSize(glong size) {
+            gbool checkSize(glong size) {
                 if (U::ADDRESS_SIZE == 4) {
-                    if (!is32Bits(size))
+                    if (!is32Bits(size)) {
                         return false;
-                } else if (size < 0)
+                    }
+                } else if (size < 0) {
                     return false;
+                }
                 return true;
             }
 
-            static gbool checkNativeAddress(glong address) {
+            gbool checkNativeAddress(glong address) {
                 if (U::ADDRESS_SIZE == 4) {
                     // Accept both zero and sign extended pointers. A valid
                     // pointer will, after the +1 below, either have produced
@@ -76,7 +284,7 @@ namespace core {
                 return true;
             }
 
-            static gbool checkOffset(const Object & /*o*/, glong offset) {
+            gbool checkOffset(const Object & /*o*/, glong offset) {
                 if (U::ADDRESS_SIZE == 4) {
                     // Note: this will also check for negative offsets
                     if (!is32Bits(offset)) {
@@ -88,21 +296,16 @@ namespace core {
                 return true;
             }
 
-            static gbool checkPointer(const Object &o, glong offset) {
-                if (null == o)
-                    return checkNativeAddress(offset);
-                else
-                    return checkOffset(o, offset);
+            gbool checkPointer(const Object &o, glong offset) {
+                return o == null ? checkNativeAddress(offset) : checkOffset(o, offset);
             }
 
-            static glong getNativeAddress(const Object &o, glong offset) {
-                return (glong) &o + offset;
-            }
+            glong getNativeAddress(const Object &o, glong offset) { return o == null ? offset : (glong) &o + offset; }
 
             /**
              * Round up allocation size to a multiple of HeapWordSize.
              */
-            static glong alignToHeapWordSize(glong bytes) {
+            glong alignToHeapWordSize(glong bytes) {
                 if (bytes >= 0) {
                     return (bytes + U::ADDRESS_SIZE - 1) & ~(U::ADDRESS_SIZE - 1);
                 } else {
@@ -112,245 +315,168 @@ namespace core {
         };
 
         gint Unsafe::getInt(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gint *) address;
         }
 
         void Unsafe::putInt(Object &o, glong offset, gint x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gint *) address = x;
         }
 
-        gint Unsafe::getInt(glong address) {
-            return getInt(null, address);
-        }
+        gint Unsafe::getInt(glong address) { return getInt(null, address); }
 
-        void Unsafe::putInt(glong address, gint x) {
-            return putInt(null, address, x);
-        }
+        void Unsafe::putInt(glong address, gint x) { putInt(null, address, x); }
 
         gbool Unsafe::getBoolean(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gbool *) address;
         }
 
         void Unsafe::putBoolean(Object &o, glong offset, gbool x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gbool *) address = x;
         }
 
-        gbool Unsafe::getBoolean(glong address) {
-            return getBoolean(null, address);
-        }
+        gbool Unsafe::getBoolean(glong address) { return getBoolean(null, address); }
 
-        void Unsafe::putBoolean(glong address, gbool x) {
-            return putBoolean(null, address, x);
-        }
+        void Unsafe::putBoolean(glong address, gbool x) { putBoolean(null, address, x); }
 
         gbyte Unsafe::getByte(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gbyte *) address;
         }
 
         void Unsafe::putByte(Object &o, glong offset, gbyte x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gbyte *) address = x;
         }
 
-        gbyte Unsafe::getByte(glong address) {
-            return getByte(null, address);
-        }
+        gbyte Unsafe::getByte(glong address) { return getByte(null, address); }
 
-        void Unsafe::putByte(glong address, gbyte x) {
-            return putByte(null, address, x);
-        }
+        void Unsafe::putByte(glong address, gbyte x) { putByte(null, address, x); }
 
         gshort Unsafe::getShort(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gshort *) address;
         }
 
         void Unsafe::putShort(Object &o, glong offset, gshort x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gshort *) address = x;
         }
 
-        gshort Unsafe::getShort(glong address) {
-            return getShort(null, address);
-        }
+        gshort Unsafe::getShort(glong address) { return getShort(null, address); }
 
-        void Unsafe::putShort(glong address, gshort x) {
-            return putShort(null, address, x);
-        }
+        void Unsafe::putShort(glong address, gshort x) { putShort(null, address, x); }
 
         gchar Unsafe::getChar(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(gchar *) address;
         }
 
         void Unsafe::putChar(Object &o, glong offset, gchar x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(gchar *) address = x;
         }
 
-        gchar Unsafe::getChar(glong address) {
-            return getChar(null, address);
-        }
+        gchar Unsafe::getChar(glong address) { return getChar(null, address); }
 
-        void Unsafe::putChar(glong address, gchar x) {
-            return putChar(null, address, x);
-        }
+        void Unsafe::putChar(glong address, gchar x) { putChar(null, address, x); }
 
         glong Unsafe::getLong(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             return *(glong *) address;
         }
 
         void Unsafe::putLong(Object &o, glong offset, glong x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
+            glong const address = null == o ? offset : getNativeAddress(o, offset);
             if (address == 0)
                 MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
             *(glong *) address = x;
         }
 
-        glong Unsafe::getLong(glong address) {
-            return getLong(null, address);
-        }
+        glong Unsafe::getLong(glong address) { return getLong(null, address); }
 
-        void Unsafe::putLong(glong address, glong x) {
-            return putLong(null, address, x);
-        }
+        void Unsafe::putLong(glong address, glong x) { putLong(null, address, x); }
 
-        gfloat Unsafe::getFloat(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-            return *(gfloat *) address;
-        }
+        gfloat Unsafe::getFloat(const Object &o, glong offset) { return i2f(getInt(o, offset)); }
 
-        void Unsafe::putFloat(Object &o, glong offset, gfloat x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-            *(gfloat *) address = x;
-        }
+        void Unsafe::putFloat(Object &o, glong offset, gfloat x) { putInt(o, offset, f2i(x)); }
 
-        gfloat Unsafe::getFloat(glong address) {
-            return getFloat(null, address);
-        }
+        gfloat Unsafe::getFloat(glong address) { return getFloat(null, address); }
 
-        void Unsafe::putFloat(glong address, gfloat x) {
-            return putFloat(null, address, x);
-        }
+        void Unsafe::putFloat(glong address, gfloat x) { putFloat(null, address, x); }
 
-        gdouble Unsafe::getDouble(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-            return *(gdouble *) address;
-        }
+        gdouble Unsafe::getDouble(const Object &o, glong offset) { return l2d(getLong(o, offset)); }
 
-        void Unsafe::putDouble(Object &o, glong offset, gdouble x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-            *(gdouble *) address = x;
-        }
+        void Unsafe::putDouble(Object &o, glong offset, gdouble x) { putLong(o, offset, d2l(x)); }
 
-        gdouble Unsafe::getDouble(glong address) {
-            return getDouble(null, address);
-        }
+        gdouble Unsafe::getDouble(glong address) { return getDouble(null, address); }
 
-        void Unsafe::putDouble(glong address, gdouble x) {
-            return putDouble(null, address, x);
-        }
+        void Unsafe::putDouble(glong address, gdouble x) { putDouble(null, address, x); }
 
         Object &Unsafe::getReference(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-
-            glong address2 = getAddress(address);
-            return address2 == 0 ? null : *(Object *) address2;
+            glong const address = getAddress(o, offset);
+            return address == 0 ? null : *(Object *) address;
         }
 
-        void Unsafe::putReference(Object &o, glong offset, Object &x) {
-            if (!UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = null == o ? offset : UnsafeImpl::getNativeAddress(o, offset);
-            if (address == 0)
-                MemoryError("Couldn't access to null address").throws(__trace("core.native.Unsafe"));
-
-            putAddress(address, UnsafeImpl::getNativeAddress(x, 0));
-        }
+        void Unsafe::putReference(Object &o, glong offset, Object &x) { putAddress(o, offset, o2l(x)); }
 
         glong Unsafe::getAddress(const Object &o, glong offset) {
-            if (!UnsafeImpl::checkPointer(o, offset))
+            if (!checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            if (ADDRESS_SIZE == 4)
-                return (glong) getInt(o, offset);
-            else
-                return getLong(o, offset);
+            return ADDRESS_SIZE == 4 ? (glong) getInt(o, offset) : getLong(o, offset);
         }
 
         void Unsafe::putAddress(Object &o, glong offset, glong x) {
-            if (!UnsafeImpl::checkPointer(o, offset) || !UnsafeImpl::checkNativeAddress(x))
+            if (!checkPointer(o, offset) || !checkNativeAddress(x))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             if (ADDRESS_SIZE == 4)
                 putInt(o, offset, (gint) x);
@@ -358,20 +484,16 @@ namespace core {
                 putLong(o, offset, x);
         }
 
-        glong Unsafe::getAddress(glong address) {
-            return getAddress(null, address);
-        }
+        glong Unsafe::getAddress(glong address) { return getAddress(null, address); }
 
-        void Unsafe::putAddress(glong address, glong x) {
-            putAddress(null, address, x);
-        }
+        void Unsafe::putAddress(glong address, glong x) { putAddress(null, address, x); }
 
         glong Unsafe::allocateMemory(glong sizeInBytes) {
-            glong heapSize = UnsafeImpl::alignToHeapWordSize(sizeInBytes);
-            if (!UnsafeImpl::checkSize(heapSize))
+            glong const heapSize = alignToHeapWordSize(sizeInBytes);
+            if (!checkSize(heapSize))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             if (heapSize == 0) return 0;
-            glong address = allocateMemoryImpl(heapSize);
+            glong const address = allocateMemoryImpl(heapSize);
             if (address == 0)
                 MemoryError("Unable to allocate " + String::valueOf(heapSize) + " bytes")
                         .throws(__trace("core.native.Unsafe"));
@@ -379,14 +501,15 @@ namespace core {
         }
 
         glong Unsafe::reallocateMemory(glong address, glong sizeInBytes) {
-            glong heapSize = UnsafeImpl::alignToHeapWordSize(sizeInBytes);
-            if (!UnsafeImpl::checkSize(heapSize) || !UnsafeImpl::checkPointer(null, address))
+            glong const heapSize = alignToHeapWordSize(sizeInBytes);
+            if (!checkSize(heapSize) || !checkPointer(null, address))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             if (heapSize == 0) {
                 freeMemory(address);
                 return 0;
             }
-            glong address2 = address == 0 ? allocateMemoryImpl(heapSize) : reallocateMemoryImpl(address, heapSize);
+            glong const address2 =
+                    address == 0 ? allocateMemoryImpl(heapSize) : reallocateMemoryImpl(address, heapSize);
             if (address2 == 0)
                 MemoryError("Unable to allocate " + String::valueOf(heapSize) + " bytes")
                         .throws(__trace("core.native.Unsafe"));
@@ -394,25 +517,18 @@ namespace core {
         }
 
         void Unsafe::setMemory(Object &o, glong offset, glong sizeInBytes, gbyte value) {
-            if (!UnsafeImpl::checkSize(sizeInBytes) || !UnsafeImpl::checkPointer(o, offset))
+            if (!checkSize(sizeInBytes) || !checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-
-            if (sizeInBytes == 0)
-                return;
-            setMemoryImpl(UnsafeImpl::getNativeAddress(o, offset), sizeInBytes, value);
+            if (sizeInBytes > 0) setMemoryImpl(getNativeAddress(o, offset), sizeInBytes, value);
         }
 
         void Unsafe::setMemory(glong address, glong sizeInBytes, gbyte value) {
             setMemory(null, address, sizeInBytes, value);
         }
 
-        void Unsafe::copyMemory(const Object &src, glong srcOffset, Object &dest, glong destOffset,
-                                glong sizeInBytes) {
-            if (!UnsafeImpl::checkSize(sizeInBytes) ||
-                !UnsafeImpl::checkPointer(src, srcOffset) ||
-                !UnsafeImpl::checkPointer(dest, destOffset))
+        void Unsafe::copyMemory(const Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes) {
+            if (!checkSize(sizeInBytes) || !checkPointer(src, srcOffset) || !checkPointer(dest, destOffset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-
             if (sizeInBytes == 0) return;
             copyMemoryImpl((glong) &src + srcOffset, (glong) &dest + destOffset, sizeInBytes);
         }
@@ -423,16 +539,13 @@ namespace core {
 
         void Unsafe::copySwapMemory(Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes,
                                     glong elemSize) {
-            if (!UnsafeImpl::checkSize(sizeInBytes) ||
-                !UnsafeImpl::checkPointer(src, srcOffset) ||
-                !UnsafeImpl::checkPointer(dest, destOffset) ||
+            if (!checkSize(sizeInBytes) || !checkPointer(src, srcOffset) || !checkPointer(dest, destOffset) ||
                 (elemSize != 2 && elemSize != 4 && elemSize != 8 && sizeInBytes % elemSize != 0))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
 
-            if (sizeInBytes == 0)
-                return;
-            copySwapMemoryImpl(UnsafeImpl::getNativeAddress(src, srcOffset),
-                               UnsafeImpl::getNativeAddress(dest, destOffset), sizeInBytes, elemSize);
+            if (sizeInBytes > 0)
+                copySwapMemoryImpl(getNativeAddress(src, srcOffset),
+                                   getNativeAddress(dest, destOffset), sizeInBytes, elemSize);
         }
 
         void Unsafe::copySwapMemory(glong srcAddress, glong destAddress, glong sizeInBytes, glong elemSize) {
@@ -440,11 +553,9 @@ namespace core {
         }
 
         void Unsafe::freeMemory(glong address) {
-            if (!UnsafeImpl::checkPointer(null, address))
+            if (!checkPointer(null, address))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            if (address == 0)
-                return;
-            freeMemoryImpl(address);
+            if (address != 0) freeMemoryImpl(address);
         }
 
         namespace {
@@ -468,8 +579,7 @@ namespace core {
                 CORE_FAST Cache(Cache &&) CORE_NOTHROW = default;
 
                 void add(glong address) {
-                    tail == null ? head = tail = ::new Heap(address, null) : tail = tail->next = ::new Heap(address,
-                                                                                                            null);
+                    tail == null ? head = tail = new Heap(address, null) : tail = tail->next = new Heap(address, null);
                 }
 
                 gbool exists(glong address) const {
@@ -512,7 +622,7 @@ namespace core {
                         Heap *heap = head;
                         head = heap->next;
                         heap->next = null;
-                        glong addr = heap->address;
+                        glong const addr = heap->address;
                         heap->address = 0;
                         delete heap;
                         Unsafe::freeMemory(addr);
@@ -587,65 +697,64 @@ namespace core {
                                  | (toUnsignedInt(i1) << pickPos(8, 8)));
             }
 
-            gbyte pick(gbyte le, gbyte be) { return Unsafe::BIG_ENDIAN ? be : le; }
+            gbyte pick(gbyte le, gbyte be) { return U::BIG_ENDIAN ? be : le; }
 
-            gshort pick(gshort le, gshort be) { return Unsafe::BIG_ENDIAN ? be : le; }
+            gshort pick(gshort le, gshort be) { return U::BIG_ENDIAN ? be : le; }
 
-            gint pick(gint le, gint be) { return Unsafe::BIG_ENDIAN ? be : le; }
+            gint pick(gint le, gint be) { return U::BIG_ENDIAN ? be : le; }
 
             // These methods write integers to memory from smaller parts
             // provided by their caller.  The ordering in which these parts
             // are written is the native endianness of this platform.
-            void
-            putLongParts(Object &o, glong offset, gbyte i0, gbyte i1, gbyte i2, gbyte i3, gbyte i4, gbyte i5, gbyte i6,
-                         gbyte i7) {
-                Unsafe::putByte(o, offset + 0, pick(i0, i7));
-                Unsafe::putByte(o, offset + 1, pick(i1, i6));
-                Unsafe::putByte(o, offset + 2, pick(i2, i5));
-                Unsafe::putByte(o, offset + 3, pick(i3, i4));
-                Unsafe::putByte(o, offset + 4, pick(i4, i3));
-                Unsafe::putByte(o, offset + 5, pick(i5, i2));
-                Unsafe::putByte(o, offset + 6, pick(i6, i1));
-                Unsafe::putByte(o, offset + 7, pick(i7, i0));
+            void putLongParts(Object &o, glong offset, gbyte i0, gbyte i1, gbyte i2, gbyte i3, gbyte i4, gbyte i5,
+                              gbyte i6, gbyte i7) {
+                U::putByte(o, offset + 0, pick(i0, i7));
+                U::putByte(o, offset + 1, pick(i1, i6));
+                U::putByte(o, offset + 2, pick(i2, i5));
+                U::putByte(o, offset + 3, pick(i3, i4));
+                U::putByte(o, offset + 4, pick(i4, i3));
+                U::putByte(o, offset + 5, pick(i5, i2));
+                U::putByte(o, offset + 6, pick(i6, i1));
+                U::putByte(o, offset + 7, pick(i7, i0));
             }
 
             void putLongParts(Object &o, glong offset, gshort i0, gshort i1, gshort i2, gshort i3) {
-                Unsafe::putShort(o, offset + 0, pick(i0, i3));
-                Unsafe::putShort(o, offset + 2, pick(i1, i2));
-                Unsafe::putShort(o, offset + 4, pick(i2, i1));
-                Unsafe::putShort(o, offset + 6, pick(i3, i0));
+                U::putShort(o, offset + 0, pick(i0, i3));
+                U::putShort(o, offset + 2, pick(i1, i2));
+                U::putShort(o, offset + 4, pick(i2, i1));
+                U::putShort(o, offset + 6, pick(i3, i0));
             }
 
             void putLongParts(Object &o, glong offset, gint i0, gint i1) {
-                Unsafe::putInt(o, offset + 0, pick(i0, i1));
-                Unsafe::putInt(o, offset + 4, pick(i1, i0));
+                U::putInt(o, offset + 0, pick(i0, i1));
+                U::putInt(o, offset + 4, pick(i1, i0));
             }
 
             void putIntParts(Object &o, glong offset, gshort i0, gshort i1) {
-                Unsafe::putShort(o, offset + 0, pick(i0, i1));
-                Unsafe::putShort(o, offset + 2, pick(i1, i0));
+                U::putShort(o, offset + 0, pick(i0, i1));
+                U::putShort(o, offset + 2, pick(i1, i0));
             }
 
             void putIntParts(Object &o, glong offset, gbyte i0, gbyte i1, gbyte i2, gbyte i3) {
-                Unsafe::putByte(o, offset + 0, pick(i0, i3));
-                Unsafe::putByte(o, offset + 1, pick(i1, i2));
-                Unsafe::putByte(o, offset + 2, pick(i2, i1));
-                Unsafe::putByte(o, offset + 3, pick(i3, i0));
+                U::putByte(o, offset + 0, pick(i0, i3));
+                U::putByte(o, offset + 1, pick(i1, i2));
+                U::putByte(o, offset + 2, pick(i2, i1));
+                U::putByte(o, offset + 3, pick(i3, i0));
             }
 
             void putShortParts(Object &o, glong offset, gbyte i0, gbyte i1) {
-                Unsafe::putByte(o, offset + 0, pick(i0, i1));
-                Unsafe::putByte(o, offset + 1, pick(i1, i0));
+                U::putByte(o, offset + 0, pick(i0, i1));
+                U::putByte(o, offset + 1, pick(i1, i0));
             }
 
             // Maybe gbyte-reverse an integer
-            gchar convEndian(gbool big, gchar n) { return big == Unsafe::BIG_ENDIAN ? n : Character::reverseBytes(n); }
+            gchar convEndian(gbool big, gchar n) { return big == U::BIG_ENDIAN ? n : Character::reverseBytes(n); }
 
-            gshort convEndian(gbool big, gshort n) { return (gshort) convEndian(big, (gchar) n); }
+            gshort convEndian(gbool big, gshort n) { return big == U::BIG_ENDIAN ? n : Short::reverseBytes(n); }
 
-            gint convEndian(gbool big, gint n) { return big == Unsafe::BIG_ENDIAN ? n : Integer::reverseBytes(n); }
+            gint convEndian(gbool big, gint n) { return big == U::BIG_ENDIAN ? n : Integer::reverseBytes(n); }
 
-            glong convEndian(gbool big, glong n) { return big == Unsafe::BIG_ENDIAN ? n : Long::reverseBytes(n); }
+            glong convEndian(gbool big, glong n) { return big == U::BIG_ENDIAN ? n : Long::reverseBytes(n); }
         }
 
         glong Unsafe::getLongUnaligned(const Object &o, glong offset) {
@@ -785,7 +894,7 @@ namespace core {
         }
 
         void Unsafe::putCharUnaligned(Object &o, glong offset, gchar x) {
-            putShortUnaligned(o, offset, (gshort) x);
+            putShortUnaligned(o, offset, c2s(x));
         }
 
         void Unsafe::putCharUnaligned(Object &o, glong offset, gchar x, gbool bigEndian) {
@@ -793,1624 +902,1390 @@ namespace core {
         }
 
         gbool Unsafe::compareAndSetReference(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeReference(o, offset, expected, x) == x;
+            return &compareAndExchangeReference(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::compareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeReference(o, offset, expected, x) == x;
+            return &compareAndExchangeReferenceAcquire(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::compareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeReference(o, offset, expected, x) == x;
+            return &compareAndExchangeReferenceRelaxed(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::compareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeReference(o, offset, expected, x) == x;
+            return &compareAndExchangeReferenceRelease(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::weakCompareAndSetReference(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeReference(o, offset, expected, x) == x;
+            return &weakCompareAndExchangeReference(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::weakCompareAndSetReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeReference(o, offset, expected, x) == x;
+            return &weakCompareAndExchangeReferenceAcquire(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::weakCompareAndSetReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeReference(o, offset, expected, x) == x;
+            return &weakCompareAndExchangeReferenceRelaxed(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::weakCompareAndSetReferenceRelease(Object &o, glong offset, const Object &expected, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeReference(o, offset, expected, x) == x;
+            return &weakCompareAndExchangeReferenceRelease(o, offset, expected, x) == &x;
         }
 
         gbool Unsafe::compareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeBoolean(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeBooleanAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeBooleanRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeBooleanRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetBoolean(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeBoolean(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetBooleanAcquire(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeBooleanAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetBooleanRelease(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeBooleanRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeBooleanRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeByte(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeByteAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeByteRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeByteRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetByte(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeByte(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetByteAcquire(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeByteAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetByteRelease(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeByteRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetByteRelaxed(Object &o, glong offset, gbyte expected, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeByteRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetShort(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeShort(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeShortAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeShortRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeShortRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetShort(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeShort(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetShortAcquire(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeShortAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetShortRelease(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeShortRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetShortRelaxed(Object &o, glong offset, gshort expected, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeShortRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetChar(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeChar(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeCharAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeCharRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeCharRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetChar(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeChar(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetCharAcquire(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeCharAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetCharRelease(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeCharRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetCharRelaxed(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeCharRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetInt(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeInt(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeIntAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetIntRelease(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeIntRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeIntRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetInt(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeInt(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetIntAcquire(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeIntAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetIntRelease(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeIntRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetIntRelaxed(Object &o, glong offset, gint expected, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeIntRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetLong(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeLong(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeLongAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetLongRelease(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeLongRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeLongRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetLong(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeLong(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetLongAcquire(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeLongAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetLongRelease(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeLongRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetLongRelaxed(Object &o, glong offset, glong expected, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeLongRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeFloat(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeFloatAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeFloatRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeFloatRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetFloat(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeFloat(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeFloatAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetFloatRelease(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeFloatRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeFloatRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeDouble(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeDoubleAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeDoubleRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::compareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return compareAndExchangeDoubleRelaxed(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetDouble(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeDouble(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeDoubleAcquire(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeDoubleRelease(o, offset, expected, x) == x;
         }
 
         gbool Unsafe::weakCompareAndSetDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             return weakCompareAndExchangeDoubleRelaxed(o, offset, expected, x) == x;
         }
 
         gfloat Unsafe::compareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        compareAndExchangeInt(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(compareAndExchangeInt(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::compareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        compareAndExchangeIntAcquire(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(compareAndExchangeIntAcquire(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::compareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        compareAndExchangeIntRelease(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(compareAndExchangeIntRelease(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::compareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        compareAndExchangeIntRelaxed(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(compareAndExchangeIntRelaxed(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::weakCompareAndExchangeFloat(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        weakCompareAndExchangeInt(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(weakCompareAndExchangeInt(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::weakCompareAndExchangeFloatAcquire(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        weakCompareAndExchangeIntAcquire(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(weakCompareAndExchangeIntAcquire(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::weakCompareAndExchangeFloatRelease(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        weakCompareAndExchangeIntRelease(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(weakCompareAndExchangeIntRelease(o, offset, f2i(expected), f2i(x)));
         }
 
         gfloat Unsafe::weakCompareAndExchangeFloatRelaxed(Object &o, glong offset, gfloat expected, gfloat x) {
-            try {
-                return Float::fromIntBits(
-                        weakCompareAndExchangeIntRelaxed(o, offset, Float::toIntBits(expected), Float::toIntBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return i2f(weakCompareAndExchangeIntRelaxed(o, offset, f2i(expected), f2i(x)));
         }
 
         gdouble Unsafe::compareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        compareAndExchangeLong(o, offset, Double::toLongBits(expected), Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(compareAndExchangeLong(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::compareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        compareAndExchangeLongAcquire(o, offset, Double::toLongBits(expected), Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(compareAndExchangeLongAcquire(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::compareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        compareAndExchangeLongRelease(o, offset, Double::toLongBits(expected), Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(compareAndExchangeLongRelease(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::compareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        compareAndExchangeLongRelaxed(o, offset, Double::toLongBits(expected), Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(compareAndExchangeLongRelaxed(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::weakCompareAndExchangeDouble(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        weakCompareAndExchangeLong(o, offset, Double::toLongBits(expected), Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(weakCompareAndExchangeLong(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::weakCompareAndExchangeDoubleAcquire(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        weakCompareAndExchangeLongAcquire(o, offset, Double::toLongBits(expected),
-                                                          Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(weakCompareAndExchangeLongAcquire(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::weakCompareAndExchangeDoubleRelease(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        weakCompareAndExchangeLongRelease(o, offset, Double::toLongBits(expected),
-                                                          Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(weakCompareAndExchangeLongRelease(o, offset, d2l(expected), d2l(x)));
         }
 
         gdouble Unsafe::weakCompareAndExchangeDoubleRelaxed(Object &o, glong offset, gdouble expected, gdouble x) {
-            try {
-                return Double::fromLongBits(
-                        weakCompareAndExchangeLongRelaxed(o, offset, Double::toLongBits(expected),
-                                                          Double::toLongBits(x)));
-            } catch (const Throwable &thr) {
-                thr.throws(__trace("Core::Unsafe"));
-            }
+            return l2d(weakCompareAndExchangeLongRelaxed(o, offset, d2l(expected), d2l(x)));
         }
 
         gbool Unsafe::compareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeByte(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(compareAndExchangeByte(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::compareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeByteAcquire(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(compareAndExchangeByteAcquire(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::compareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeByteRelease(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(compareAndExchangeByteRelease(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::compareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeByteRelaxed(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(compareAndExchangeByteRelaxed(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::weakCompareAndExchangeBoolean(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeByte(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(weakCompareAndExchangeByte(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::weakCompareAndExchangeBooleanAcquire(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeByteAcquire(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(weakCompareAndExchangeByteAcquire(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::weakCompareAndExchangeBooleanRelease(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeByteRelease(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(weakCompareAndExchangeByteRelease(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gbool Unsafe::weakCompareAndExchangeBooleanRelaxed(Object &o, glong offset, gbool expected, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return weakCompareAndExchangeByteRelaxed(o, offset, expected ? 1 : 0, x ? 1 : 0) != 0;
+            return b2bool(weakCompareAndExchangeByteRelaxed(o, offset, b2byte(expected), b2byte(x)));
         }
 
         gchar Unsafe::compareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShort(o, offset, (gshort) expected, (gshort) x);
+            return s2c(compareAndExchangeShort(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::compareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShort(o, offset, (gshort) expected, (gshort) x);
+            return s2c(compareAndExchangeShortAcquire(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::compareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShort(o, offset, (gshort) expected, (gshort) x);
+            return s2c(compareAndExchangeShortRelease(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::compareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShort(o, offset, (gshort) expected, (gshort) x);
+            return s2c(compareAndExchangeShortRelaxed(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::weakCompareAndExchangeChar(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShort(o, offset, (gshort) expected, (gshort) x);
+            return s2c(weakCompareAndExchangeShort(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::weakCompareAndExchangeCharAcquire(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShortAcquire(o, offset, (gshort) expected, (gshort) x);
+            return s2c(weakCompareAndExchangeShortAcquire(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::weakCompareAndExchangeCharRelease(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShortRelease(o, offset, (gshort) expected, (gshort) x);
+            return s2c(weakCompareAndExchangeShortRelease(o, offset, c2s(expected), c2s(x)));
         }
 
         gchar Unsafe::weakCompareAndExchangeCharRelaxed(Object &o, glong offset, gchar expected, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return compareAndExchangeShortRelaxed(o, offset, (gshort) expected, (gshort) x);
+            return s2c(compareAndExchangeShortRelaxed(o, offset, c2s(expected), c2s(x)));
         }
 
         Object &Unsafe::getReferenceVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ? getIntVolatile(o, offset) : getLongVolatile(o, offset);
-            return address == 0 ? null : *(Object *) address;
+            return l2o(ADDRESS_SIZE == 4 ? (glong) getIntVolatile(o, offset) : getLongVolatile(o, offset));
         }
 
         void Unsafe::putReferenceVolatile(Object &o, glong offset, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             if (ADDRESS_SIZE == 4)
-                putIntVolatile(o, offset, (gint) UnsafeImpl::getNativeAddress((Object &) x, 0));
+                putIntVolatile(o, offset, (gint) getNativeAddress((Object &) x, 0));
             else
-                putLongVolatile(o, offset, UnsafeImpl::getNativeAddress((Object &) x, 0));
+                putLongVolatile(o, offset, getNativeAddress((Object &) x, 0));
         }
 
         gint Unsafe::getIntVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), 5);
-#endif
-            return (gint volatile) getInt(o, offset);
+            return CORE_EXPR(
+                    getInt(o, offset),
+                    getInt(o, offset),
+                    CORE_BARRIER(getInt(o, offset)),
+                    getInt(o, offset)
+            );
         }
 
         void Unsafe::putIntVolatile(Object &o, glong offset, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 5);
-            return;
-#endif
-            putInt(o, offset, (gint) x);
+            CORE_EXPR(
+                    putInt(o, offset, x),
+                    putInt(o, offset, x),
+                    CORE_BARRIER(putInt(o, offset, x)),
+                    putInt(o, offset, x)
+            );
         }
 
         glong Unsafe::getLongVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), 5);
-#endif
-            return (glong volatile) getLong(o, offset);
+            return CORE_EXPR(
+                    getLong(o, offset),
+                    getLong(o, offset),
+                    CORE_BARRIER(getLong(o, offset)),
+                    getLong(o, offset)
+            ) ;
         }
 
         void Unsafe::putLongVolatile(Object &o, glong offset, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 5);
-            return;
-#endif
-            putLong(o, offset, (glong) x);
+            CORE_EXPR(
+                    putLong(o, offset, x),
+                    putLong(o, offset, x),
+                    CORE_BARRIER(putLong(o, offset, x)),
+                    putLong(o, offset, x)
+            ) ;
         }
 
         gshort Unsafe::getShortVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), 5);
-#endif
-            return (gshort volatile) getShort(o, offset);
+            return CORE_EXPR(
+                    getShort(o, offset),
+                    getShort(o, offset),
+                    CORE_BARRIER(getShort(o, offset)),
+                    getShort(o, offset)
+            ) ;
         }
 
         void Unsafe::putShortVolatile(Object &o, glong offset, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 5);
-            return;
-#endif
-            putInt(o, offset, (gshort) x);
+            CORE_EXPR(
+                    putShort(o, offset, x),
+                    putShort(o, offset, x),
+                    CORE_BARRIER(putShort(o, offset, x)),
+                    putShort(o, offset, x)
+            ) ;
         }
 
         gbyte Unsafe::getByteVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), 5);
-#endif
-            return (gbyte volatile) getByte(o, offset);
+            return CORE_EXPR(
+                    getByte(o, offset),
+                    getByte(o, offset),
+                    CORE_BARRIER(getByte(o, offset)),
+                    getByte(o, offset)
+            ) ;
         }
 
         void Unsafe::putByteVolatile(Object &o, glong offset, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 5);
-            return;
-#endif
-            putInt(o, offset, (gbyte) x);
+            CORE_EXPR(
+                    putByte(o, offset, x),
+                    putByte(o, offset, x),
+                    CORE_BARRIER(putByte(o, offset, x)),
+                    putByte(o, offset, x)
+            ) ;
         }
 
-        gbool Unsafe::getBooleanVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getByteVolatile(o, offset) != 0;
-        }
+        gbool Unsafe::getBooleanVolatile(const Object &o, glong offset) { return b2bool(getByteVolatile(o, offset)); }
 
-        void Unsafe::putBooleanVolatile(Object &o, glong offset, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putByteVolatile(o, offset, x ? 1 : 0);
-        }
+        void Unsafe::putBooleanVolatile(Object &o, glong offset, gbool x) { putByteVolatile(o, offset, b2byte(x)); }
 
-        gchar Unsafe::getCharVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar volatile) getShortVolatile(o, offset);
-        }
+        gchar Unsafe::getCharVolatile(const Object &o, glong offset) { return s2c(getShortVolatile(o, offset)); }
 
-        void Unsafe::putCharVolatile(Object &o, glong offset, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putShortVolatile(o, offset, (gshort) x);
-        }
+        void Unsafe::putCharVolatile(Object &o, glong offset, gchar x) { putShortVolatile(o, offset, c2s(x)); }
 
-        gfloat Unsafe::getFloatVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gfloat volatile) Float::fromIntBits(getIntVolatile(o, offset));
-        }
+        gfloat Unsafe::getFloatVolatile(const Object &o, glong offset) { return i2f(getIntVolatile(o, offset)); }
 
-        void Unsafe::putFloatVolatile(Object &o, glong offset, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putIntVolatile(o, offset, Float::toIntBits(x));
-        }
+        void Unsafe::putFloatVolatile(Object &o, glong offset, gfloat x) { putIntVolatile(o, offset, f2i(x)); }
 
-        gdouble Unsafe::getDoubleVolatile(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gdouble volatile) Double::fromLongBits(getLongVolatile(o, offset));
-        }
+        gdouble Unsafe::getDoubleVolatile(const Object &o, glong offset) { return l2d(getLongVolatile(o, offset)); }
 
-        void Unsafe::putDoubleVolatile(Object &o, glong offset, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putLongVolatile(o, offset, Double::toLongBits(x));
-        }
+        void Unsafe::putDoubleVolatile(Object &o, glong offset, gdouble x) { putLongVolatile(o, offset, d2l(x)); }
 
         Object &Unsafe::getReferenceAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ? getIntAcquire(o, offset) : getLongAcquire(o, offset);
-            return address == 0 ? null : *(Object *) address;
+            return l2o(ADDRESS_SIZE == 4 ? getIntVolatile(o, offset) : getLongVolatile(o, offset));
         }
 
+        gbool Unsafe::getBooleanAcquire(const Object &o, glong offset) { return b2bool(getByteAcquire(o, offset)); }
+
         gint Unsafe::getIntAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), 2);
-#endif
-            return (gint volatile) getInt(o, offset);
+            return CORE_EXPR(
+                    getIntVolatile(o, offset),
+                    __atomic_load_n((gint volatile *) getNativeAddress(o, offset), __ATOMIC_ACQUIRE),
+                    getIntVolatile(o, offset),
+                    getIntVolatile(o, offset)
+            );
         }
 
         glong Unsafe::getLongAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), 2);
-#endif
-            return (glong volatile) getLong(o, offset);
+            return CORE_EXPR(
+                    getLong(o, offset),
+                    __atomic_load_n((glong volatile *) getNativeAddress(o, offset), __ATOMIC_ACQUIRE),
+                    getLongVolatile(o, offset),
+                    getLongVolatile(o, offset)
+            );
         }
 
         gshort Unsafe::getShortAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), 2);
-#endif
-            return (gshort volatile) getShort(o, offset);
+            return CORE_EXPR(
+                    getShort(o, offset),
+                    __atomic_load_n((gshort volatile *) getNativeAddress(o, offset), __ATOMIC_ACQUIRE),
+                    getShortVolatile(o, offset),
+                    getShortVolatile(o, offset)
+            );
         }
 
         gbyte Unsafe::getByteAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), 2);
-#endif
-            return (gbyte volatile) getByte(o, offset);
+            return CORE_EXPR(
+                    getByte(o, offset),
+                    __atomic_load_n((gbyte volatile *) getNativeAddress(o, offset), __ATOMIC_ACQUIRE),
+                    getByteVolatile(o, offset),
+                    getByteVolatile(o, offset)
+            );
         }
 
-        gbool Unsafe::getBooleanAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getByteAcquire(o, offset) != 0;
-        }
+        gchar Unsafe::getCharAcquire(const Object &o, glong offset) { return getShortAcquire(o, offset); }
 
-        gchar Unsafe::getCharAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar volatile) getShortAcquire(o, offset);
-        }
+        gfloat Unsafe::getFloatAcquire(const Object &o, glong offset) { return i2f(getIntAcquire(o, offset)); }
 
-        gfloat Unsafe::getFloatAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gfloat volatile) Float::fromIntBits(getIntAcquire(o, offset));
-        }
-
-        gdouble Unsafe::getDoubleAcquire(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gdouble volatile) Double::fromLongBits(getLongAcquire(o, offset));
-        }
-
-        void Unsafe::putReferenceRelease(Object &o, glong offset, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            if (ADDRESS_SIZE == 4)
-                putIntRelease(o, offset, (gint) UnsafeImpl::getNativeAddress((Object &) x, 0));
-            else
-                putLongRelease(o, offset, UnsafeImpl::getNativeAddress((Object &) x, 0));
-        }
-
-        void Unsafe::putIntRelease(Object &o, glong offset, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 3);
-            return;
-#endif
-            putInt(o, offset, (gint) x);
-        }
-
-        void Unsafe::putLongRelease(Object &o, glong offset, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 3);
-            return;
-#endif
-            putLong(o, offset, (glong) x);
-        }
-
-        void Unsafe::putShortRelease(Object &o, glong offset, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 3);
-            return;
-#endif
-            putInt(o, offset, (gshort) x);
-        }
-
-        void Unsafe::putByteRelease(Object &o, glong offset, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 3);
-            return;
-#endif
-            putInt(o, offset, (gbyte) x);
-        }
-
-        void Unsafe::putBooleanRelease(Object &o, glong offset, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putByteRelease(o, offset, x ? 1 : 0);
-        }
-
-        void Unsafe::putCharRelease(Object &o, glong offset, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putShortRelease(o, offset, (gshort) x);
-        }
-
-        void Unsafe::putFloatRelease(Object &o, glong offset, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putIntRelease(o, offset, Float::toIntBits(x));
-        }
-
-        void Unsafe::putDoubleRelease(Object &o, glong offset, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putLongRelease(o, offset, Double::toLongBits(x));
-        }
+        gdouble Unsafe::getDoubleAcquire(const Object &o, glong offset) { return l2d(getLongAcquire(o, offset)); }
 
         Object &Unsafe::getReferenceRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ? getIntRelaxed(o, offset) : getLongRelaxed(o, offset);
-            return address == 0 ? null : *(Object *) address;
-        }
-
-        void Unsafe::putReferenceRelaxed(Object &o, glong offset, Object &x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            if (ADDRESS_SIZE == 4)
-                putIntRelaxed(o, offset, (gint) UnsafeImpl::getNativeAddress((Object &) x, 0));
-            else
-                putLongRelaxed(o, offset, UnsafeImpl::getNativeAddress((Object &) x, 0));
+            return l2o(ADDRESS_SIZE == 4 ? getIntVolatile(o, offset) : getLongVolatile(o, offset));
         }
 
         gint Unsafe::getIntRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), 0);
-#endif
-            return (gint volatile) getInt(o, offset);
-        }
-
-        void Unsafe::putIntRelaxed(Object &o, glong offset, gint x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 0);
-            return;
-#endif
-            putInt(o, offset, (gint) x);
+            return CORE_EXPR(
+                    getInt(o, offset),
+                    __atomic_load_n((gint volatile *) getNativeAddress(o, offset), __ATOMIC_RELAXED),
+                    getInt(o, offset),
+                    getIntVolatile(o, offset)
+            );
         }
 
         glong Unsafe::getLongRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), 0);
-#endif
-            return (glong volatile) getLong(o, offset);
-        }
-
-        void Unsafe::putLongRelaxed(Object &o, glong offset, glong x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 0);
-            return;
-#endif
-            putLong(o, offset, (glong) x);
+            return CORE_EXPR(
+                    getLong(o, offset),
+                    __atomic_load_n((glong volatile *) getNativeAddress(o, offset), __ATOMIC_RELAXED),
+                    getLong(o, offset),
+                    getLongVolatile(o, offset)
+            );
         }
 
         gshort Unsafe::getShortRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), 0);
-#endif
-            return (gshort volatile) getShort(o, offset);
-        }
-
-        void Unsafe::putShortRelaxed(Object &o, glong offset, gshort x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 0);
-            return;
-#endif
-            putInt(o, offset, (gshort) x);
+            return CORE_EXPR(
+                    getShort(o, offset),
+                    __atomic_load_n((gshort volatile *) getNativeAddress(o, offset), __ATOMIC_RELAXED),
+                    getShort(o, offset),
+                    getShortVolatile(o, offset)
+            );
         }
 
         gbyte Unsafe::getByteRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            return __atomic_load_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), 0);
-#endif
-            return (gbyte volatile) getByte(o, offset);
+            return CORE_EXPR(
+                    getByte(o, offset),
+                    __atomic_load_n((gbyte volatile *) getNativeAddress(o, offset), __ATOMIC_RELAXED),
+                    getByte(o, offset),
+                    getByteVolatile(o, offset)
+            );
         }
 
-        void Unsafe::putByteRelaxed(Object &o, glong offset, gbyte x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gbool Unsafe::getBooleanRelaxed(const Object &o, glong offset) { return b2bool(getByteRelaxed(o, offset)); }
+
+        gchar Unsafe::getCharRelaxed(const Object &o, glong offset) { return getShortRelaxed(o, offset); }
+
+        gfloat Unsafe::getFloatRelaxed(const Object &o, glong offset) { return i2f(getIntRelaxed(o, offset)); }
+
+        gdouble Unsafe::getDoubleRelaxed(const Object &o, glong offset) { return l2d(getLongRelaxed(o, offset)); }
+
+        void Unsafe::putIntRelease(Object &o, glong offset, gint x) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_load_n)
-            __atomic_store_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), x, 0);
-            return;
-#endif
-            putInt(o, offset, (gbyte) x);
+            CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gint volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELEASE),
+                    putIntVolatile(o, offset, x),
+                    putIntVolatile(o, offset, x)
+            );
         }
 
-        gbool Unsafe::getBooleanRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        void Unsafe::putLongRelease(core::Object &o, glong offset, glong x) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getByteRelaxed(o, offset) != 0;
+            CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((glong volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELEASE),
+                    putLongVolatile(o, offset, x),
+                    putLongVolatile(o, offset, x)
+            );
         }
 
-        void Unsafe::putBooleanRelaxed(Object &o, glong offset, gbool x) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        void Unsafe::putShortRelease(core::Object &o, glong offset, gshort x) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putByteRelaxed(o, offset, x ? 1 : 0);
+            CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gshort volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELEASE),
+                    putShortVolatile(o, offset, x),
+                    putShortVolatile(o, offset, x)
+            );
         }
 
-        gchar Unsafe::getCharRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        void Unsafe::putByteRelease(core::Object &o, glong offset, gbyte x) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar volatile) getShortRelaxed(o, offset);
+            CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gbyte volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELEASE),
+                    putByteVolatile(o, offset, x),
+                    putByteVolatile(o, offset, x)
+            );
         }
 
-        void Unsafe::putCharRelaxed(Object &o, glong offset, gchar x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putShortRelaxed(o, offset, (gshort) x);
+        void Unsafe::putReferenceRelease(core::Object &o, glong offset, core::Object &x) {
+            if(ADDRESS_SIZE == 4)
+                putIntRelease(o, offset, (gint) o2l(x));
+            else
+                putLongRelease(o, offset, o2l(x));
         }
 
-        gfloat Unsafe::getFloatRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gfloat volatile) Float::fromIntBits(getIntRelaxed(o, offset));
+        void Unsafe::putCharRelease(core::Object &o, glong offset, gchar x) {
+            putShortRelease(o, offset, c2s(x));
         }
 
-        void Unsafe::putFloatRelaxed(Object &o, glong offset, gfloat x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putIntRelaxed(o, offset, Float::toIntBits(x));
+        void Unsafe::putBooleanRelease(core::Object &o, glong offset, gbool x) {
+            putByteRelease(o, offset, b2byte(x));
         }
 
-        gdouble Unsafe::getDoubleRelaxed(const Object &o, glong offset) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gdouble volatile) Double::fromLongBits(getLongRelaxed(o, offset));
+        void Unsafe::putFloatRelease(core::Object &o, glong offset, gfloat x) {
+            putIntRelease(o, offset, f2i(x));
         }
 
-        void Unsafe::putDoubleRelaxed(Object &o, glong offset, gdouble x) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            putLongRelaxed(o, offset, Double::toLongBits(x));
+        void Unsafe::putDoubleRelease(core::Object &o, glong offset, gdouble x) {
+            putLongRelease(o, offset, d2l(x));
         }
 
+        void Unsafe::putIntRelaxed(Object &o, glong offset, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gint volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELAXED),
+                    putInt(o, offset, x),
+                    putIntVolatile(o, offset, x)
+            );
+        }
+
+        void Unsafe::putLongRelaxed(core::Object &o, glong offset, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((glong volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELAXED),
+                    putLong(o, offset, x),
+                    putLongVolatile(o, offset, x)
+            );
+        }
+
+        void Unsafe::putShortRelaxed(core::Object &o, glong offset, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gshort volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELAXED),
+                    putShort(o, offset, x),
+                    putShortVolatile(o, offset, x)
+            );
+        }
+
+        void Unsafe::putByteRelaxed(core::Object &o, glong offset, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), x),
+                    __atomic_store_n((gbyte volatile *) getNativeAddress(o, offset), x, __ATOMIC_RELAXED),
+                    putByte(o, offset, x),
+                    putByteVolatile(o, offset, x)
+            );
+        }
+
+        void Unsafe::putReferenceRelaxed(core::Object &o, glong offset, core::Object &x) {
+            if(ADDRESS_SIZE == 4)
+                putIntRelaxed(o, offset, (gint) o2l(x));
+            else
+                putLongRelaxed(o, offset, o2l(x));
+        }
+
+        void Unsafe::putCharRelaxed(core::Object &o, glong offset, gchar x) {
+            putShortRelaxed(o, offset, c2s(x));
+        }
+
+        void Unsafe::putBooleanRelaxed(core::Object &o, glong offset, gbool x) {
+            putByteRelaxed(o, offset, b2byte(x));
+        }
+
+        void Unsafe::putFloatRelaxed(core::Object &o, glong offset, gfloat x) {
+            putIntRelaxed(o, offset, f2i(x));
+        }
+
+        void Unsafe::putDoubleRelaxed(core::Object &o, glong offset, gdouble x) {
+            putLongRelaxed(o, offset, d2l(x));
+        }
+        
         gint Unsafe::getAndAddIntAcquire(Object &o, glong offset, gint delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 2);
-#endif
-            return getAndAddInt(o, offset, delta);
-        }
-
-        gint Unsafe::getAndAddIntRelease(Object &o, glong offset, gint delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            return getAndAddInt(o, offset, delta);
-        }
-
-        gint Unsafe::getAndAddIntRelaxed(Object &o, glong offset, gint delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            return getAndAddInt(o, offset, delta);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gint volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gint volatile *) getNativeAddress(o, offset), delta, __ATOMIC_ACQUIRE),
+                    getAndAddInt(o, offset, delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getInt(o, offset);
+                        } while (!weakCompareAndSetIntAcquire(o, offset, v, (gint) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
         glong Unsafe::getAndAddLongAcquire(Object &o, glong offset, glong delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 2);
-#endif
-            return getAndAddLong(o, offset, delta);
-        }
-
-        glong Unsafe::getAndAddLongRelease(Object &o, glong offset, glong delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            return getAndAddLong(o, offset, delta);
-        }
-
-        glong Unsafe::getAndAddLongRelaxed(Object &o, glong offset, glong delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            return getAndAddLong(o, offset, delta);
-        }
-
-        gbyte Unsafe::getAndAddByte(Object &o, glong offset, gbyte delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 4);
-#endif
-            gbyte v = {};
-            do {
-                v = getByte(o, offset);
-            } while (!weakCompareAndSetByteRelease(o, offset, v, (gbyte) (v + delta)));
-            return v;
+            return CORE_EXPR(
+                    __sync_fetch_and_add((glong volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((glong volatile *) getNativeAddress(o, offset), delta, __ATOMIC_ACQUIRE),
+                    getAndAddLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLong(o, offset);
+                        } while (!weakCompareAndSetLongAcquire(o, offset, v, (glong) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
         gbyte Unsafe::getAndAddByteAcquire(Object &o, glong offset, gbyte delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 2);
-#endif
-            gbyte v = {};
-            do {
-                v = getByteAcquire(o, offset);
-            } while (!weakCompareAndSetByteAcquire(o, offset, v, (gbyte) (v + delta)));
-            return v;
-        }
-
-        gbyte Unsafe::getAndAddByteRelease(Object &o, glong offset, gbyte delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            gbyte v = {};
-            do {
-                v = getByte(o, offset);
-            } while (!weakCompareAndSetByteRelease(o, offset, v, (gbyte) (v + delta)));
-            return v;
-        }
-
-        gbyte Unsafe::getAndAddByteRelaxed(Object &o, glong offset, gbyte delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 0);
-#endif
-            gbyte v = {};
-            do {
-                v = getByteRelaxed(o, offset);
-            } while (!weakCompareAndSetByteRelaxed(o, offset, v, (gbyte) (v + delta)));
-            return v;
-        }
-
-        gshort Unsafe::getAndAddShort(Object &o, glong offset, gshort delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 4);
-#endif
-            gshort v = {};
-            do {
-                v = getShort(o, offset);
-            } while (!weakCompareAndSetShortRelease(o, offset, v, (gshort) (v + delta)));
-            return v;
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gbyte volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gbyte volatile *) getNativeAddress(o, offset), delta, __ATOMIC_ACQUIRE),
+                    getAndAddByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetByteAcquire(o, offset, v, (gbyte) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
         gshort Unsafe::getAndAddShortAcquire(Object &o, glong offset, gshort delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 2);
-#endif
-            gshort v = {};
-            do {
-                v = getShortAcquire(o, offset);
-            } while (!weakCompareAndSetShortAcquire(o, offset, v, (gshort) (v + delta)));
-            return v;
-        }
-
-        gshort Unsafe::getAndAddShortRelease(Object &o, glong offset, gshort delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 3);
-#endif
-            gshort v = {};
-            do {
-                v = getShort(o, offset);
-            } while (!weakCompareAndSetShortRelease(o, offset, v, (gshort) (v + delta)));
-            return v;
-        }
-
-        gshort Unsafe::getAndAddShortRelaxed(Object &o, glong offset, gshort delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_add)
-            return __atomic_fetch_add((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), delta, 0);
-#endif
-            gshort v = {};
-            do {
-                v = getShortRelaxed(o, offset);
-            } while (!weakCompareAndSetShortRelaxed(o, offset, v, (gshort) (v + delta)));
-            return v;
-        }
-
-        gchar Unsafe::getAndAddChar(Object &o, glong offset, gchar delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndAddShort(o, offset, (gshort) delta);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gshort volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gshort volatile *) getNativeAddress(o, offset), delta, __ATOMIC_ACQUIRE),
+                    getAndAddShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShort(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, v, (gshort) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
         gchar Unsafe::getAndAddCharAcquire(Object &o, glong offset, gchar delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndAddShortAcquire(o, offset, (gshort) delta);
-        }
-
-        gchar Unsafe::getAndAddCharRelease(Object &o, glong offset, gchar delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndAddShortRelease(o, offset, (gshort) delta);
-        }
-
-        gchar Unsafe::getAndAddCharRelaxed(Object &o, glong offset, gchar delta) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndAddShortRelaxed(o, offset, (gshort) delta);
-        }
-
-        gfloat Unsafe::getAndAddFloat(Object &o, glong offset, gfloat delta) {
-            gint expectedBits = {};
-            float v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getIntVolatile(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetInt(o, offset, expectedBits, Float::toIntBits(v + delta)));
-            return v;
+            return s2c(getAndAddShortAcquire(o, offset, c2s(delta)));
         }
 
         gfloat Unsafe::getAndAddFloatAcquire(Object &o, glong offset, gfloat delta) {
             gint expectedBits = {};
-            float v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getIntAcquire(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntAcquire(o, offset, expectedBits, Float::toIntBits(v + delta)));
-            return v;
-        }
-
-        gfloat Unsafe::getAndAddFloatRelease(Object &o, glong offset, gfloat delta) {
-            gint expectedBits = {};
-            float v = {};
+            gfloat v = {};
             do {
                 // Load and CAS with the raw bits to avoid issues with NaNs and
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getInt(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntRelease(o, offset, expectedBits, Float::toIntBits(v + delta)));
-            return v;
-        }
-
-        gfloat Unsafe::getAndAddFloatRelaxed(Object &o, glong offset, gfloat delta) {
-            gint expectedBits = {};
-            float v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getIntRelaxed(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntRelaxed(o, offset, expectedBits, Float::toIntBits(v + delta)));
-            return v;
-        }
-
-        gdouble Unsafe::getAndAddDouble(Object &o, glong offset, gdouble delta) {
-            glong expectedBits = {};
-            double v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getLongVolatile(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLong(o, offset, expectedBits, Double::toLongBits(v + delta)));
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntAcquire(o, offset, expectedBits, f2i(v + delta)));
             return v;
         }
 
         gdouble Unsafe::getAndAddDoubleAcquire(Object &o, glong offset, gdouble delta) {
             glong expectedBits = {};
-            double v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getLongAcquire(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongAcquire(o, offset, expectedBits, Double::toLongBits(v + delta)));
-            return v;
-        }
-
-        gdouble Unsafe::getAndAddDoubleRelease(Object &o, glong offset, gdouble delta) {
-            glong expectedBits = {};
-            double v = {};
+            gdouble v = {};
             do {
                 // Load and CAS with the raw bits to avoid issues with NaNs and
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getLong(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongRelease(o, offset, expectedBits, Double::toLongBits(v + delta)));
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongAcquire(o, offset, expectedBits, d2l(v + delta)));
+            return v;
+        }
+
+        gint Unsafe::getAndAddIntRelease(Object &o, glong offset, gint delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gint volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gint volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELEASE),
+                    getAndAddInt(o, offset, delata),
+                    [&](){
+                        gint v = {};
+                        do {
+                            v = getInt(o, offset);
+                        } while (!weakCompareAndSetIntRelease(o, offset, v, (gint) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndAddLongRelease(Object &o, glong offset, glong delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((glong volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((glong volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELEASE),
+                    getAndAddLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLong(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, v, (glong) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndAddByteRelease(Object &o, glong offset, gbyte delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gbyte volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gbyte volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELEASE),
+                    getAndAddByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, v, (gbyte) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndAddShortRelease(Object &o, glong offset, gshort delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gshort volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gshort volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELEASE),
+                    getAndAddShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShort(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, v, (gshort) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndAddCharRelease(Object &o, glong offset, gchar delta) {
+            return s2c(getAndAddShortRelease(o, offset, c2s(delta)));
+        }
+
+        gfloat Unsafe::getAndAddFloatRelease(Object &o, glong offset, gfloat delta) {
+            gint expectedBits = {};
+            gfloat v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getInt(o, offset);
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntRelease(o, offset, expectedBits, f2i(v + delta)));
+            return v;
+        }
+
+        gdouble Unsafe::getAndAddDoubleRelease(Object &o, glong offset, gdouble delta) {
+            glong expectedBits = {};
+            gdouble v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getLong(o, offset);
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongRelease(o, offset, expectedBits, d2l(v + delta)));
+            return v;
+        }
+
+        gint Unsafe::getAndAddIntRelaxed(Object &o, glong offset, gint delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gint volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gint volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELAXED),
+                    getAndAddShort(o, offset, delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getIntRelaxed(o, offset);
+                        } while (!weakCompareAndSetIntRelaxed(o, offset, v, (gint) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndAddLongRelaxed(Object &o, glong offset, glong delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((glong volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((glong volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELAXED),
+                    getAndAddLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLongRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, v, (glong) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndAddByteRelaxed(Object &o, glong offset, gbyte delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gbyte volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gbyte volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELAXED),
+                    getAndAddByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByteRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, v, (gbyte) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndAddShortRelaxed(Object &o, glong offset, gshort delta) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gshort volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gshort volatile *) getNativeAddress(o, offset), delta, __ATOMIC_RELAXED),
+                    getAndAddShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShortRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, v, (gshort) (v + delta)));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndAddCharRelaxed(Object &o, glong offset, gchar delta) {
+            return s2c(getAndAddShortRelaxed(o, offset, c2s(delta)));
+        }
+
+        gfloat Unsafe::getAndAddFloatRelaxed(Object &o, glong offset, gfloat delta) {
+            gint expectedBits = {};
+            gfloat v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getIntRelaxed(o, offset);
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntRelaxed(o, offset, expectedBits, f2i(v + delta)));
             return v;
         }
 
         gdouble Unsafe::getAndAddDoubleRelaxed(Object &o, glong offset, gdouble delta) {
             glong expectedBits = {};
-            double v = {};
+            gdouble v = {};
             do {
                 // Load and CAS with the raw bits to avoid issues with NaNs and
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getLongRelaxed(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongRelaxed(o, offset, expectedBits, Double::toLongBits(v + delta)));
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongRelaxed(o, offset, expectedBits, d2l(v + delta)));
             return v;
         }
 
-        gint Unsafe::getAndSetIntAcquire(Object &o, glong offset, gint newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gint Unsafe::getAndAddInt(Object &o, glong offset, gint delta) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 2);
-#endif
-            return getAndSetInt(o, offset, newValue);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gint volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gint volatile *) getNativeAddress(o, offset), delta, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(ExchangeAdd)((XADDRESS) getNativeAddress(o, offset), delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getIntVolatile(o, offset);
+                        } while (!weakCompareAndSetInt(o, offset, v, (gint) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
-        glong Unsafe::getAndSetLongAcquire(Object &o, glong offset, glong newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        glong Unsafe::getAndAddLong(Object &o, glong offset, glong delta) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 2);
-#endif
-            return getAndSetLong(o, offset, newValue);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((glong volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((glong volatile *) getNativeAddress(o, offset), delta, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(ExchangeAdd64)((__int64 volatile *) getNativeAddress(o, offset), delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLongVolatile(o, offset);
+                        } while (!weakCompareAndSetLong(o, offset, v, (glong) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
-        gint Unsafe::getAndSetIntRelease(Object &o, glong offset, gint newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gbyte Unsafe::getAndAddByte(Object &o, glong offset, gbyte delta) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 3);
-#endif
-            return getAndSetInt(o, offset, newValue);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gbyte volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gbyte volatile *) getNativeAddress(o, offset), delta, __ATOMIC_SEQ_CST),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByteVolatile(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, v, (gbyte) (v + delta)));
+                        return v;
+                    }(),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByteVolatile(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, v, (gbyte) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
-        glong Unsafe::getAndSetLongRelease(Object &o, glong offset, glong newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gshort Unsafe::getAndAddShort(Object &o, glong offset, gshort delta) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 3);
-#endif
-            return getAndSetLong(o, offset, newValue);
+            return CORE_EXPR(
+                    __sync_fetch_and_add((gshort volatile *) getNativeAddress(o, offset), delta),
+                    __atomic_fetch_add((gshort volatile *) getNativeAddress(o, offset), delta, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(ExchangeAdd16)((__int16 volatile *) getNativeAddress(o, offset), delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShortVolatile(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, v, (gshort) (v + delta)));
+                        return v;
+                    }()
+            );
         }
 
-        gint Unsafe::getAndSetIntRelaxed(Object &o, glong offset, gint newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gint volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 0);
-#endif
-            return getAndSetInt(o, offset, newValue);
+        gchar Unsafe::getAndAddChar(Object &o, glong offset, gchar delta) {
+            return s2c(getAndAddShort(o, offset, c2s(delta)));
         }
 
-        glong Unsafe::getAndSetLongRelaxed(Object &o, glong offset, glong newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((glong volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 0);
-#endif
-            return getAndSetLong(o, offset, newValue);
-        }
-
-        gbyte Unsafe::getAndSetByte(Object &o, glong offset, gbyte newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 4);
-#endif
-            gbyte v = {};
-            do {
-                v = getByte(o, offset);
-            } while (!weakCompareAndSetByteRelease(o, offset, v, (gbyte) newValue));
-            return v;
-        }
-
-        gbyte Unsafe::getAndSetByteAcquire(Object &o, glong offset, gbyte newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 2);
-#endif
-            gbyte v = {};
-            do {
-                v = getByteAcquire(o, offset);
-            } while (!weakCompareAndSetByteAcquire(o, offset, v, (gbyte) newValue));
-            return v;
-        }
-
-        gbyte Unsafe::getAndSetByteRelease(Object &o, glong offset, gbyte newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 3);
-#endif
-            gbyte v = {};
-            do {
-                v = getByte(o, offset);
-            } while (!weakCompareAndSetByteRelease(o, offset, v, (gbyte) newValue));
-            return v;
-        }
-
-        gbyte Unsafe::getAndSetByteRelaxed(Object &o, glong offset, gbyte newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gbyte volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 0);
-#endif
-            gbyte v = {};
-            do {
-                v = getByteRelaxed(o, offset);
-            } while (!weakCompareAndSetByteRelaxed(o, offset, v, (gbyte) newValue));
-            return v;
-        }
-
-        gshort Unsafe::getAndSetShort(Object &o, glong offset, gshort newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 4);
-#endif
-            gshort v = {};
-            do {
-                v = getShort(o, offset);
-            } while (!weakCompareAndSetShortRelease(o, offset, v, (gshort) newValue));
-            return v;
-        }
-
-        gshort Unsafe::getAndSetShortAcquire(Object &o, glong offset, gshort newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 2);
-#endif
-            gshort v = {};
-            do {
-                v = getShortAcquire(o, offset);
-            } while (!weakCompareAndSetShortAcquire(o, offset, v, (gshort) newValue));
-            return v;
-        }
-
-        gshort Unsafe::getAndSetShortRelease(Object &o, glong offset, gshort newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 3);
-#endif
-            gshort v = {};
-            do {
-                v = getShort(o, offset);
-            } while (!weakCompareAndSetShortRelease(o, offset, v, (gshort) newValue));
-            return v;
-        }
-
-        gshort Unsafe::getAndSetShortRelaxed(Object &o, glong offset, gshort newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_exchange_n)
-            return __atomic_exchange_n((gshort volatile *) UnsafeImpl::getNativeAddress(o, offset), newValue, 0);
-#endif
-            gshort v = {};
-            do {
-                v = getShortRelaxed(o, offset);
-            } while (!weakCompareAndSetShortRelaxed(o, offset, v, (gshort) newValue));
-            return v;
-        }
-
-        gchar Unsafe::getAndSetChar(Object &o, glong offset, gchar newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndSetShort(o, offset, (gshort) newValue);
-        }
-
-        gchar Unsafe::getAndSetCharAcquire(Object &o, glong offset, gchar newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndSetShortAcquire(o, offset, (gshort) newValue);
-        }
-
-        gchar Unsafe::getAndSetCharRelease(Object &o, glong offset, gchar newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndSetShortRelease(o, offset, (gshort) newValue);
-        }
-
-        gchar Unsafe::getAndSetCharRelaxed(Object &o, glong offset, gchar newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return (gchar) getAndSetShortRelaxed(o, offset, (gshort) newValue);
-        }
-
-        gbool Unsafe::getAndSetBoolean(Object &o, glong offset, gbool newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndSetByte(o, offset, newValue ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndSetBooleanAcquire(Object &o, glong offset, gbool newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndSetByteAcquire(o, offset, newValue ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndSetBooleanRelease(Object &o, glong offset, gbool newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndSetByteRelease(o, offset, newValue ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndSetBooleanRelaxed(Object &o, glong offset, gbool newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndSetByteRelaxed(o, offset, newValue ? 1 : 0) != 0;
-        }
-
-        gfloat Unsafe::getAndSetFloat(Object &o, glong offset, gfloat newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+        gfloat Unsafe::getAndAddFloat(Object &o, glong offset, gfloat delta) {
             gint expectedBits = {};
-            float v = {};
+            gfloat v = {};
             do {
                 // Load and CAS with the raw bits to avoid issues with NaNs and
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getIntVolatile(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetInt(o, offset, expectedBits, Float::toIntBits(newValue)));
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetInt(o, offset, expectedBits, f2i(v + delta)));
             return v;
         }
 
-        gfloat Unsafe::getAndSetFloatAcquire(Object &o, glong offset, gfloat newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            gint expectedBits = {};
-            float v = {};
+        gdouble Unsafe::getAndAddDouble(Object &o, glong offset, gdouble delta) {
+            glong expectedBits = {};
+            gdouble v = {};
             do {
                 // Load and CAS with the raw bits to avoid issues with NaNs and
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
-                expectedBits = getIntAcquire(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntAcquire(o, offset, expectedBits, Float::toIntBits(newValue)));
+                expectedBits = getLongVolatile(o, offset);
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLong(o, offset, expectedBits, d2l(v + delta)));
             return v;
         }
 
-        gfloat Unsafe::getAndSetFloatRelease(Object &o, glong offset, gfloat newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gint Unsafe::getAndSetIntAcquire(Object &o, glong offset, gint newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gint volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_ACQUIRE),
+                    getAndSetInt(o, offset, delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getInt(o, offset);
+                        } while (!weakCompareAndSetIntAcquire(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndSetLongAcquire(Object &o, glong offset, glong newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((glong volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_ACQUIRE),
+                    getAndSetLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLong(o, offset);
+                        } while (!weakCompareAndSetLongAcquire(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndSetByteAcquire(Object &o, glong offset, gbyte newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gbyte volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_ACQUIRE),
+                    getAndSetByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetByteAcquire(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndSetShortAcquire(Object &o, glong offset, gshort newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gshort volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_ACQUIRE),
+                    getAndSetShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShort(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndSetCharAcquire(Object &o, glong offset, gchar newValue) {
+            return s2c(getAndSetShortAcquire(o, offset, c2s(newValue)));
+        }
+
+        gbool Unsafe::getAndSetBooleanAcquire(Object &o, glong offset, gbool newValue) {
+            return b2bool(getAndSetByteAcquire(o, offset, b2byte(newValue)));
+        }
+
+        gfloat Unsafe::getAndSetFloatAcquire(Object &o, glong offset, gfloat newValue) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             gint expectedBits = {};
             float v = {};
@@ -2419,58 +2294,13 @@ namespace core {
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getInt(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntRelease(o, offset, expectedBits, Float::toIntBits(newValue)));
-            return v;
-        }
-
-        gfloat Unsafe::getAndSetFloatRelaxed(Object &o, glong offset, gfloat newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            gint expectedBits = {};
-            float v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getIntRelaxed(o, offset);
-                v = Float::fromIntBits(expectedBits);
-            } while (!weakCompareAndSetIntRelaxed(o, offset, expectedBits, Float::toIntBits(newValue)));
-            return v;
-        }
-
-        gdouble Unsafe::getAndSetDouble(Object &o, glong offset, gdouble newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong expectedBits = {};
-            double v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getLongVolatile(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLong(o, offset, expectedBits, Double::toLongBits(newValue)));
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntAcquire(o, offset, expectedBits, f2i(newValue)));
             return v;
         }
 
         gdouble Unsafe::getAndSetDoubleAcquire(Object &o, glong offset, gdouble newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong expectedBits = {};
-            double v = {};
-            do {
-                // Load and CAS with the raw bits to avoid issues with NaNs and
-                // possible bit conversion from signaling NaNs to quiet NaNs that
-                // may result in the loop not terminating.
-                expectedBits = getLongAcquire(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongAcquire(o, offset, expectedBits, Double::toLongBits(newValue)));
-            return v;
-        }
-
-        gdouble Unsafe::getAndSetDoubleRelease(Object &o, glong offset, gdouble newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong expectedBits = {};
             double v = {};
@@ -2479,13 +2309,230 @@ namespace core {
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getLong(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongRelease(o, offset, expectedBits, Double::toLongBits(newValue)));
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongAcquire(o, offset, expectedBits, d2l(newValue)));
+            return v;
+        }
+
+        Object &Unsafe::getAndSetReferenceAcquire(Object &o, glong offset, Object &newValue) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       (glong) getAndSetIntAcquire(o, offset, (gint) getNativeAddress(newValue, 0)) :
+                       getAndSetLongAcquire(o, offset, getNativeAddress(newValue, 0)));
+        }
+
+        gint Unsafe::getAndSetIntRelease(Object &o, glong offset, gint newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gint volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELEASE),
+                    getAndSetInt(o, offset, delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getInt(o, offset);
+                        } while (!weakCompareAndSetIntRelease(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndSetLongRelease(Object &o, glong offset, glong newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((glong volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELEASE),
+                    getAndSetLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLong(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndSetByteRelease(Object &o, glong offset, gbyte newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gbyte volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELEASE),
+                    getAndSetByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetByteRelease(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndSetShortRelease(Object &o, glong offset, gshort newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gshort volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELEASE),
+                    getAndSetShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShort(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndSetCharRelease(Object &o, glong offset, gchar newValue) {
+            return s2c(getAndSetShortRelease(o, offset, c2s(newValue)));
+        }
+
+        gbool Unsafe::getAndSetBooleanRelease(Object &o, glong offset, gbool newValue) {
+            return b2bool(getAndSetByteRelease(o, offset, b2byte(newValue)));
+        }
+
+        gfloat Unsafe::getAndSetFloatRelease(Object &o, glong offset, gfloat newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            gint expectedBits = {};
+            float v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getInt(o, offset);
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntRelease(o, offset, expectedBits, f2i(newValue)));
+            return v;
+        }
+
+        gdouble Unsafe::getAndSetDoubleRelease(Object &o, glong offset, gdouble newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            glong expectedBits = {};
+            double v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getLong(o, offset);
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongRelease(o, offset, expectedBits, d2l(newValue)));
+            return v;
+        }
+
+        Object &Unsafe::getAndSetReferenceRelease(Object &o, glong offset, Object &newValue) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       (glong) getAndSetIntRelease(o, offset, (gint) getNativeAddress(newValue, 0)) :
+                       getAndSetLongRelease(o, offset, getNativeAddress(newValue, 0)));
+        }
+
+        gint Unsafe::getAndSetIntRelaxed(Object &o, glong offset, gint newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gint volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELAXED),
+                    getAndSetInt(o, offset, delta),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getIntRelaxed(o, offset);
+                        } while (!weakCompareAndSetIntRelaxed(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndSetLongRelaxed(Object &o, glong offset, glong newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((glong volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELAXED),
+                    getAndSetLong(o, offset, delta),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLongRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndSetByteRelaxed(Object &o, glong offset, gbyte newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gbyte volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELAXED),
+                    getAndSetByte(o, offset, delta),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByteRelaxed(o, offset);
+                        } while (!weakCompareAndSetByteRelaxed(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndSetShortRelaxed(Object &o, glong offset, gshort newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gshort volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_RELAXED),
+                    getAndSetShort(o, offset, delta),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShortRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndSetCharRelaxed(Object &o, glong offset, gchar newValue) {
+            return s2c(getAndSetShortRelaxed(o, offset, c2s(newValue)));
+        }
+
+        gbool Unsafe::getAndSetBooleanRelaxed(Object &o, glong offset, gbool newValue) {
+            return b2bool(getAndSetByteRelaxed(o, offset, b2byte(newValue)));
+        }
+
+        gfloat Unsafe::getAndSetFloatRelaxed(Object &o, glong offset, gfloat newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            gint expectedBits = {};
+            float v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getIntRelaxed(o, offset);
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetIntRelaxed(o, offset, expectedBits, f2i(newValue)));
             return v;
         }
 
         gdouble Unsafe::getAndSetDoubleRelaxed(Object &o, glong offset, gdouble newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
             glong expectedBits = {};
             double v = {};
@@ -2494,695 +2541,1600 @@ namespace core {
                 // possible bit conversion from signaling NaNs to quiet NaNs that
                 // may result in the loop not terminating.
                 expectedBits = getLongRelaxed(o, offset);
-                v = Double::fromLongBits(expectedBits);
-            } while (!weakCompareAndSetLongRelaxed(o, offset, expectedBits, Double::toLongBits(newValue)));
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLongRelaxed(o, offset, expectedBits, d2l(newValue)));
+            return v;
+        }
+
+        Object &Unsafe::getAndSetReferenceRelaxed(Object &o, glong offset, Object &newValue) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       (glong) getAndSetIntRelaxed(o, offset, (gint) getNativeAddress(newValue, 0)) :
+                       getAndSetLongRelaxed(o, offset, getNativeAddress(newValue, 0)));
+        }
+
+        gint Unsafe::getAndSetInt(Object &o, glong offset, gint newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gint volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gint volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Exchange)((XADDRESS) getNativeAddress(o, offset), newValue),
+                    [&]() {
+                        gint v = {};
+                        do {
+                            v = getInt(o, offset);
+                        } while (!weakCompareAndSetInt(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndSetLong(Object &o, glong offset, glong newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((glong volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((glong volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Exchange64)((__int64 volatile *) getNativeAddress(o, offset), newValue),
+                    [&]() {
+                        glong v = {};
+                        do {
+                            v = getLong(o, offset);
+                        } while (!weakCompareAndSetLong(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::getAndSetByte(Object &o, glong offset, gbyte newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gbyte volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gbyte volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_SEQ_CST),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, v, newValue));
+                        return v;
+                    }(),
+                    [&]() {
+                        gbyte v = {};
+                        do {
+                            v = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndSetShort(Object &o, glong offset, gshort newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_swap((gshort volatile *) getNativeAddress(o, offset), newValue),
+                    __atomic_exchange_n((gshort volatile *) getNativeAddress(o, offset), newValue,
+                                        __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Exchange16)((__int16 volatile *) getNativeAddress(o, offset), newValue),
+                    [&]() {
+                        gshort v = {};
+                        do {
+                            v = getShort(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, v, newValue));
+                        return v;
+                    }()
+            );
+        }
+
+        gchar Unsafe::getAndSetChar(Object &o, glong offset, gchar newValue) {
+            return s2c(getAndSetShort(o, offset, c2s(newValue)));
+        }
+
+        gbool Unsafe::getAndSetBoolean(Object &o, glong offset, gbool newValue) {
+            return b2bool(getAndSetByte(o, offset, b2byte(newValue)));
+        }
+
+        gfloat Unsafe::getAndSetFloat(Object &o, glong offset, gfloat newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            gint expectedBits = {};
+            float v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getInt(o, offset);
+                v = i2f(expectedBits);
+            } while (!weakCompareAndSetInt(o, offset, expectedBits, f2i(newValue)));
+            return v;
+        }
+
+        gdouble Unsafe::getAndSetDouble(Object &o, glong offset, gdouble newValue) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            glong expectedBits = {};
+            double v = {};
+            do {
+                // Load and CAS with the raw bits to avoid issues with NaNs and
+                // possible bit conversion from signaling NaNs to quiet NaNs that
+                // may result in the loop not terminating.
+                expectedBits = getLong(o, offset);
+                v = l2d(expectedBits);
+            } while (!weakCompareAndSetLong(o, offset, expectedBits, d2l(newValue)));
             return v;
         }
 
         Object &Unsafe::getAndSetReference(Object &o, glong offset, Object &newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ?
-                            getAndSetInt(o, offset, (gint) UnsafeImpl::getNativeAddress(newValue, 0)) :
-                            getAndSetLong(o, offset, UnsafeImpl::getNativeAddress(newValue, 0));
-            return address == 0 ? null : *(Object *) address;
-        }
-
-        Object &Unsafe::getAndSetReferenceAcquire(Object &o, glong offset, Object &newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ?
-                            getAndSetIntAcquire(o, offset, (gint) UnsafeImpl::getNativeAddress(newValue, 0)) :
-                            getAndSetLongAcquire(o, offset, UnsafeImpl::getNativeAddress(newValue, 0));
-            return address == 0 ? null : *(Object *) address;
-        }
-
-        Object &Unsafe::getAndSetReferenceRelease(Object &o, glong offset, Object &newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ?
-                            getAndSetIntRelease(o, offset, (gint) UnsafeImpl::getNativeAddress(newValue, 0)) :
-                            getAndSetLongRelease(o, offset, UnsafeImpl::getNativeAddress(newValue, 0));
-            return address == 0 ? null : *(Object *) address;
-        }
-
-        Object &Unsafe::getAndSetReferenceRelaxed(Object &o, glong offset, Object &newValue) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            glong address = ADDRESS_SIZE == 4 ?
-                            getAndSetIntRelaxed(o, offset, (gint) UnsafeImpl::getNativeAddress(newValue, 0)) :
-                            getAndSetLongRelaxed(o, offset, UnsafeImpl::getNativeAddress(newValue, 0));
-            return address == 0 ? null : *(Object *) address;
-        }
-
-        gbyte Unsafe::getAndBitwiseOrByte(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current | mask)));
-            return current;
+            return l2o(ADDRESS_SIZE == 4 ?
+                       (glong) getAndSetInt(o, offset, (gint) getNativeAddress(newValue, 0)) :
+                       getAndSetLong(o, offset, getNativeAddress(newValue, 0)));
         }
 
         gbyte Unsafe::getAndBitwiseOrByteAcquire(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current | mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseOrByteRelease(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gbyte current = {};
-            do {
-                current = getByte(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current | mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseOrByteRelaxed(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteRelaxed(o, offset);
-            } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current | mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseOrShort(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current | mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseOrByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteAcquire(o, offset, current, (gbyte) (current | mask)));
+                        return current;
+                    }()
+            );
         }
 
         gshort Unsafe::getAndBitwiseOrShortAcquire(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current | mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseOrShortRelease(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gshort current = {};
-            do {
-                current = getShort(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current | mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseOrShortRelaxed(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gshort current = {};
-            do {
-                current = getShortRelaxed(o, offset);
-            } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current | mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseOrShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gshort) (current | mask)));
+                        return current;
+                    }()
+            );
         }
 
         gint Unsafe::getAndBitwiseOrIntAcquire(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseOrIntRelease(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseOrIntRelaxed(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseOrInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gint) (current | mask)));
+                        return current;
+                    }()
+            );
         }
 
         glong Unsafe::getAndBitwiseOrLongAcquire(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseOrLongRelease(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseOrLongRelaxed(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_or)
-            return __atomic_fetch_or((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        gbool Unsafe::getAndBitwiseOrBoolean(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrByte(o, offset, mask ? 1 : 0) != 0;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseOrLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongAcquire(o, offset, current, (glong) (current | mask)));
+                        return current;
+                    }()
+            );
         }
 
         gbool Unsafe::getAndBitwiseOrBooleanAcquire(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrByteAcquire(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseOrBooleanRelease(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrByteRelease(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseOrBooleanRelaxed(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrByteRelaxed(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gchar Unsafe::getAndBitwiseOrChar(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrShort(o, offset, (gshort) mask);
+            return b2bool(getAndBitwiseOrByteAcquire(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseOrCharAcquire(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseOrShortAcquire(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseOrByteRelease(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrShortAcquire(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseOrByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteRelease(o, offset, current, (gbyte) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseOrShortRelease(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseOrShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gshort) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseOrIntRelease(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseOrInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gint) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseOrLongRelease(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseOrLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, current, (glong) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseOrBooleanRelease(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseOrByteRelease(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseOrCharRelease(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseOrShortRelease(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseOrByteRelaxed(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrShortRelease(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseOrByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByteRelaxed(o, offset);
+                        } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseOrShortRelaxed(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseOrShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShortRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseOrIntRelaxed(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseOrInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getIntRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gint) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseOrLongRelaxed(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseOrLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLongRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, current, (glong) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseOrBooleanRelaxed(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseOrByteRelaxed(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseOrCharRelaxed(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseOrShortRelaxed(o, offset, (gshort) mask);
+            return s2c(getAndBitwiseOrShortRelaxed(o, offset, c2s(mask)));
         }
 
-        gbyte Unsafe::getAndBitwiseAndByte(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gbyte Unsafe::getAndBitwiseOrByte(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current & mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current | mask)));
+                        return current;
+                    }(),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseOrShort(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Xor)((__int16 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseOrInt(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Or)((XADDRESS) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gint) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseOrLong(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Or64)((__int64 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLong(o, offset, current, (glong) (current | mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseOrBoolean(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseOrByte(o, offset, b2byte(mask)));
+        }
+
+        gchar Unsafe::getAndBitwiseOrChar(Object &o, glong offset, gchar mask) {
+            return s2c(getAndBitwiseOrShort(o, offset, c2s(mask)));
         }
 
         gbyte Unsafe::getAndBitwiseAndByteAcquire(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current & mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseAndByteRelease(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gbyte current = {};
-            do {
-                current = getByte(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current & mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseAndByteRelaxed(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteRelaxed(o, offset);
-            } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current & mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseAndShort(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current & mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseAndByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteAcquire(o, offset, current, (gbyte) (current & mask)));
+                        return current;
+                    }()
+            );
         }
 
         gshort Unsafe::getAndBitwiseAndShortAcquire(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current & mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseAndShortRelease(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gshort current = {};
-            do {
-                current = getShort(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current & mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseAndShortRelaxed(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gshort current = {};
-            do {
-                current = getShortRelaxed(o, offset);
-            } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current & mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseAndShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gshort) (current & mask)));
+                        return current;
+                    }()
+            );
         }
 
         gint Unsafe::getAndBitwiseAndIntAcquire(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseAndIntRelease(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseAndIntRelaxed(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseAndInt(o, offset, mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseAndInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gint) (current & mask)));
+                        return current;
+                    }()
+            );
         }
 
         glong Unsafe::getAndBitwiseAndLongAcquire(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseAndLongRelease(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseAndLongRelaxed(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_and)
-            return __atomic_fetch_and((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseAndLong(o, offset, mask);
-        }
-
-        gbool Unsafe::getAndBitwiseAndBoolean(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndByte(o, offset, mask ? 1 : 0) != 0;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseAndLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongAcquire(o, offset, current, (glong) (current & mask)));
+                        return current;
+                    }()
+            );
         }
 
         gbool Unsafe::getAndBitwiseAndBooleanAcquire(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndByteAcquire(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseAndBooleanRelease(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndByteRelease(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseAndBooleanRelaxed(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndByteRelaxed(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gchar Unsafe::getAndBitwiseAndChar(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndShort(o, offset, (gshort) mask);
+            return b2bool(getAndBitwiseAndByteAcquire(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseAndCharAcquire(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseAndShortAcquire(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseAndByteRelease(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndShortAcquire(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseAndByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteRelease(o, offset, current, (gbyte) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseAndShortRelease(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseAndShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gshort) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseAndIntRelease(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseAndInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gint) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseAndLongRelease(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseAndLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, current, (glong) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseAndBooleanRelease(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseAndByteRelease(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseAndCharRelease(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseAndShortRelease(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseAndByteRelaxed(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndShortRelease(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseAndByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByteRelaxed(o, offset);
+                        } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseAndShortRelaxed(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseAndShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShortRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseAndIntRelaxed(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseAndInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getIntRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gint) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseAndLongRelaxed(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseAndLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLongRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, current, (glong) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseAndBooleanRelaxed(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseAndByteRelaxed(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseAndCharRelaxed(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseAndShortRelaxed(o, offset, (gshort) mask);
+            return s2c(getAndBitwiseAndShortRelaxed(o, offset, c2s(mask)));
         }
 
-        gbyte Unsafe::getAndBitwiseXorByte(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+        gbyte Unsafe::getAndBitwiseAndByte(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current ^ mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current & mask)));
+                        return current;
+                    }(),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseAndShort(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(And16)((__int16 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseAndInt(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(And)((XADDRESS) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gint) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseAndLong(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(And64)((__int64 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLong(o, offset, current, (glong) (current & mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseAndBoolean(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseAndByte(o, offset, b2byte(mask)));
+        }
+
+        gchar Unsafe::getAndBitwiseAndChar(Object &o, glong offset, gchar mask) {
+            return s2c(getAndBitwiseAndShort(o, offset, c2s(mask)));
         }
 
         gbyte Unsafe::getAndBitwiseXorByteAcquire(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteVolatile(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current ^ mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseXorByteRelease(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gbyte current = {};
-            do {
-                current = getByte(o, offset);
-            } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current ^ mask)));
-            return current;
-        }
-
-        gbyte Unsafe::getAndBitwiseXorByteRelaxed(Object &o, glong offset, gbyte mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gbyte volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gbyte current = {};
-            do {
-                current = getByteRelaxed(o, offset);
-            } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current ^ mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseXorShort(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 4);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current ^ mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseXorByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteAcquire(o, offset, current, (gbyte) (current ^ mask)));
+                        return current;
+                    }()
+            );
         }
 
         gshort Unsafe::getAndBitwiseXorShortAcquire(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            gshort current = {};
-            do {
-                current = getShortVolatile(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current ^ mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseXorShortRelease(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            gshort current = {};
-            do {
-                current = getShort(o, offset);
-            } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current ^ mask)));
-            return current;
-        }
-
-        gshort Unsafe::getAndBitwiseXorShortRelaxed(Object &o, glong offset, gshort mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gshort volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            gshort current = {};
-            do {
-                current = getShortRelaxed(o, offset);
-            } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current ^ mask)));
-            return current;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseXorShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gshort) (current ^ mask)));
+                        return current;
+                    }()
+            );
         }
 
         gint Unsafe::getAndBitwiseXorIntAcquire(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseXorInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseXorIntRelease(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseXorInt(o, offset, mask);
-        }
-
-        gint Unsafe::getAndBitwiseXorIntRelaxed(Object &o, glong offset, gint mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((gint volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseXorInt(o, offset, mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseXorInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortAcquire(o, offset, current, (gint) (current ^ mask)));
+                        return current;
+                    }()
+            );
         }
 
         glong Unsafe::getAndBitwiseXorLongAcquire(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 2);
-#endif
-            return getAndBitwiseXorLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseXorLongRelease(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 3);
-#endif
-            return getAndBitwiseXorLong(o, offset, mask);
-        }
-
-        glong Unsafe::getAndBitwiseXorLongRelaxed(Object &o, glong offset, glong mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-#if __has_builtin(__atomic_fetch_xor)
-            return __atomic_fetch_xor((glong volatile*) UnsafeImpl::getNativeAddress(o, offset), mask, 0);
-#endif
-            return getAndBitwiseXorLong(o, offset, mask);
-        }
-
-        gbool Unsafe::getAndBitwiseXorBoolean(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorByte(o, offset, mask ? 1 : 0) != 0;
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_ACQUIRE),
+                    getAndBitwiseXorLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongAcquire(o, offset, current, (glong) (current ^ mask)));
+                        return current;
+                    }()
+            );
         }
 
         gbool Unsafe::getAndBitwiseXorBooleanAcquire(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorByteAcquire(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseXorBooleanRelease(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorByteRelease(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gbool Unsafe::getAndBitwiseXorBooleanRelaxed(Object &o, glong offset, gbool mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorByteRelaxed(o, offset, mask ? 1 : 0) != 0;
-        }
-
-        gchar Unsafe::getAndBitwiseXorChar(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorShort(o, offset, (gshort) mask);
+            return b2bool(getAndBitwiseXorByteAcquire(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseXorCharAcquire(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseXorShortAcquire(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseXorByteRelease(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorShortAcquire(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseXorByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByte(o, offset);
+                        } while (!weakCompareAndSetByteRelease(o, offset, current, (gbyte) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseXorShortRelease(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseXorShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gshort) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseXorIntRelease(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseXorInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShortRelease(o, offset, current, (gint) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseXorLongRelease(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELEASE),
+                    getAndBitwiseXorLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLongRelease(o, offset, current, (glong) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseXorBooleanRelease(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseXorByteRelease(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseXorCharRelease(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
+            return s2c(getAndBitwiseXorShortRelease(o, offset, c2s(mask)));
+        }
+
+        gbyte Unsafe::getAndBitwiseXorByteRelaxed(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
                 ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorShortRelease(o, offset, (gshort) mask);
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseXorByte(o, offset, delta),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByteRelaxed(o, offset);
+                        } while (!weakCompareAndSetByteRelaxed(o, offset, current, (gbyte) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseXorShortRelaxed(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseXorShort(o, offset, delta),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShortRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gshort) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseXorIntRelaxed(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseXorInt(o, offset, delta),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getIntRelaxed(o, offset);
+                        } while (!weakCompareAndSetShortRelaxed(o, offset, current, (gint) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseXorLongRelaxed(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_RELAXED),
+                    getAndBitwiseXorLong(o, offset, delta),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLongRelaxed(o, offset);
+                        } while (!weakCompareAndSetLongRelaxed(o, offset, current, (glong) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseXorBooleanRelaxed(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseXorByteRelaxed(o, offset, b2byte(mask)));
         }
 
         gchar Unsafe::getAndBitwiseXorCharRelaxed(Object &o, glong offset, gchar mask) {
-            if (UnsafeImpl::checkPointer(o, offset))
-                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
-            return getAndBitwiseXorShortRelaxed(o, offset, (gshort) mask);
+            return s2c(getAndBitwiseXorShortRelaxed(o, offset, c2s(mask)));
         }
+
+        gbyte Unsafe::getAndBitwiseXorByte(Object &o, glong offset, gbyte mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gbyte volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gbyte volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByteVolatile(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current ^ mask)));
+                        return current;
+                    }(),
+                    [&]() {
+                        gbyte current = {};
+                        do {
+                            current = getByteVolatile(o, offset);
+                        } while (!weakCompareAndSetByte(o, offset, current, (gbyte) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gshort Unsafe::getAndBitwiseXorShort(Object &o, glong offset, gshort mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gshort volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gshort volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Xor16)((__int16 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gshort current = {};
+                        do {
+                            current = getShort(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gshort) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gint Unsafe::getAndBitwiseXorInt(Object &o, glong offset, gint mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((gint volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((gint volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Xor)((XADDRESS) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        gint current = {};
+                        do {
+                            current = getInt(o, offset);
+                        } while (!weakCompareAndSetShort(o, offset, current, (gint) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        glong Unsafe::getAndBitwiseXorLong(Object &o, glong offset, glong mask) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_fetch_and_or((glong volatile *) getNativeAddress(o, offset), mask),
+                    __atomic_fetch_or((glong volatile *) getNativeAddress(o, offset), mask, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(Xor64)((__int64 volatile *) getNativeAddress(o, offset), mask),
+                    [&]() {
+                        glong current = {};
+                        do {
+                            current = getLong(o, offset);
+                        } while (!weakCompareAndSetLong(o, offset, current, (glong) (current ^ mask)));
+                        return current;
+                    }()
+            );
+        }
+
+        gbool Unsafe::getAndBitwiseXorBoolean(Object &o, glong offset, gbool mask) {
+            return b2bool(getAndBitwiseXorByte(o, offset, b2byte(mask)));
+        }
+
+        gchar Unsafe::getAndBitwiseXorChar(Object &o, glong offset, gchar mask) {
+            return s2c(getAndBitwiseXorShort(o, offset, c2s(mask)));
+        }
+
+        Object &Unsafe::compareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       compareAndExchangeIntAcquire(o, offset, (gint) getNativeAddress(expected, 0),
+                                                    (gint) getNativeAddress(x, 0)) :
+                       compareAndExchangeLongAcquire(o, offset, getNativeAddress(expected, 0), getNativeAddress(x, 0)));
+        }
+
+        Object &Unsafe::compareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       compareAndExchangeIntRelease(o, offset, (gint) getNativeAddress(expected, 0),
+                                                    (gint) getNativeAddress(x, 0)) :
+                       compareAndExchangeLongRelease(o, offset, getNativeAddress(expected, 0), getNativeAddress(x, 0)));
+        }
+
+        Object &Unsafe::compareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       compareAndExchangeIntRelaxed(o, offset, (gint) getNativeAddress(expected, 0),
+                                                    (gint) getNativeAddress(x, 0)) :
+                       compareAndExchangeLongRelaxed(o, offset, getNativeAddress(expected, 0), getNativeAddress(x, 0)));
+        }
+
+        Object &Unsafe::compareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       compareAndExchangeInt(o, offset, (gint) getNativeAddress(expected, 0),
+                                             (gint) getNativeAddress(x, 0)) :
+                       compareAndExchangeLong(o, offset, getNativeAddress(expected, 0), getNativeAddress(x, 0)));
+        }
+
+        Object &
+        Unsafe::weakCompareAndExchangeReferenceAcquire(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       weakCompareAndExchangeIntAcquire(o, offset, (gint) getNativeAddress(expected, 0),
+                                                        (gint) getNativeAddress(x, 0)) :
+                       weakCompareAndExchangeLongAcquire(o, offset, getNativeAddress(expected, 0),
+                                                         getNativeAddress(x, 0)));
+        }
+
+        Object &
+        Unsafe::weakCompareAndExchangeReferenceRelease(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       weakCompareAndExchangeIntRelease(o, offset, (gint) getNativeAddress(expected, 0),
+                                                        (gint) getNativeAddress(x, 0)) :
+                       weakCompareAndExchangeLongRelease(o, offset, getNativeAddress(expected, 0),
+                                                         getNativeAddress(x, 0)));
+        }
+
+        Object &
+        Unsafe::weakCompareAndExchangeReferenceRelaxed(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       weakCompareAndExchangeIntRelaxed(o, offset, (gint) getNativeAddress(expected, 0),
+                                                        (gint) getNativeAddress(x, 0)) :
+                       weakCompareAndExchangeLongRelaxed(o, offset, getNativeAddress(expected, 0),
+                                                         getNativeAddress(x, 0)));
+        }
+
+        Object &Unsafe::weakCompareAndExchangeReference(Object &o, glong offset, const Object &expected, Object &x) {
+            return l2o(ADDRESS_SIZE == 4 ?
+                       weakCompareAndExchangeInt(o, offset, (gint) getNativeAddress(expected, 0),
+                                                 (gint) getNativeAddress(x, 0)) :
+                       weakCompareAndExchangeLong(o, offset, getNativeAddress(expected, 0), getNativeAddress(x, 0)));
+        }
+
+        gint Unsafe::compareAndExchangeIntAcquire(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    compareAndExchangeInt(o, offset, expected, x),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::compareAndExchangeLongAcquire(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    compareAndExchangeLong(o, offset, expected, x),
+                    compareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::compareAndExchangeByteAcquire(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    compareAndExchangeByte(o, offset, expected, x),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::compareAndExchangeShortAcquire(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((__int16 volatile *) getNativeAddress(o, offset), expected, x),
+                    compareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::compareAndExchangeIntRelease(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    compareAndExchangeInt(o, offset, expected, x),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::compareAndExchangeLongRelease(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    compareAndExchangeLong(o, offset, expected, x),
+                    compareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::compareAndExchangeByteRelease(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    compareAndExchangeByte(o, offset, expected, x),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::compareAndExchangeShortRelease(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    compareAndExchangeShort(o, offset, expected, x),
+                    compareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::compareAndExchangeIntRelaxed(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    compareAndExchangeInt(o, offset, expected, x),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::compareAndExchangeLongRelaxed(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    compareAndExchangeLong(o, offset, expected, x),
+                    compareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::compareAndExchangeByteRelaxed(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    compareAndExchangeByte(o, offset, expected, x),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::compareAndExchangeShortRelaxed(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    compareAndExchangeInt(o, offset, expected, x),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::compareAndExchangeInt(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)((volatile LONG *) getNativeAddress(o, offset), x,
+                                                               expected),
+                    [&]() -> gint {
+                        gint oldVal = getIntRelaxed(o, offset);
+                        if (oldVal == expected) {
+                            putIntRelaxed(o, offset, x);
+                            return x;
+                        }
+                        return oldVal;
+                    }()
+            );
+        }
+
+        glong Unsafe::compareAndExchangeLong(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange64)((volatile LONG64 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    [&]() -> glong {
+                        glong oldVal = getLongRelaxed(o, offset);
+                        if (oldVal == expected) {
+                            putLongRelaxed(o, offset, x);
+                            return x;
+                        }
+                        return oldVal;
+                    }()
+            );
+        }
+
+        gbyte Unsafe::compareAndExchangeByte(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    [&]() -> gbyte {
+                        glong wordOffset = offset & ~3;
+                        gint shift = (int) (offset & 3) << 3;
+                        if (BIG_ENDIAN) {
+                            shift = 24 - shift;
+                        }
+                        gint mask = 0xFF << shift;
+                        gint maskedExpected = (expected & 0xFF) << shift;
+                        gint maskedX = (x & 0xFF) << shift;
+                        gint fullWord;
+                        do {
+                            fullWord = getIntVolatile(o, wordOffset);
+                            if ((fullWord & mask) != maskedExpected)
+                                return (byte)((fullWord & mask) >> shift);
+                        } while (!weakCompareAndSetInt(o, wordOffset,
+                                                       fullWord, (fullWord & ~mask) | maskedX));
+                        return expected;
+                    }(),
+                    [&]() -> gbyte {
+                        glong wordOffset = offset & ~3;
+                        gint shift = (int) (offset & 3) << 3;
+                        if (BIG_ENDIAN) {
+                            shift = 24 - shift;
+                        }
+                        gint mask = 0xFF << shift;
+                        gint maskedExpected = (expected & 0xFF) << shift;
+                        gint maskedX = (x & 0xFF) << shift;
+                        gint fullWord;
+                        do {
+                            fullWord = getIntVolatile(o, wordOffset);
+                            if ((fullWord & mask) != maskedExpected)
+                                return (gbyte)((fullWord & mask) >> shift);
+                        } while (!weakCompareAndSetInt(o, wordOffset, fullWord, (fullWord & ~mask) | maskedX));
+                        return expected;
+                    }()
+            );
+        }
+
+        gshort Unsafe::compareAndExchangeShort(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, false,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((volatile __int16 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    [&]() -> gshort {
+                        if ((offset & 3) == 3) {
+                            ArgumentException("Update spans the word, not supported").throws(
+                                    __trace("core.util.Unsafe"));
+                        }
+                        glong wordOffset = offset & ~3;
+                        gint shift = (int) (offset & 3) << 3;
+                        if (BIG_ENDIAN) {
+                            shift = 16 - shift;
+                        }
+                        gint mask = 0xFFFF << shift;
+                        gint maskedExpected = (expected & 0xFFFF) << shift;
+                        gint maskedX = (x & 0xFFFF) << shift;
+                        gint fullWord;
+                        do {
+                            fullWord = getIntVolatile(o, wordOffset);
+                            if ((fullWord & mask) != maskedExpected) {
+                                return (short) ((fullWord & mask) >> shift);
+                            }
+                        } while (!weakCompareAndSetInt(o, wordOffset, fullWord, (fullWord & ~mask) | maskedX));
+                        return expected;
+                    }()
+            );
+        }
+
+        gint Unsafe::weakCompareAndExchangeIntAcquire(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)((volatile LONG *) getNativeAddress(o, offset), x,
+                                                               expected),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::weakCompareAndExchangeLongAcquire(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange64)((volatile LONG64 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::weakCompareAndExchangeByteAcquire(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)8((volatile char *) getNativeAddress(o, offset),
+                                                                (gbyte) x, (gbyte) expected),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::weakCompareAndExchangeShortAcquire(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((volatile __int16 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::weakCompareAndExchangeIntRelease(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)((volatile LONG *) getNativeAddress(o, offset), x,
+                                                               expected),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::weakCompareAndExchangeLongRelease(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange64)((volatile LONG64 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeLong(o, offset, expected, x);
+            );
+        }
+
+        gbyte Unsafe::weakCompareAndExchangeByteRelease(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    compareAndExchangeByte(o, offset, expected, x),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::weakCompareAndExchangeShortRelease(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELEASE, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((volatile __int16 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    weakCompareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::weakCompareAndExchangeIntRelaxed(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)((volatile LONG *) getNativeAddress(o, offset), x,
+                                                               expected),
+                    weakCompareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::weakCompareAndExchangeLongRelaxed(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange64)((volatile LONG64 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    weakCompareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::weakCompareAndExchangeByteRelaxed(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    compareAndExchangeByte(o, offset, expected, x),
+                    compareAndExchangeByte(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::weakCompareAndExchangeShortRelaxed(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_RELAXED, __ATOMIC_RELAXED),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((volatile __int16 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
+        gint Unsafe::weakCompareAndExchangeInt(core::Object &o, glong offset, gint expected, gint x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gint volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gint *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange)((volatile LONG *) getNativeAddress(o, offset), x,
+                                                               expected),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        glong Unsafe::weakCompareAndExchangeLong(core::Object &o, glong offset, glong expected, glong x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((glong volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile glong *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange64)((volatile LONG64 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeLong(o, offset, expected, x)
+            );
+        }
+
+        gbyte Unsafe::weakCompareAndExchangeByte(core::Object &o, glong offset, gbyte expected, gbyte x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gbyte volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gbyte *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    compareAndExchangeInt(o, offset, expected, x),
+                    compareAndExchangeInt(o, offset, expected, x)
+            );
+        }
+
+        gshort Unsafe::weakCompareAndExchangeShort(core::Object &o, glong offset, gshort expected, gshort x) {
+            if (checkPointer(o, offset))
+                ArgumentException("Invalid input").throws(__trace("core.native.Unsafe"));
+            return CORE_EXPR(
+                    __sync_val_compare_and_swap((gshort volatile *) getNativeAddress(o, offset), expected, x),
+                    __atomic_compare_exchange_n((volatile gshort *) getNativeAddress(o, offset), &expected, x, true,
+                                                __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST),
+                    CORE_INTERLOCKED_FUNCTION(CompareExchange16)((volatile __int16 *) getNativeAddress(o, offset), x,
+                                                                 expected),
+                    compareAndExchangeShort(o, offset, expected, x)
+            );
+        }
+
 
     }
 
 } // core
-//
-//using U = core::native::Unsafe;
-//CORE_ALIAS(LPVOID, void*);
-//
-//using namespace core;
-//
-//// no inline, required by [replacement.functions]/3
-//void* operator new(size_t sz) {
-//    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
-//    glong addr = U::allocateMemory(sizeInBytes);
-//    return (LPVOID) addr;
-//}
-//// no inline, required by [replacement.functions]/3
-//void* operator new[](size_t sz) {
-//    glong sizeInBytes = sz > Long::MAX_VALUE ? Long::MAX_VALUE : (glong) sz;
-//    glong addr = U::allocateMemory(sizeInBytes);
-//    return (LPVOID) addr;
-//}
-//
-//void operator delete(void* ptr) noexcept {
-//    U::freeMemory((glong) ptr);
-//}
-//
-//void operator delete(void* ptr, size_t size) noexcept {
-//    U::freeMemory((glong) ptr);
-//}
-//
-//void operator delete[](void* ptr) noexcept {
-//    U::freeMemory((glong) ptr);
-//}

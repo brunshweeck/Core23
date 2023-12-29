@@ -31,10 +31,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gshort>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -53,7 +55,7 @@ namespace core {
             /**
              * Construct new empty Short Array
              */
-            ShortArray() : ShortArray(0) {}
+            CORE_FAST ShortArray() = default;
 
             /**
              * Construct new ShortArray with specified number
@@ -109,6 +111,8 @@ namespace core {
              */
             ShortArray &operator=(ShortArray &&array) CORE_NOTHROW;
 
+            gint length() const override;
+
             /**
              * Return item at specified index
              *
@@ -129,7 +133,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gshort get(gint index) const override;
+            gshort get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -177,16 +181,16 @@ namespace core {
             /**
              * Construct new ShortArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gshort>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gshort>::allIsTrue
                     (Class<T>::template isAssignable<gshort>()...)> = true>
             static ShortArray of(T &&...a) {
                 gint size = sizeof...(a);
                 ShortArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gshort>::valueExactAt(i + 1, (gshort) 0, (gshort) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

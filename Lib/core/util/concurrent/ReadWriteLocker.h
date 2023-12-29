@@ -10,7 +10,7 @@
 namespace core {
     namespace util {
 
-        class ReadWriteLocker final: public Locker {
+        class ReadWriteLocker CORE_FINAL: public Locker {
 
         };
 

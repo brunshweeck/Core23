@@ -56,12 +56,12 @@ namespace core {
      *
      * <p>
      * The platform uses signed two's complement integer arithmetic with
-     * int and long native types.  The developer should choose
+     * gint and glong native types.  The developer should choose
      * the native type to ensure that arithmetic operations consistently
      * produce correct results, which in some cases means the operations
      * will not overflow the range of values of the computation.
      * The best practice is to choose the native type and algorithm to avoid
-     * overflow. In cases where the size is <b> int</b> or <b> long</b> and
+     * overflow. In cases where the size is <b> gint</b> or <b> glong</b> and
      * overflow errors need to be detected, the methods whose names end with
      * <b> Exact</b> throw an <b> ArithmeticException</b> when the results overflow.
      *
@@ -93,7 +93,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Math final: public Object {
+    class Math CORE_FINAL: public Object {
 
     private:
         /**
@@ -581,7 +581,7 @@ namespace core {
          */
         static gdouble pow(gdouble a, gdouble b);
 
-        /** Returns the closest int to the argument, with ties
+        /** Returns the closest gint to the argument, with ties
          * rounding to positive infinity.
          * <p>
          * Special cases:
@@ -596,7 +596,7 @@ namespace core {
          */
         static gint round(gfloat a);
 
-        /** Returns the closest long to the argument, with ties
+        /** Returns the closest glong to the argument, with ties
          * rounding to positive infinity.
          * <p>Special cases:
          * <ul><li>If the argument is NaN, the result is 0.
@@ -607,7 +607,7 @@ namespace core {
          * equal to the value of Long.MAX_VALUE, the result is
          * equal to the value of Long.MAX_VALUE.</ul>
          * @param   a   a floating-point value to be rounded to a
-         *          long.
+         *          glong.
          */
         static glong round(gdouble a);
 
@@ -625,63 +625,63 @@ namespace core {
         static gdouble random();
 
         /** Returns the sum of its arguments,
-         * throwing an exception if the result overflows an int.
+         * throwing an exception if the result overflows an gint.
          * @param x the first value
          * @param y the second value
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint addExact(gint x, gint y);
 
         /** Returns the sum of its arguments,
-         * throwing an exception if the result overflows a long.
+         * throwing an exception if the result overflows a glong.
          * @param x the first value
          * @param y the second value
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong addExact(glong x, glong y);
 
         /** Returns the difference of the arguments,
-         * throwing an exception if the result overflows an int.
+         * throwing an exception if the result overflows an gint.
          * @param x the first value
          * @param y the second value to subtract from the first
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint subtractExact(gint x, gint y);
 
         /** Returns the difference of the arguments,
-         * throwing an exception if the result overflows a long.
+         * throwing an exception if the result overflows a glong.
          * @param x the first value
          * @param y the second value to subtract from the first
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong subtractExact(glong x, glong y);
 
         /** Returns the product of the arguments,
-         * throwing an exception if the result overflows an int.
+         * throwing an exception if the result overflows an gint.
          * @param x the first value
          * @param y the second value
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint multiplyExact(gint x, gint y);
 
         /** Returns the product of the arguments, throwing an exception if the result
-         * overflows a long.
+         * overflows a glong.
          * @param x the first value
          * @param y the second value
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong multiplyExact(glong x, gint y);
 
         /** Returns the product of the arguments,
-         * throwing an exception if the result overflows a long.
+         * throwing an exception if the result overflows a glong.
          * @param x the first value
          * @param y the second value
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong multiplyExact(glong x, glong y);
 
         /** Returns the quotient of the arguments, throwing an exception if the
-         * result overflows an int.  Such overflow occurs in this method if
+         * result overflows an gint.  Such overflow occurs in this method if
          * x is Integer.MIN_VALUE and y is -1.
          * In contrast, if Integer.MIN_VALUE / -1 were evaluated directly,
          * the result would be Integer.MIN_VALUE and no exception would be
@@ -694,12 +694,12 @@ namespace core {
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if y is zero or the quotient
-         * overflows an int
+         * overflows an gint
          */
         static gint divideExact(gint x, gint y);
 
         /** Returns the quotient of the arguments, throwing an exception if the
-         * result overflows a long.  Such overflow occurs in this method if
+         * result overflows a glong.  Such overflow occurs in this method if
          * x is Long.MIN_VALUE and y is -1.
          * In contrast, if Long.MIN_VALUE / -1 were evaluated directly,
          * the result would be Long.MIN_VALUE and no exception would be
@@ -712,23 +712,23 @@ namespace core {
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if y is zero or the quotient
-         * overflows a long
+         * overflows a glong
          */
         static glong divideExact(glong x, glong y);
 
         /** Returns the largest (closest to positive infinity)
-         * int value that is less than or equal to the algebraic quotient.
-         * This method is identical to ::floorDiv(int,int) except that it
+         * gint value that is less than or equal to the algebraic quotient.
+         * This method is identical to ::floorDiv(gint,gint) except that it
          * throws an ArithmeticException when the dividend is
          * Integer.MIN_VALUE and the divisor is
          * -1 instead of ignoring the integer overflow and returning
          * Integer.MIN_VALUE.
          * <p>
-         * The floor modulus method ::floorMod(int,int) is a suitable
-         * counterpart both for this method and for the ::floorDiv(int,int)
+         * The floor modulus method ::floorMod(gint,gint) is a suitable
+         * counterpart both for this method and for the ::floorDiv(gint,gint)
          * method.
          * <p>
-         * For examples, see ::floorDiv(int, int).
+         * For examples, see ::floorDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero, or the
@@ -738,18 +738,18 @@ namespace core {
         static gint floorDivExact(gint x, gint y);
 
         /** Returns the largest (closest to positive infinity)
-         * long value that is less than or equal to the algebraic quotient.
-         * This method is identical to ::floorDiv(long,long) except that it
+         * glong value that is less than or equal to the algebraic quotient.
+         * This method is identical to ::floorDiv(glong,glong) except that it
          * throws an ArithmeticException when the dividend is
          * Long.MIN_VALUE and the divisor is
          * -1 instead of ignoring the integer overflow and returning
          * Long.MIN_VALUE.
          * <p>
-         * The floor modulus method ::floorMod(long,long) is a suitable
-         * counterpart both for this method and for the ::floorDiv(long,long)
+         * The floor modulus method ::floorMod(glong,glong) is a suitable
+         * counterpart both for this method and for the ::floorDiv(glong,glong)
          * method.
          * <p>
-         * For examples, see ::floorDiv(int, int).
+         * For examples, see ::floorDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero, or the
@@ -759,18 +759,18 @@ namespace core {
         static glong floorDivExact(glong x, glong y);
 
         /** Returns the smallest (closest to negative infinity)
-         * int value that is greater than or equal to the algebraic quotient.
-         * This method is identical to ::ceilDiv(int,int) except that it
+         * gint value that is greater than or equal to the algebraic quotient.
+         * This method is identical to ::ceilDiv(gint,gint) except that it
          * throws an ArithmeticException when the dividend is
          * the divisor is
          * -1 instead of ignoring the integer overflow and returning
          * Integer.MIN_VALUE.
          * <p>
-         * The ceil modulus method ::ceilMod(int,int) is a suitable
-         * counterpart both for this method and for the ::ceilDiv(int,int)
+         * The ceil modulus method ::ceilMod(gint,gint) is a suitable
+         * counterpart both for this method and for the ::ceilDiv(gint,gint)
          * method.
          * <p>
-         * For examples, see ::ceilDiv(int, int).
+         * For examples, see ::ceilDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero, or the
@@ -780,18 +780,18 @@ namespace core {
         static gint ceilDivExact(gint x, gint y);
 
         /** Returns the smallest (closest to negative infinity)
-         * long value that is greater than or equal to the algebraic quotient.
-         * This method is identical to ::ceilDiv(long,long) except that it
+         * glong value that is greater than or equal to the algebraic quotient.
+         * This method is identical to ::ceilDiv(glong,glong) except that it
          * throws an ArithmeticException when the dividend is
          * the divisor is
          * -1 instead of ignoring the integer overflow and returning
          * Long.MIN_VALUE.
          * <p>
-         * The ceil modulus method ::ceilMod(long,long) is a suitable
-         * counterpart both for this method and for the ::ceilDiv(long,long)
+         * The ceil modulus method ::ceilMod(glong,glong) is a suitable
+         * counterpart both for this method and for the ::ceilDiv(glong,glong)
          * method.
          * <p>
-         * For examples, see ::ceilDiv(int, int).
+         * For examples, see ::ceilDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero, or the
@@ -801,57 +801,57 @@ namespace core {
         static glong ceilDivExact(glong x, glong y);
 
         /** Returns the argument incremented by one, throwing an exception if the
-         * result overflows an int.
+         * result overflows an gint.
          * The overflow only occurs for the maximum value.
          * @param a the value to increment
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint incrementExact(gint a);
 
         /** Returns the argument incremented by one, throwing an exception if the
-         * result overflows a long.
+         * result overflows a glong.
          * The overflow only occurs for the maximum value.
          * @param a the value to increment
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong incrementExact(glong a);
 
         /** Returns the argument decremented by one, throwing an exception if the
-         * result overflows an int.
+         * result overflows an gint.
          * The overflow only occurs for the minimum value.
          * @param a the value to decrement
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint decrementExact(gint a);
 
         /** Returns the argument decremented by one, throwing an exception if the
-         * result overflows a long.
+         * result overflows a glong.
          * The overflow only occurs for the minimum value.
          * @param a the value to decrement
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong decrementExact(glong a);
 
         /** Returns the negation of the argument, throwing an exception if the
-         * result overflows an int.
+         * result overflows an gint.
          * The overflow only occurs for the minimum value.
          * @param a the value to negate
-         * @throws ArithmeticException if the result overflows an int
+         * @throws ArithmeticException if the result overflows an gint
          */
         static gint negateExact(gint a);
 
         /** Returns the negation of the argument, throwing an exception if the
-         * result overflows a long.
+         * result overflows a glong.
          * The overflow only occurs for the minimum value.
          * @param a the value to negate
-         * @throws ArithmeticException if the result overflows a long
+         * @throws ArithmeticException if the result overflows a glong
          */
         static glong negateExact(glong a);
 
-        /** Returns the value of the long argument,
-         * throwing an exception if the value overflows an int.
-         * @param value the long value
-         * @throws ArithmeticException if the argument overflows an int
+        /** Returns the value of the glong argument,
+         * throwing an exception if the value overflows an gint.
+         * @param value the glong value
+         * @throws ArithmeticException if the argument overflows an gint
          */
         static gint toIntExact(glong value);
 
@@ -861,14 +861,14 @@ namespace core {
          */
         static glong multiplyFull(gint x, gint y);
 
-        /** Returns as a long the most significant 64 bits of the 128-bit
+        /** Returns as a glong the most significant 64 bits of the 128-bit
          * product of two 64-bit factors.
          * @param x the first value
          * @param y the second value
          */
         static glong multiplyHigh(glong x, glong y);
 
-        /** Returns as a long the most significant 64 bits of the unsigned
+        /** Returns as a glong the most significant 64 bits of the unsigned
          * 128-bit product of two unsigned 64-bit factors.
          * @param x the first value
          * @param y the second value
@@ -876,7 +876,7 @@ namespace core {
         static glong unsignedMultiplyHigh(glong x, glong y);
 
         /** Returns the largest (closest to positive infinity)
-         * int value that is less than or equal to the algebraic quotient.
+         * gint value that is less than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -907,7 +907,7 @@ namespace core {
         static gint floorDiv(gint x, gint y);
 
         /** Returns the largest (closest to positive infinity)
-         * long value that is less than or equal to the algebraic quotient.
+         * glong value that is less than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -919,7 +919,7 @@ namespace core {
          * The floor rounding mode gives different results from truncation
          * when the exact result is not an integer and is negative.
          * <p>
-         * For examples, see ::floorDiv(int, int).
+         * For examples, see ::floorDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
@@ -927,7 +927,7 @@ namespace core {
         static glong floorDiv(glong x, gint y);
 
         /** Returns the largest (closest to positive infinity)
-         * long value that is less than or equal to the algebraic quotient.
+         * glong value that is less than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -939,14 +939,14 @@ namespace core {
          * The floor rounding mode gives different results from truncation
          * when the exact result is not an integer and is negative.
          * <p>
-         * For examples, see ::floorDiv(int, int).
+         * For examples, see ::floorDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
          */
         static glong floorDiv(glong x, glong y);
 
-        /** Returns the floor modulus of the int arguments.
+        /** Returns the floor modulus of the gint arguments.
          * <p>
          * The floor modulus is r = x - (floorDiv(x, y) * y),
          * has the same sign as the divisor y or is zero, and
@@ -959,7 +959,7 @@ namespace core {
          * <p>
          * The difference in values between floorMod and the % operator
          * is due to the difference between floorDiv and the /
-         * operator, as detailed in floorDiv(int, int).
+         * operator, as detailed in floorDiv(gint, gint).
          * <p>
          * Examples:
          * <ul>
@@ -981,7 +981,7 @@ namespace core {
          */
         static gint floorMod(gint x, gint y);
 
-        /** Returns the floor modulus of the long and int arguments.
+        /** Returns the floor modulus of the glong and gint arguments.
          * <p>
          * The floor modulus is r = x - (floorDiv(x, y) * y),
          * has the same sign as the divisor y or is zero, and
@@ -992,14 +992,14 @@ namespace core {
          *   <li>floorDiv(x, y) * y + floorMod(x, y) == x</li>
          * </ul>
          * <p>
-         * For examples, see ::floorMod(int, int).
+         * For examples, see ::floorMod(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
          */
         static gint floorMod(glong x, gint y);
 
-        /** Returns the floor modulus of the long arguments.
+        /** Returns the floor modulus of the glong arguments.
          * <p>
          * The floor modulus is r = x - (floorDiv(x, y) * y),
          * has the same sign as the divisor y or is zero, and
@@ -1010,7 +1010,7 @@ namespace core {
          *   <li>floorDiv(x, y) * y + floorMod(x, y) == x</li>
          * </ul>
          * <p>
-         * For examples, see ::floorMod(int, int).
+         * For examples, see ::floorMod(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
@@ -1018,7 +1018,7 @@ namespace core {
         static glong floorMod(glong x, glong y);
 
         /** Returns the smallest (closest to negative infinity)
-         * int value that is greater than or equal to the algebraic quotient.
+         * gint value that is greater than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -1049,7 +1049,7 @@ namespace core {
         static gint ceilDiv(gint x, gint y);
 
         /** Returns the smallest (closest to negative infinity)
-         * long value that is greater than or equal to the algebraic quotient.
+         * glong value that is greater than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -1061,7 +1061,7 @@ namespace core {
          * The ceiling rounding mode gives different results from truncation
          * when the exact result is not an integer and is positive.
          * <p>
-         * For examples, see ::ceilDiv(int, int).
+         * For examples, see ::ceilDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
@@ -1069,7 +1069,7 @@ namespace core {
         static glong ceilDiv(glong x, gint y);
 
         /** Returns the smallest (closest to negative infinity)
-         * long value that is greater than or equal to the algebraic quotient.
+         * glong value that is greater than or equal to the algebraic quotient.
          * There is one special case: if the dividend is
          * the divisor is -1,
          * then integer overflow occurs and
@@ -1081,14 +1081,14 @@ namespace core {
          * The ceiling rounding mode gives different results from truncation
          * when the exact result is not an integer and is positive.
          * <p>
-         * For examples, see ::ceilDiv(int, int).
+         * For examples, see ::ceilDiv(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
          */
         static glong ceilDiv(glong x, glong y);
 
-        /** Returns the ceiling modulus of the int arguments.
+        /** Returns the ceiling modulus of the gint arguments.
          * <p>
          * The ceiling modulus is r = x - (ceilDiv(x, y) * y),
          * has the opposite sign as the divisor y or is zero, and
@@ -1101,7 +1101,7 @@ namespace core {
          * <p>
          * The difference in values between ceilMod and the % operator
          * is due to the difference between ceilDiv and the /
-         * operator, as detailed in ceilDiv(int, int).
+         * operator, as detailed in ceilDiv(gint, gint).
          * <p>
          * Examples:
          * <ul>
@@ -1123,7 +1123,7 @@ namespace core {
          */
         static gint ceilMod(gint x, gint y);
 
-        /** Returns the ceiling modulus of the long and int arguments.
+        /** Returns the ceiling modulus of the glong and gint arguments.
          * <p>
          * The ceiling modulus is r = x - (ceilDiv(x, y) * y),
          * has the opposite sign as the divisor y or is zero, and
@@ -1134,14 +1134,14 @@ namespace core {
          *   <li>ceilDiv(x, y) * y + ceilMod(x, y) == x</li>
          * </ul>
          * <p>
-         * For examples, see ::ceilMod(int, int).
+         * For examples, see ::ceilMod(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
          */
         static gint ceilMod(glong x, gint y);
 
-        /** Returns the ceiling modulus of the long arguments.
+        /** Returns the ceiling modulus of the glong arguments.
          * <p>
          * The ceiling modulus is r = x - (ceilDiv(x, y) * y),
          * has the opposite sign as the divisor y or is zero, and
@@ -1152,20 +1152,20 @@ namespace core {
          *   <li>ceilDiv(x, y) * y + ceilMod(x, y) == x</li>
          * </ul>
          * <p>
-         * For examples, see ::ceilMod(int, int).
+         * For examples, see ::ceilMod(gint, gint).
          * @param x the dividend
          * @param y the divisor
          * @throws ArithmeticException if the divisor y is zero
          */
         static glong ceilMod(glong x, glong y);
 
-        /** Returns the absolute value of an int value.
+        /** Returns the absolute value of an gint value.
          * If the argument is not negative, the argument is returned.
          * If the argument is negative, the negation of the argument is returned.
          * <p>Note that if the argument is equal to the value of
-         * Integer.MIN_VALUE, the most negative representable int
+         * Integer.MIN_VALUE, the most negative representable gint
          * value, the result is that same value, which is negative. In
-         * contrast, the Math.absExact(int) method throws an
+         * contrast, the Math.absExact(gint) method throws an
          * ArithmeticException for this value.
          * @param   a   the argument whose absolute value is to be determined
          */
@@ -1173,27 +1173,27 @@ namespace core {
             return (a < 0) ? -a : a;
         }
 
-        /** Returns the mathematical absolute value of an int value
-         * if it is exactly representable as an int, throwing
+        /** Returns the mathematical absolute value of an gint value
+         * if it is exactly representable as an gint, throwing
          * ArithmeticException if the result overflows the
-         * positive int range.
+         * positive gint range.
          * <p>Since the range of two's complement integers is asymmetric
          * with one additional negative value , the
          * mathematical absolute value of Integer.MIN_VALUE
-         * overflows the positive int range, so an exception is
+         * overflows the positive gint range, so an exception is
          * thrown for that argument.
          * @param  a  the argument whose absolute value is to be determined
          * @throws ArithmeticException if the argument is Integer.MIN_VALUE
          */
         static gint absExact(gint a);
 
-        /** Returns the absolute value of a long value.
+        /** Returns the absolute value of a glong value.
          * If the argument is not negative, the argument is returned.
          * If the argument is negative, the negation of the argument is returned.
          * <p>Note that if the argument is equal to the value of
-         * Long.MIN_VALUE, the most negative representable long
+         * Long.MIN_VALUE, the most negative representable glong
          * value, the result is that same value, which is negative. In
-         * contrast, the Math.absExact(long) method throws an
+         * contrast, the Math.absExact(glong) method throws an
          * ArithmeticException for this value.
          * @param   a   the argument whose absolute value is to be determined
          */
@@ -1201,14 +1201,14 @@ namespace core {
             return (a < 0) ? -a : a;
         }
 
-        /** Returns the mathematical absolute value of an long value
-         * if it is exactly representable as an long, throwing
+        /** Returns the mathematical absolute value of an glong value
+         * if it is exactly representable as an glong, throwing
          * ArithmeticException if the result overflows the
-         * positive long range.
+         * positive glong range.
          * <p>Since the range of two's complement integers is asymmetric
          * with one additional negative value , the
          * mathematical absolute value of Long.MIN_VALUE overflows
-         * the positive long range, so an exception is thrown for
+         * the positive glong range, so an exception is thrown for
          * that argument.
          * @param  a  the argument whose absolute value is to be determined
          * @throws ArithmeticException if the argument is Long.MIN_VALUE
@@ -1251,7 +1251,7 @@ namespace core {
          */
         static gdouble abs(gdouble a);
 
-        /** Returns the greater of two int values. That is, the
+        /** Returns the greater of two gint values. That is, the
          * result is the argument closer to the value of
          * Integer.MAX_VALUE. If the arguments have the same value,
          * the result is that same value.
@@ -1262,7 +1262,7 @@ namespace core {
             return (a >= b) ? a : b;
         }
 
-        /** Returns the greater of two long values. That is, the
+        /** Returns the greater of two glong values. That is, the
          * result is the argument closer to the value of
          * Long.MAX_VALUE. If the arguments have the same value,
          * the result is that same value.
@@ -1305,7 +1305,7 @@ namespace core {
          */
         static gdouble max(gdouble a, gdouble b);
 
-        /** Returns the smaller of two int values. That is,
+        /** Returns the smaller of two gint values. That is,
          * the result the argument closer to the value of
          * Integer.MIN_VALUE.  If the arguments have the same
          * value, the result is that same value.
@@ -1316,7 +1316,7 @@ namespace core {
             return (a <= b) ? a : b;
         }
 
-        /** Returns the smaller of two long values. That is,
+        /** Returns the smaller of two glong values. That is,
          * the result is the argument closer to the value of
          * Long.MIN_VALUE. If the arguments have the same
          * value, the result is that same value.

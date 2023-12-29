@@ -2,7 +2,7 @@
 // Created by T.N.Brunshweeck on 17/11/2023.
 //
 
-#ifndef CORE23_FORMATTER_H
+#ifndef CORE23_DATETIMEFORMATTER_H
 #define CORE23_FORMATTER_H
 
 namespace core {
@@ -15,4 +15,4 @@ namespace core {
     } // core
 } // text
 
-#endif //CORE23_FORMATTER_H
+#endif //CORE23_DATETIMEFORMATTER_H

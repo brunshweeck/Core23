@@ -353,7 +353,17 @@ namespace core {
              * @throws CastException if the class of a key or value in
              *         the specified map prevents it from being stored in this map
              */
-            void putAll(const Map<K, V> &m) override { TreeMap<K, V>::putAll < K, V > (m); }
+            void putAll(const Map<K, V> &m) override {
+                gint mSize = m.size();
+                if (len == 0 && mSize != 0 && Class<SortedStruct<K>>::hasInstance(m)) {
+                    if (Object::equals(comparator(), ((const SortedStruct<K> &) m).comparator())) {
+                        modNum += 1;
+                        buildFromSorted(mSize, m.entrySet().iterator(), null);
+                    }
+                    return;
+                }
+                Map<K, V>::putAll(m);
+            }
 
             /**
              * Copies all of the mappings from the specified map to this map.
@@ -364,13 +374,13 @@ namespace core {
              * @throws CastException if the class of a key or value in
              *         the specified map prevents it from being stored in this map
              */
-            template<class T, class U>
+            template<class T = K, class U = V>
             void putAll(const Map<CaptureK<T>, CaptureV<U>> &m) {
                 gint mSize = m.size();
-                if (len == 0 && mSize != 0 && Class<TreeMap<T, U>>::hasInstance(m)) {
-                    if (Object::equals(comparator(), ((const TreeMap<T, U> &) m).comparator())) {
+                if (len == 0 && mSize != 0 && Class<SortedStruct<T>>::hasInstance(m)) {
+                    if (Object::equals(comparator(), ((const SortedStruct<T> &) m).comparator())) {
                         modNum += 1;
-                        //...
+                        buildFromSorted(mSize, m.entrySet().iterator(), null);
                     }
                     return;
                 }
@@ -445,7 +455,7 @@ namespace core {
                     return root->value();
                 }
                 ENTRY parent = null;
-                gint ret;
+                gint ret = {};
                 const Comparator<K> &cpr = comparator();
                 do {
                     parent = t;
@@ -1038,7 +1048,7 @@ namespace core {
             }
 
             /**
-             * Linear time tree building algorithm from sorted data.  Can accept keys
+             * Linear time tree building algorithm from sorted array.  Can accept keys
              * and/or values from iterator or stream. This leads to too many
              * parameters, but seems better than alternatives.  The four formats
              * that this method accepts are:
@@ -1093,7 +1103,7 @@ namespace core {
 
                 if (hi < lo) return null;
 
-                int mid = (lo + hi) >> 1;
+                int const mid = (lo + hi) >> 1;
 
                 ENTRY left = null;
                 if (lo < mid)
@@ -1457,7 +1467,7 @@ namespace core {
 
                 const V &next() override {
                     try { return ValueItr::nextEntry()->value(); }
-                    catch (Exception &e) { e.throws(__trace("core.util.TreeMap.ValueItr")); }
+                    catch (const Exception &e) { e.throws(__trace("core.util.TreeMap.ValueItr")); }
                 }
 
                 Object &clone() const override {
@@ -1471,7 +1481,7 @@ namespace core {
 
                 const K &next() override {
                     try { return KeyItr::nextEntry()->key(); }
-                    catch (Exception &e) { e.throws(__trace("core.util.TreeMap.KeyItr")); }
+                    catch (const Exception &e) { e.throws(__trace("core.util.TreeMap.KeyItr")); }
                 }
 
                 Object &clone() const override {
@@ -1485,7 +1495,7 @@ namespace core {
 
                 const ExEntry<K, V> &next() override {
                     try { return EntryItr::nextEntry()[0]; }
-                    catch (Exception &e) { e.throws(__trace("core.util.TreeMap.EntryItr")); }
+                    catch (const Exception &e) { e.throws(__trace("core.util.TreeMap.EntryItr")); }
                 }
 
                 Object &clone() const override {
@@ -1499,7 +1509,7 @@ namespace core {
 
                 const K &next() override {
                     try { return ReverseKeyItr::prevEntry()->key(); }
-                    catch (Exception &e) { e.throws(__trace("core.util.TreeMap.ReverseKeyItr")); }
+                    catch (const Exception &e) { e.throws(__trace("core.util.TreeMap.ReverseKeyItr")); }
                 }
 
                 Object &clone() const override {
@@ -1513,7 +1523,7 @@ namespace core {
 
                 const ExEntry<K, V> &next() override {
                     try { return ReverseEntryItr::prevEntry()[0]; }
-                    catch (Exception &e) { e.throws(__trace("core.util.TreeMap.ReverseEntryItr")); }
+                    catch (const Exception &e) { e.throws(__trace("core.util.TreeMap.ReverseEntryItr")); }
                 }
 
                 Object &clone() const override {

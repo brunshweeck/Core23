@@ -31,19 +31,17 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gchar>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
             friend util::ArraysSupport;
             friend native::Unsafe;
-
-            template<class T>
-            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
-                    Class<typename Class<T>::NoArray>::template isAssignable<gbool>() >);
 
             template<class T>
             CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gbool>()>);
@@ -110,6 +108,11 @@ namespace core {
             CharArray &operator=(CharArray &&array) CORE_NOTHROW;
 
             /**
+             * Return number of character from this array.
+             */
+            gint length() const override;
+
+            /**
              * Return item at specified index
              *
              * @param index
@@ -129,7 +132,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gchar get(gint index) const override;
+            gchar get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -177,16 +180,16 @@ namespace core {
             /**
              * Construct new CharArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gchar>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gchar>::allIsTrue
                     (Class<T>::template isAssignable<gchar>()...)> = true>
             static CharArray of(T &&...a) {
                 gint size = sizeof...(a);
                 CharArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gbool>::valueExactAt(i + 1, 0, (gchar) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

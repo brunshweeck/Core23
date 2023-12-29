@@ -10,7 +10,7 @@
 namespace core {
     namespace util {
 
-        class ReentrantLocker final: public Locker {
+        class ReentrantLocker CORE_FINAL: public Locker {
 
         };
 

@@ -73,7 +73,7 @@ namespace core {
 
         /**
          * Constructs an AssertionError with its detail message derived
-         * from the specified int value, which is converted to a string.
+         * from the specified gint value, which is converted to a string.
          *
          * @param expression
          *          value to be used in constructing detail message
@@ -82,7 +82,7 @@ namespace core {
 
         /**
          * Constructs an AssertionError with its detail message derived
-         * from the specified long value, which is converted to a string.
+         * from the specified glong value, which is converted to a string.
          *
          * @param expression
          *          value to be used in constructing detail message

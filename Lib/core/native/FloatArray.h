@@ -31,10 +31,12 @@ namespace core {
              */
             CORE_ALIAS(STORAGE, typename Class<gfloat>::Ptr);
 
+            gint len = {};
+
             /**
              * The items storage
              */
-            STORAGE value = null;
+            STORAGE value = {};
 
             gbool isLocal = false;
 
@@ -109,6 +111,8 @@ namespace core {
              */
             FloatArray &operator=(FloatArray &&array) CORE_NOTHROW;
 
+            gint length() const override;
+
             /**
              * Return item at specified index
              *
@@ -129,7 +133,7 @@ namespace core {
              * @throws IndexException
              *              If index out of bounds.
              */
-            const gfloat get(gint index) const override;
+            gfloat get(gint index) const override;
 
             /**
              * Return the sharable copy of this object.
@@ -177,16 +181,16 @@ namespace core {
             /**
              * Construct new FloatArray list of value
              */
-            template<class ...T, Class<gbool>::template Iff<Class<gfloat>::allIsTrue
+            /*template<class ...T, Class<gbool>::template Iff<Class<gfloat>::allIsTrue
                     (Class<T>::template isAssignable<gfloat>()...)> = true>
             static FloatArray of(T &&...a) {
                 gint size = sizeof...(a);
                 FloatArray ba(size);
-                for (int i = 0; i < size; ++i) {
+                for (gint i = 0; i < size; ++i) {
                     ba[i] = Class<gfloat>::valueExactAt(i + 1, 0.0F, (gfloat) a...);
                 }
                 return ba;
-            }
+            }*/
         };
 
     } // core

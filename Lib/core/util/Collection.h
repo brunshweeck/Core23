@@ -15,6 +15,7 @@
 #include <core/util/Comparator.h>
 #include <core/util/function/Consumer.h>
 #include <core/util/function/Predicate.h>
+#include <core/StringBuffer.h>
 
 namespace core {
     namespace util {
@@ -324,18 +325,19 @@ namespace core {
              * @return an array, whose <b style="color: green;"> runtime component type</b>
              *          is <b> Object</b>, containing all of the elements in this collection
              */
-            virtual ReferenceArray<E> toArray() const {
+            virtual ReferenceArray toArray() const {
                 // Estimate size of array; be prepared to see more or fewer elements
-                ReferenceArray<E> r = ReferenceArray<E>(size());
+                ReferenceArray r = ReferenceArray(size());
                 Iterator<const E> &it = iterator();
                 for (gint i = 0; i < r.length(); i++) {
                     if (!it.hasNext()) {
                         // fewer elements than expected
-                        ReferenceArray<E> copy = ReferenceArray<E>(i);
-                        for (gint j = 0; j < i; ++j) copy.set(j, r[j]);
+                        ReferenceArray copy = ReferenceArray(i);
+                        for (gint j = 0; j < i; ++j)
+                            copy.set(j, r[j]);
                         return copy;
                     }
-                    r.set(i, it.next());
+                    r.set(i, (Object &) it.next());
                 }
                 return r;
             }
@@ -412,6 +414,10 @@ namespace core {
              * @see    contains(Object)
              */
             virtual gbool containsAll(const Collection &c) const {
+                if (c.size() == 0)
+                    return false;
+                if (this == &c)
+                    return true;
                 for (const E &e: c)
                     if (!contains((const E &) e))
                         return false;
@@ -442,36 +448,6 @@ namespace core {
             virtual gbool addAll(const Collection &c) {
                 gbool modified = false;
                 for (const E &e: c)
-                    if (add((const E &) e))
-                        modified = true;
-                return modified;
-            }
-
-            /**
-             * Adds all of the elements in the specified collection to this collection
-             * (optional operation).  The behavior of this operation is undefined if
-             * the specified collection is modified while the operation is in progress.
-             * (This implies that the behavior of this call is undefined if the
-             * specified collection is this collection, and this collection is
-             * nonempty.)
-             *
-             * @param c collection containing elements to be added to this collection
-             * @return <b>true</b> if this collection changed as a result of the call
-             * @throws UnsupportedMethodException if the <b>addAll</b> operation
-             *         is not supported by this collection
-             * @throws CastException if the class of an element of the specified
-             *         collection prevents it from being added to this collection
-             * @throws ArgumentException if some property of an element of the
-             *         specified collection prevents it from being added to this
-             *         collection
-             * @throws StateException if not all the elements can be added at
-             *         this time due to insertion restrictions
-             * @see add(Object)
-             */
-            template<class T = E>
-            gbool addAll(const Collection<Capture<T>> &c) {
-                gbool modified = false;
-                for (const T &e: c)
                     if (add((const E &) e))
                         modified = true;
                 return modified;
@@ -629,11 +605,11 @@ namespace core {
                 if (!it.hasNext())
                     return "[]";
 
-                StringBuffer sb;
+                StringBuffer sb = {};
                 sb.append('[');
                 for (;;) {
                     const E &e = it.next();
-                    if (Object::equals(e)) sb.append("?"); else sb.append(e);
+                    if (Collection<E>::equals(e)) sb.append("?"); else sb.append(e);
                     if (!it.hasNext()) return sb.append(']').toString();
                     sb.append(',').append(' ');
                 }
@@ -646,44 +622,42 @@ namespace core {
             // }
             //
             template<class T = E>
-            class NativeIterator final : public Object {
+            class Itr CORE_FINAL : public Object {
             private:
                 const Collection &root;
-                ReferenceArray<E> data;
-                gint cursor;
+                ReferenceArray array = {};
+                gint cursor = {};
 
             public:
                 /**
                  * Create new Native Iterator instance to mark begin of iterations
                  */
-                NativeIterator(const Collection &root, const ReferenceArray<E> &data) :
-                        root(root), data(data), cursor(0) {}
+                Itr(const Collection &root, const ReferenceArray &a) : root(root), array(a) {}
 
                 /**
                  * Create new Native Iterator instance to mark the end of iterations
                  */
-                NativeIterator(const Collection &root) :
-                        root(root), data(ReferenceArray<E>(0)), cursor(root.size()) {}
+                Itr(const Collection &root) : root(root), cursor(root.size()) {}
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
                         return true;
-                    if (!Class<NativeIterator>::hasInstance(o))
+                    if (!Class<Itr>::hasInstance(o))
                         return false;
-                    NativeIterator &nitr = CORE_CAST(NativeIterator &, o);
-                    return nitr.cursor == cursor && &nitr.root == &root;
+                    const Itr &it = (Itr &) o;
+                    return it.cursor == cursor && &it.root == &root;
                 }
 
                 /**
                  * Return the next element (it similar to core.util.Iterator.next())
                  */
                 inline T &operator*() {
-                    if (cursor == data.length())
-                        StateException("").throws(__trace("core.util.Collection.NativeIterator"));
-                    return data[cursor++];
+                    if (cursor == array.length())
+                        StateException("").throws(__trace("core.util.Collection.Itr"));
+                    return (T &) array[cursor++];
                 }
 
-                inline NativeIterator &operator++() { return *this; }
+                inline Itr &operator++() { return *this; }
             };
 
         public:
@@ -692,18 +666,14 @@ namespace core {
              * to mark the beginning of foreach statement.
              * by default collection not support modification during each
              */
-            inline NativeIterator<const E> begin() const {
-                return NativeIterator<const E>(*this, toArray());
-            }
+            inline Itr<const E> begin() const { return Itr<const E>(*this, toArray()); }
 
             /**
              * Return The native iterator (The C iterator) used
              * to mark the ending of foreach statement.
              * by default collection not support modification during each
              */
-            inline NativeIterator<const E> end() const {
-                return NativeIterator<const E>(*this);
-            }
+            inline Itr<const E> end() const { return Itr<const E>(*this); }
 
             CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
                                "The valid parameters type must be a class deriving from core.Object");

@@ -16,7 +16,7 @@ namespace core {
         gint i = {};
         try {
             i = Integer::parseInt(s, base);
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
         if (i < MIN_VALUE || i > MAX_VALUE)
@@ -27,7 +27,7 @@ namespace core {
     gbyte Byte::parseByte(const String &s) {
         try {
             return parseByte(s, 10);
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
@@ -35,7 +35,7 @@ namespace core {
     Byte Byte::valueOf(const String &s, gint base) {
         try {
             return valueOf(parseByte(s, base));
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
@@ -43,7 +43,7 @@ namespace core {
     Byte Byte::valueOf(const String &s) {
         try {
             return valueOf(s, 10);
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
     }
@@ -52,7 +52,7 @@ namespace core {
         gint i = {};
         try {
             i = Integer::decode(s);
-        } catch (NumberFormatException &nfe) {
+        } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Byte"));
         }
         if (i < MIN_VALUE || i > MAX_VALUE)

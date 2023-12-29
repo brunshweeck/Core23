@@ -27,7 +27,7 @@ namespace core {
 
         CharArray::CharArray(gint length) : CharArray(length, (gchar) 0) {}
 
-        CharArray::CharArray(gint length, gchar initialValue) : Array<Character>(length) {
+        CharArray::CharArray(gint length, gchar initialValue) {
             if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.CharArray"));
             value = (STORAGE) U::allocateMemory(L(length));
@@ -36,9 +36,9 @@ namespace core {
                 value[i] = initialValue;
         }
 
-        CharArray::CharArray(const CharArray &array) : Array<Character>(0) {
-            gint length = array.length();
-            if (len < 0)
+        CharArray::CharArray(const CharArray &array) {
+            gint const length = array.length();
+            if (length < 0)
                 ArgumentException("Negative array length").throws(__trace("core.native.CharArray"));
             value = (STORAGE) U::allocateMemory(L(length));
             len = length;
@@ -46,7 +46,7 @@ namespace core {
                 value[i] = array.value[i];
         }
 
-        CharArray::CharArray(CharArray &&array) CORE_NOTHROW: Array<Character>(0) {
+        CharArray::CharArray(CharArray &&array) CORE_NOTHROW {
             permute(value, array.value);
             permute(len, array.len);
             permute(isLocal, array.isLocal);
@@ -54,7 +54,7 @@ namespace core {
 
         CharArray &CharArray::operator=(const CharArray &array) {
             if (this != &array) {
-                gint length = array.len;
+                gint const length = array.len;
                 if (array.isLocal) {
                     if (!isLocal) {
                         U::freeMemory((glong) value);
@@ -88,20 +88,14 @@ namespace core {
 
         gchar &CharArray::get(gint index) {
             try {
-                Preconditions::checkIndex(index, Array<Character>::length());
-                return value[index];
-            } catch (const IndexException &ie) {
-                ie.throws(__trace("core.native.CharArray"));
-            }
+                return value[Preconditions::checkIndex(index, len)];
+            } catch (const IndexException &ie) { ie.throws(__trace("core.native.CharArray")); }
         }
 
-        const gchar CharArray::get(gint index) const {
+        gchar CharArray::get(gint index) const {
             try {
-                Preconditions::checkIndex(index, Array<Character>::length());
-                return value[index];
-            } catch (const IndexException &ie) {
-                ie.throws(__trace("core.native.CharArray"));
-            }
+                return value[Preconditions::checkIndex(index, len)];
+            } catch (const IndexException &ie) { ie.throws(__trace("core.native.CharArray")); }
         }
 
         Object &CharArray::clone() const {
@@ -125,6 +119,10 @@ namespace core {
             ba.len = length;
             ba.isLocal = true;
             return ba;
+        }
+
+        gint CharArray::length() const {
+            return len;
         }
     } // core
 } // native

@@ -10,7 +10,7 @@
 namespace core {
     namespace time {
 
-        class DeadLine final: public Temporal {
+        class DeadLine CORE_FINAL: public Temporal {
 
         };
 

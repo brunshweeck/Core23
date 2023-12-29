@@ -252,7 +252,7 @@ namespace core {
         }
 
         /**
-         * Return the value of this Byte as int after
+         * Return the value of this Byte as gint after
          * widening native conversion
          */
         CORE_FAST gint intValue() const {
@@ -532,7 +532,7 @@ namespace core {
          * @return a <b> glong</b> value with a single one-bit, in the position
          *     of the highest-order one-bit in the specified value, or zero if
          *     the specified value is itself equal to zero.
-         * @since 1.5
+         *
          */
         static glong highestOneBit(glong i) { return i & (MIN_VALUE >> leadingZeros(i)); }
 
@@ -547,7 +547,7 @@ namespace core {
          * @return a <b> glong</b> value with a single one-bit, in the position
          *     of the lowest-order one-bit in the specified value, or zero if
          *     the specified value is itself equal to zero.
-         * @since 1.5
+         *
          */
         static CORE_FAST glong lowestOneBit(glong i) {
             // HD, Section 2-1
