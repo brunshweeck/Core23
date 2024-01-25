@@ -11,12 +11,19 @@ namespace core {
     namespace time {
 
         class LocalDate;
+
         class LocalDateTime;
+
         class LocalTime;
+
         class ZoneID;
+
         class ZoneOffset;
+
         class DateTimeFormatter;
+
         class Chronology;
+
         class Era;
 
         /**
@@ -624,7 +631,7 @@ namespace core {
                  * Field number  indicating the daylight saving offset in milliseconds.
                  * <p>
                  * This field reflects the correct daylight saving offset value of
-                 * the time zone of this Calendar if the {@code TimeZone} implementation
+                 * the time zone of this Calendar if the <b> TimeZone} implementation
                  * supports historical Daylight Saving Time schedule changes.
                  */
                 DAYLIGHT_SAVING_OFFSET,
@@ -804,7 +811,7 @@ namespace core {
              * This is an immutable and thread-safe enum.
              *
              */
-            enum FormatStyle: gbyte {
+            enum FormatStyle : gbyte {
                 // ordered from large to small
                 // ordered so that bit 0 of the ordinal indicates stand-alone.
 
@@ -908,7 +915,7 @@ namespace core {
              *         the range of values exceeds an <b> gint</b>
              * @throws ArithmeticException if numeric overflow occurs
              */
-            virtual gint get(TemporalField field) const = 0;
+            virtual gint get(TemporalField field) const;
 
             /**
              * Gets the value of the specified field as a <b> glong</b> .
@@ -933,7 +940,7 @@ namespace core {
              * @throws UnsupportedTemporalException if the field is not supported
              * @throws ArithmeticException if numeric overflow occurs
              */
-            virtual glong getLong(TemporalField field) const = 0;
+            virtual glong getLong(TemporalField field) const;
 
             /**
              * Calculates the amount of time until another temporal in terms of the specified unit.
@@ -978,13 +985,13 @@ namespace core {
             /**
              * Check if the specified value is valid for given temporal field
              *
-             * @throws ArgumentException
+             * @throws IllegalArgumentException
              */
             static glong checkValue(TemporalField field, glong value);
 
         public:
 
-            interface Query: public Object {
+            interface Query : public Object {
 
                 /**
                  * Queries the specified temporal object.
@@ -1024,7 +1031,7 @@ namespace core {
                  * @throws DateTimeException if unable to query
                  * @throws ArithmeticException if numeric overflow occurs
                  */
-                 virtual const Object& queryFrom(const Temporal& temporal) const = 0;
+                virtual const Object &queryFrom(const Temporal &temporal) const = 0;
             };
 
             static const Query &LOCAL_TIME;
@@ -1085,7 +1092,7 @@ namespace core {
              * @throws DateTimeException if unable to query
              * @throws ArithmeticException if numeric overflow occurs
              */
-            virtual const Object& query(const Query &query) const;
+            virtual const Object &query(const Query &query) const;
         };
 
     } // core

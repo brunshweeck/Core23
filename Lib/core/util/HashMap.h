@@ -25,25 +25,25 @@ namespace core {
          * operations (<b> get</b>  and <b> put</b> ), assuming the hash function
          * disperses the elements properly among the buckets.  Iteration over
          * collection views requires time proportional to the "capacity" of the
-         * <b> HashMap</b>  instance (the number of buckets) plus its size (the number
+         * <b> HashMap</b>  INSTANCE (the number of buckets) plus its size (the number
          * of key-value mappings).  Thus, it's very important not to set the initial
          * capacity too high (or the load factor too low) if iteration performance is
          * important.
          *
-         * <p>An instance of <b> HashMap</b>  has two parameters that affect its
+         * <p>An INSTANCE of <b> HashMap</b>  has two parameters that affect its
          * performance: <i>initial capacity</i> and <i>load factor</i>.  The
          * <i>capacity</i> is the number of buckets in the hash table, and the initial
          * capacity is simply the capacity at the time the hash table is created.  The
          * <i>load factor</i> is a measure of how full the hash table is allowed to
          * get before its capacity is automatically increased.  When the number of
          * entries in the hash table exceeds the product of the load factor and the
-         * current capacity, the hash table is <i>rehashed</i> (that is, internal array
+         * current capacity, the hash table is <i>rehashed</i> (that is, internal root
          * structures are rebuilt) so that the hash table has approximately twice the
          * number of buckets.
          *
          * <p>As a general rule, the default load factor (.75) offers a good
-         * tradeoff between time and space costs.  Higher values decrease the
-         * space overhead but increase the lookup cost (reflected in most of
+         * tradeoff between time and diskSpace costs.  Higher values decrease the
+         * diskSpace overhead but increase the lookup cost (reflected in most of
          * the operations of the <b> HashMap</b>  class, including
          * <b> get</b>  and <b> put</b> ).  The expected number of entries in
          * the map and its load factor should be taken into account when
@@ -53,7 +53,7 @@ namespace core {
          * operations will ever occur.
          *
          * <p>If many mappings are to be stored in a <b> HashMap</b>
-         * instance, creating it with a sufficiently large capacity will allow
+         * INSTANCE, creating it with a sufficiently large capacity will allow
          * the mappings to be stored more efficiently than letting it perform
          * automatic rehashing as needed to grow the table.  Note that using
          * many keys with the same <b> hashCode()</b>  is a sure way to slow
@@ -66,7 +66,7 @@ namespace core {
          * the threads modifies the map structurally, it <i>must</i> be
          * synchronized externally.  (A structural modification is any operation
          * that adds or deletes one or more mappings; merely changing the value
-         * associated with a key that an instance already contains is not a
+         * associated with a key that an INSTANCE already contains is not a
          * structural modification.)  This is typically accomplished by
          * synchronizing on some object that naturally encapsulates the map.
          *
@@ -115,11 +115,11 @@ namespace core {
              * instanceof a node).  Bins of TreeNodes may be traversed and
              * used like any others, but additionally support faster lookup
              * when overpopulated. However, since the vast majority of bins in
-             * normal use are not overpopulated, checking for existence of
+             * normal use are not overpopulated, checking for the existence of
              * tree bins may be delayed in the course of table methods.
              *
              * Tree bins (i.e., bins whose elements are all TreeNodes) are
-             * ordered primarily by hashCode, but in the case of ties, if two
+             * ordered primarily by hash code. However, in the case of ties, if two
              * elements are of the same "class C implements Comparable<C>",
              * type then their compareTo method is used for ordering. (We
              * conservatively check generic types via reflection to validate
@@ -130,22 +130,22 @@ namespace core {
              * accidental or malicious usages in which hashCode() methods
              * return values that are poorly distributed, as well as those in
              * which many keys share a hashCode, so glong as they are also
-             * Comparable. (If neither of these apply, we may waste about a
-             * factor of two in time and space compared to taking no
-             * precautions. But the only known cases stem from poor user
+             * Comparable. (If neither of these applies, we may waste about a
+             * factor of two in time and diskSpace compared to taking no
+             * precautions, But the only known cases stem from poor user
              * programming practices that are already so slow that this makes
              * little difference.)
              *
              * Because TreeNodes are about twice the size of regular nodes, we
              * use them only when bins contain enough nodes to warrant use
              * (see TREEIFY_THRESHOLD). And when they become too small (due to
-             * removal or resizing) they are converted back to plain bins.  In
+             * removal or resizing), they are converted back to plain bins.  In
              * usages with well-distributed user hashCodes, tree bins are
              * rarely used.  Ideally, under random hashCodes, the frequency of
              * nodes in bins follows a Poisson distribution
              * (http://en.wikipedia.org/wiki/Poisson_distribution) with a
              * parameter of about 0.5 on average for the default resizing
-             * threshold of 0.75, although with a large variance because of
+             * a threshold of 0.75, although with a large variance because of
              * resizing granularity. Ignoring variance, the expected
              * occurrences of list size k are (exp(-0.5) * pow(0.5, k) /
              * factorial(k)). The first values are:
@@ -179,38 +179,33 @@ namespace core {
              * simplify handling of splits and traversals that invoke
              * iterator.remove. When using comparators on insertion, to keep a
              * total ordering (or as close as is required here) across
-             * rebalancings, we compare classes and identityHashCodes as
+             * rebalanced, we compare classes and identityHashCodes as
              * tie-breakers.
              *
-             * The use and transitions among plain vs tree modes is
+             * The use and transitions among plain vs tree modes are
              * complicated by the existence of subclass LinkedHashMap. See
              * below for hook methods defined to be invoked upon insertion,
              * removal and access that allow LinkedHashMap internals to
              * otherwise remain independent of these mechanics. (This also
-             * requires that a map instance be passed to some utility methods
+             * requires that a map INSTANCE be passed to some utility methods
              * that may create new nodes.)
              *
              * The concurrent-programming-like SSA-based coding style helps
-             * avoid aliasing errors amid all of the twisty pointer operations.
+             * avoid aliasing errors amid all the twisty pointer operations.
              */
 
         private:
 
-            CORE_ALIAS(U, native::Unsafe);
+            CORE_ALIAS(Unsafe, native::Unsafe);
 
-            /**
-             * Capture<T> represent all type T that extends this Map key type K.
-             * in other word K is base of T (Class<K>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(CaptureK, typename Class<T>::template Iff<Class<K>::template isSuper<T>()>);
+            template<class E>
+            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
 
-            /**
-             * Capture<T> represent all type T that extends this Map value type V.
-             * in other word V is base of T (Class<V>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(CaptureV, typename Class<T>::template Iff<Class<V>::template isSuper<T>()>);
+            template<class T, class U>
+            CORE_ALIAS(BinaryActionConsumer, , function::BiConsumer<T, U>);
+
+            template<class T, class U>
+            CORE_ALIAS(BinaryFunction, , function::BiFunction<T, U, V>);
 
             // Used by table form
             class Node;
@@ -229,11 +224,10 @@ namespace core {
             CORE_ALIAS(TNODE, typename Class<TreeNode>::Ptr);
             CORE_ALIAS(LNODE, typename Class<LinkedEntry>::Ptr);
             CORE_ALIAS(ARRAY, typename Class<NODE>::Ptr);
-            template<class T, class U>
-            CORE_ALIAS(ExEntry, , typename Map<T, U>::Entry);
+            CORE_ALIAS(MapEntry, , typename Map<K, V>::Entry);
             CORE_ALIAS(KEY, typename Class<K>::Ptr);
             CORE_ALIAS(VALUE, typename Class<V>::Ptr);
-            CORE_ALIAS(ENTRIES, , typename Class<Set<ExEntry<K, V>>>::Ptr);
+            CORE_ALIAS(ENTRIES, , typename Class<Set<MapEntry>>::Ptr);
             CORE_ALIAS(VALUES, typename Class<Collection<V>>::Ptr);
             CORE_ALIAS(KEYSET, typename Class<Set<K>>::Ptr);
 
@@ -283,25 +277,35 @@ namespace core {
              * Basic hash bin node, used for most entries.  (See below for
              * TreeNode subclass, and in LinkedHashMap for its Entry subclass.)
              */
-            interface Node : public ExEntry<K, V> {
-                gint hash = {};
-                KEY k = {};
-                VALUE v = {};
-                NODE next = {};
+            class Node : public MapEntry {
+            public:
+                gint hash;
+                KEY k;
+                VALUE v;
+                NODE next;
 
+                Node(gint hash, K &k, V &v, NODE next) :
+                        hash(hash), k(&k), v(&v), next(next) {}
 
-                Node(gint hash, K &k, V &v, NODE next) : hash(hash), k(&k), v(&v), next(next) {}
+                const K &key() const override {
+                    // assert (k != null)
+                    return *k;
+                }
 
-                const K &key() const override { return k[0]; }
+                V &value() override {
+                    // assert (v != null)
+                    return *v;
+                }
 
-                V &value() override { return v[0]; }
-
-                const V &value() const override { return v[0]; }
+                const V &value() const override {
+                    // assert (v != null)
+                    return *v;
+                }
 
                 const V &set(const V &value) override {
                     VALUE oldValue = v;
-                    v = &U::copyInstance(value, true);
-                    return oldValue[0];
+                    v = &Unsafe::copyInstance(value, true);
+                    return *oldValue;
                 }
             };
 
@@ -322,7 +326,7 @@ namespace core {
              * never be used in index calculations because of table bounds.
              */
             static gint hash(const K &key) {
-                if (key == null)
+                if (null == key)
                     return 0;
                 else {
                     gint h = key.hash();
@@ -342,8 +346,18 @@ namespace core {
              * Returns a power of two size for the given target capacity.
              */
             static gint tableSizeFor(gint capacity) {
-                gint n = -1 >> Integer::leadingZeros(capacity - 1);
+                gint const n = -1 >> Integer::leadingZeros(capacity - 1);
                 return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+            }
+
+            static CORE_FAST const K &keyOf(NODE entry) {
+                // assert (entry != null)
+                return (*entry).key();
+            }
+
+            static CORE_FAST V &valueOf(NODE entry) {
+                // assert (entry != null)
+                return (*entry).value();
             }
 
             using Map<K, V>::$;
@@ -354,24 +368,24 @@ namespace core {
              * (We also tolerate length zero in some operations to allow
              * bootstrapping mechanics that are currently not needed.)
              */
-            ARRAY table = {};
+            ARRAY table;
 
             /**
              * The number of place allocated form table
              *
              */
-            gint capacity = {};
+            gint capacity;
 
             /**
              * Holds cached entrySet(). Note that AbstractMap fields are used
              * for keySet() and values().
              */
-            ENTRIES eSet = {};
+            ENTRIES eSet;
 
             /**
              * The number of key-value mappings contained in this map.
              */
-            gint len = {};
+            gint len;
 
             /**
              * The number of times this HashMap has been structurally modified
@@ -380,17 +394,17 @@ namespace core {
              * rehash).  This field is used to make iterators on Collection-views of
              * the HashMap fail-fast.  (See ConcurrentModificationException).
              */
-            gint modNum = {};
+            gint modNum;
 
             /**
              * The next size value at which to resize (capacity * load factor).
              */
-            gint threshold = {};
+            gint threshold;
 
             /**
              * The load factor for the hash table.
              */
-            gfloat factor = {};
+            gfloat factor;
 
         public:
 
@@ -400,17 +414,19 @@ namespace core {
              *
              * @param  initialCapacity the initial capacity
              * @param  loadFactor      the load factor
-             * @throws ArgumentException if the initial capacity is negative
+             * @throws IllegalArgumentException if the initial capacity is negative
              *         or the load factor is non-positive
              */
-            CORE_EXPLICIT HashMap(gint initialCapacity, gfloat loadFactor) {
+            CORE_EXPLICIT HashMap(gint initialCapacity, gfloat loadFactor) :
+                    table(null), capacity(0), eSet(null), len(0), modNum(0), threshold(0), factor(0) {
                 if (initialCapacity < 0)
-                    ArgumentException("Illegal initial capacity: " + $(initialCapacity))
+                    IllegalArgumentException("Illegal initial capacity: " + $(initialCapacity))
                             .throws(__trace("core.util.HashMap"));
                 if (initialCapacity > MAXIMUM_CAPACITY)
                     initialCapacity = MAXIMUM_CAPACITY;
                 if (loadFactor < 0 || Float::isNaN(loadFactor))
-                    ArgumentException("Illegal load factor: " + $(loadFactor)).throws(__trace("core.util.HashMap"));
+                    IllegalArgumentException("Illegal load factor: " + $(loadFactor)).throws(
+                            __trace("core.util.HashMap"));
                 factor = loadFactor;
                 threshold = tableSizeFor(initialCapacity);
             }
@@ -420,7 +436,7 @@ namespace core {
              * capacity and the default load factor (0.75).
              *
              * @param  initialCapacity the initial capacity.
-             * @throws ArgumentException if the initial capacity is negative.
+             * @throws IllegalArgumentException if the initial capacity is negative.
              */
             CORE_EXPLICIT HashMap(gint initialCapacity) : HashMap(initialCapacity, DEFAULT_FACTOR) {}
 
@@ -428,7 +444,7 @@ namespace core {
              * Constructs an empty <b> HashMap</b>  with the default initial capacity
              * (16) and the default load factor (0.75).
              */
-            CORE_FAST HashMap() : factor(DEFAULT_FACTOR) {}
+            CORE_FAST HashMap() : HashMap(DEFAULT_CAPACITY, DEFAULT_FACTOR) {}
 
             /**
              * Constructs a new <b> HashMap</b>  with the same mappings as the
@@ -438,12 +454,21 @@ namespace core {
              *
              * @param   m the map whose mappings are to be placed in this map
              */
-            template<class T = K, class U = V>
-            CORE_EXPLICIT HashMap(const Map<CaptureK<T>, CaptureV<T>> &m): factor(DEFAULT_FACTOR) {
+            CORE_EXPLICIT HashMap(const Map<K, V> &m) : HashMap(DEFAULT_CAPACITY, DEFAULT_FACTOR) {
                 addEntries(m, false);
             }
 
-            //
+            /**
+             * Constructs a new <b> HashMap</b>  with the same mappings as the
+             * specified <b> Map</b> .  The <b> HashMap</b>  is created with
+             * default load factor (0.75) and an initial capacity sufficient to
+             * hold the mappings in the specified <b> Map</b> .
+             *
+             * @param   m the map whose mappings are to be placed in this map
+             */
+            HashMap(const HashMap &m) : HashMap(DEFAULT_CAPACITY, DEFAULT_FACTOR) {
+                addEntries(m, false);
+            }
 
             /**
              * Constructs a new <b> HashMap</b>  with the same mappings as the
@@ -453,24 +478,12 @@ namespace core {
              *
              * @param   m the map whose mappings are to be placed in this map
              */
-            HashMap(const HashMap<K, V> &m) : factor(DEFAULT_FACTOR) { addEntries(m, false); }
-
-            //
-
-            /**
-             * Constructs a new <b> HashMap</b>  with the same mappings as the
-             * specified <b> Map</b> .  The <b> HashMap</b>  is created with
-             * default load factor (0.75) and an initial capacity sufficient to
-             * hold the mappings in the specified <b> Map</b> .
-             *
-             * @param   m the map whose mappings are to be placed in this map
-             */
-            HashMap(HashMap<K, V> &&m) CORE_NOTHROW {
-                swap(table, m.table);
-                swap(capacity, m.capacity);
-                swap(len, m.len);
-                swap(threshold, m.threshold);
-                swap(factor, m.factor);
+            HashMap(HashMap &&m) CORE_NOTHROW {
+                Unsafe::swapValues(table, m.table);
+                Unsafe::swapValues(capacity, m.capacity);
+                Unsafe::swapValues(len, m.len);
+                Unsafe::swapValues(threshold, m.threshold);
+                Unsafe::swapValues(factor, m.factor);
                 m.modNum += 1;
             }
 
@@ -479,7 +492,7 @@ namespace core {
              *
              * @param   m the map whose mappings are to be placed in this map
              */
-            HashMap<K, V> &operator=(const HashMap<K, V> &m) {
+            HashMap &operator=(const HashMap &m) {
                 if (this != &m) {
                     clear();
                     addEntries(m, false);
@@ -492,13 +505,13 @@ namespace core {
              *
              * @param   m the map whose mappings are to be placed in this map
              */
-            HashMap<K, V> &operator=(HashMap<K, V> &&m) CORE_NOTHROW {
+            HashMap &operator=(HashMap &&m) CORE_NOTHROW {
                 if (this != &m) {
-                    swap(table, m.table);
-                    swap(capacity, m.capacity);
-                    swap(len, m.len);
-                    swap(threshold, m.threshold);
-                    swap(factor, m.factor);
+                    Unsafe::swapValues(table, m.table);
+                    Unsafe::swapValues(capacity, m.capacity);
+                    Unsafe::swapValues(len, m.len);
+                    Unsafe::swapValues(threshold, m.threshold);
+                    Unsafe::swapValues(factor, m.factor);
                     modNum += 1;
                     m.modNum += 1;
                 }
@@ -514,14 +527,13 @@ namespace core {
              * @param evict false when initially constructing this map, else
              * true (relayed to method afterNodeInsertion).
              */
-            template<class T = K, class U = V>
-            void addEntries(const Map<T, U> &m, gbool evict) {
+            void addEntries(const Map<K, V> &m, gbool evict) {
                 gint size = m.size();
                 if (size > 0) {
                     if (table == null) {
                         // pre-size
                         gdouble dt = Math::ceil(size / (gdouble) factor);
-                        gint t = (dt < (gdouble) MAXIMUM_CAPACITY) ? (gint) dt : MAXIMUM_CAPACITY;
+                        gint const t = (dt < (gdouble) MAXIMUM_CAPACITY) ? (gint) dt : MAXIMUM_CAPACITY;
                         if (t > threshold)
                             threshold = tableSizeFor(t);
                     } else {
@@ -532,19 +544,12 @@ namespace core {
                             resize();
                     }
 
-                    for (const ExEntry<T, U> &e: m.entrySet()) {
+                    for (const MapEntry &e: m.entrySet()) {
                         const K &key = e.key();
                         const V &value = e.value();
-                        addEntry(HashMap<K, V>::hash(key), key, value, false, evict);
+                        addEntry(HashMap::hash(key), key, value, false, evict);
                     }
                 }
-            }
-
-            template<class T, class U>
-            static void swap(T &t, U &u) {
-                T temp = t;
-                t = u;
-                u = temp;
             }
 
         public:
@@ -554,7 +559,9 @@ namespace core {
              *
              * @return the number of key-value mappings in this map
              */
-            gint size() const override { return len; }
+            gint size() const override {
+                return len;
+            }
 
             /**
              * Returns the value to which the specified key is mapped,
@@ -563,7 +570,7 @@ namespace core {
              * <p>More formally, if this map contains a mapping from a key
              * <b> k</b>  to a value <b> v</b>  such that <b> key.equals(k)</b> ,
              * then this method returns <b> v</b> ; otherwise
-             * it throws <b> KeyNotFoundException</b> .  (There can be at most one such mapping.)
+             * it throws <b> NoSuchKeyException</b> .  (There can be at most one such mapping.)
              *
              * <p>A return value of <b> null</b>  does not <i>necessarily</i>
              * indicate that the map contains no mapping for the key; it's also
@@ -578,8 +585,8 @@ namespace core {
             V &get(const K &key) override {
                 NODE e = entryOf(key);
                 if (e == null)
-                    KeyNotFoundException($(key)).throws(__trace("core.util.HashMap"));
-                return e->value();
+                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                return valueOf(e);
             }
 
             /**
@@ -589,7 +596,7 @@ namespace core {
              * <p>More formally, if this map contains a mapping from a key
              * <b> k</b>  to a value <b> v</b>  such that <b> key.equals(k)</b> ,
              * then this method returns <b> v</b> ; otherwise
-             * it throws <b> KeyNotFoundException</b> .  (There can be at most one such mapping.)
+             * it throws <b> NoSuchKeyException</b> .  (There can be at most one such mapping.)
              *
              * <p>A return value of <b> null</b>  does not <i>necessarily</i>
              * indicate that the map contains no mapping for the key; it's also
@@ -604,8 +611,8 @@ namespace core {
             const V &get(const K &key) const override {
                 NODE e = entryOf(key);
                 if (e == null)
-                    KeyNotFoundException($(key)).throws(__trace("core.util.HashMap"));
-                return e->value();
+                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                return valueOf(e);
             }
 
         private:
@@ -617,22 +624,21 @@ namespace core {
              * @return the node, or null if none
              */
             NODE entryOf(const K &key) const {
-                ARRAY tab = {};
-                NODE e = {};
-                NODE first = {};
-                gint hash = {};
-                gint n = {};
-                KEY k = {};
+                ARRAY tab = null;
+                NODE e = null;
+                NODE first = null;
+                gint hash = 0;
+                gint n = 0;
                 if ((tab = table) != null && (n = capacity) > 0 &&
-                    (first = tab[(n - 1) & (hash = HashMap<K, V>::hash(key))]) != null) {
-                    if (first->hash == hash && // always check first node
-                        ((k = first->k) == &key || (key != null && key.equals(k[0]))))
+                    (first = tab[(n - 1) & (hash = HashMap::hash(key))]) != null) {
+                    if (first->hash == hash && // always check the first node
+                        key.equals(keyOf(first)))
                         return first;
                     if ((e = first->next) != null) {
-                        if (Class<TreeNode>::hasInstance(first[0]))
+                        if (Class<TreeNode>::hasInstance(*first))
                             return ((TNODE) first)->entryOf(hash, key);
                         do {
-                            if (e->hash == hash && ((k = e->k) == &key || key.equals(k[0])))
+                            if (e->hash == hash && (key.equals(keyOf(e))))
                                 return e;
                         } while ((e = e->next) != null);
                     }
@@ -663,7 +669,7 @@ namespace core {
              *         <b> the new value </b>  if there was no mapping for <b> key</b> .
              */
             const V &put(const K &key, const V &value) override {
-                return addEntry(HashMap<K, V>::hash(key), key, value, false, true);
+                return addEntry(HashMap::hash(key), key, value, false, true);
             }
 
             /**
@@ -678,7 +684,7 @@ namespace core {
              *         <b> the current value </b>  if there was mapping for <b> key</b> .
              */
             const V &putIfAbsent(const K &key, const V &value) override {
-                return addEntry(HashMap<K, V>::hash(key), key, value, true, true);
+                return addEntry(HashMap::hash(key), key, value, true, true);
             }
 
         private:
@@ -694,11 +700,11 @@ namespace core {
              * @return previous value, or the new value if none
              */
             const V &addEntry(gint hash, const K &key, const V &value, gbool addIfAbsent, gbool evict) {
-                ARRAY tab = {};
-                NODE p = {};
-                gint n = {};
-                gint i = {};
-                VALUE retVal = {};
+                ARRAY tab = null;
+                NODE p = null;
+                gint n = 0;
+                gint i = 0;
+                VALUE retVal = null;
                 if ((tab = table) == null || (n = capacity) == 0) {
                     tab = resize();
                     n = capacity;
@@ -707,11 +713,10 @@ namespace core {
                     tab[i] = newNode(hash, key, value, null);
                     retVal = tab[i]->v;
                 } else {
-                    NODE e = {};
-                    KEY k = {};
-                    if ((p->hash == hash) && (((k = p->k) == &key) || key.equals(k[0]))) {
+                    NODE e = null;
+                    if ((p->hash == hash) && (key.equals(keyOf(p)))) {
                         e = p;
-                    } else if (Class<TreeNode>::hasInstance(p[0])) {
+                    } else if (Class<TreeNode>::hasInstance(*p)) {
                         e = ((TNODE) p)->addEntry(*this, tab, hash, key, value);
                     } else {
                         for (gint binCount = 0;; ++binCount) {
@@ -721,32 +726,34 @@ namespace core {
                                     treeifyBin(tab, hash);
                                 break;
                             }
-                            if (e->hash == hash && ((k = e->k) == &key || key.equals(k[0]))) {
+                            if (e->hash == hash && (key.equals(keyOf(e)))) {
                                 break;
                             }
                             p = e;
                         }
                     }
-                    if (e != null) { // existing mapping for key
+                    if (e != null) { // existing mapping for a key
                         VALUE oldValue = e->v;
                         if (!addIfAbsent || oldValue == null) {
-                            e->v = &U::copyInstance(value, true);
+                            e->v = &Unsafe::copyInstance(value, true);
                         }
                         afterNodeAccess(e);
-                        return oldValue[0];
+                        return *oldValue;
                     }
                 }
                 ++modNum;
                 if (++len > threshold)
                     resize();
                 afterNodeInsertion(evict);
-                return retVal[0];
+                return *retVal;
             }
 
             /**
              * convert the given capacity to equivalent in bytes
              */
-            static CORE_FAST glong L(gint capacity) { return 1LL * capacity * U::ARRAY_REFERENCE_INDEX_SCALE; }
+            static CORE_FAST glong L(gint capacity) {
+                return 1LL * capacity * Unsafe::ARRAY_REFERENCE_INDEX_SCALE;
+            }
 
             /**
              * Initializes or doubles table size.  If null, allocates in
@@ -761,16 +768,17 @@ namespace core {
                 ARRAY oldTab = table;
                 gint oldCap = (oldTab == null) ? 0 : capacity;
                 gint oldThr = threshold;
-                gint newCap, newThr = 0;
+                gint newCap;
+                gint newThr = 0;
                 if (oldCap > 0) {
                     if (oldCap >= MAXIMUM_CAPACITY) {
                         threshold = Integer::MAX_VALUE;
                         return oldTab;
                     } else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY && oldCap >= DEFAULT_CAPACITY)
                         newThr = oldThr << 1; // double threshold
-                } else if (oldThr > 0) // initial capacity was placed in threshold
+                } else if (oldThr > 0) // initial capacity was placed in a threshold
                     newCap = oldThr;
-                else {               // zero initial threshold signifies using defaults
+                else {               // zero initial thresholds signify using defaults
                     newCap = DEFAULT_CAPACITY;
                     newThr = (gint) (DEFAULT_FACTOR * DEFAULT_CAPACITY);
                 }
@@ -780,7 +788,7 @@ namespace core {
                               (gint) ft : Integer::MAX_VALUE);
                 }
                 threshold = newThr;
-                ARRAY newTab = (ARRAY) U::allocateMemory(L(newCap));
+                ARRAY newTab = (ARRAY) Unsafe::allocateMemory(L(newCap));
                 table = newTab;
                 capacity = newCap;
                 for (gint i = 0; i < newCap; ++i)
@@ -788,17 +796,19 @@ namespace core {
 
                 if (oldTab != null) {
                     for (gint j = 0; j < oldCap; ++j) {
-                        NODE e = {};
+                        NODE e = null;
                         if ((e = oldTab[j]) != null) {
                             oldTab[j] = null;
                             if (e->next == null)
                                 newTab[e->hash & (newCap - 1)] = e;
-                            else if (Class<TreeNode>::hasInstance(e[0]))
+                            else if (Class<TreeNode>::hasInstance(*e))
                                 ((TNODE) e)->split(*this, newTab, j, oldCap);
                             else { // preserve order
-                                NODE loHead = null, loTail = null;
-                                NODE hiHead = null, hiTail = null;
-                                NODE next = {};
+                                NODE loHead = null;
+                                NODE loTail = null;
+                                NODE hiHead = null;
+                                NODE hiTail = null;
+                                NODE next = null;
                                 do {
                                     next = e->next;
                                     if ((e->hash & oldCap) == 0) {
@@ -827,7 +837,7 @@ namespace core {
                         }
                     }
                 }
-                U::freeMemory((glong) oldTab);
+                Unsafe::freeMemory((glong) oldTab);
                 return newTab;
             }
 
@@ -836,12 +846,14 @@ namespace core {
              * table is too small, in which case resizes instead.
              */
             void treeifyBin(ARRAY tab, gint hash) {
-                gint n = {}, index = {};
-                NODE e = {};
+                gint n = 0;
+                gint index = 0;
+                NODE e = null;
                 if (tab == null || (n = capacity) < MIN_TREEIFY_CAPACITY)
                     resize();
                 else if ((e = tab[index = (n - 1) & hash]) != null) {
-                    TNODE hd = null, tl = null;
+                    TNODE hd = null;
+                    TNODE tl = null;
                     do {
                         TNODE p = replacementTNode(e, null);
                         if (tl == null)
@@ -888,10 +900,10 @@ namespace core {
              *         previously associated <b> null</b>  with <b> key</b> .)
              */
             const V &remove(const K &key) override {
-                NODE e = deleteEntry(HashMap<K, V>::hash(key), key, null, false, true);
+                NODE e = deleteEntry(HashMap::hash(key), key, null, false, true);
                 if (e == null)
-                    KeyNotFoundException($(key)).throws(__trace("core.util.HashMap"));
-                return e->value();
+                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                return valueOf(e);
             }
 
         private:
@@ -907,21 +919,21 @@ namespace core {
              * @return the node, or null if none
              */
             NODE deleteEntry(gint hash, const K &key, const Object &value, gbool matchValue, gbool movable) {
-                ARRAY tab = {};
-                NODE p = {};
-                gint n = {}, index = {};
+                ARRAY tab = null;
+                NODE p = null;
+                gint n = 0;
+                gint index = 0;
                 if ((tab = table) != null && (n = capacity) > 0 && (p = tab[index = (n - 1) & hash]) != null) {
-                    NODE node = null, e = {};
-                    KEY k = {};
-                    VALUE v = {};
-                    if (p->hash == hash && ((k = p->k) == &key || key.equals(k[0])))
+                    NODE node = null;
+                    NODE e = null;
+                    if (p->hash == hash && (key.equals(keyOf(p))))
                         node = p;
                     else if ((e = p->next) != null) {
-                        if (Class<TreeNode>::hasInstance(p[0]))
+                        if (Class<TreeNode>::hasInstance(*p))
                             node = ((TNODE) p)->entryOf(hash, key);
                         else {
                             do {
-                                if (e->hash == hash && ((k = e->k) == &key || key.equals(k[0]))) {
+                                if (e->hash == hash && (key.equals(keyOf(e)))) {
                                     node = e;
                                     break;
                                 }
@@ -929,8 +941,8 @@ namespace core {
                             } while ((e = e->next) != null);
                         }
                     }
-                    if (node != null && (!matchValue || (v = node->v) == &value || value.equals(v[0]))) {
-                        if (Class<TreeNode>::hasInstance(node[0]))
+                    if (node != null && (!matchValue || value.equals(valueOf(node)))) {
+                        if (Class<TreeNode>::hasInstance(*node))
                             ((TNODE) node)->deleteEntry(*this, tab, movable);
                         else if (node == p)
                             tab[index] = node->next;
@@ -946,6 +958,9 @@ namespace core {
             }
 
         public:
+            gint hash() const override {
+                return Object::hash();
+            }
 
             /**
              * Removes all of the mappings from this map.
@@ -956,8 +971,9 @@ namespace core {
                 modNum++;
                 if ((tab = table) != null && len > 0) {
                     len = 0;
-                    for (gint i = 0; i < capacity; ++i)
+                    for (gint i = 0; i < capacity; ++i) {
                         tab[i] = null;
+                    }
                 }
             }
 
@@ -971,12 +987,11 @@ namespace core {
              */
             gbool containsValue(const V &value) const override {
                 ARRAY tab;
-                VALUE v;
                 if ((tab = table) != null && len > 0) {
                     for (gint i = 0; i < capacity; ++i) {
                         NODE e = tab[i];
                         for (; e != null; e = e->next) {
-                            if ((v = e->v) == &value || value.equals(v[0]))
+                            if (value.equals(valueOf(e)))
                                 return true;
                         }
                     }
@@ -1000,47 +1015,52 @@ namespace core {
              * @return a set view of the keys contained in this map
              */
             Set<K> &keySet() const override {
-                if (Map<K, V>::kSet == null)
-                    (KEYSET &) Map<K, V>::kSet = &U::createInstance<KeySet>((HashMap<K, V> &) *this);
-
-                return Map<K, V>::kSet[0];
+                if (Map<K, V>::kSet == null) {
+                    (KEYSET &) Map<K, V>::kSet = &Unsafe::allocateInstance<KeySet>((HashMap &) *this);
+                }
+                return *Map<K, V>::kSet;
             }
 
         private:
 
             class KeySet CORE_FINAL : public Set<K> {
-                HashMap<K, V> &root;
+            private:
+                CORE_ALIAS(ActionConsumer, function::Consumer<K>);
+                CORE_ALIAS(ElementFilter, function::Predicate<K>);
+
+                HashMap &root;
 
             public:
-                CORE_EXPLICIT KeySet(HashMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT KeySet(HashMap &root) : root(root) {}
 
-                void forEach(const Consumer<K> &action) const override {
+                void forEach(const ActionConsumer &action) const override {
                     ARRAY tab;
                     if (root.len > 0 && (tab = root.table) != null) {
                         gint mc = root.modNum;
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
-                                action.accept(e->key());
+                                action.accept(keyOf(e));
                         }
                         if (root.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
                     }
                 }
 
-                ReferenceArray toArray() const override {
-                    ReferenceArray array = ReferenceArray(root.len);
-                    ARRAY tab = {};
+                Array<K> toArray() const override {
+                    Array<K> ra{root.len};
+                    ARRAY tab = null;
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                array.value[idx++] = e->k;
+                                ra.set(idx, *e->k);
+                                idx += 1;
                             }
                         }
                     }
-                    return array;
+                    return (Array<K> &&) ra;
                 }
 
                 gint size() const override { return root.size(); }
@@ -1048,11 +1068,11 @@ namespace core {
                 gbool contains(const K &o) const override { return root.containsKey(o); }
 
                 Iterator<const K> &iterator() const override {
-                    return U::createInstance<KeyItr>((HashMap<K, V> &) root);
+                    return Unsafe::allocateInstance<KeyItr>((HashMap &) root);
                 }
 
                 gbool remove(const K &o) override {
-                    return root.deleteEntry(HashMap<K, V>::hash(o), o, null, false, true) != null;
+                    return root.deleteEntry(HashMap::hash(o), o, null, false, true) != null;
                 }
 
                 void clear() override { root.clear(); }
@@ -1076,34 +1096,40 @@ namespace core {
              * @return a view of the values contained in this map
              */
             Collection<V> &values() const override {
-                if (Map<K, V>::vCollection == null)
-                    (VALUES &) Map<K, V>::vCollection = &U::createInstance<Values>((HashMap<K, V> &) *this);
-                return Map<K, V>::vCollection[0];
+                if (Map<K, V>::vCollection == null) {
+                    (VALUES &) Map<K, V>::vCollection = &Unsafe::allocateInstance<Values>((HashMap &) *this);
+                }
+                return *Map<K, V>::vCollection;
             }
 
         private:
             class Values CORE_FINAL : public Collection<V> {
-                HashMap<K, V> &root;
+            private:
+
+                CORE_ALIAS(ActionConsumer, function::Consumer<V>);
+                CORE_ALIAS(ElementFilter, function::Predicate<V>);
+
+                HashMap &root;
 
             public:
-                CORE_EXPLICIT Values(HashMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT Values(HashMap &root) : root(root) {}
 
                 gint size() const override { return root.size(); }
 
                 gbool contains(const V &o) const override { return root.containsValue(o); }
 
                 Iterator<const V> &iterator() const override {
-                    return U::createInstance<ValueItr>((HashMap<K, V> &) root);
+                    return Unsafe::allocateInstance<ValueItr>((HashMap &) root);
                 }
 
-                void forEach(const Consumer<V> &action) const override {
+                void forEach(const ActionConsumer &action) const override {
                     ARRAY tab;
                     if (root.len > 0 && (tab = root.table) != null) {
                         gint mc = root.modNum;
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
-                                action.accept(e->value());
+                                action.accept(valueOf(e));
                         }
                         if (root.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
@@ -1112,19 +1138,20 @@ namespace core {
 
                 void clear() override { root.clear(); }
 
-                ReferenceArray toArray() const override {
-                    ReferenceArray array = ReferenceArray(root.len);
-                    ARRAY tab = {};
+                Array<V> toArray() const override {
+                    Array<V> ra{root.len};
+                    ARRAY tab = null;
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                array.value[idx++] = e->v;
+                                ra.set(idx, *e->v);
+                                idx += 1;
                             }
                         }
                     }
-                    return array;
+                    return (Array<V> &&) ra;
                 }
             };
 
@@ -1146,87 +1173,94 @@ namespace core {
              *
              * @return a set view of the mappings contained in this map
              */
-            Set<ExEntry<K, V>> &entrySet() const override {
-                if (eSet == null)
-                    (ENTRIES &) eSet = &U::createInstance<EntrySet>((HashMap<K, V> &) *this);
-                return eSet[0];
+            Set<MapEntry> &entrySet() const override {
+                if (eSet == null) {
+                    (ENTRIES &) eSet = &Unsafe::allocateInstance<EntrySet>((HashMap &) *this);
+                }
+                return *eSet;
             }
 
         private:
-            class EntrySet CORE_FINAL : public Set<ExEntry<K, V>> {
-                HashMap<K, V> &root;
+            class EntrySet CORE_FINAL : public Set<MapEntry> {
+            private:
+
+                CORE_ALIAS(ActionConsumer, function::Consumer<MapEntry>);
+                CORE_ALIAS(ElementFilter, function::Predicate<MapEntry>);
+
+                HashMap &root;
+
             public:
-                CORE_EXPLICIT EntrySet(HashMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT EntrySet(HashMap &root) : root(root) {}
 
                 gint size() const override { return root.size(); }
 
                 void clear() override { root.clear(); }
 
-                Iterator<const ExEntry<K, V>> &iterator() const override {
-                    return U::createInstance<EntryItr>((HashMap<K, V> &) root);
+                Iterator<const MapEntry> &iterator() const override {
+                    return Unsafe::allocateInstance<EntryItr>((HashMap &) root);
                 }
 
-                gbool contains(const ExEntry<K, V> &o) const override {
+                gbool contains(const MapEntry &o) const override {
                     NODE e = root.entryOf(o.key());
                     if (e == null)
                         return false;
-                    return Object::equals(o.value(), e->value());
+                    return Object::equals(o.value(), valueOf(e));
                 }
 
-                gbool remove(const ExEntry<K, V> &o) override {
-                    return root.deleteEntry(HashMap<K, V>::hash(o.key()), o.key(), o.value(), true, true) != null;
+                gbool remove(const MapEntry &o) override {
+                    return root.deleteEntry(HashMap::hash(o.key()), o.key(), o.value(), true, true) != null;
                 }
 
-                void forEach(const Consumer<ExEntry<K, V>> &action) const override {
+                void forEach(const ActionConsumer &action) const override {
                     ARRAY tab;
                     if (root.len > 0 && (tab = root.table) != null) {
                         gint mc = root.modNum;
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
-                                action.accept(e[0]);
+                                action.accept(*e);
                         }
                         if (root.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
                     }
                 }
 
-                ReferenceArray toArray() const override {
-                    ReferenceArray array = ReferenceArray(root.len);
-                    ARRAY tab = {};
+                Array<typename Map<K, V>::Entry> toArray() const override {
+                    Array<MapEntry> ra{root.len};
+                    ARRAY tab = null;
                     gint idx = 0;
                     if (root.len > 0 && (tab = root.table) != null) {
                         for (gint i = 0; i < root.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                array.value[idx++] = e;
+                                ra.set(idx, *e);
+                                idx += 1;
                             }
                         }
                     }
-                    return array;
+                    return (Array<MapEntry> &&) ra;
                 }
             };
 
         public:
             V &getOrDefault(const K &key, const V &defaultValue) override {
-                NODE e = {};
-                return (e = entryOf(key)) != null ? e->value() : U::copyInstance(defaultValue, true);
+                NODE e = null;
+                return (e = entryOf(key)) != null ? valueOf(e) : Unsafe::copyInstance(defaultValue, true);
             }
 
             const V &getOrDefault(const K &key, const V &defaultValue) const override {
-                NODE e = {};
-                return (e = entryOf(key)) != null ? e->value() : U::copyInstance(defaultValue, true);
+                NODE e = null;
+                return (e = entryOf(key)) != null ? valueOf(e) : Unsafe::copyInstance(defaultValue, true);
             }
 
             gbool remove(const K &key, const V &value) override {
-                return deleteEntry(HashMap<K, V>::hash(key), key, value, true, true) != null;
+                return deleteEntry(HashMap::hash(key), key, value, true, true) != null;
             }
 
             gbool replace(const K &key, const V &oldValue, const V &newValue) override {
-                NODE e = {};
-                VALUE v = {};
-                if ((e = entryOf(key)) != null && ((v = e->v) == &oldValue || v->equals(oldValue))) {
-                    e->v = &U::copyInstance(newValue, true);
+                NODE e = null;
+                if ((e = entryOf(key)) != null && (valueOf(e).equals(oldValue))) {
+                    e->v = &Unsafe::copyInstance(newValue, true);
                     afterNodeAccess(e);
                     return true;
                 }
@@ -1234,24 +1268,25 @@ namespace core {
             }
 
             const V &replace(const K &key, const V &value) override {
-                NODE e = {};
+                NODE e = null;
                 if ((e = entryOf(key)) != null) {
                     VALUE oldValue = e->v;
-                    e->v = &U::copyInstance(value, true);
+                    e->v = &Unsafe::copyInstance(value, true);
                     afterNodeAccess(e);
-                    return oldValue[0];
+                    return *oldValue;
                 }
-                KeyNotFoundException($(key)).throws(__trace("core.util.HashMap"));
+                NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
             }
 
-            void forEach(BiConsumer<K, V> action) override {
-                ARRAY tab = {};
+            void forEach(const BinaryActionConsumer<K, V> &action) override {
+                CORE_IGNORE(action);
+                ARRAY tab = null;
                 if (len > 0 && (tab = table) != null) {
                     gint mc = modNum;
                     for (gint i = 0; i < capacity; ++i) {
                         NODE e = tab[i];
                         for (; e != null; e = e->next) {
-//                            action.accept(e->key(), e->value());
+//                            action.accept(keyOf(e), valueOf(e));
                         }
                     }
                     if (modNum != mc)
@@ -1259,14 +1294,14 @@ namespace core {
                 }
             }
 
-            void replaceAll(BiFunction<K, V &, V> function) override {
-                ARRAY tab = {};
+            void replaceAll(const BinaryFunction<K, V> & /*function*/) override {
+                ARRAY tab = null;
                 if (len > 0 && (tab = table) != null) {
                     gint mc = modNum;
                     for (gint i = 0; i < capacity; ++i) {
                         NODE e = tab[i];
                         for (; e != null; e = e->next) {
-//                            e->set(function.apply(e->key(), e->value()));
+//                            e->set(function.apply(keyOf(e), valueOf(e)));
                         }
                     }
                     if (modNum != mc)
@@ -1275,30 +1310,29 @@ namespace core {
             }
 
             /**
-             * Returns a shallow copy of this <b> HashMap</b>  instance: the keys and
+             * Returns a shallow copy of this <b> HashMap</b>  INSTANCE: the keys and
              * values themselves are not cloned.
              *
              * @return a shallow copy of this map
              */
-            Object &clone() const override { return U::createInstance<HashMap<K, V>>(*this); }
+            Object &clone() const override { return Unsafe::allocateInstance<HashMap>(*this); }
 
         private:
             template<class T>
             interface AbstractItr : public Iterator<const T> {
-                NODE next = {};
-                NODE current = {};
-                gint modNum = {};
-                gint index = {};
-                HashMap<K, V> &root;
+                NODE next = null;
+                NODE current = null;
+                gint modNum;
+                gint index = 0;
+                HashMap &root;
 
-                CORE_EXPLICIT AbstractItr(HashMap<K, V> &root) : root(root) {
-                    modNum = root.modNum;
+                CORE_EXPLICIT AbstractItr(HashMap &root) : modNum(root.modNum), root(root) {
                     ARRAY tab = root.table;
-                    current = next = null;
-                    index = 0;
                     if (tab != null && root.len > 0) {
                         // advance to the first entry
-                        do {} while (index < root.capacity && (next = tab[index++]) == null);
+                        do {
+                            index += 1;
+                        } while (index <= root.capacity && (next = tab[index]) == null);
                     }
                 }
 
@@ -1307,14 +1341,16 @@ namespace core {
                 }
 
                 NODE nextEntry() {
-                    ARRAY tab = {};
+                    ARRAY tab = null;
                     NODE e = next;
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.HashMap.AbstractItr"));
                     if (e == null)
-                        NoSuchItemException().throws(__trace("core.util.HashMap.AbstractItr"));
+                        NoSuchElementException().throws(__trace("core.util.HashMap.AbstractItr"));
                     if ((next = (current = e)->next) == null && (tab = root.table) != null) {
-                        do {} while (index < root.capacity && (next = tab[index++]) == null);
+                        do {
+                            index += 1;
+                        } while (index <= root.capacity && (next = tab[index]) == null);
                     }
                     return e;
                 }
@@ -1322,11 +1358,11 @@ namespace core {
                 void remove() override {
                     NODE p = current;
                     if (p == null)
-                        StateException().throws(__trace("core.util.HashMap.AbstractItr"));
+                        IllegalStateException().throws(__trace("core.util.HashMap.AbstractItr"));
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.HashMap.AbstractItr"));
                     current = null;
-                    root.deleteEntry(p->hash, p->key(), null, false, false);
+                    root.deleteEntry(p->hash, keyOf(p), null, false, false);
                     modNum = root.modNum;
                 }
 
@@ -1343,31 +1379,37 @@ namespace core {
 
             class KeyItr CORE_FINAL : public AbstractItr<K> {
             public:
-                CORE_EXPLICIT KeyItr(HashMap<K, V> &root) : AbstractItr<K>(root) {}
+                using AbstractItr<K>::nextEntry;
 
-                const K &next() override { return KeyItr::nextEntry()->key(); }
+                CORE_EXPLICIT KeyItr(HashMap &root) : AbstractItr<K>(root) {}
 
-                Object &clone() const override { return U::createInstance<KeyItr>(*this); }
+                const K &next() override { return keyOf(nextEntry()); }
+
+                Object &clone() const override { return Unsafe::allocateInstance<KeyItr>(*this); }
             };
 
 
             class ValueItr CORE_FINAL : public AbstractItr<V> {
             public:
-                CORE_EXPLICIT ValueItr(HashMap<K, V> &root) : AbstractItr<V>(root) {}
+                using AbstractItr<V>::nextEntry;
 
-                const V &next() override { return ValueItr::nextEntry()->value(); }
+                CORE_EXPLICIT ValueItr(HashMap &root) : AbstractItr<V>(root) {}
 
-                Object &clone() const override { return U::createInstance<ValueItr>(*this); }
+                const V &next() override { return valueOf(nextEntry()); }
+
+                Object &clone() const override { return Unsafe::allocateInstance<ValueItr>(*this); }
             };
 
 
-            class EntryItr CORE_FINAL : public AbstractItr<ExEntry<K, V>> {
+            class EntryItr CORE_FINAL : public AbstractItr<MapEntry> {
             public:
-                CORE_EXPLICIT EntryItr(HashMap<K, V> &root) : AbstractItr<ExEntry<K, V>>(root) {}
+                using AbstractItr<MapEntry>::nextEntry;
 
-                const ExEntry<K, V> &next() override { return EntryItr::nextEntry()[0]; }
+                CORE_EXPLICIT EntryItr(HashMap &root) : AbstractItr<MapEntry>(root) {}
 
-                Object &clone() const override { return U::createInstance<EntryItr>(*this); }
+                const MapEntry &next() override { return *nextEntry(); }
+
+                Object &clone() const override { return Unsafe::allocateInstance<EntryItr>(*this); }
             };
 
 
@@ -1381,30 +1423,30 @@ namespace core {
 
             // Create a regular (non-tree) node
             virtual NODE newNode(gint hash, const K &key, const V &value, NODE next) {
-                K &keyCopy = U::copyInstance(key, true);
-                V &valueCopy = U::copyInstance(value, true);
-                return &U::createInstance<Node>(hash, keyCopy, valueCopy, next);
+                K &keyCopy = Unsafe::copyInstance(key, true);
+                V &valueCopy = Unsafe::copyInstance(value, true);
+                return &Unsafe::allocateInstance<Node>(hash, keyCopy, valueCopy, next);
             }
 
             // For conversion from TreeNodes to plain nodes
             virtual NODE replacementNode(NODE p, NODE next) {
-                K &keyCopy = p->k[0];
-                V &valueCopy = p->v[0];
-                return &U::createInstance<Node>(p->hash, keyCopy, valueCopy, next);
+                K &keyCopy = (K &) keyOf(p);
+                V &valueCopy = (V &) valueOf(p);
+                return &Unsafe::allocateInstance<Node>(p->hash, keyCopy, valueCopy, next);
             }
 
             // Create a tree bin node
             virtual TNODE newTNode(gint hash, const K &key, const V &value, NODE next) {
-                K &keyCopy = U::copyInstance(key, true);
-                V &valueCopy = U::copyInstance(value, true);
-                return &U::createInstance<TreeNode>(hash, keyCopy, valueCopy, next);
+                K &keyCopy = Unsafe::copyInstance(key, true);
+                V &valueCopy = Unsafe::copyInstance(value, true);
+                return &Unsafe::allocateInstance<TreeNode>(hash, keyCopy, valueCopy, next);
             }
 
             // For treeifyBin
             virtual TNODE replacementTNode(NODE p, NODE next) {
-                K &keyCopy = p->k[0];
-                V &valueCopy = p->v[0];
-                return &U::createInstance<TreeNode>(p->hash, keyCopy, valueCopy, next);
+                K &keyCopy = (K &) keyOf(p);
+                V &valueCopy = (V &) valueOf(p);
+                return &Unsafe::allocateInstance<TreeNode>(p->hash, keyCopy, valueCopy, next);
             }
 
             // Callbacks to allow LinkedHashMap post-actions
@@ -1418,8 +1460,8 @@ namespace core {
              * HashMap.Node subclass for normal LinkedHashMap entries.
              */
             interface LinkedEntry : public Node {
-                LNODE after = {};
-                LNODE before = {};
+                LNODE after = null;
+                LNODE before = null;
 
                 CORE_EXPLICIT LinkedEntry(gint hash, K &k, V &v, NODE next) : Node(hash, k, v, next) {}
             };
@@ -1434,10 +1476,10 @@ namespace core {
              * linked node.
              */
             interface TreeNode CORE_FINAL : public LinkedEntry {
-                TNODE parent = {};
-                TNODE left = {};
-                TNODE right = {};
-                TNODE prev = {};
+                TNODE parent = null;
+                TNODE left = null;
+                TNODE right = null;
+                TNODE prev = null;
                 gbool color = BLACK;
 
                 CORE_EXPLICIT TreeNode(gint hash, K &k, V &v, NODE next) : LinkedEntry(hash, k, v, next) {}
@@ -1457,12 +1499,12 @@ namespace core {
                  * Ensures that the given root is the first node of its bin.
                  */
                 static void toFront(ARRAY tab, TNODE root, gint capacity) {
-                    gint n = {};
+                    gint n = 0;
                     if (root != null && tab != null && (n = capacity) > 0) {
                         gint index = (n - 1) & root->hash;
                         TNODE first = (TNODE) tab[index];
                         if (root != first) {
-                            NODE rn = {};
+                            NODE rn = null;
                             tab[index] = root;
                             TNODE rp = root->prev;
                             if ((rn = root->next) != null)
@@ -1486,20 +1528,23 @@ namespace core {
                 TNODE find(gint h, const K &k) {
                     TNODE p = this;
                     do {
-                        gint ph, dir;
+                        gint ph;
+                        gint dir;
                         KEY pk;
-                        TNODE pl = p->left, pr = p->right, q;
+                        TNODE pl = p->left;
+                        TNODE pr = p->right;
+                        TNODE q;
                         if ((ph = p->hash) > h)
                             p = pl;
                         else if (ph < h)
                             p = pr;
-                        else if ((pk = p->k) == &k || k.equals(pk[0]))
+                        else if ((pk = p->k) == &k || k.equals(*pk))
                             return p;
                         else if (pl == null)
                             p = pr;
                         else if (pr == null)
                             p = pl;
-                        else if ((dir = compareComparables(k, pk[0])) != 0)
+                        else if ((dir = compareComparables(k, *pk)) != 0)
                             p = (dir < 0) ? pl : pr;
                         else if ((q = pr->find(h, k)) != null)
                             return q;
@@ -1546,14 +1591,15 @@ namespace core {
                             KEY k = x->k;
                             gint h = x->hash;
                             for (TNODE p = root;;) {
-                                gint dir, ph;
+                                gint dir;
+                                gint ph;
                                 KEY pk = p->k;
                                 if ((ph = p->hash) > h)
                                     dir = -1;
                                 else if (ph < h)
                                     dir = 1;
-                                else if ((dir = compareComparables(k[0], pk[0])) == 0)
-                                    dir = tieBreakOrder(k[0], pk[0]);
+                                else if ((dir = compareComparables(*k, *pk)) == 0)
+                                    dir = tieBreakOrder(*k, *pk);
 
                                 TNODE xp = p;
                                 if ((p = (dir <= 0) ? p->left : p->right) == null) {
@@ -1575,8 +1621,9 @@ namespace core {
                  * Returns a list of non-TreeNodes replacing those linked from
                  * this node.
                  */
-                NODE untreeify(HashMap<K, V> &map) {
-                    NODE hd = null, tl = null;
+                NODE untreeify(HashMap &map) {
+                    NODE hd = null;
+                    NODE tl = null;
                     for (NODE q = this; q != null; q = q->next) {
                         NODE p = map.replacementNode(q, null);
                         if (tl == null)
@@ -1591,27 +1638,28 @@ namespace core {
                 /**
                  * Tree version of putVal.
                  */
-                TNODE addEntry(HashMap<K, V> &map, ARRAY tab, gint h, const K &k, const V &v) {
+                TNODE addEntry(HashMap &map, ARRAY tab, gint h, const K &k, const V &v) {
                     gbool searched = false;
                     TNODE root = (parent != null) ? this->root() : this;
                     for (TNODE p = root;;) {
-                        gint dir, ph;
-                        KEY pk;
+                        gint dir = 0;
+                        gint ph = 0;
                         if ((ph = p->hash) > h)
                             dir = -1;
                         else if (ph < h)
                             dir = 1;
-                        else if ((pk = p->k) == &k || k.equals(pk[0]))
+                        else if (k.equals(keyOf(p)))
                             return p;
-                        else if ((dir = compareComparables(k, pk[0])) == 0) {
+                        else if ((dir = compareComparables(k, keyOf(p))) == 0) {
                             if (!searched) {
-                                TNODE q, ch;
+                                TNODE q;
+                                TNODE ch;
                                 searched = true;
                                 if (((ch = p->left) != null && (q = ch->find(h, k)) != null) ||
                                     ((ch = p->right) != null && (q = ch->find(h, k)) != null))
                                     return q;
                             }
-                            dir = tieBreakOrder(k, pk[0]);
+                            dir = tieBreakOrder(k, keyOf(p));
                         }
 
                         TNODE xp = p;
@@ -1642,13 +1690,16 @@ namespace core {
                  * the bin is converted back to a plain bin. (The test triggers
                  * somewhere between 2 and 6 nodes, depending on tree structure).
                  */
-                void deleteEntry(HashMap<K, V> &map, ARRAY tab, gbool movable) {
+                void deleteEntry(HashMap &map, ARRAY tab, gbool movable) {
                     gint n;
                     if (tab == null || (n = map.capacity) == 0)
                         return;
                     gint index = (n - 1) & Node::hash;
-                    TNODE first = (TNODE) tab[index], root = first, rl;
-                    TNODE succ = (TNODE) this->next, pred = prev;
+                    TNODE first = (TNODE) tab[index];
+                    TNODE root = first;
+                    TNODE rl;
+                    TNODE succ = (TNODE) this->next;
+                    TNODE pred = prev;
                     if (pred == null)
                         tab[index] = first = succ;
                     else
@@ -1664,9 +1715,13 @@ namespace core {
                         tab[index] = first->untreeify(map);  // too small
                         return;
                     }
-                    TNODE p = this, pl = left, pr = right, replacement;
+                    TNODE p = this;
+                    TNODE pl = left;
+                    TNODE pr = right;
+                    TNODE replacement;
                     if (pl != null && pr != null) {
-                        TNODE s = pr, sl;
+                        TNODE s = pr;
+                        TNODE sl;
                         while ((sl = s->left) != null) // find successor
                             s = sl;
                         gbool c = s->color;
@@ -1746,12 +1801,15 @@ namespace core {
                  * @param index the index of the table being split
                  * @param bit the bit of hash to split on
                  */
-                void split(HashMap<K, V> &map, ARRAY tab, gint index, gint bit) {
+                void split(HashMap &map, ARRAY tab, gint index, gint bit) {
                     TNODE b = this;
                     // Relink into lo and hi lists, preserving order
-                    TNODE loHead = null, loTail = null;
-                    TNODE hiHead = null, hiTail = null;
-                    gint lc = 0, hc = 0;
+                    TNODE loHead = null;
+                    TNODE loTail = null;
+                    TNODE hiHead = null;
+                    TNODE hiTail = null;
+                    gint lc = 0;
+                    gint hc = 0;
                     for (TNODE e = b, next; e != null; e = next) {
                         next = (TNODE) e->next;
                         e->next = null;
@@ -1796,7 +1854,9 @@ namespace core {
 
 
                 static TNODE rotateLeft(TNODE root, TNODE p) {
-                    TNODE r, pp, rl;
+                    TNODE r;
+                    TNODE pp;
+                    TNODE rl;
                     if (p != null && (r = p->right) != null) {
                         if ((rl = p->right = r->left) != null)
                             rl->parent = p;
@@ -1813,7 +1873,9 @@ namespace core {
                 }
 
                 static TNODE rotateRight(TNODE root, TNODE p) {
-                    TNODE l, pp, lr;
+                    TNODE l;
+                    TNODE pp;
+                    TNODE lr;
                     if (p != null && (l = p->left) != null) {
                         if ((lr = p->left = l->right) != null)
                             lr->parent = p;
@@ -1899,7 +1961,8 @@ namespace core {
                             if (xpr == null)
                                 x = xp;
                             else {
-                                TNODE sl = xpr->left, sr = xpr->right;
+                                TNODE sl = xpr->left;
+                                TNODE sr = xpr->right;
                                 if ((sr == null || sr->color == BLACK) && (sl == null || sl->color == BLACK)) {
                                     xpr->color = RED;
                                     x = xp;
@@ -1934,7 +1997,8 @@ namespace core {
                             if (xpl == null)
                                 x = xp;
                             else {
-                                TNODE sl = xpl->left, sr = xpl->right;
+                                TNODE sl = xpl->left;
+                                TNODE sr = xpl->right;
                                 if ((sl == null || sl->color == BLACK) && (sr == null || sr->color == BLACK)) {
                                     xpl->color = RED;
                                     x = xp;
@@ -1966,8 +2030,11 @@ namespace core {
                  * Recursive invariant check
                  */
                 static gbool checkInvariants(TNODE t) {
-                    TNODE tp = t->parent, tl = t->left, tr = t->right,
-                            tb = t->prev, tn = (TNODE) t->next;
+                    TNODE tp = t->parent;
+                    TNODE tl = t->left;
+                    TNODE tr = t->right;
+                    TNODE tb = t->prev;
+                    TNODE tn = (TNODE) t->next;
                     if (tb != null && tb->next != t)
                         return false;
                     if (tn != null && tn->prev != t)
@@ -1996,23 +2063,23 @@ namespace core {
                     len = 0;
                 }
                 capacity = 0;
-                U::freeMemory((glong) table);
+                Unsafe::freeMemory((glong) table);
                 table = null;
             }
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION
         template<class K, class V>
-        HashMap(Map<K, V>) -> HashMap<K, V>;
+        HashMap(Map<K, V>) -> HashMap;
 
         template<class K = Object, class V = Object>
-        HashMap(gint, gfloat) -> HashMap<K, V>;
+        HashMap(gint, gfloat) -> HashMap;
 
         template<class K = Object, class V = Object>
-        HashMap(gint) -> HashMap<K, V>;
+        HashMap(gint) -> HashMap;
 
         template<class K = Object, class V = Object>
-        HashMap() -> HashMap<K, V>;
+        HashMap() -> HashMap;
 #endif
 
     }

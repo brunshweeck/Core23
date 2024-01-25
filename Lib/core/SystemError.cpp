@@ -6,20 +6,19 @@
 #include "SystemError.h"
 
 namespace core {
-
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     SystemError::SystemError(String message) CORE_NOTHROW:
-            Error(U::moveInstance(message)) {}
+            Error(Unsafe::moveInstance(message)) {}
 
     SystemError::SystemError(String message, const Throwable &cause) CORE_NOTHROW:
-            Error(U::moveInstance(message), cause) {}
+            Error(Unsafe::moveInstance(message), cause) {}
 
     void SystemError::raise() &&{
-        throw *this;
+        throw SystemError(*this);
     }
 
     Object &SystemError::clone() const {
-        return U::createInstance<SystemError>(*this);
+        return Unsafe::allocateInstance<SystemError>(*this);
     }
 } // core

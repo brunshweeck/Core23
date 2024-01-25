@@ -305,9 +305,9 @@ namespace core {
         }
 
         Object &ZoneOffset::clone() const {
-            if (this == &INVALID)
-                return (ZoneOffset &) INVALID;
-            return native::Unsafe::createInstance<ZoneOffset>(*this);
+            if (this == &INVALID || this == &UTC || this == &MIN || this == &MAX)
+                return (ZoneOffset &) *this;
+            return native::Unsafe::allocateInstance<ZoneOffset>(*this);
         }
 
         ZoneOffset::ZoneOffset(const ZoneOffset &offset) :

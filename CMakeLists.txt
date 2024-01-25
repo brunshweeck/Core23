@@ -5,78 +5,204 @@ PROJECT(Core23 VERSION 2023.6.5 LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+SET(PROJECT_LIBDIR Lib)
 
 # Adding compatible lib folder
-IF (WIN32)
-#    The Operating System is Windows (Vista, MS-DOS, MS-Windows, ...)
+
+IF (MINGW)
+    #    The operating System is Windows Witch Unix library
     SET(SYSTEM_LIBDIR WinLib)
-    IF (MINGW)
-        ADD_COMPILE_OPTIONS(--save-temps)
-    ENDIF ()
+    #    SET(SYSTEM_LIBDIR UnixLib)
+#    ADD_COMPILE_OPTIONS(--save-temps)
+ELSEIF (WIN32)
+    #    The Operating System is Windows (Vista, MS-DOS, MS-Windows, ...)
+    SET(SYSTEM_LIBDIR WinLib)
 ELSE ()
-#    The Operating System is Unix (Unix, Linux, Apple, Android, ...)
+    #    The Operating System is Unix (Unix, Linux, Apple, Android, ...)
     SET(SYSTEM_LIBDIR UnixLib)
-    ADD_COMPILE_OPTIONS(--save-temps)
+#    ADD_COMPILE_OPTIONS(--save-temps)
+    IF (LINUX)
+        MESSAGE(NOTICE "LINUX System")
+    ELSEIF (APPLE)
+        MESSAGE(NOTICE "APPLE System")
+    ELSEIF (BSD)
+        MESSAGE(NOTICE "BSD System")
+    ELSEIF (Unix)
+        MESSAGE(NOTICE "UNIX System")
+    ELSE ()
+        MESSAGE(NOTICE "WSL/Other Unix System")
+    ENDIF ()
 ENDIF ()
 
 FILE(GLOB Core23
-##=====[Common files]==============##
-        Lib/core/*.h
-        Lib/core/*.c??
-        Lib/core/foreign/*.h
-        Lib/core/foreign/*.c??
-        Lib/core/io/*.h
-        Lib/core/io/*.c??
-        Lib/core/io/charset/*.h
-        Lib/core/io/charset/*.c??
-        Lib/core/io/native/*.h
-        Lib/core/io/native/*.c??
-        Lib/core/math/*.h
-        Lib/core/math/*.c??
-        Lib/core/net/*.h
-        Lib/core/net/*.c??
-        Lib/core/native/*.h
-        Lib/core/native/*.c??
-        Lib/core/private/*.h
-        Lib/core/private/*.c??
-        Lib/core/sql/*.h
-        Lib/core/sql/*.c??
-        Lib/core/text/*.h
-        Lib/core/text/*.c??
-        Lib/core/time/*.h
-        Lib/core/time/*.c??
-        Lib/core/util/*.h
-        Lib/core/util/*.c??
-        Lib/core/util/concurrent/*.h
-        Lib/core/util/concurrent/*.c??
-        Lib/core/util/function/*.h
-        Lib/core/util/function/*.c??
-        Lib/core/util/random/*.h
-        Lib/core/util/random/*.c??
-        Lib/core/util/regex/*.h
-        Lib/core/util/regex/*.c??
+        ## ========= [project files] ============== ##
+        ${PROJECT_LIBDIR}/core/*.h
+        ${PROJECT_LIBDIR}/core/*.c??
+        ${PROJECT_LIBDIR}/core/private/*.h
+        ${PROJECT_LIBDIR}/core/private/*.c??
+        ${PROJECT_LIBDIR}/core/foreign/*.h
+        ${PROJECT_LIBDIR}/core/foreign/*.c??
+        ${PROJECT_LIBDIR}/core/foreign/private/*.h
+        ${PROJECT_LIBDIR}/core/foreign/private/*.c??
+        ${PROJECT_LIBDIR}/core/io/*.h
+        ${PROJECT_LIBDIR}/core/io/*.c??
+        ${PROJECT_LIBDIR}/core/io/private/*.h
+        ${PROJECT_LIBDIR}/core/io/private/*.c??
+        ${PROJECT_LIBDIR}/core/charset/*.h
+        ${PROJECT_LIBDIR}/core/charset/*.c??
+        ${PROJECT_LIBDIR}/core/charset/private/*.h
+        ${PROJECT_LIBDIR}/core/charset/private/*.c??
+        ${PROJECT_LIBDIR}/core/math/*.h
+        ${PROJECT_LIBDIR}/core/math/*.c??
+        ${PROJECT_LIBDIR}/core/math/private/*.h
+        ${PROJECT_LIBDIR}/core/math/private/*.c??
+        ${PROJECT_LIBDIR}/core/net/*.h
+        ${PROJECT_LIBDIR}/core/net/*.c??
+        ${PROJECT_LIBDIR}/core/net/private/*.h
+        ${PROJECT_LIBDIR}/core/net/private/*.c??
+        ${PROJECT_LIBDIR}/core/native/*.h
+        ${PROJECT_LIBDIR}/core/native/*.c??
+        ${PROJECT_LIBDIR}/core/native/private/*.h
+        ${PROJECT_LIBDIR}/core/native/private/*.c??
+        ${PROJECT_LIBDIR}/core/sql/*.h
+        ${PROJECT_LIBDIR}/core/sql/*.c??
+        ${PROJECT_LIBDIR}/core/sql/private/*.h
+        ${PROJECT_LIBDIR}/core/sql/private/*.c??
+        ${PROJECT_LIBDIR}/core/text/*.h
+        ${PROJECT_LIBDIR}/core/text/*.c??
+        ${PROJECT_LIBDIR}/core/text/private/*.h
+        ${PROJECT_LIBDIR}/core/text/private/*.c??
+        ${PROJECT_LIBDIR}/core/time/*.h
+        ${PROJECT_LIBDIR}/core/time/*.c??
+        ${PROJECT_LIBDIR}/core/time/private/*.h
+        ${PROJECT_LIBDIR}/core/time/private/*.c??
+        ${PROJECT_LIBDIR}/core/util/*.h
+        ${PROJECT_LIBDIR}/core/util/*.c??
+        ${PROJECT_LIBDIR}/core/util/private/*.h
+        ${PROJECT_LIBDIR}/core/util/private/*.c??
+        ${PROJECT_LIBDIR}/core/concurrent/*.h
+        ${PROJECT_LIBDIR}/core/concurrent/*.c??
+        ${PROJECT_LIBDIR}/core/concurrent/private/*.h
+        ${PROJECT_LIBDIR}/core/concurrent/private/*.c??
+        ${PROJECT_LIBDIR}/core/function/*.h
+        ${PROJECT_LIBDIR}/core/function/*.c??
+        ${PROJECT_LIBDIR}/core/function/private/*.h
+        ${PROJECT_LIBDIR}/core/function/private/*.c??
+        ${PROJECT_LIBDIR}/core/random/*.h
+        ${PROJECT_LIBDIR}/core/random/*.c??
+        ${PROJECT_LIBDIR}/core/random/private/*.h
+        ${PROJECT_LIBDIR}/core/random/private/*.c??
+        ${PROJECT_LIBDIR}/core/regex/*.h
+        ${PROJECT_LIBDIR}/core/regex/*.c??
+        ${PROJECT_LIBDIR}/core/regex/private/*.h
+        ${PROJECT_LIBDIR}/core/regex/private/*.c??
 
-##=============[System files]================##
-        ${SYSTEM_LIBDIR}/core/native/*.h
-        ${SYSTEM_LIBDIR}/core/native/*.c??
+        ## ============= [System files] ================ ##
+        ${SYSTEM_LIBDIR}/core/*.h
+        ${SYSTEM_LIBDIR}/core/*.c??
         ${SYSTEM_LIBDIR}/core/private/*.h
         ${SYSTEM_LIBDIR}/core/private/*.c??
+        ${SYSTEM_LIBDIR}/core/foreign/*.h
+        ${SYSTEM_LIBDIR}/core/foreign/*.c??
+        ${SYSTEM_LIBDIR}/core/foreign/private/*.h
+        ${SYSTEM_LIBDIR}/core/foreign/private/*.c??
+        ${SYSTEM_LIBDIR}/core/io/*.h
+        ${SYSTEM_LIBDIR}/core/io/*.c??
+        ${SYSTEM_LIBDIR}/core/io/private/*.h
+        ${SYSTEM_LIBDIR}/core/io/private/*.c??
+        ${SYSTEM_LIBDIR}/core/charset/*.h
+        ${SYSTEM_LIBDIR}/core/charset/*.c??
+        ${SYSTEM_LIBDIR}/core/charset/private/*.h
+        ${SYSTEM_LIBDIR}/core/charset/private/*.c??
+        ${SYSTEM_LIBDIR}/core/math/*.h
+        ${SYSTEM_LIBDIR}/core/math/*.c??
+        ${SYSTEM_LIBDIR}/core/math/private/*.h
+        ${SYSTEM_LIBDIR}/core/math/private/*.c??
+        ${SYSTEM_LIBDIR}/core/net/*.h
+        ${SYSTEM_LIBDIR}/core/net/*.c??
+        ${SYSTEM_LIBDIR}/core/net/private/*.h
+        ${SYSTEM_LIBDIR}/core/net/private/*.c??
+        ${SYSTEM_LIBDIR}/core/native/*.h
+        ${SYSTEM_LIBDIR}/core/native/*.c??
+        ${SYSTEM_LIBDIR}/core/native/private/*.h
+        ${SYSTEM_LIBDIR}/core/native/private/*.c??
+        ${SYSTEM_LIBDIR}/core/sql/*.h
+        ${SYSTEM_LIBDIR}/core/sql/*.c??
+        ${SYSTEM_LIBDIR}/core/sql/private/*.h
+        ${SYSTEM_LIBDIR}/core/sql/private/*.c??
+        ${SYSTEM_LIBDIR}/core/text/*.h
+        ${SYSTEM_LIBDIR}/core/text/*.c??
+        ${SYSTEM_LIBDIR}/core/text/private/*.h
+        ${SYSTEM_LIBDIR}/core/text/private/*.c??
         ${SYSTEM_LIBDIR}/core/time/*.h
         ${SYSTEM_LIBDIR}/core/time/*.c??
+        ${SYSTEM_LIBDIR}/core/time/private/*.h
+        ${SYSTEM_LIBDIR}/core/time/private/*.c??
+        ${SYSTEM_LIBDIR}/core/util/*.h
+        ${SYSTEM_LIBDIR}/core/util/*.c??
+        ${SYSTEM_LIBDIR}/core/util/private/*.h
+        ${SYSTEM_LIBDIR}/core/util/private/*.c??
+        ${SYSTEM_LIBDIR}/core/concurrent/*.h
+        ${SYSTEM_LIBDIR}/core/concurrent/*.c??
+        ${SYSTEM_LIBDIR}/core/concurrent/private/*.h
+        ${SYSTEM_LIBDIR}/core/concurrent/private/*.c??
+        ${SYSTEM_LIBDIR}/core/function/*.h
+        ${SYSTEM_LIBDIR}/core/function/*.c??
+        ${SYSTEM_LIBDIR}/core/function/private/*.h
+        ${SYSTEM_LIBDIR}/core/function/private/*.c??
+        ${SYSTEM_LIBDIR}/core/random/*.h
+        ${SYSTEM_LIBDIR}/core/random/*.c??
+        ${SYSTEM_LIBDIR}/core/random/private/*.h
+        ${SYSTEM_LIBDIR}/core/random/private/*.c??
+        ${SYSTEM_LIBDIR}/core/regex/*.h
+        ${SYSTEM_LIBDIR}/core/regex/*.c??
+        ${SYSTEM_LIBDIR}/core/regex/private/*.h
+        ${SYSTEM_LIBDIR}/core/regex/private/*.c??
 )
 
-ADD_LIBRARY(Core23 SHARED ${Core23}
-        Lib/core/io/native/NativeBuffer.cpp
-        Lib/core/io/native/NativeBuffer.h
-        Lib/core/AutoClosable.h
-        Lib/core/io/FileDescriptor.cpp
-        Lib/core/io/FileDescriptor.h
-        Lib/core/io/Closeable.cpp
-        Lib/core/io/Closeable.h
-        Lib/core/io/FileArray.cpp
-        Lib/core/io/FileArray.h)
+ADD_LIBRARY(Core23 STATIC ${Core23}
+        Lib/core/native/PrimitiveArray2D.h
+        Lib/core/native/BooleanArray2D.cpp
+        Lib/core/native/BooleanArray2D.h
+        Lib/core/native/ByteArray2D.cpp
+        Lib/core/native/ByteArray2D.h
+        Lib/core/native/CharArray2D.cpp
+        Lib/core/native/CharArray2D.h
+        Lib/core/native/ShortArray2D.cpp
+        Lib/core/native/ShortArray2D.h
+        Lib/core/native/IntArray2D.cpp
+        Lib/core/native/IntArray2D.h
+        Lib/core/native/LongArray2D.cpp
+        Lib/core/native/LongArray2D.h
+        Lib/core/native/FloatArray2D.cpp
+        Lib/core/native/FloatArray2D.h
+        Lib/core/native/DoubleArray2D.cpp
+        Lib/core/native/DoubleArray2D.h
+        Lib/core/native/StringArray2D.cpp
+        Lib/core/native/StringArray2D.h
+        Lib/core/native/ObjectArray.cpp
+        Lib/core/native/ObjectArray.h
+        Lib/core/native/Array.h
+        Lib/core/time/Duration.cpp
+        Lib/core/time/Duration.h
+        Lib/core/util/private/LanguageTag.cpp
+        Lib/core/util/private/LanguageTag.h
+        Lib/core/util/private/ParseStatus.cpp
+        Lib/core/util/private/ParseStatus.h
+        Lib/core/util/private/LocaleUtils.cpp
+        Lib/core/util/private/LocaleUtils.h
+        Lib/core/util/private/LocaleISOData.cpp
+        Lib/core/util/private/LocaleISOData.h
+        Lib/core/util/private/LocaleBuilder.cpp
+        Lib/core/util/private/LocaleBuilder.h
+        Lib/core/util/private/LocaleSyntaxException.cpp
+        Lib/core/util/private/LocaleSyntaxException.h
+        Lib/core/util/MissingResourceException.cpp
+        Lib/core/util/MissingResourceException.h
+        WinLib/core/util/Locale.cpp)
 
-INCLUDE_DIRECTORIES("Lib")
+INCLUDE_DIRECTORIES("${PROJECT_LIBDIR}")
+INCLUDE_DIRECTORIES("${SYSTEM_LIBDIR}")
 
 
 # This file is called to realize tests on Core23 library
@@ -85,4 +211,4 @@ ADD_EXECUTABLE(Main23 Main.cpp)
 TARGET_LINK_LIBRARIES(Main23 PUBLIC Core23)
 
 SET(CMAKE_GNUtoMS ON)
-SET(CMAKE_AIX_EXPORT_ALL_SYMBOLS  ON)
+SET(CMAKE_AIX_EXPORT_ALL_SYMBOLS ON)

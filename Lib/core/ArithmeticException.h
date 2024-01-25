@@ -35,6 +35,7 @@ namespace core {
          */
         Object &clone() const override;
 
+    private:
         /**
          * Thrown this exception
          */

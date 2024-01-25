@@ -684,13 +684,15 @@ namespace core {
         static CORE_FAST glong min(glong x, glong y) { return Math::min(x, y); }
 
         /**
-         * Return sharable copy of this Long instance
+         * Return sharable copy of this Long INSTANCE
          */
         Object &clone() const override;
 
+        CORE_FAST static gint BYTES = 8;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(glong, value, const)
 
-        CORE_ENABLE_IMPLICIT_CAST(glong &, value)
+        CORE_ENABLE_IMPLICIT_CAST(glong &, value, &)
     };
 
 } // core

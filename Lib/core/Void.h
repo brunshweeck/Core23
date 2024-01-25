@@ -9,8 +9,17 @@
 
 namespace core {
 
-    class Void CORE_FINAL : private Object {
+    /**
+     * The <b> Void</b> class is an uninstantiable placeholder class to hold a
+     * reference to the <b> Class</b> object representing the keyword
+     * void.
+     *
+     */
+    class Void CORE_FINAL : public Object {
     private:
+        /*
+         * The Void class cannot be instantiated.
+         */
         CORE_FAST Void() = default;
     };
 

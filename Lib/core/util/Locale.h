@@ -5,33 +5,36 @@
 #ifndef CORE23_LOCALE_H
 #define CORE23_LOCALE_H
 
-#include <core/Object.h>
+#include <core/native/StringArray.h>
+#include <core/native/StringArray2D.h>
+#include <core/util/Optional.h>
+#include <core/util/ArrayList.h>
+#include <core/util/HashMap.h>
+#include <core/util/StringTokenizer.h>
+#include <core/AssertionError.h>
+#include <core/StringBuffer.h>
 
 namespace core {
 
     namespace util {
-        template<class E>
-        class List;
-
-
 
         /**
-         * A <b> Locale</b> object represents a specific geographical, political,
-         * or cultural region. An operation that requires a <b> Locale</b> to perform
-         * its task is called <em>locale-sensitive</em> and uses the <b> Locale</b>
+         * A <b> Locale</b>  object represents a specific geographical, political,
+         * or cultural region. An operation that requires a <b> Locale</b>  to perform
+         * its task is called <em>locale-sensitive</em> and uses the <b> Locale</b> 
          * to tailor information for the user. For example, displaying a number
          * is a locale-sensitive operation&mdash; the number should be formatted
          * according to the customs and conventions of the user's native country,
          * region, or culture.
          *
-         * <p> The <b> Locale</b> class implements IETF BCP 47 which is composed of
+         * <p> The <b> Locale</b>  class implements IETF BCP 47 which is composed of
          * <a href="https://tools.ietf.org/html/rfc4647">RFC 4647 "Matching of Language
          * Tags"</a> and <a href="https://tools.ietf.org/html/rfc5646">RFC 5646 "Tags
          * for Identifying Languages"</a> with support for the LDML (UTS#35, "Unicode
-         * Locale Data Markup Language") BCP 47-compatible extensions for locale array
+         * Locale Data Markup Language") BCP 47-compatible extensions for locale data
          * exchange.
          *
-         * <p> A <b> Locale</b> object logically consists of the fields
+         * <p> A <b> Locale</b>  object logically consists of the fields
          * described below.
          *
          * <dl>
@@ -43,10 +46,10 @@ namespace core {
          *   alpha-2 code must be used.  You can find a full list of valid
          *   language codes in the IANA Language Subtag Registry (search for
          *   "Type: language").  The language field is case insensitive, but
-         *   <b> Locale</b> always canonicalizes to lower case.</dd>
+         *   <b> Locale</b>  always canonicalizes to lower case.</dd>
          *
          *   <dd>Well-formed language values have the form
-         *   <code>[a-zA-Z]{2,8</b></code>.  Note that this is not the full
+         *   <code>[a-zA-Z]{2,8}</code>.  Note that this is not the full
          *   BCP47 language production, since it excludes extlang.  They are
          *   not needed since modern three-letter language codes replace
          *   them.</dd>
@@ -58,7 +61,7 @@ namespace core {
          *   <dd>ISO 15924 alpha-4 script code.  You can find a full list of
          *   valid script codes in the IANA Language Subtag Registry (search
          *   for "Type: script").  The script field is case insensitive, but
-         *   <b> Locale</b> always canonicalizes to title case (the first
+         *   <b> Locale</b>  always canonicalizes to title case (the first
          *   letter is upper case and the rest of the letters are lower
          *   case).</dd>
          *
@@ -73,24 +76,96 @@ namespace core {
          *   You can find a full list of valid country and region codes in the
          *   IANA Language Subtag Registry (search for "Type: region").  The
          *   country (region) field is case insensitive, but
-         *   <b> Locale</b> always canonicalizes to upper case.</dd>
+         *   <b> Locale</b>  always canonicalizes to upper case.</dd>
          *
          *   <dd>Well-formed country/region values have
          *   the form <code>[a-zA-Z]{2} | [0-9]{3}</code></dd>
          *
          *   <dd>Example: "US" (United States), "FR" (France), "029"
          *   (Caribbean)</dd>
+         *
+         *   <dt><a id="def_variant"><b>variant</b></a></dt>
+         *
+         *   <dd>Any arbitrary value used to indicate a variation of a
+         *   <b> Locale</b> .  Where there are two or more variant values
+         *   each indicating its own semantics, these values should be ordered
+         *   by importance, with most important first, separated by
+         *   underscore('_').  The variant field is case sensitive.</dd>
+         *
+         *   <dd>Note: IETF BCP 47 places syntactic restrictions on variant
+         *   subtags.  Also BCP 47 subtags are strictly used to indicate
+         *   additional variations that define a language or its dialects that
+         *   are not covered by any combinations of language, script and
+         *   region subtags.  You can find a full list of valid variant codes
+         *   in the IANA Language Subtag Registry (search for "Type: variant").
+         *
+         *   <p>However, the variant field in <b> Locale</b>  has
+         *   historically been used for any kind of variation, not just
+         *   language variations.  For example, some supported variants
+         *   available in Runtime Environments indicate alternative
+         *   cultural behaviors such as calendar type or number script.  In
+         *   BCP 47 this kind of information, which does not identify the
+         *   language, is supported by extension subtags or private use
+         *   subtags.</dd>
+         *
+         *   <dd>Well-formed variant values have the form <code>SUBTAG
+         *   (('_'|'-') SUBTAG)*</code> where <code>SUBTAG =
+         *   [0-9][0-9a-zA-Z]{3} | [0-9a-zA-Z]{5,8}</code>. (Note: BCP 47 only
+         *   uses hyphen ('-') as a delimiter, this is more lenient).</dd>
+         *
+         *   <dd>Example: "polyton" (Polytonic Greek), "POSIX"</dd>
+         *
+         *   <dt><a id="def_extensions"><b>extensions</b></a></dt>
+         *
+         *   <dd>A map from single character keys to string values, indicating
+         *   extensions apart from language identification.  The extensions in
+         *   <b> Locale</b>  implement the semantics and syntax of BCP 47
+         *   extension subtags and private use subtags. The extensions are
+         *   case insensitive, but <b> Locale</b>  canonicalizes all
+         *   extension keys and values to lower case. Note that extensions
+         *   cannot have empty values.</dd>
+         *
+         *   <dd>Well-formed keys are single characters from the set
+         *   <b> [0-9a-zA-Z]</b> .  Well-formed values have the form
+         *   <b> SUBTAG ('-' SUBTAG)*</b>  where for the key 'x'
+         *   <code>SUBTAG = [0-9a-zA-Z]{1,8}</code> and for other keys
+         *   <code>SUBTAG = [0-9a-zA-Z]{2,8}</code> (that is, 'x' allows
+         *   single-character subtag).</dd>
+         *
+         *   <dd>Example: key="u"/value="ca-japanese" (Japanese Calendar)</dd>
          * </dl>
          *
          * <b>Note:</b> Although BCP 47 requires field values to be registered
-         * in the IANA Language Subtag Registry, the <b> Locale</b> class
-         * does not provide any validation features.  The <b> Builder</b>
-         * only checks if an individual field satisfies the syntactic
-         * requirement (is well-formed), but does not validate the value
-         * itself.  See <b style="color: orange;"> Builder</b> for details.
+         * in the IANA Language Subtag Registry, the <b> Locale</b>  class
+         * does not provide any validation features.
          *
-         * <p>
-         * A well-formed locale key has the form
+         * <h2><a id="">Unicode locale/language extension</a></h2>
+         *
+         * <p>UTS#35, "Unicode Locale Data Markup Language" defines optional
+         * attributes and keywords to override or refine the default behavior
+         * associated with a locale.  A keyword is represented by a pair of
+         * key and type.  For example, "nu-thai" indicates that Thai local
+         * digits (value:"thai") should be used for formatting numbers
+         * (key:"nu").
+         *
+         * <p>The keywords are mapped to a BCP 47 extension value using the
+         * extension key 'u' (<b style="color: orange;"> UNICODE_EXTENSION_KEY</b> ).  The above
+         * example, "nu-thai", becomes the extension "u-nu-thai".
+         *
+         * <p>Thus, when a <b> Locale</b>  object contains Unicode locale
+         * attributes and keywords,
+         * <b> Locale::extension(UNICODE_EXTENSION_KEY)</b>  will return a
+         * String representing this information, for example, "nu-thai".  The
+         * <b> Locale</b>  class also provides <b style="color: orange;"> 
+         * Locale::unicodeLocaleAttributes</b> , <b style="color: orange;"> Locale::unicodeLocaleKeys</b> , and
+         * <b style="color: orange;"> Locale::unicodeLocaleType</b>  which allow you to access Unicode
+         * locale attributes and key/type pairs directly.  When represented as
+         * a string, the Unicode Locale Extension lists attributes
+         * alphabetically, followed by key/type sequences with keys listed
+         * alphabetically (the order of subtags comprising a key's type is
+         * fixed when the type is defined)
+         *
+         * <p>A well-formed locale key has the form
          * <code>[0-9a-zA-Z]{2}</code>.  A well-formed locale type has the
          * form <code>"" | [0-9a-zA-Z]{3,8} ('-' [0-9a-zA-Z]{3,8})*</code> (it
          * can be empty, or a series of subtags 3-8 alphanums in length).  A
@@ -98,8 +173,7 @@ namespace core {
          * <code>[0-9a-zA-Z]{3,8}</code> (it is a single subtag with the same
          * form as a locale type subtag).
          *
-         * <p>
-         * The Unicode locale extension specifies optional behavior in
+         * <p>The Unicode locale extension specifies optional behavior in
          * locale-sensitive services.  Although the LDML specification defines
          * various keys and values, actual locale-sensitive service
          * implementations in a Runtime Environment might not support any
@@ -107,35 +181,27 @@ namespace core {
          *
          * <h3><a id="ObtainingLocale">Obtaining a Locale</a></h3>
          *
-         * <p>There are several ways to obtain a <b> Locale</b>
+         * <p>There are several ways to obtain a <b> Locale</b> 
          * object.
-         *
-         * <h4>Builder</h4>
-         *
-         * <p>Using <b style="color: orange;"> Builder</b> you can construct a <b> Locale</b> object
-         * that conforms to BCP 47 syntax.
          *
          * <h4>Factory Methods</h4>
          *
-         * <p>
-         * The method <b style="color: orange;"> forLanguageTag()</b> obtains a <b> Locale</b>
+         * <p>The method <b style="color: orange;"> Locale::forLanguageTag</b>  obtains a <b> Locale</b>
          * object for a well-formed BCP 47 language tag. The method
-         * <b style="color: orange;"> of(String, String, String)</b> and its overloads obtain a
-         * <b> Locale</b> object from given <b> language</b>, <b> country</b>,
-         * and/or <b> script</b> defined above.
+         * <b style="color: orange;"> Locale::of(String, String, String)</b>  and its overloads obtain a
+         * <b> Locale</b>  object from given <b> language</b> , <b> country</b> ,
+         * and/or <b> variant</b>  defined above.
          *
          * <h4>Locale Constants</h4>
          *
-         * <p>
-         * The <b> Locale</b> class provides a number of convenient constants
-         * that you can use to obtain <b> Locale</b> objects for commonly used
-         * locales. For example, <b> Locale::US</b> is the <b> Locale</b> object
+         * <p>The <b> Locale</b>  class provides a number of convenient constants
+         * that you can use to obtain <b> Locale</b>  objects for commonly used
+         * locales. For example, <b> Locale::US</b>  is the <b> Locale</b>  object
          * for the United States.
          *
          * <h3><a id="LocaleMatching">Locale Matching</a></h3>
          *
-         * <p>
-         * If an application or a system is internationalized and provides localized
+         * <p>If an application or a system is internationalized and provides localized
          * resources for multiple locales, it sometimes needs to find one or more
          * locales (or language tags) which meet each user's specific preferences. Note
          * that a term "language tag" is used interchangeably with "locale" in this
@@ -149,15 +215,14 @@ namespace core {
          * Matching is done case-insensitively. These matching mechanisms are described
          * in the following sections.
          *
-         * <p>
-         * A user's preference is called a <em>Language Priority List</em> and is
+         * <p>A user's preference is called a <em>Language Priority List</em> and is
          * expressed as a list of language ranges. There are syntactically two types of
-         * language ranges: basic and extended.
+         * language ranges: basic and extended. See
+         * <b style="color: orange;"> Locale::LanguageRange</b>  for details.
          *
          * <h4>Filtering</h4>
          *
-         * <p>
-         * The filtering operation returns all matching language tags. It is defined
+         * <p>The filtering operation returns all matching language tags. It is defined
          * in RFC 4647 as follows:
          * "In filtering, each language range represents the least specific language
          * tag (that is, the language tag with fewest number of subtags) that is an
@@ -166,118 +231,157 @@ namespace core {
          * non-wildcard subtag in the language range will appear in every one of the
          * matching language tags."
          *
-         * <p>
-         * There are two types of filtering: filtering for basic language ranges
+         * <p>There are two types of filtering: filtering for basic language ranges
          * (called "basic filtering") and filtering for extended language ranges
          * (called "extended filtering"). They may return different results by what
          * kind of language ranges are included in the given Language Priority List.
+         * <b style="color: orange;"> Locale::FilteringMode</b>  is a parameter to specify how filtering should
+         * be done.
          *
          * <h4>Lookup</h4>
          *
-         * <p>
-         * The lookup operation returns the best matching language tags. It is
+         * <p>The lookup operation returns the best matching language tags. It is
          * defined in RFC 4647 as follows:
          * "By contrast with filtering, each language range represents the most
          * specific tag that is an acceptable match.  The first matching tag found,
          * according to the user's priority, is considered the closest match and is the
          * item returned."
          *
-         * <p>
-         * For example, if a Language Priority List consists of two language ranges,
-         * <b> "zh-Hant-TW"</b> and <b> "en-US"</b>, in prioritized order, lookup
+         * <p>For example, if a Language Priority List consists of two language ranges,
+         * <b> "zh-Hant-TW"</b>  and <b> "en-US"</b> , in prioritized order, lookup
          * method progressively searches the language tags below in order to find the
          * best matching language tag.
          * <blockquote>
          * <pre>
-         *    1. zh-Hant-TW <br>
-         *    2. zh-Hant <br>
-         *    3. zh <br>
-         *    4. en-US <br>
-         *    5. en <br>
+         *    1. zh-Hant-TW
+         *    2. zh-Hant
+         *    3. zh
+         *    4. en-US
+         *    5. en
          * </pre>
          * </blockquote>
          * If there is a language tag which matches completely to a language range
          * above, the language tag is returned.
          *
-         * <p><b> "*"</b> is the special language range, and it is ignored in lookup.
+         * <p><b> "*"</b>  is the special language range, and it is ignored in lookup.
          *
-         * <p>If multiple language tags match as a result of the subtag <b> '*'</b>
+         * <p>If multiple language tags match as a result of the subtag <b> '*'</b> 
          * included in a language range, the first matching language tag returned by
-         * an <b style="color: orange;"> Iterator</b> over a <b style="color: orange;"> Collection</b> of language tags is treated as
+         * an <b style="color: orange;"> Iterator</b>  over a <b style="color: orange;"> Collection</b>  of language tags is treated as
          * the best matching one.
          *
          * <h3>Use of Locale</h3>
          *
-         * <p>
-         * Once you've obtained a <b> Locale</b> you can query it for information
-         * about itself. Use <b> country() </b> to get the country (or region)
-         * code and <b> language() </b> to get the language code.
-         * You can use <b> displayCountry() </b> to get the
+         * <p>Once you've obtained a <b> Locale</b>  you can query it for information
+         * about itself. Use <b> getCountry</b>  to get the country (or region)
+         * code and <b> Locale::language</b>  to get the language code.
+         * You can use <b> Locale::displayCountry</b>  to get the
          * name of the country suitable for displaying to the user. Similarly,
-         * you can use <b> displayLanguage() </b> to get the name of
+         * you can use <b> Locale::displayLanguage</b>  to get the name of
          * the language suitable for displaying to the user. Interestingly,
-         * the <b> displayXXX() </b> methods are themselves locale-sensitive
+         * the <b> Locale::displayXXX</b>  methods are themselves locale-sensitive
          * and have two versions: one that uses the default
-         * <b style="color: orange;"> DISPLAY</b> locale and one that uses the locale specified
-         * as an argument.
+         * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale and one
+         * that uses the locale specified as an argument.
          *
-         * <p>
-         * The Platform provides a number of classes that perform locale-sensitive
-         * operations. For example, the <b> NumberFormat</b> class formats
+         * <p>The Platform provides a number of classes that perform locale-sensitive
+         * operations. For example, the <b> NumberFormat</b>  class formats
          * numbers, currency, and percentages in a locale-sensitive manner. Classes
-         * such as <b> NumberFormat</b> have several convenience methods
+         * such as <b> NumberFormat</b>  have several convenience methods
          * for creating a default object of that type. For example, the
-         * <b> NumberFormat</b> class provides these three convenience methods
-         * for creating a default <b> NumberFormat</b> object:
+         * <b> NumberFormat</b>  class provides these three convenience methods
+         * for creating a default <b> NumberFormat</b>  object:
          * <blockquote>
          * <pre>
-         *     NumberFormat.createInstance()
-         *     NumberFormat.createCurrencyInstance()
-         *     NumberFormat.createPercentInstance()
+         *     NumberFormat.newInstance()
+         *     NumberFormat.newCurrencyInstance()
+         *     NumberFormat.newPercentInstance()
          * </pre>
          * </blockquote>
          * Each of these methods has two variants; one with an explicit locale
          * and one without; the latter uses the default
-         * <b style="color: orange;"> FORMAT</b> locale:
+         * <b style="color: orange;"> Locale::Category::FORMAT</b>  locale:
          * <blockquote>
          * <pre>
-         *     NumberFormat.createInstance(myLocale)
-         *     NumberFormat.createCurrencyInstance(myLocale)
-         *     NumberFormat.createPercentInstance(myLocale)
+         *     NumberFormat.newInstance(myLocale)
+         *     NumberFormat.newCurrencyInstance(myLocale)
+         *     NumberFormat.newPercentInstance(myLocale)
          * </pre>
          * </blockquote>
-         * A <b> Locale</b> is the mechanism for identifying the kind of object
-         * (<b> NumberFormat</b>) that you would like to get. The locale is
+         * A <b> Locale</b>  is the mechanism for identifying the kind of object
+         * (<b> NumberFormat</b> ) that you would like to get. The locale is
          * <STRONG>just</STRONG> a mechanism for identifying objects,
          * <STRONG>not</STRONG> a container for the objects themselves.
          *
          * <h3>Compatibility</h3>
          *
+         * <p>In order to maintain compatibility, Locale's
+         * constructors retain their behavior prior to the Runtime
+         * Environment.  The same is largely true for the
+         * <b> toString</b>  method. Thus Locale objects can continue to
+         * be used as they were. In particular, clients who parse the output
+         * of toString into language, country, and variant fields can continue
+         * to do so (although this is strongly discouraged), although the
+         * variant field will have additional information in it if script or
+         * extensions are present.
+         *
          * <p>In addition, BCP 47 imposes syntax restrictions that are not
          * imposed by Locale's constructors. This means that conversions
          * between some Locales and BCP 47 language tags cannot be made without
-         * losing information. Thus <b> toLanguageTag</b> cannot
-         * represent the state of locales whose language, country
+         * losing information. Thus <b> toLanguageTag</b>  cannot
+         * represent the state of locales whose language, country, or variant
          * do not conform to BCP 47.
          *
          * <p>Because of these issues, it is recommended that clients migrate
          * away from constructing non-conforming locales and use the
-         * <b> forLanguageTag</b> and <b> Locale.Builder</b> APIs instead.
+         * <b> LocaleforLanguageTag</b>.
          * Clients desiring a string representation of the complete locale can
-         * then always rely on <b> toLanguageTag</b> for this purpose.
+         * then always rely on <b> toLanguageTag</b>  for this purpose.
          *
-         * <h4><a id="legacy_language_codes">Legacy language codes</a></h4>
+         * <h4><a id="">Special cases</a></h4>
          *
-         * <p>
-         * Locale's constructor has always converted three language codes to
-         * their earlier, obsoleted forms: <b> he</b> maps to <b> iw</b>,
-         * <b> yi</b> maps to <b> ji</b>, and <b> id</b> maps to
-         * <b> in</b>.
+         * <p>For compatibility reasons, two
+         * non-conforming locales are treated as special cases.  These are
+         * <b><b> ja__JP_JP</b> </b> and <b><b> th__TH_TH</b> </b>. These are ill-formed
+         * in BCP 47 since the variants are too short. To ease migration to BCP 47,
+         * these are treated specially during construction.
          *
-         * <p>
-         * The APIs added map between the old and new language codes,
+         * <p>Locale has used <b> ja__JP_JP</b>  to represent Japanese as used in
+         * Japan together with the Japanese Imperial calendar. This is now
+         * representable using a Unicode locale extension, by specifying the
+         * Unicode locale key <b> ca</b>  (for "calendar") and type
+         * <b> japanese</b> . When the Locale constructor is called with the
+         * arguments "ja", "JP", "JP", the extension "u-ca-japanese" is
+         * automatically added.
+         *
+         * <p>Locale has used <b> th__TH_TH</b>  to represent Thai as used in
+         * Thailand together with Thai digits. This is also now representable using
+         * a Unicode locale extension, by specifying the Unicode locale key
+         * <b> nu</b>  (for "number") and value <b> thai</b> . When the Locale
+         * constructor is called with the arguments "th", "TH", "TH", the
+         * extension "u-nu-thai" is automatically added.
+         *
+         * <h4>Serialization</h4>
+         *
+         * <p>During serialization, writeObject writes all fields to the output
+         * stream, including extensions.
+         *
+         * <p>During deserialization, readResolve adds extensions as described
+         * in <a href="">Special Cases</a>, only
+         * for the two cases th__TH_TH and ja__JP_JP.
+         *
+         * <h4><a id="">Legacy language codes</a></h4>
+         *
+         * <p>Locale's constructor has always converted three language codes to
+         * their earlier, obsoleted forms: <b> he</b>  maps to <b> iw</b> ,
+         * <b> yi</b>  maps to <b> ji</b> , and <b> id</b>  maps to
+         * <b> in</b> . Each language maps to its new form; <b> iw</b>  maps to <b> he</b> ,
+         * <b> ji</b> maps to <b> yi</b> , and <b> in</b>  maps to <b> id</b> .
+         *
+         * <p>The APIs added map between the old and new language codes,
          * maintaining the mapped codes internal to Locale,
-         * but using the new codes in the BCP 47 language tag APIs. This
+         * but using the new codes in the BCP 47 language tag APIs (so
+         * that <b> toLanguageTag</b>  reflects the new one). This
          * preserves the equivalence between Locales no matter which code or
          * API is used to construct them.
          *
@@ -293,1086 +397,53 @@ namespace core {
          * compatibility, the implementation still does not impose a length
          * constraint.
          *
-         * @see Format
-         * @see NumberFormat
-         * @see Collator
-         *
+         * @see core.text.Format
+         * @see core.text.NumberFormat
+         * @see core.text.Collator
          * @author Brunshweeck Tazeussong
          */
-        class Locale : public Object {
-        public:
-            /**
-             * Enumeration of all available languages
-             */
-            enum class Language : gshort {
-                UNDEFINED = 0,
-                // -------------- [Standard Languages] -------------
-                C,
-                ABKHAZIAN,
-                AFAR,
-                AFRIKAANS,
-                AGHEM,
-                AKAN,
-                AKKADIAN,
-                AKOOSE,
-                ALBANIAN,
-                AMERICAN_SIGN_LANGUAGE,
-                AMHARIC,
-                ANCIENT_EGYPTIAN,
-                ANCIENT_GREEK,
-                ARABIC,
-                ARAGONESE,
-                ARAMAIC,
-                ARMENIAN,
-                ASSAMESE,
-                ASTURIAN,
-                ASU,
-                ATSAM,
-                AVARIC,
-                AVESTAN,
-                AYMARA,
-                AZERBAIJANI,
-                BAFIA,
-                BALINESE,
-                BAMBARA,
-                BAMUN,
-                BANGLA,
-                BASAA,
-                BASHKIR,
-                BASQUE,
-                BATAK_TOBA,
-                BELARUSIAN,
-                BEMBA,
-                BENA,
-                BHOJPURI,
-                BISLAMA,
-                BLIN,
-                BODO,
-                BOSNIAN,
-                BRETON,
-                BUGINESE,
-                BULGARIAN,
-                BURMESE,
-                CANTONESE,
-                CATALAN,
-                CEBUANO,
-                CENTRAL_ATLAS_TAMAZIGHT,
-                CENTRAL_KURDISH,
-                CHAKMA,
-                CHAMORRO,
-                CHECHEN,
-                CHEROKEE,
-                CHICKASAW,
-                CHIGA,
-                CHINESE,
-                CHURCH,
-                CHUVASH,
-                COLOGNIAN,
-                COPTIC,
-                CORNISH,
-                CORSICAN,
-                CREE,
-                CROATIAN,
-                CZECH,
-                DANISH,
-                DIVEHI,
-                DOGRI,
-                DUALA,
-                DUTCH,
-                DZONGKHA,
-                EMBU,
-                ENGLISH,
-                ERZYA,
-                ESPERANTO,
-                ESTONIAN,
-                EWE,
-                EWONDO,
-                FAROESE,
-                FIJIAN,
-                FILIPINO,
-                FINNISH,
-                FRENCH,
-                FRIULIAN,
-                FULAH,
-                GAELIC,
-                GA,
-                GALICIAN,
-                GANDA,
-                GEEZ,
-                GEORGIAN,
-                GERMAN,
-                GOTHIC,
-                GREEK,
-                GUARANI,
-                GUJARATI,
-                GUSII,
-                HAITIAN,
-                HAUSA,
-                HAWAIIAN,
-                HEBREW,
-                HERERO,
-                HINDI,
-                HIRI_MOTU,
-                HUNGARIAN,
-                ICELANDIC,
-                IDO,
-                IGBO,
-                INARI_SAMI,
-                INDONESIAN,
-                INGUSH,
-                INTERLINGUA,
-                INTERLINGUE,
-                INUKTITUT,
-                INUPIAQ,
-                IRISH,
-                ITALIAN,
-                JAPANESE,
-                JAVANESE,
-                JJU,
-                JOLA_FONYI,
-                KABUVERDIANU,
-                KABYLE,
-                KAKO,
-                KALAALLISUT,
-                KALENJIN,
-                KAMBA,
-                KANNADA,
-                KANURI,
-                KASHMIRI,
-                KAZAKH,
-                KENYANG,
-                KHMER,
-                KICHE,
-                KIKUYU,
-                KINYARWANDA,
-                KOMI,
-                KONGO,
-                KONKANI,
-                KOREAN,
-                KORO,
-                KOYRABORO_SENNI,
-                KOYRA_CHIINI,
-                KPELLE,
-                KUANYAMA,
-                KURDISH,
-                KWASIO,
-                KYRGYZ,
-                LAKOTA,
-                LANGI,
-                LAO,
-                LATIN,
-                LATVIAN,
-                LEZGHIAN,
-                LIMBURGISH,
-                LINGALA,
-                LITERARY_CHINESE,
-                LITHUANIAN,
-                LOJBAN,
-                LOWER_SORBIAN,
-                LOW_GERMAN,
-                LUBA_KATANGA,
-                LULE_SAMI,
-                LUO,
-                LUXEMBOURGISH,
-                LUYIA,
-                MACEDONIAN,
-                MACHAME,
-                MAITHILI,
-                MAKHUWA_MEETTO,
-                MAKONDE,
-                MALAGASY,
-                MALAYALAM,
-                MALAY,
-                MALTESE,
-                MANDINGO,
-                MANIPURI,
-                MANX,
-                MAORI,
-                MAPUCHE,
-                MARATHI,
-                MARSHALLESE,
-                MASAI,
-                MAZANDERANI,
-                MENDE,
-                MERU,
-                META,
-                MOHAWK,
-                MONGOLIAN,
-                MORISYEN,
-                MUNDANG,
-                MUSCOGEE,
-                NAMA,
-                NAURU,
-                NAVAJO,
-                NDONGA,
-                NEPALI,
-                NEWARI,
-                NGIEMBOON,
-                NGOMBA,
-                NIGERIAN_PIDGIN,
-                NKO,
-                NORTHERN_LURI,
-                NORTHERN_SAMI,
-                NORTHERN_SOTHO,
-                NORTH_NDEBELE,
-                NORWEGIAN_BOKMAL,
-                NORWEGIAN_NYNORSK,
-                NUER,
-                NYANJA,
-                NYANKOLE,
-                OCCITAN,
-                ODIA,
-                OJIBWA,
-                OLD_IRISH,
-                OLD_NORSE,
-                OLD_PERSIAN,
-                OROMO,
-                OSAGE,
-                OSSETIC,
-                PAHLAVI,
-                PALAUAN,
-                PALI,
-                PAPIAMENTO,
-                PASHTO,
-                PERSIAN,
-                PHOENICIAN,
-                POLISH,
-                PORTUGUESE,
-                PRUSSIAN,
-                PUNJABI,
-                QUECHUA,
-                ROMANIAN,
-                ROMANSH,
-                ROMBO,
-                RUNDI,
-                RUSSIAN,
-                RWA,
-                SAHO,
-                SAKHA,
-                SAMBURU,
-                SAMOAN,
-                SANGO,
-                SANGU,
-                SANSKRIT,
-                SANTALI,
-                SARDINIAN,
-                SAURASHTRA,
-                SENA,
-                SERBIAN,
-                SHAMBALA,
-                SHONA,
-                SICHUAN_YI,
-                SICILIAN,
-                SIDAMO,
-                SILESIAN,
-                SINDHI,
-                SINHALA,
-                SKOLT_SAMI,
-                SLOVAK,
-                SLOVENIAN,
-                SOGA,
-                SOMALI,
-                SOUTHERN_KURDISH,
-                SOUTHERN_SAMI,
-                SOUTHERN_SOTHO,
-                SOUTH_NDEBELE,
-                SPANISH,
-                STANDARD_MOROCCAN_TAMAZIGHT,
-                SUNDANESE,
-                SWAHILI,
-                SWATI,
-                SWEDISH,
-                SWISS_GERMAN,
-                SYRIAC,
-                TACHELHIT,
-                TAHITIAN,
-                TAI_DAM,
-                TAITA,
-                TAJIK,
-                TAMIL,
-                TAROKO,
-                TASAWAQ,
-                TATAR,
-                TELUGU,
-                TESO,
-                THAI,
-                TIBETAN,
-                TIGRE,
-                TIGRINYA,
-                TOKELAU,
-                TOK_PISIN,
-                TONGAN,
-                TSONGA,
-                TSWANA,
-                TURKISH,
-                TURKMEN,
-                TUVALU,
-                TYAP,
-                UGARITIC,
-                UKRAINIAN,
-                UPPER_SORBIAN,
-                URDU,
-                UYGHUR,
-                UZBEK,
-                VAI,
-                VENDA,
-                VIETNAMESE,
-                VOLAPUK,
-                VUNJO,
-                WALLOON,
-                WALSER,
-                WARLPIRI,
-                WELSH,
-                WESTERN_BALOCHI,
-                WESTERN_FRISIAN,
-                WOLAYTTA,
-                WOLOF,
-                XHOSA,
-                YANGBEN,
-                YIDDISH,
-                YORUBA,
-                ZARMA,
-                ZHUANG,
-                ZULU,
-                KAINGANG,
-                NHEENGATU,
-                HARYANVI,
-                NORTHERN_FRISIAN,
-                RAJASTHANI,
-                MOKSHA,
-                TOKI_PONA,
-                PIJIN,
-                OBOLO,
-// ------------- [Other Languages] ----------------
-                AFAN, // similar to OROMO,
-                BENGALI, // similar to BANGLA,
-                BHUTANI, // similar to DZONGKHA,
-                BYELORUSSIAN, // similar to BELARUSIAN,
-                CAMBODIAN, // similar to KHMER,
-                CENTRAL_MOROCCO_TAMAZIGHT, // similar to CENTRAL_ATLAS_TAMAZIGHT,
-                CHEWA, // similar to NYANJA,
-                FRISIAN, // similar to WESTERN_FRISIAN,
-                GREENLANDIC, // similar to KALAALLISUT,
-                INUPIAK, // similar to INUPIAQ,
-                KIRGHIZ, // similar to KYRGYZ,
-                KURUNDI, // similar to RUNDI,
-                KWANYAMA, // similar to KUANYAMA,
-                NAVAHO, // similar to NAVAJO,
-                ORIYA, // similar to ODIA,
-                RHAETO_ROMANCE, // similar to ROMANSH,
-                UIGHUR, // similar to UYGHUR,
-                UIGUR, // similar to UYGHUR,
-                WALAMO, // similar to WOLAYTTA,
-            };
-
-            /**
-             * Enumeration of all available countries
-             */
-            enum class Country : gshort {
-                UNDEFINED = 0,
-// ---------------- [Standard Country names] -----------------
-                AFGHANISTAN,
-                ALAND_ISLANDS,
-                ALBANIA,
-                ALGERIA,
-                AMERICAN_SAMOA,
-                ANDORRA,
-                ANGOLA,
-                ANGUILLA,
-                ANTARCTICA,
-                ANTIGUA_AND_BARBUDA,
-                ARGENTINA,
-                ARMENIA,
-                ARUBA,
-                ASCENSION_ISLAND,
-                AUSTRALIA,
-                AUSTRIA,
-                AZERBAIJAN,
-                BAHAMAS,
-                BAHRAIN,
-                BANGLADESH,
-                BARBADOS,
-                BELARUS,
-                BELGIUM,
-                BELIZE,
-                BENIN,
-                BERMUDA,
-                BHUTAN,
-                BOLIVIA,
-                BOSNIA_AND_HERZEGOVINA,
-                BOTSWANA,
-                BOUVET_ISLAND,
-                BRAZIL,
-                BRITISH_INDIAN_OCEAN,
-                BRITISH_VIRGIN_ISLANDS,
-                BRUNEI,
-                BULGARIA,
-                BURKINA_FASO,
-                BURUNDI,
-                CAMBODIA,
-                CAMEROON,
-                CANADA,
-                CANARY_ISLANDS,
-                CAPE_VERDE,
-                CARIBBEAN_NETHERLANDS,
-                CAYMAN_ISLANDS,
-                CENTRAL_AFRICAN_REPUBLIC,
-                CEUTA_AND_MELILLA,
-                CHAD,
-                CHILE,
-                CHINA,
-                CHRISTMAS_ISLAND,
-                CLIPPERTON_ISLAND,
-                COCOS_ISLANDS,
-                COLOMBIA,
-                COMOROS,
-                CONGO_BRAZZAVILLE,
-                CONGO_KINSHASA,
-                COOK_ISLANDS,
-                COSTA_RICA,
-                CROATIA,
-                CUBA,
-                CURACAO,
-                CYPRUS,
-                CZECHIA,
-                DENMARK,
-                DIEGO_GARCIA,
-                DJIBOUTI,
-                DOMINICA,
-                DOMINICAN_REPUBLIC,
-                ECUADOR,
-                EGYPT,
-                EL_SALVADOR,
-                EQUATORIAL_GUINEA,
-                ERITREA,
-                ESTONIA,
-                ESWATINI,
-                ETHIOPIA,
-                EUROPE,
-                EUROPEAN_UNION,
-                FALKLAND_ISLANDS,
-                FAROE_ISLANDS,
-                FIJI,
-                FINLAND,
-                FRANCE,
-                FRENCH_GUIANA,
-                FRENCH_POLYNESIA,
-                FRENCH_SOUTHERN_TERRITORIES,
-                GABON,
-                GAMBIA,
-                GEORGIA,
-                GERMANY,
-                GHANA,
-                GIBRALTAR,
-                GREECE,
-                GREENLAND,
-                GRENADA,
-                GUADELOUPE,
-                GUAM,
-                GUATEMALA,
-                GUERNSEY,
-                GUINEA_BISSAU,
-                GUINEA,
-                GUYANA,
-                HAITI,
-                HEARD_AND_MC_DONALD_ISLANDS,
-                HONDURAS,
-                HONG_KONG,
-                HUNGARY,
-                ICELAND,
-                INDIA,
-                INDONESIA,
-                IRAN,
-                IRAQ,
-                IRELAND,
-                ISLE_OF_MAN,
-                ISRAEL,
-                ITALY,
-                IVORY_COAST,
-                JAMAICA,
-                JAPAN,
-                JERSEY,
-                JORDAN,
-                KAZAKHSTAN,
-                KENYA,
-                KIRIBATI,
-                KOSOVO,
-                KUWAIT,
-                KYRGYZSTAN,
-                LAOS,
-                LATIN_AMERICA,
-                LATVIA,
-                LEBANON,
-                LESOTHO,
-                LIBERIA,
-                LIBYA,
-                LIECHTENSTEIN,
-                LITHUANIA,
-                LUXEMBOURG,
-                MACAO,
-                MACEDONIA,
-                MADAGASCAR,
-                MALAWI,
-                MALAYSIA,
-                MALDIVES,
-                MALI,
-                MALTA,
-                MARSHALL_ISLANDS,
-                MARTINIQUE,
-                MAURITANIA,
-                MAURITIUS,
-                MAYOTTE,
-                MEXICO,
-                MICRONESIA,
-                MOLDOVA,
-                MONACO,
-                MONGOLIA,
-                MONTENEGRO,
-                MONTSERRAT,
-                MOROCCO,
-                MOZAMBIQUE,
-                MYANMAR,
-                NAMIBIA,
-                NAURU,
-                NEPAL,
-                NETHERLANDS,
-                NEW_CALEDONIA,
-                NEW_ZEALAND,
-                NICARAGUA,
-                NIGERIA,
-                NIGER,
-                NIUE,
-                NORFOLK_ISLAND,
-                NORTHERN_MARIANA_ISLANDS,
-                NORTH_KOREA,
-                NORWAY,
-                OMAN,
-                OUTLYING_OCEANIA,
-                PAKISTAN,
-                PALAU,
-                PALESTINIAN_TERRITORIES,
-                PANAMA,
-                PAPUA_NEW_GUINEA,
-                PARAGUAY,
-                PERU,
-                PHILIPPINES,
-                PITCAIRN,
-                POLAND,
-                PORTUGAL,
-                PUERTO_RICO,
-                QATAR,
-                REUNION,
-                ROMANIA,
-                RUSSIA,
-                RWANDA,
-                SAINT_BARTHELEMY,
-                SAINT_HELENA,
-                SAINT_KITTS_AND_NEVIS,
-                SAINT_LUCIA,
-                SAINT_MARTIN,
-                SAINT_PIERRE_AND_MIQUELON,
-                SAINT_VINCENT_AND_GRENADINES,
-                SAMOA,
-                SAN_MARINO,
-                SAO_TOME_AND_PRINCIPE,
-                SAUDI_ARABIA,
-                SENEGAL,
-                SERBIA,
-                SEYCHELLES,
-                SIERRA_LEONE,
-                SINGAPORE,
-                SINT_MAARTEN,
-                SLOVAKIA,
-                SLOVENIA,
-                SOLOMON_ISLANDS,
-                SOMALIA,
-                SOUTH_AFRICA,
-                SOUTH_GEORGIA_AND_SOUTH_SANDWICH_ISLANDS,
-                SOUTH_KOREA,
-                SOUTH_SUDAN,
-                SPAIN,
-                SRI_LANKA,
-                SUDAN,
-                SURINAME,
-                SVALBARD_AND_JAN_MAYEN,
-                SWEDEN,
-                SWITZERLAND,
-                SYRIA,
-                TAIWAN,
-                TAJIKISTAN,
-                TANZANIA,
-                THAILAND,
-                TIMOR_LESTE,
-                TOGO,
-                TOKELAU,
-                TONGA,
-                TRINIDAD_AND_TOBAGO,
-                TRISTAN_DA_CUNHA,
-                TUNISIA,
-                TURKEY,
-                TURKMENISTAN,
-                TURKS_AND_CAICOS_ISLANDS,
-                TUVALU,
-                UGANDA,
-                UKRAINE,
-                UNITED_ARAB_EMIRATES,
-                UNITED_KINGDOM,
-                UNITED_STATES_OUTLYING_ISLANDS,
-                UNITED_STATES,
-                UNITED_STATES_VIRGIN_ISLANDS,
-                URUGUAY,
-                UZBEKISTAN,
-                VANUATU,
-                VATICAN_CITY,
-                VENEZUELA,
-                VIETNAM,
-                WALLIS_AND_FUTUNA,
-                WESTERN_SAHARA,
-                WORLD,
-                YEMEN,
-                ZAMBIA,
-                ZIMBABWE,
-// ---------------- [Other Country names] -----------------
-                BONAIRE, // similar to CARIBBEAN_NETHERLANDS,
-                BOSNIA_AND_HERZEGOWINA, // similar to BOSNIA_AND_HERZEGOVINA,
-                CURA_SAO, // similar to CURACAO,
-                CZECH_REPUBLIC, // similar to CZECHIA,
-                DEMOCRATIC_REPUBLIC_OF_CONGO, // similar to CONGO_KINSHASA,
-                DEMOCRATIC_REPUBLIC_OF_KOREA, // similar to NORTH_KOREA,
-                EAST_TIMOR, // similar to TIMOR_LESTE,
-                LATIN_AMERICA_AND_THE_CARIBBEAN, // similar to LATIN_AMERICA,
-                MACAU, // similar to MACAO,
-                PEOPLES_REPUBLIC_OF_CONGO, // similar to CONGO_BRAZZAVILLE,
-                REPUBLIC_OF_KOREA, // similar to SOUTH_KOREA,
-                RUSSIAN_FEDERATION, // similar to RUSSIA,
-                SAINT_VINCENT_AND_THE_GRENADINES, // similar to SAINT_VINCENT_AND_GRENADINES,
-                SOUTH_GEORGIA_AND_THE_SOUTH_SANDWICH_ISLANDS, // similar to SOUTH_GEORGIA_AND_SOUTH_SANDWICH_ISLANDS,
-                SVALBARD_AND_JAN_MAYEN_ISLANDS, // similar to SVALBARD_AND_JAN_MAYEN,
-                SWAZILAND, // similar to ESWATINI,
-                SYRIAN_ARAB_REPUBLIC, // similar to SYRIA,
-                UNITED_STATES_MINOR_OUTLYING_ISLANDS, // similar to UNITED_STATES_OUTLYING_ISLANDS,
-                VATICAN_CITY_STATE, // similar to VATICAN_CITY,
-                WALLIS_AND_FUTUNA_ISLANDS, // similar to WALLIS_AND_FUTUNA,
-            };
-
-            /**
-             * Enumeration of all available scripts
-             */
-            enum class Script : gshort {
-                UNDEFINED = 0,
-// ---------------- [Standard Script names] -----------------
-                ADLAM,
-                AHOM,
-                ANATOLIAN_HIEROGLYPHS,
-                ARABIC,
-                ARMENIAN,
-                AVESTAN,
-                BALINESE,
-                BAMUM,
-                BANGLA,
-                BASSA_VAH,
-                BATAK,
-                BHAIKSUKI,
-                BOPOMOFO,
-                BRAHMI,
-                BRAILLE,
-                BUGINESE,
-                BUHID,
-                CANADIAN_ABORIGINAL,
-                CARIAN,
-                CAUCASIAN_ALBANIAN,
-                CHAKMA,
-                CHAM,
-                CHEROKEE,
-                COPTIC,
-                CUNEIFORM,
-                CYPRIOT,
-                CYRILLIC,
-                DESERET,
-                DEVANAGARI,
-                DUPLOYAN,
-                EGYPTIAN_HIEROGLYPHS,
-                ELBASAN,
-                ETHIOPIC,
-                FRASER,
-                GEORGIAN,
-                GLAGOLITIC,
-                GOTHIC,
-                GRANTHA,
-                GREEK,
-                GUJARATI,
-                GURMUKHI,
-                HANGUL,
-                HAN,
-                HANUNOO,
-                HAN_WITH_BOPOMOFO,
-                HATRAN,
-                HEBREW,
-                HIRAGANA,
-                IMPERIAL_ARAMAIC,
-                INSCRIPTIONAL_PAHLAVI,
-                INSCRIPTIONAL_PARTHIAN,
-                JAMO,
-                JAPANESE,
-                JAVANESE,
-                KAITHI,
-                KANNADA,
-                KATAKANA,
-                KAYAH_LI,
-                KHAROSHTHI,
-                KHMER,
-                KHOJKI,
-                KHUDAWADI,
-                KOREAN,
-                LANNA,
-                LAO,
-                LATIN,
-                LEPCHA,
-                LIMBU,
-                LINEAR_ASCRIPT,
-                LINEAR_BSCRIPT,
-                LYCIAN,
-                LYDIAN,
-                MAHAJANI,
-                MALAYALAM,
-                MANDAEAN,
-                MANICHAEAN,
-                MARCHEN,
-                MEITEI_MAYEK,
-                MENDE,
-                MEROITIC_CURSIVE,
-                MEROITIC,
-                MODI,
-                MONGOLIAN,
-                MRO,
-                MULTANI,
-                MYANMAR,
-                NABATAEAN,
-                NEWA,
-                NEW_TAI_LUE,
-                NKO,
-                ODIA,
-                OGHAM,
-                OL_CHIKI,
-                OLD_HUNGARIAN,
-                OLD_ITALIC,
-                OLD_NORTH_ARABIAN,
-                OLD_PERMIC,
-                OLD_PERSIAN,
-                OLD_SOUTH_ARABIAN,
-                ORKHON,
-                OSAGE,
-                OSMANYA,
-                PAHAWH_HMONG,
-                PALMYRENE,
-                PAU_CIN_HAU,
-                PHAGS_PA,
-                PHOENICIAN,
-                POLLARD_PHONETIC,
-                PSALTER_PAHLAVI,
-                REJANG,
-                RUNIC,
-                SAMARITAN,
-                SAURASHTRA,
-                SHARADA,
-                SHAVIAN,
-                SIDDHAM,
-                SIGN_WRITING,
-                SIMPLIFIED_HAN,
-                SINHALA,
-                SORA_SOMPENG,
-                SUNDANESE,
-                SYLOTI_NAGRI,
-                SYRIAC,
-                TAGALOG,
-                TAGBANWA,
-                TAI_LE,
-                TAI_VIET,
-                TAKRI,
-                TAMIL,
-                TANGUT,
-                TELUGU,
-                THAANA,
-                THAI,
-                TIBETAN,
-                TIFINAGH,
-                TIRHUTA,
-                TRADITIONAL_HAN,
-                UGARITIC,
-                VAI,
-                VARANG_KSHITI,
-                YI,
-// ---------------- [Other Country names] -----------------
-                BENGALI, // similar to BANGLA,
-                MENDE_KIKAKUI, // similar to MENDE,
-                ORIYA, // similar to ODIA,
-                SIMPLIFIED_CHINESE, // similar to SIMPLIFIED_HAN,
-                TRADITIONAL_CHINESE, // similar to TRADITIONAL_HAN,
-            };
-
+        class Locale CORE_FINAL : public Object {
         private:
             /**
              * The internal locale
              */
-            interface BaseLocale : Object {
-                Language language;
-                Country country;
-                Script script;
+            class BaseLocale CORE_FINAL : public Object {
+            public:
+                static const String SEP; // "_"
 
-                CORE_FAST BaseLocale() :
-                        language(Language::UNDEFINED), country(Country::UNDEFINED), script(Script::UNDEFINED) {}
+                String language;
+                String script;
+                String region;
+                String variant;
+                gint hashcode = 0;
 
-                CORE_FAST BaseLocale(Language language, Country country, Script script) :
-                        language(language), country(country), script(script) {}
+                CORE_EXPLICIT BaseLocale(String language, String script, String region, String variant);
 
-                CORE_FAST BaseLocale(const BaseLocale &locale) :
-                        language(locale.language), country(locale.country), script(locale.script) {}
+                static String convertOldISOCode(const String &language);
 
-                static BaseLocale of(gint language, gint script, gint country) {
-                    return BaseLocale((Language) language, (Country) country, (Script) script);
-                }
+                gbool equals(const Object &o) const override;
+
+                String toString() const override;
+
+                gint hash() const override;
 
                 Object &clone() const override;
 
-                /**
-                 * Return the alpha-2 code of language of this locale
-                 */
-                String languageCode() const;
+                static BaseLocale of(const String &language);
 
-                /**
-                 * Return the alpha-3 code of language of this locale
-                 */
-                String languageISO3Code() const;
-
-                /**
-                 * return display language name
-                 */
-                String languageName() const;
-
-                /**
-                 * Return the alpha-2 code of language if this locale
-                 */
-                String countryCode() const;
-
-                /**
-                 * Return the alpha-3 code of country if this locale
-                 */
-                String countryISO3Code() const;
-
-                /**
-                 * Return the display name of country if this locale
-                 */
-                String countryName() const;
-
-                /**
-                 * Return the alpha-4 code of script if this locale
-                 */
-                String scriptCode() const;
-
-                /**
-                 * Return the display name of script if this locale
-                 */
-                String scriptName() const;
-
-                gint findLocaleIndex() const;
-
-                gint findLocaleIndex0() const;
-
-                gint findLocaleDataIndex() const;
-
-                /**
-                 * Return the BCP 47 locale name
-                 */
-                String bcp47Name() const;
-
-                String name(gchar sep) const;
-
-                /**
-                 *  Returns a native name of the language for the locale.
-                 */
-                String nativeLanguageName() const;
-
-                /**
-                 *  Returns a native name of the country for the locale.
-                 */
-                String nativeCountryName() const;
-
-                gbool equals(const Object &object) const override;
-
-                gbool validateSC(const BaseLocale &target) const;
-
-                gbool validateL(Language lang) const;
-
-                gbool validate() const;
-
-                BaseLocale addSubTag() const;
-
-                BaseLocale deleteSubTag() const;
-
-                /**
-                 * The CLDR array
-                 */
-                interface CLDR {
-                    gshort language;
-                    gshort script;
-                    gshort country;
-                    gshort startListPatternOffset;
-                    gshort midListPatternOffset;
-                    gshort endListPatternOffset;
-                    gshort pairListPatternOffset;
-                    gshort listDelimitOffset;
-                    gshort decimalSeparatorOffset;
-                    gshort groupDelimOffset;
-                    gshort percentSymbolOffset;
-                    gshort zeroDigitOffset;
-                    gshort minusSignOffset;
-                    gshort plusSignOffset;
-                    gshort exponentialOffset;
-                    gshort quoteStartOffset;
-                    gshort quoteEndOffset;
-                    gshort quoteStartAltOffset;
-                    gshort quoteEndAltOffset;
-                    gshort longDateFormatOffset;
-                    gshort shortDateFormatOffset;
-                    gshort longTimeFormatOffset;
-                    gshort shortTimeFormatOffset;
-                    gshort longDayNamesStandaloneOffset;
-                    gshort longDayNamesOffset;
-                    gshort shortDayNamesStandaloneOffset;
-                    gshort shortDayNamesOffset;
-                    gshort narrowDayNamesStandaloneOffset;
-                    gshort narrowDayNamesOffset;
-                    gshort amOffset;
-                    gshort pmOffset;
-                    gshort byteCountOffset;
-                    gshort byteAmountSIOffset;
-                    gshort byteAmountIECOffset;
-                    gshort currencySymbolOffset;
-                    gshort currencyDisplayNameOffset;
-                    gshort currencyFormatOffset;
-                    gshort currencyFormatNegativeOffset;
-                    gshort languageNameOffset;
-                    gshort countryNameOffset;
-                    gshort startListPatternSize;
-                    gshort midListPatternSize;
-                    gshort endListPatternSize;
-                    gshort pairListPatternSize;
-                    gshort listDelimitSize;
-                    gshort decimalSeparatorSize;
-                    gshort groupDelimSize;
-                    gshort percentSymbolSize;
-                    gshort zeroDigitSize;
-                    gshort minusSignSize;
-                    gshort plusSignSize;
-                    gshort exponentialSize;
-                    gshort quoteStartSize;
-                    gshort quoteEndSize;
-                    gshort quoteStartAltSize;
-                    gshort quoteEndAltSize;
-                    gshort longDateFormatSize;
-                    gshort shortDateFormatSize;
-                    gshort longTimeFormatSize;
-                    gshort shortTimeFormatSize;
-                    gshort longDayNamesStandaloneSize;
-                    gshort longDayNamesSize;
-                    gshort shortDayNamesStandaloneSize;
-                    gshort shortDayNamesSize;
-                    gshort narrowDayNamesStandaloneSize;
-                    gshort narrowDayNamesSize;
-                    gshort amSize;
-                    gshort pmSize;
-                    gshort byteCountSize;
-                    gshort byteAmountSISize;
-                    gshort byteAmountIECSize;
-                    gshort currencySymbolSize;
-                    gshort currencyDisplayNameSize;
-                    gshort currencyFormatSize;
-                    gshort currencyFormatNegativeSize;
-                    gshort languageNameSize;
-                    gshort countryNameSize;
-                    gshort currencyISOCode[3];
-                    gshort currencyDigits;
-                    gshort currencyRound;
-                    gshort firstDayOfWeek;
-                    gshort weekendStart;
-                    gshort weekendEnd;
-                    gshort groupingTop;
-                    gshort groupingHigh;
-                    gshort groupingLeast;
-                };
-
-                static const CLDR cldr[635];
-
-                static const BaseLocale tags[739 << 1];
-
-                /**
-                 * Return standard language
-                 */
-                static Language normalize(Language language);
-
-                /**
-                 * Return standard country
-                 */
-                static Country normalize(Country country);
-
-                /**
-                 * Return standard script
-                 */
-                static Script normalize(Script script);
-
-                static Language parseLanguage(String language);
-
-                static Language parseLanguageName(String language);
-
-                static Language parseNativeLanguageName(String language);
-
-                static Country parseCountry(String country);
-
-                static Country parseCountryName(String country);
-
-                static Country parseNativeCountryName(String country);
-
-                static Script parseScript(String script);
-
-                static Script parseScriptName(String script);
-
-                static Locale parseLocale(String locale);
+                static BaseLocale of(const String &language, const String &region);
             };
 
-            /**
-             * The last available language id
-             */
-            static CORE_FAST Language LAST_STANDARD_LANGUAGE = Language::OBOLO;
+            // The private locale class dependencies
+            class LanguageTag;
 
-            /**
-             * The last available country id
-             */
-            static CORE_FAST Country LAST_STANDARD_COUNTRY = Country::ZIMBABWE;
-
-            /**
-             * The last available script id
-             */
-            static CORE_FAST Script LAST_STANDARD_SCRIPT = Script::YI;
+            class LocaleBuilder;
 
             /**
              * The locale property
              */
-            BaseLocale base{};
-
-            /**
-             * The internal locale constructor
-             *
-             * @param language The language id
-             * @param country The country/region id
-             * @param script The script id
-             */
-            CORE_EXPLICIT Locale(Language language, Country country, Script script) :
-                    base({language, country, script}) {}
-
-            /**
-             * The internal locale constructor
-             */
-            CORE_EXPLICIT Locale(BaseLocale base) : base((BaseLocale &&) base) {}
+            BaseLocale baseLocale;
+            HashMap<Character, String> localeExtensions;
 
         public:
 
@@ -1489,20 +560,25 @@ namespace core {
              */
             static const Locale TAIWAN;
 
+        private:
+
             /**
              * Construct a locale from a language code.
              * This constructor normalizes the language value to lowercase.
-             * @note
+             * @implNote
              * <ul>
              * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
-             * their current forms. See <a href="#legacy_language_codes">Legacy language
+             * their current forms. See <a href="">Legacy language
              * codes</a> for more information.
              * <li>For backward compatibility reasons, this constructor does not make
              * any syntactic checks on the input.
              * </ul>
              *
+             * @deprecated Locale constructors have been deprecated. See <a href="">
+             * Obtaining a Locale</a> for other options.
+             *
              * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
-             * up to 8 characters in length.  See the <b> Locale</b> class description about
+             * up to 8 characters in length.  See the <b> Locale</b>  class description about
              * valid language values.
              */
             CORE_EXPLICIT Locale(String language);
@@ -1511,20 +587,22 @@ namespace core {
              * Construct a locale from language and country.
              * This constructor normalizes the language value to lowercase and
              * the country value to uppercase.
-             * @note
+             * @implNote
              * <ul>
              * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
-             * their current forms. See <a href="#legacy_language_codes">Legacy language
-             * codes</a> for more information.
+             * their current forms. See <a href="">Legacy language codes</a> for more information.
              * <li>For backward compatibility reasons, this constructor does not make
              * any syntactic checks on the input.
              * </ul>
              *
+             * @deprecated Locale constructors have been deprecated. See <a href="">
+             * Obtaining a Locale</a> for other options.
+             *
              * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
-             * up to 8 characters in length.  See the <b> Locale</b> class description about
+             * up to 8 characters in length.  See the <b> Locale</b>  class description about
              * valid language values.
              * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
-             * See the <b> Locale</b> class description about valid country values.
+             * See the <b> Locale</b>  class description about valid country values.
              */
             CORE_EXPLICIT Locale(String language, String country);
 
@@ -1535,42 +613,240 @@ namespace core {
              * @note
              * <ul>
              * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
-             * their current forms. See <a href="#legacy_language_codes">Legacy language
+             * their current forms. See <a href="">Legacy language
              * codes</a> for more information.
              * <li>For backward compatibility reasons, this constructor does not make
              * any syntactic checks on the input.
              * <li>The two cases ("ja", "JP", "JP") and ("th", "TH", "TH") are handled specially,
-             * see <a href="#special_cases_constructor">Special Cases</a> for more information.
+             * see <a href="">Special Cases</a> for more information.
              * </ul>
              *
-             * @deprecated Locale constructors have been deprecated. See <a href ="#ObtainingLocale">
+             * @deprecated Locale constructors have been deprecated. See <a href ="">
              * Obtaining a Locale</a> for other options.
              *
              * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
              * up to 8 characters in length.  See the <b> Locale</b> class description about
              * valid language values.
-             * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
-             * See the <b> Locale</b> class description about valid country values.
              * @param script An ISO 15924 alpha-4 script code.
              * See the <b> Locale</b> class description for the details.
+             * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
+             * See the <b> Locale</b> class description about valid country values.
              */
             CORE_EXPLICIT Locale(String language, String script, String country);
 
             /**
-             * Initialized new created locale with properties of the
-             * given locale
+             * Private constructor used by createInstance method
              */
-            CORE_FAST Locale(const Locale &locale);
+            CORE_EXPLICIT Locale(BaseLocale baseLocale, const Map<Character, String> &extensions);
+
+            /**
+             * Returns a <b> Locale</b>  constructed from the given
+             * <b> language</b> , <b> country</b>  and <b> script</b> .
+             *
+             * @param language lowercase 2 to 8 language code.
+             * @param script The script code
+             * @param country uppercase two-letter ISO-3166 code and numeric-3 UN M.49 area code.
+             * @return the <b> Locale</b>  instance requested
+             */
+            static Locale createLocale(const String &language, const String &script, const String &country,
+                                       const String &variant);
+
+            static Locale createLocale(const String &language, const String &script, const String &country,
+                                       const String &variant, const Map<Character, String> &extensions);
+
+            static Locale createLocale(const String &language, const String &country);
+
+            static Locale createLocale(const BaseLocale &baseLocale, const Map<Character, String> &localeExtensions);
+
+        public:
+
+            /**
+             * Gets the current value of the default locale for this instance
+             * of the Machine system.
+             *
+             * @return the default locale for this instance of the Machine system.
+             */
+            static Locale system();
+
+            /**
+             * Gets the current value of the default locale for this instance
+             * of the process.
+             *
+             * @return the default locale for this instance of the process.
+             */
+            static Locale defaultLocale();
+
+            /**
+             * Enum for locale categories.  These locale categories are used to get/set
+             * the default locale for the specific functionality represented by the
+             * category.
+             */
+            enum class Category : gbyte {
+
+                /**
+                 * Category used to represent the default locale for
+                 * displaying user interfaces.
+                 */
+                DISPLAY,
+
+                /**
+                 * Category used to represent the default locale for
+                 * formatting dates, numbers, and/or currencies.
+                 */
+                FORMAT,
+            };
+
+            /**
+             * Gets the current value of the default locale for the specified Category
+             * for this instance of the system.
+             *
+             * @param category the specified category to get the default locale
+             * @return the default locale for the specified Category for this instance
+             *     of the system.
+             */
+            static Locale system(Category category);
+
+            /**
+             * Gets the current value of the default locale for the specified Category
+             * for this instance of the current process.
+             *
+             * @param category the specified category to get the default locale
+             * @return the default locale for the specified Category for this instance
+             *     of the current process.
+             */
+            static Locale defaultLocale(Category category);
+
+            /**
+             * Sets the default locale for this instance of the process.
+             * This does not affect the host locale.
+             * <p>
+             * Since changing the default locale may affect many different areas
+             * of functionality, this method should only be used if the caller
+             * is prepared to reinitialize locale-sensitive code running
+             * within the same process.
+             * <p>
+             * By setting the default locale with this method, all of the default
+             * locales for each Category are also set to the specified default locale.
+             *
+             * @throws SecurityException if a security manager exists and its
+             *        <b> checkPermission</b>  method doesn't allow the operation.
+             * @param newLocale the new default locale
+             */
+            static void setDefaultLocale(const Locale &newLocale);
+
+            /**
+             * Sets the default locale for the specified Category for this instance
+             * of the Machine. This does not affect the host locale.
+             * <p>
+             * If there is a security manager, its checkPermission method is called
+             * with a PropertyPermission("user.language", "write") permission before
+             * the default locale is changed.
+             * <p>
+             * The Machine sets the default locale during startup based
+             * on the host environment. It is used by many locale-sensitive methods
+             * if no locale is explicitly specified.
+             * <p>
+             * Since changing the default locale may affect many different areas of
+             * functionality, this method should only be used if the caller is
+             * prepared to reinitialize locale-sensitive code running within the
+             * same Machine.
+             *
+             * @param category the specified category to set the default locale
+             * @param newLocale the new default locale
+             * @throws SecurityException if a security manager exists and its
+             *     checkPermission method doesn't allow the operation.
+             *
+             * @see defaultLocaleLocale::Category)
+             */
+            static void setDefaultLocale(Category category, const Locale &newLocale);
+
+            /**
+             * Returns a list of all 2-letter country codes defined in ISO 3166.
+             * Can be used to obtain Locales.
+             * This method is equivalent to <b style="color: orange;"> Locale::SOCountries(Locale::IsoCountryCode type)</b>
+             * with <b> type</b>   <b style="color: orange;"> IsoCountryCode::PART1_ALPHA2</b> .
+             * <p>
+             * <b>Note:</b> The <b> Locale</b>  class also supports other codes for
+             * country (region), such as 3-letter numeric UN M.49 area codes.
+             * Therefore, the list returned by this method does not contain ALL valid
+             * codes that can be used to obtain Locales.
+             * <p>
+             * Note that this method does not return obsolete 2-letter country codes.
+             * ISO3166-3 codes which designate country codes for those obsolete codes,
+             * can be retrieved from <b style="color: orange;"> Locale::SOCountries(Locale::IsoCountryCode type)</b>  with
+             * <b> type</b>   <b style="color: orange;"> IsoCountryCode::PART3</b> .
+             * @return An array of ISO 3166 two-letter country codes.
+             */
+            static StringArray isoCountries();
+
+            enum class ISOCountryCode : gbyte {
+                /**
+                 * PART1_ALPHA2 is used to represent the ISO3166-1 alpha-2 two letter
+                 * country codes.
+                 */
+                PART1_ALPHA2,
+
+                /**
+                 *
+                 * PART1_ALPHA3 is used to represent the ISO3166-1 alpha-3 three letter
+                 * country codes.
+                 */
+                PART1_ALPHA3,
+
+                /**
+                 * PART3 is used to represent the ISO3166-3 four letter country codes.
+                 */
+                PART3,
+            };
+
+            /**
+             * Returns a <b> Set</b>  of ISO3166 country codes for the specified type.
+             *
+             * @param type <b style="color: orange;"> Locale::IsoCountryCode</b>  specified ISO code type.
+             * @return a <b> Set</b>  of ISO country codes for the specified type.
+             */
+            static StringArray isoCountries(ISOCountryCode type);
+
+            /**
+             * Returns a list of all 2-letter language codes defined in ISO 639.
+             * Can be used to obtain Locales.
+             * <p>
+             * <b>Note:</b>
+             * <ul>
+             * <li>ISO 639 is not a stable standard&mdash; some languages' codes have changed.
+             * The list this function returns includes both the new and the old codes for the
+             * languages whose codes have changed.
+             * <li>The <b> Locale</b>  class also supports language codes up to
+             * 8 characters in length.  Therefore, the list returned by this method does
+             * not contain ALL valid codes that can be used to obtain Locales.
+             * </ul>
+             *
+             * @return An array of ISO 639 two-letter language codes.
+             */
+            static StringArray isoLanguages();
+
+            /**
+             * Returns an array of all installed locales.
+             * The returned array represents the union of locales supported
+             * by the runtime environment and by installed
+             * <b style="color: orange;"> system provider </b>
+             * implementations. At a minimum, the returned array must contain a
+             * <b> Locale</b>  instance equal to <b style="color: orange;"> Locale::ROOT</b>  and
+             * a <b> Locale</b>  instance equal to <b style="color: orange;"> Locale::US</b> .
+             *
+             * @return An array of installed locales.
+             */
+            static Set<Locale> &availableLocales();
 
             /**
              * Returns the language code of this Locale.
              *
-             * @note This method returns the new forms for the obsolete ISO 639
-             * codes ("iw", "ji", and "in"). See <a href="#legacy_language_codes">
+             * @implNote This method returns the new forms for the obsolete ISO 639
+             * codes ("iw", "ji", and "in"). See <a href="">
              * Legacy language codes</a> for more information.
              *
              * @return The language code, or the empty string if none is defined.
-             * @see displayLanguage
+             * @see Locale::displayLanguage
              */
             String language() const;
 
@@ -1581,7 +857,7 @@ namespace core {
              * lowercase, for example, 'Latn', 'Cyrl'.
              *
              * @return The script code, or the empty string if none is defined.
-             * @see displayScript
+             * @see Locale::displayScript
              */
             String script() const;
 
@@ -1591,64 +867,132 @@ namespace core {
              * or a UN M.49 3-digit code.
              *
              * @return The country/region code, or the empty string if none is defined.
-             * @see displayCountry
+             * @see Locale::displayCountry
              */
             String country() const;
 
             /**
-             * Returns a string representation of this <b> Locale</b>
-             * object, consisting of language, country and script as below:
-             * <blockquote>
-             * language + "_" + country + "_" + script
-             * </blockquote>
+             * Returns the variant code for this locale.
              *
-             * Language is always lower case, country is always upper case and script is always title
-             * case.  Private use subtags will be in canonical order as explained in <b style="color: orange;"> languageTag</b>.
-             *
-             * <p>
-             * If both the language and country fields are missing, this function will return
-             * the empty string, even if the script field is present
-             *
-             * <p>
-             * This behavior is designed to support debugging and to be compatible with
-             * previous uses of <b> toString</b> that expected language and country
-             * fields only.  To represent a Locale as a String for interchange purposes, use
-             * <b style="color: orange;"> languageTag</b>.
-             *
-             * <p>Examples: <ul>
-             * <li><b> en</b></li>
-             * <li><b> de_DE</b></li>
-             * <li><b> _GB</b></li>
-             * <li><b> zh_CN_Hans</b></li></ul>
-             *
-             * @return A string representation of the Locale, for debugging.
-             * @see displayName
-             * @see languageTag
+             * @return The variant code, or the empty string if none is defined.
+             * @see Locale::displayVariant
              */
-            String toString() const override;
+            String variant() const;
 
             /**
-             * Return locale name
-             * language((_script)_country)
+             * Returns {@code true} if this {@code Locale} has any <a href="#def_extensions">
+             * extensions</a>.
+             *
+             * @return {@code true} if this {@code Locale} has any extensions
+             * @since 1.8
              */
-            String name() const;
+            gbool hasExtensions() const;
+
+            /**
+             * Returns a copy of this {@code Locale} with no <a href="#def_extensions">
+             * extensions</a>. If this {@code Locale} has no extensions, this {@code Locale}
+             * is returned.
+             *
+             * @return a copy of this {@code Locale} with no extensions, or {@code this}
+             *         if {@code this} has no extensions
+             */
+            Locale stripExtensions() const;
+
+            /**
+             * Returns the extension (or private use) value associated with
+             * the specified key, or null if there is no extension
+             * associated with the key. To be well-formed, the key must be one
+             * of {@code [0-9A-Za-z]}. Keys are case-insensitive, so
+             * for example 'z' and 'Z' represent the same extension.
+             *
+             * @param key the extension key
+             * @return The extension, or null if this locale defines no
+             * extension for the specified key.
+             * @throws IllegalArgumentException if key is not well-formed
+             * @see PRIVATE_USE_EXTENSION_KEY
+             * @see UNICODE_EXTENSION_KEY
+             */
+            String extension(gchar key) const;
+
+            static CORE_FAST gchar UNICODE_EXTENSION_KEY = u'u';
+            static CORE_FAST gchar PRIVATE_USE_EXTENSION_KEY = u'x';
+
+            /**
+             * Returns a string representation of this <b> Locale</b> 
+             * object, consisting of language, script, country and variant as below:
+             * <blockquote> @code
+             * language + _script + "_" + country + ("_#" + variant)
+             * @endcode </blockquote>
+             *
+             * Language is always lower case, country is always upper case and script is always title
+             * case.
+             *
+             * <p>If both the language and country fields are missing, this function will return
+             * the empty string, even if the script, or variant field is present (you
+             * can't have a locale with just a variant, the variant must accompany a well-formed
+             * language or country code).
+             *
+             * <p>If script is present and variant is missing.
+             *
+             * <p>This behavior is designed to support debugging and to be compatible with
+             * previous uses of <b> toString</b>  that expected language, country, and variant
+             * fields only.  To represent a Locale as a String for interchange purposes, use
+             * <b style="color: orange;"> Locale::toLanguageTag</b> .
+             *
+             * <p>Examples: <ul>
+             * <li><b> en</b> </li>
+             * <li><b> de_DE</b> </li>
+             * <li><b> _GB</b> </li>
+             * <li><b> en_US_#WIN</b> </li>
+             * <li><b> de__#POSIX</b> </li>
+             * <li><b> zh_Hans_CN</b> </li>
+             * <li><b> zh_Hant_TW</b> </li>
+             * <li><b> th_TH_TH</b> </li></ul>
+             *
+             * @return A string representation of the Locale, for debugging.
+             * @see Locale::displayName
+             * @see Locale::toLanguageTag
+             */
+            String toString() const override;
 
             /**
              * Returns a well-formed IETF BCP 47 language tag representing
              * this locale.
              *
-             * <p>If this <b> Locale</b> has a language and country
-             * that does not satisfy the IETF BCP 47 language tag
+             * <p>If this <b> Locale</b>  has a language, country, or
+             * variant that does not satisfy the IETF BCP 47 language tag
              * syntax requirements, this method handles these fields as
              * described below:
              *
              * <p><b>Language:</b> If language is empty, or not <a
-             * href="#def_language" >well-formed</a> (for example "a" or
+             * href="" >well-formed</a> (for example "a" or
              * "e2"), it will be emitted as "und" (Undetermined).
              *
              * <p><b>Country:</b> If country is not <a
-             * href="#def_region">well-formed</a> (for example "12" or "USA"),
+             * href="">well-formed</a> (for example "12" or "USA"),
              * it will be omitted.
+             *
+             * <p><b>Variant:</b> If variant <b>is</b> <a
+             * href="">well-formed</a>, each sub-segment
+             * (delimited by '-' or '_') is emitted as a subtag.  Otherwise:
+             * <ul>
+             *
+             * <li>if all sub-segments match <code>[0-9a-zA-Z]{1,8}</code>
+             * (for example "WIN" or "Oracle_JDK_Standard_Edition"), the first
+             * ill-formed sub-segment and all following will be appended to
+             * the private use subtag.  The first appended subtag will be
+             * "lvariant", followed by the sub-segments in order, separated by
+             * hyphen. For example, "x-lvariant-WIN",
+             * "Oracle-x-lvariant-JDK-Standard-Edition".
+             *
+             * <li>if any sub-segment does not match
+             * <code>[0-9a-zA-Z]{1,8}</code>, the variant will be truncated
+             * and the problematic sub-segment and all following sub-segments
+             * will be omitted.  If the remainder is non-empty, it will be
+             * emitted as a private use subtag as above (even if the remainder
+             * turns out to be well-formed).  For example,
+             * "Solaris_isjustthecoolestthing" is emitted as
+             * "x-lvariant-Solaris", not as "solaris".</li></ul>
              *
              * <p><b>Special Conversions:</b> supports some old locale
              * representations, including deprecated ISO language codes,
@@ -1659,8 +1003,8 @@ namespace core {
              * <li>Deprecated ISO language codes "iw", "ji", and "in" are
              * converted to "he", "yi", and "id", respectively.
              *
-             * <li>A locale with language "no" and country "NO",
-             * representing Norwegian Nynorsk (Norway), is converted
+             * <li>A locale with language "no", country "NO", and variant
+             * "NY", representing Norwegian Nynorsk (Norway), is converted
              * to a language tag "nn-NO".</li></ul>
              *
              * <p><b>Note:</b> Although the language tag obtained by this
@@ -1668,22 +1012,19 @@ namespace core {
              * defined by the IETF BCP 47 specification), it is not
              * necessarily a valid BCP 47 language tag.  For example,
              * <pre>
-             *   Locale.forLanguageTag("xx-YY").toLanguageTag();</pre>
+             *   Locale::forLanguageTag("xx-YY").toLanguageTag();</pre>
              *
              * will return "xx-YY", but the language subtag "xx" and the
              * region subtag "YY" are invalid because they are not registered
              * in the IANA Language Subtag Registry.
              *
              * @return a BCP47 language tag representing the locale
-             * @see forLanguageTag(String)
+             * @see Locale::forLanguageTag(String)
              */
             String toLanguageTag() const;
 
             /**
              * Returns a locale for the specified IETF BCP 47 language tag string.
-             *
-             * <p>If the specified language tag contains any ill-formed subtags,
-             * the first such subtag and all following subtags are ignored.
              *
              * <p>The following <b>conversions</b> are performed:<ul>
              *
@@ -1692,13 +1033,49 @@ namespace core {
              * <li>The language codes "iw", "ji", and "in" are mapped to "he",
              * "yi", and "id" respectively. (This is the same canonicalization
              * that's done in Locale's constructors.) See
-             * <a href="#legacy_language_codes">Legacy language codes</a>
+             * <a href="">Legacy language codes</a>
              * for more information.
              *
-             * <li>Case is normalized, which are left unchanged.
-             * Language is normalized to lower case, script to
+             * <li>The portion of a private use subtag prefixed by "lvariant",
+             * if any, is removed and appended to the variant field in the
+             * result locale (without case normalization).  If it is then
+             * empty, the private use subtag is discarded:
+             *
+             * <pre>
+             *     Locale loc;
+             *     loc = Locale::forLanguageTag("en-US-x-lvariant-POSIX");
+             *     loc.variant(); // returns "POSIX"
+             *     loc.extension('x'); // returns null
+             *
+             *     loc = Locale::forLanguageTag("de-POSIX-x-URP-lvariant-Abc-Def");
+             *     loc.variant(); // returns "POSIX_Abc_Def"
+             *     loc.extension('x'); // returns "urp"
+             * </pre>
+             *
+             * <li>When the languageTag argument contains an extlang subtag,
+             * the first such subtag is used as the language, and the primary
+             * language subtag and other extlang subtags are ignored:
+             *
+             * <pre>
+             *     Locale::forLanguageTag("ar-aao").language(); // returns "aao"
+             *     Locale::forLanguageTag("en-abc-def-us").toString(); // returns "abc_US"
+             * </pre>
+             *
+             * <li>Case is normalized except for variant tags, which are left
+             * unchanged.  Language is normalized to lower case, script to
              * title case, country to upper case, and extensions to lower
              * case.
+             *
+             * <li>If, after processing, the locale would exactly match either
+             * ja_JP_JP or th_TH_TH with no extensions, the appropriate
+             * extensions are added as though the constructor had been called:
+             *
+             * <pre>
+             *    Locale::forLanguageTag("ja-JP").toLanguageTag();
+             *    // returns "ja-JP"
+             *    Locale::forLanguageTag("th-TH").toLanguageTag();
+             *    // returns "th-TH"
+             * </pre></ul>
              *
              * <p>This implements the 'Language-Tag' production of BCP47, and
              * so supports legacy (regular and irregular, referred to as
@@ -1708,17 +1085,66 @@ namespace core {
              * and legacy tags are converted to their canonical replacements
              * where they exist.
              *
+             * <p>Legacy tags with canonical replacements are as follows:
+             *
+             * <table class="striped">
+             * <caption style="display:none">Legacy tags with canonical replacements</caption>
+             * <thead style="text-align:center">
+             * <tr><th scope="col" style="padding: 0 2px">legacy tag</th><th scope="col" style="padding: 0 2px">modern replacement</th></tr>
+             * </thead>
+             * <tbody style="text-align:center">
+             * <tr><th scope="row">art-lojban</th><td>jbo</td></tr>
+             * <tr><th scope="row">i-ami</th><td>ami</td></tr>
+             * <tr><th scope="row">i-bnn</th><td>bnn</td></tr>
+             * <tr><th scope="row">i-hak</th><td>hak</td></tr>
+             * <tr><th scope="row">i-klingon</th><td>tlh</td></tr>
+             * <tr><th scope="row">i-lux</th><td>lb</td></tr>
+             * <tr><th scope="row">i-navajo</th><td>nv</td></tr>
+             * <tr><th scope="row">i-pwn</th><td>pwn</td></tr>
+             * <tr><th scope="row">i-tao</th><td>tao</td></tr>
+             * <tr><th scope="row">i-tay</th><td>tay</td></tr>
+             * <tr><th scope="row">i-tsu</th><td>tsu</td></tr>
+             * <tr><th scope="row">no-bok</th><td>nb</td></tr>
+             * <tr><th scope="row">no-nyn</th><td>nn</td></tr>
+             * <tr><th scope="row">sgn-BE-FR</th><td>sfb</td></tr>
+             * <tr><th scope="row">sgn-BE-NL</th><td>vgt</td></tr>
+             * <tr><th scope="row">sgn-CH-DE</th><td>sgg</td></tr>
+             * <tr><th scope="row">zh-guoyu</th><td>cmn</td></tr>
+             * <tr><th scope="row">zh-hakka</th><td>hak</td></tr>
+             * <tr><th scope="row">zh-min-nan</th><td>nan</td></tr>
+             * <tr><th scope="row">zh-xiang</th><td>hsn</td></tr>
+             * </tbody>
+             * </table>
+             *
+             * <p>Legacy tags with no modern replacement will be
+             * converted as follows:
+             *
+             * <table class="striped">
+             * <caption style="display:none">Legacy tags with no modern replacement</caption>
+             * <thead style="text-align:center">
+             * <tr><th scope="col" style="padding: 0 2px">legacy tag</th><th scope="col" style="padding: 0 2px">converts to</th></tr>
+             * </thead>
+             * <tbody style="text-align:center">
+             * <tr><th scope="row">cel-gaulish</th><td>xtg-x-cel-gaulish</td></tr>
+             * <tr><th scope="row">en-GB-oed</th><td>en-GB-x-oed</td></tr>
+             * <tr><th scope="row">i-default</th><td>en-x-i-default</td></tr>
+             * <tr><th scope="row">i-enochian</th><td>und-x-i-enochian</td></tr>
+             * <tr><th scope="row">i-mingo</th><td>see-x-i-mingo</td></tr>
+             * <tr><th scope="row">zh-min</th><td>nan-x-zh-min</td></tr>
+             * </tbody>
+             * </table>
+             *
              * <p>For a list of all legacy tags, see the
              * IANA Language Subtag Registry (search for "Type: grandfathered").
              *
-             * <p><b>Note</b>: there is no guarantee that <b> toLanguageTag</b>
-             * and <b> forLanguageTag</b> will round-trip.
+             * <p><b>Note</b>: there is no guarantee that <b> toLanguageTag</b> 
+             * and <b> forLanguageTag</b>  will round-trip.
              *
              * @param languageTag the language tag
              * @return The locale that best represents the language tag.
-             * @see toLanguageTag()
+             * @see Locale::toLanguageTag()
              */
-            static Locale forLanguageTag(String languageTag);
+            static Locale forLanguageTag(const String &languageTag);
 
             /**
              * Returns a three-letter abbreviation of this locale's language.
@@ -1755,14 +1181,14 @@ namespace core {
              * Returns a name for the locale's language that is appropriate for display to the
              * user.
              * If possible, the name returned will be localized for the default
-             * <b style="color: orange;"> DISPLAY</b> locale.
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale.
              * For example, if the locale is fr_FR and the default
-             * <b style="color: orange;"> DISPLAY</b> locale
-             * is en_US, displayLanguage() will return "French"; if the locale is en_US and
-             * the default <b style="color: orange;"> DISPLAY</b> locale is fr_FR,
-             * displayLanguage() will return "anglais".
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale
+             * is en_US, Locale::displayLanguage() will return "French"; if the locale is en_US and
+             * the default <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale is fr_FR,
+             * Locale::displayLanguage() will return "anglais".
              * If the name returned cannot be localized for the default
-             * <b style="color: orange;"> DISPLAY</b> locale,
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale,
              * (say, we don't have a Japanese name for Croatian),
              * this function falls back on the English name, and uses the ISO code as a last-resort
              * value.  If the locale doesn't specify a language, this function returns the empty string.
@@ -1771,31 +1197,60 @@ namespace core {
              */
             String displayLanguage() const;
 
-            String nativeLanguage() const;
+            /**
+             * Returns a name for the locale's language that is appropriate for display to the
+             * user.
+             * If possible, the name returned will be localized according to inLocale.
+             * For example, if the locale is fr_FR and inLocale
+             * is en_US, Locale::displayLanguage() will return "French"; if the locale is en_US and
+             * inLocale is fr_FR, Locale::displayLanguage() will return "anglais".
+             * If the name returned cannot be localized according to inLocale,
+             * (say, we don't have a Japanese name for Croatian),
+             * this function falls back on the English name, and finally
+             * on the ISO code as a last-resort value.  If the locale doesn't specify a language,
+             * this function returns the empty string.
+             *
+             * @param inLocale The locale for which to retrieve the display language.
+             * @return The name of the display language appropriate to the given locale.
+             */
+            String displayLanguage(const Locale &inLocale) const;
 
             /**
              * Returns a name for the locale's script that is appropriate for display to
              * the user. If possible, the name will be localized for the default
-             * <b style="color: orange;"> DISPLAY</b> locale.  Returns
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale.  Returns
              * the empty string if this locale doesn't specify a script code.
              *
              * @return the display name of the script code for the current default
-             *     <b style="color: orange;"> DISPLAY</b> locale
+             *     <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale
+             * @since 1.7
              */
             String displayScript() const;
+
+            /**
+             * Returns a name for the locale's script that is appropriate
+             * for display to the user. If possible, the name will be
+             * localized for the given locale. Returns the empty string if
+             * this locale doesn't specify a script code.
+             *
+             * @param inLocale The locale for which to retrieve the display script.
+             * @return the display name of the script code for the current default
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale
+             */
+            String displayScript(const Locale &inLocale) const;
 
             /**
              * Returns a name for the locale's country that is appropriate for display to the
              * user.
              * If possible, the name returned will be localized for the default
-             * <b style="color: orange;"> DISPLAY</b> locale.
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale.
              * For example, if the locale is fr_FR and the default
-             * <b style="color: orange;"> DISPLAY</b> locale
-             * is en_US, displayCountry() will return "France"; if the locale is en_US and
-             * the default <b style="color: orange;"> DISPLAY</b> locale is fr_FR,
-             * displayCountry() will return "Etats-Unis".
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale
+             * is en_US, Locale::displayCountry() will return "France"; if the locale is en_US and
+             * the default <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale is fr_FR,
+             * Locale::displayCountry() will return "Etats-Unis".
              * If the name returned cannot be localized for the default
-             * <b style="color: orange;"> DISPLAY</b> locale,
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale,
              * (say, we don't have a Japanese name for Croatia),
              * this function falls back on the English name, and uses the ISO code as a last-resort
              * value.  If the locale doesn't specify a country, this function returns the empty string.
@@ -1804,25 +1259,93 @@ namespace core {
              */
             String displayCountry() const;
 
-            String nativeCountry() const;
+            /**
+             * Returns a name for the locale's country that is appropriate for display to the
+             * user.
+             * If possible, the name returned will be localized according to inLocale.
+             * For example, if the locale is fr_FR and inLocale
+             * is en_US, Locale::displayCountry() will return "France"; if the locale is en_US and
+             * inLocale is fr_FR, Locale::displayCountry() will return "Etats-Unis".
+             * If the name returned cannot be localized according to inLocale.
+             * (say, we don't have a Japanese name for Croatia),
+             * this function falls back on the English name, and finally
+             * on the ISO code as a last-resort value.  If the locale doesn't specify a country,
+             * this function returns the empty string.
+             *
+             * @param inLocale The locale for which to retrieve the display country.
+             * @return The name of the country appropriate to the given locale.
+             */
+            String displayCountry(const Locale &inLocale) const;
+
+            /**
+             * Returns a name for the locale's variant code that is appropriate for display to the
+             * user.  If possible, the name will be localized for the default
+             * <b style="color: orange;"> Locale::Category::DISPLAY</b>  locale.  If the locale
+             * doesn't specify a variant code, this function returns the empty string.
+             *
+             * @return The name of the display variant code appropriate to the locale.
+             */
+            String displayVariant() const;
+
+            /**
+             * Returns a name for the locale's variant code that is appropriate for display to the
+             * user.  If possible, the name will be localized for inLocale.  If the locale
+             * doesn't specify a variant code, this function returns the empty string.
+             *
+             * @param inLocale The locale for which to retrieve the display variant code.
+             * @return The name of the display variant code appropriate to the given locale.
+             */
+            String displayVariant(const Locale &inLocale) const;
 
             /**
              * Returns a name for the locale that is appropriate for display to the
-             * user. This will be the values returned by displayLanguage(),
-             * displayScript() and displayCountry().  For example:
+             * user. This will be the values returned by Locale::displayLanguage(),
+             * Locale::displayScript(), Locale::displayCountry(), Locale::displayVariant() and
+             * optional <a href="">Unicode extensions</a>
+             * assembled into a single string. The non-empty values are used in order, with
+             * the second and subsequent names in parentheses.  For example:
              * <blockquote>
-             * language (script, country)<br>
-             * language (country)<br>
-             * script (country)<br>
+             * language (script, country, variant(, extension)*)<br>
+             * language (country(, extension)*)<br>
+             * language (variant(, extension)*)<br>
+             * script (country(, extension)*)<br>
+             * country (extension)*<br>
              * </blockquote>
              * depending on which fields are specified in the locale. The field
              * separator in the above parentheses, denoted as a comma character, may
-             * be localized depending on the locale. If the language, script and country
-             * fields are all empty, this function returns the empty string.
+             * be localized depending on the locale. If the language, script, country,
+             * and variant fields are all empty, this function returns the empty string.
              *
              * @return The name of the locale appropriate to display.
              */
             String displayName() const;
+
+            /**
+             * Returns a name for the locale that is appropriate for display
+             * to the user.  This will be the values returned by
+             * Locale::displayLanguage(), Locale::displayScript(), Locale::displayCountry(),
+             * Locale::displayVariant(), and optional <a href="">
+             * Unicode extensions</a> assembled into a single string. The non-empty
+             * values are used in order, with the second and subsequent names in
+             * parentheses.  For example:
+             * <blockquote>
+             * language (script, country, variant)<br>
+             * language (script, country)<br>
+             * language (country)<br>
+             * language (variant)<br>
+             * script (country, variant)<br>
+             * script (country)<br>
+             * country <br>
+             * </blockquote>
+             * depending on which fields are specified in the locale. The field
+             * separator in the above parentheses, denoted as a comma character, may
+             * be localized depending on the locale. If the language, script, country,
+             * and variant fields are all empty, this function returns the empty string.
+             *
+             * @param inLocale The locale for which to retrieve the display name.
+             * @return The name of the locale appropriate to display.
+             */
+            String displayName(const Locale &inLocale) const;
 
             /**
              * Return shadow copy of this locale
@@ -1830,108 +1353,132 @@ namespace core {
             Object &clone() const override;
 
             /**
-             * Return hashcode of this locale instance
+             * Return hashcode of this locale INSTANCE
              */
             gint hash() const override;
 
             /**
-             * Return true if specified object is Locale instance and
-             * has same properties with this locale
+             * Returns true if this Locale is equal to another object.  A Locale is
+             * deemed equal to another Locale with identical language, script, country,
+             * variant, and unequal to all other objects.
              *
-             * @param o The object to be compared
+             * @return true if this Locale is equal to the specified object.
              */
-            gbool equals(const Object &o) const override;
+            gbool equals(const Object &obj) const override;
 
             /**
-             * Return the locale instance corresponding to specified locale representation
+             * Obtains a locale from language, script, country and variant.
+             * This method normalizes the language value to lowercase and
+             * the country value to uppercase.
+             * @implNote
+             * <ul>
+             * <li>This method does make full syntactic checks on the input with BCP47.
+             * <li>The two cases ("ja", "", "JP", "JP") and ("th", "", "TH", "TH") are handled specially,
+             * see <a href="">Special Cases</a> for more information.
+             * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
+             * their current forms. See <a href="">Legacy language codes</a> for more information.
+             * </ul>
              *
-             * @param locale The locale name
+             * @param language A language code. See the <b> Locale</b>  class description of
+             * <a href="">language</a> values.
+             * @param script A script code. See the <b> Locale</b>  class description of
+             * <a href="">script</a> values.
+             * @param country A country code. See the <b> Locale</b>  class description of
+             * <a href="">country</a> values.
+             * @param variant Any arbitrary value used to indicate a variation of a <b> Locale</b> .
+             * See the <b> Locale</b>  class description of <a href="">variant</a> values.
+             * @return A <b> Locale</b>  object
              */
-            static Locale forName(String locale);
+            static Locale of(const String &language, const String &script, const String &country,
+                             const String &variant);
 
             /**
-             * Obtains a locale from language, country and script
+             * Obtains a locale from language, script and country.
+             * This method normalizes the language value to lowercase and
+             * the country value to uppercase.
+             * @implNote
+             * <ul>
+             * <li>This method does make full syntactic checks on the input with BCP47.
+             * <li>The two cases ("ja", "", "JP", "JP") and ("th", "", "TH", "TH") are handled specially,
+             * see <a href="">Special Cases</a> for more information.
+             * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
+             * their current forms. See <a href="">Legacy language codes</a> for more information.
+             * </ul>
              *
-             * @param language A language name. See the <b> Locale::Language</b> class description of
-             * <a href="#def_language">language</a> values.
-             * @param country A country name in english. See the <b> Locale::Country</b> class description of
-             * <a href="#def_region">country</a> values.
-             * @param script A script name in english. See the <b> Locale::Script</b> class description of
-             * <a href="#def_script">script</a> values
+             * @param language A language code. See the <b> Locale</b>  class description of
+             * <a href="">language</a> values.
+             * @param script A script code. See the <b> Locale</b>  class description of
+             * <a href="">script</a> values.
+             * @param country A country code. See the <b> Locale</b>  class description of
+             * <a href="">country</a> values.
+             * @return A <b> Locale</b>  object
              */
-            static Locale of(String language, String script, String country);
+            static Locale of(const String &language, const String &script, const String &country);
 
             /**
-             * Obtains a locale from language, country and script
+             * Obtains a locale from language and country.
+             * This method normalizes the language value to lowercase and
+             * the country value to uppercase.
+             * @implNote
+             * <ul>
+             * <li>This method does not make any syntactic checks on the input.
+             * <li>Obsolete ISO 639 codes ("iw", "ji", and "in") are mapped to
+             * their current forms. See <a href="">Legacy language
+             * codes</a> for more information.
+             * </ul>
              *
-             * @param language A language name. See the <b> Locale::Language</b> class description of
-             * <a href="#def_language">language</a> values.
-             * @param country A country name. See the <b> Locale::Country</b> class description of
-             * <a href="#def_region">country</a> values.
-             * @param script A script name. See the <b> Locale::Script</b> class description of
-             * <a href="#def_script">script</a> values
+             * @param language A language code. See the <b> Locale</b>  class description of
+             * <a href="">language</a> values.
+             * @param country A country code. See the <b> Locale</b>  class description of
+             * <a href="">country</a> values.
+             * @return A <b> Locale</b>  object
              */
-            static Locale of(Language language, Script script, Country country);
+            static Locale of(const String &language, const String &country);
 
             /**
-             * Gets the current value of the default locale for host environment.
+             * Destroy this Locale instance
              */
-            static Locale systemLocale();
+            ~Locale() override = default;
 
+        private:
             /**
-             * Gets the current value of the default locale for this instance
-             * of the process.
-             * <p>
-             * It is used by many locale-sensitive methods if no locale is explicitly specified.
-             * It can be changed using the <b style="color: orange;"> setDefaultLocale</b> method.
-             *
-             * @return the default locale for this instance of the process.
+             * Default locales
              */
-            static Locale defaultLocale();
+            static Locale DEFAULT_LOCALE;
+            static Locale DEFAULT_DISPLAY_LOCALE;
+            static Locale DEFAULT_FORMAT_LOCALE;
 
-            /**
-             * Sets the default locale for this instance of the process.
-             * This does not affect the host locale.
-             * <p>
-             * The process sets the default locale during startup
-             * based on the host environment. It is used by many locale-sensitive
-             * methods if no locale is explicitly specified.
-             * <p>
-             * Since changing the default locale may affect many different areas
-             * of functionality, this method should only be used if the caller
-             * is prepared to reinitialize locale-sensitive code running
-             * within the same process.
-             * <p>
-             * By setting the default locale with this method, all of the default
-             * locales for each Category are also set to the specified default locale.
-             *
-             * @param newLocale the new default locale
-             */
-            static void setDefaultLocale(Locale newLocale);
+            String BCP47_TAG;
 
-            /**
-             * Return the list of locale names for use in selecting translations
-             * Each entry in the returned list is the dash-joined name of a locale,
-             * suitable to the user's preferences for what to translate the UI into. For
-             * example, if the user has configured their system to use English as used in
-             * the USA, the list would be "en-Latn-US", "en-US", "en". The order of entries
-             * is the order in which to check for translations; earlier items in the list
-             * are to be preferred over later ones.
-             */
-            static List<String> &availableUILanguages();
+            enum Query: gbyte {
+                DISPLAY_LANGUAGE,
+                DISPLAY_SCRIPT,
+                DISPLAY_COUNTRY,
+                DISPLAY_VARIANT
+            };
 
-            /**
-             * Returns a list of all installed locales.
-             * At a minimum, the returned list must contain a
-             * <b> Locale</b> instance equal to <b style="color: orange;"> Locale::ROOT</b> and
-             * a <b> Locale</b> instance equal to <b style="color: orange;"> Locale::US</b>.
-             */
-            static List<Locale> &availableLocales();
+            static String displayString(const String& code, const String& cat, const Locale &inLocale, Query query) {
+                if (code.isEmpty())
+                    return ""_S;
+                CORE_IGNORE(cat);
+                CORE_IGNORE(inLocale);
+                CORE_IGNORE(query);
+                return {};
+            }
 
-            ~Locale() = default;
+            static Locale initDefaultLocale();
+
+            static Locale initDefaultLocale(Category category);
+
+            static StringArray iso2Table(const String &table);
+
+            static StringArray iso3Table(const String &table);
+
+            static String iso3Code(const String &iso2Code, const String &table);
         };
 
     }
 } // core
+
 
 #endif //CORE23_LOCALE_H

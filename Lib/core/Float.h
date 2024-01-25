@@ -198,7 +198,7 @@ namespace core {
          *
          * <p>
          *  Leading and trailing whitespace characters in <b>s</b> are ignored.  Whitespace
-         *  is removed as if by the String.strip()</b> method; that is, both ASCII space and
+         *  is removed as if by the String.strip()</b> method; that is, both ASCII diskSpace and
          *  control characters are removed. The rest of <b>str</b> should constitute a <i>FloatValue</i>
          *  as described by the lexical syntax rules:
          *
@@ -284,7 +284,7 @@ namespace core {
         static Float valueOf(const String &str);
 
         /**
-         * Returns a <b>Float</b> instance representing the specified
+         * Returns a <b>Float</b> INSTANCE representing the specified
          * <b>float</b> value.
          *
          * @param f
@@ -670,7 +670,11 @@ namespace core {
          *         The second float to compare.
          */
         static CORE_FAST gint compare(gfloat x, gfloat y) {
-            return (x < y) ? -1 : ((x > y) ? 1 : 0);
+            return (x < y) ? -1 :
+                   ((x > y) ? 1 :
+                    ((x == y) ? 0 :
+                     (isNaN(x) ? (isNaN(y) ? 0 : +1) :
+                      -1)));
         }
 
         /**
@@ -853,7 +857,7 @@ namespace core {
          */
         static CORE_FAST gfloat max(gfloat x, gfloat y) {
             return (x != x) ? x :
-                   ((x == 0.0f) && (y == 0.0f) && toIntBits(x) == toIntBits(-0.0f)) ? x :
+                   ((x == 0.0F) && (y == 0.0F) && toIntBits(x) == toIntBits(-0.0F)) ? x :
                    (x >= y) ? x : y;
         }
 
@@ -867,13 +871,15 @@ namespace core {
          */
         static CORE_FAST gfloat min(gfloat x, gfloat y) {
             return (x != x) ? x :
-                   ((x == 0.0f) && (y == 0.0f) && toIntBits(y) == toIntBits(-0.0f)) ? y :
+                   ((x == 0.0F) && (y == 0.0F) && toIntBits(y) == toIntBits(-0.0F)) ? y :
                    (x <= y) ? x : y;
         }
 
+        CORE_FAST static gint BYTES = 4;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gfloat, value, const)
 
-        CORE_ENABLE_IMPLICIT_CAST(gfloat &, value)
+        CORE_ENABLE_IMPLICIT_CAST(gfloat &, value, &)
 
         CORE_STATIC_ASSERT(((SIGN_BIT_MASK | EXPONENT_BIT_MASK | SIGNIFICAND_BIT_MASK) == ~0) &&
                     (((SIGN_BIT_MASK & EXPONENT_BIT_MASK) == 0) &&

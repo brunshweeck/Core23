@@ -1,0 +1,181 @@
+= AsciiDoc Core23
+Brunshweeck Tazeussong <brunshweeck1234@gmail.com>
+:toc:
+:icons: font
+:url-quickref: https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/
+
+_**Core-23**_, une librairie crée pour apporter une nouvelle vision au C++
+
+== C'est quoi _Core-23_
+Comme son nom l'indique (*core*), il est une modification de la vision orienté objet du C++ standard et ajouter des fonctionnalités visibles dans des langages purement orienté objet tel que _java_
+
+.Core-23 logo
+image::ICON.jpg[core-23]
+
+Dans cette librairie, on recense de nouvelles classes (les classe standard sont ignoré au profit des nouvelles)
+
+=== Nouveautés
+
+* Le support des classes abstraites dans les collections (_Les ensembles, les listes, les queues, etc._).
+* Le support des classes abstraites dans les tableaux.
+* Les tableaux static sont désarmait compatibles avec les object, à travers les classes prédéfinies (_[X]Array_ oú _X_ est un type primitif).
+
+.Examples
+[source]
+----
+** bool[] ->BooleanArray
+** __int8[] ->ByteArray
+** __int16[]/signed short[]/unsigned short[] ->ShortArray
+** __char16[]/wchar_t[] (windows) ->CharArray
+** __int32[] ->IntArray
+** __int64[] ->LongArray
+** __float32[] ->FloatArray
+** __float64[] ->DoubleArray
+----
+* Les types primitifs standard sont remplacer par des type generic stable (_g[X]_).
+
+.Examples
+[source]
+----
+** bool ->gbool
+** __int8 ->gbyte
+** __int16 ->gshort
+** __int32 ->gint
+** __int64 ->glong
+** __int128 ->glong (débordement de 64 bits)
+** __float32 ->gfloat
+** __float64 ->gdouble
+** __float128 ->gdouble
+** char16_t -> gchar (débordement de 64 bits)
+----
+
+* Les exceptions/erreurs sont désormais traçables via la méthode
+_Throwable.throws(trace)_ qui lance l'exception/erreur et la macro ___trace(classname)_ qui génère le point d'exécution dans le code.
+En plus de cela la méthode _Object.classname()_ qui donne le nom complet de la classe courant.
+
+.Example
+[source]
+----
+#include <core/Exception>
+using namespace core;
+class MyException : public Exception {
+public:
+    MyException() = default;
+private:
+    // @override to preserve class during throwing operation
+    void raise() && override {
+        throw MyException(*this);
+    }
+};
+
+class MyClass: public Object {
+public:
+    void newStyleThrow() {
+        MyException().throws(__trace(this->classname()));
+    }
+
+    void newStyleThrow2() {
+        MyException().throws(__trace("MyClass"));
+    }
+
+    void newStyleNoTraceableThrow() {
+        MyException().throws();
+    }
+
+    void oldStyleThrow() {
+        throw MyException();
+    }
+
+}
+
+void newStyleThrow() {
+    MyException().throws(__trace(""));
+}
+
+void newStyleNoTraceableThrow() {
+    MyException().throws();
+}
+
+void oldStyleThrow() {
+    throw MyException();
+}
+
+int main() {
+    try{
+        MyClass mcls = {};
+        mcls.newStyleThrow();
+    } catch(const Throwable& th) {
+        th.throws(__trace("")); // rethrow at new trace
+    }
+}
+
+----
+.output
+[source]
+----
+MyException:
+    at main(Main.cpp:15)
+    at MyClass.newStyleThrow(MyClass.cpp:75)
+    at ...
+----
+
+* Ajout de nouveaux encodages de caractères
+
+.Sidebar title
+****
+
+****
+
+[#_third_level_heading]
+==== Third level heading
+
+[#id-for-listing-block]
+.Listing block title
+----
+Content in a listing block is subject to verbatim substitutions.
+Listing block content is commonly used to preserve code input.
+----
+
+===== Fourth level heading
+
+.Table title
+|===
+|Column heading 1 |Column heading 2
+
+|Column 1, row 1
+|Column 2, row 1
+
+|Column 1, row 2
+|Column 2, row 2
+|===
+
+====== Fifth level heading
+
+[quote,firstname lastname,movie title]
+____
+I am a block quote or a prose excerpt.
+I am subject to normal substitutions.
+____
+
+[verse,firstname lastname,poem title and more]
+____
+I am a verse block.
+  Indents and endlines are preserved in verse blocks.
+____
+
+== First level heading
+
+TIP: There are five admonition labels: Tip, Note, Important, Caution and Warning.
+
+// I am a comment and won't be rendered.
+
+. ordered list item
+.. nested ordered list item
+. ordered list item
+
+The text at the end of this sentence is cross referenced to <<_third_level_heading,the third level heading>>
+
+== First level heading
+
+This is a link to the https://docs.asciidoctor.org/home/[Asciidoctor documentation].
+This is an attribute reference {url-quickref}[that links this text to the AsciiDoc Syntax Quick Reference].

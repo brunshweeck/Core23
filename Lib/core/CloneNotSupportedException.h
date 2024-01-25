@@ -5,7 +5,7 @@
 #ifndef CORE23_CLONENOTSUPPORTEDEXCEPTION_H
 #define CORE23_CLONENOTSUPPORTEDEXCEPTION_H
 
-#include <core/UnsupportedMethodException.h>
+#include <core/UnsupportedOperationException.h>
 
 namespace core {
 
@@ -21,7 +21,7 @@ namespace core {
      *
      * @see     Object.clone()
      */
-    class CloneNotSupportedException : public UnsupportedMethodException {
+    class CloneNotSupportedException : public UnsupportedOperationException {
 
     public:
         /**

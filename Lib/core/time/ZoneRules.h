@@ -7,17 +7,12 @@
 
 
 #include <core/native/LongArray.h>
-#include <core/native/ReferenceArray.h>
 #include <core/time/LocalDateTime.h>
 #include <core/util/HashMap.h>
-#include <core/util/List.h>
+#include <core/native/Array.h>
 
 namespace core {
     namespace time {
-        class ZoneOffset;
-        class ZoneRegion;
-        class ZoneOffsetTransition;
-        class ZoneOffsetTransitionRule;
 
         /**
          * The rules defining how the zone offset varies for a single time-zone.
@@ -27,7 +22,7 @@ namespace core {
          * <b style="color:orange;"> ZoneOffsetTransitionRule</b>  is used for future transitions that are based
          * on the result of an algorithm.
          * <p>
-         * Serializing an instance of <b> ZoneRules</b>  will store the entire set of rules.
+         * Serializing an INSTANCE of <b> ZoneRules</b>  will store the entire set of rules.
          * It does not store the zone ID as it is not part of the state of this object.
          * <p>
          * A rule implementation may or may not store full information about historic
@@ -55,7 +50,7 @@ namespace core {
             /**
              * The standard offsets.
              */
-            ReferenceArray standardOffsets;
+            native::ObjectArray standardOffsets;
             /**
              * The transitions between instants (epoch seconds), sorted.
              */
@@ -63,22 +58,22 @@ namespace core {
 
             /**
              * The transitions between local date-times, sorted.
-             * This is a paired array, where the first entry is the start of the transition
+             * This is a paired root, where the first entry is the start of the transition
              * and the second entry is the end of the transition.
              */
-            ReferenceArray savingsLocalTransitions;
+            Array<LocalDateTime> savingsLocalTransitions;
             /**
              * The wall offsets.
              */
-            ReferenceArray wallOffsets;
+            native::ObjectArray wallOffsets;
             /**
              * The last rule.
              */
-            ReferenceArray lastRules;
+            native::ObjectArray lastRules;
             /**
              * The map of recent transitions.
              */
-            util::HashMap<Integer, ReferenceArray> lastRulesCache;
+            util::HashMap<Integer, Array<ZoneOffsetTransition>> lastRulesCache;
             /**
              * The number of days in a 400 year cycle.
              */
@@ -92,14 +87,14 @@ namespace core {
 
         public:
             /**
-             * Obtains an instance of a ZoneRules.
+             * Obtains an INSTANCE of a ZoneRules.
              *
-             * @param baseStandardOffset  the standard offset to use before legal rules were set, not null
-             * @param baseWallOffset  the wall offset to use before legal rules were set, not null
-             * @param standardOffsetTransitionList  the list of changes to the standard offset, not null
-             * @param transitionList  the list of transitions, not null
-             * @param lastRules  the recurring last rules, size 16 or less, not null
-             * @return the zone rules, not null
+             * @param baseStandardOffset  the standard offset to use before legal rules were set
+             * @param baseWallOffset  the wall offset to use before legal rules were set
+             * @param standardOffsetTransitionList  the list of changes to the standard offset
+             * @param transitionList  the list of transitions
+             * @param lastRules  the recurring last rules, size 16 or less
+             * @return the zone rules
              */
             static ZoneRules of(const ZoneOffset &baseStandardOffset,
                                 const ZoneOffset &baseWallOffset,
@@ -108,33 +103,33 @@ namespace core {
                                 const util::List<ZoneOffsetTransitionRule> &lastRules);
 
             /**
-             * Obtains an instance of ZoneRules that has fixed zone rules.
+             * Obtains an INSTANCE of ZoneRules that has fixed zone rules.
              *
-             * @param offset  the offset this fixed zone rules is based on, not null
-             * @return the zone rules, not null
-             * @see #isFixedOffset()
+             * @param offset  the offset this fixed zone rules is based on
+             * @return the zone rules
+             * @see isFixedOffset()
              */
             static ZoneRules of(const ZoneOffset &offset);
 
-            ZoneRules(const ZoneRules& rules);
+            ZoneRules(const ZoneRules &rules);
 
-            ZoneRules(ZoneRules&& rules) CORE_NOTHROW;
+            ZoneRules(ZoneRules &&rules) CORE_NOTHROW;
 
-            ZoneRules& operator=(const ZoneRules& rules);
+            ZoneRules &operator=(const ZoneRules &rules);
 
-            ZoneRules& operator=(ZoneRules&& rules) CORE_NOTHROW;
+            ZoneRules &operator=(ZoneRules &&rules) CORE_NOTHROW;
 
             ~ZoneRules() override;
 
         private:
             /**
-             * Creates an instance.
+             * Creates an INSTANCE.
              *
-             * @param baseStandardOffset  the standard offset to use before legal rules were set, not null
-             * @param baseWallOffset  the wall offset to use before legal rules were set, not null
-             * @param standardOffsetTransitionList  the list of changes to the standard offset, not null
-             * @param transitionList  the list of transitions, not null
-             * @param lastRules  the recurring last rules, size 16 or less, not null
+             * @param baseStandardOffset  the standard offset to use before legal rules were set
+             * @param baseWallOffset  the wall offset to use before legal rules were set
+             * @param standardOffsetTransitionList  the list of changes to the standard offset
+             * @param transitionList  the list of transitions
+             * @param lastRules  the recurring last rules, size 16 or less
              */
             CORE_EXPLICIT ZoneRules(const ZoneOffset &baseStandardOffset,
                                     const ZoneOffset &baseWallOffset,
@@ -145,29 +140,29 @@ namespace core {
             /**
              * Constructor.
              *
-             * @param standardTransitions  the standard transitions, not null
-             * @param standardOffsets  the standard offsets, not null
-             * @param savingsInstantTransitions  the standard transitions, not null
-             * @param wallOffsets  the wall offsets, not null
-             * @param lastRules  the recurring last rules, size 15 or less, not null
+             * @param standardTransitions  the standard transitions
+             * @param standardOffsets  the standard offsets
+             * @param savingsInstantTransitions  the standard transitions
+             * @param wallOffsets  the wall offsets
+             * @param lastRules  the recurring last rules, size 15 or less
              */
             CORE_EXPLICIT ZoneRules(const LongArray &standardTransitions,
-                                    const ReferenceArray &standardOffsets,
+                                    const Array<ZoneOffset> &standardOffsets,
                                     const LongArray &savingsInstantTransitions,
-                                    const ReferenceArray &wallOffsets,
-                                    const ReferenceArray &lastRules);
+                                    const Array<ZoneOffset> &wallOffsets,
+                                    const Array<ZoneOffsetTransitionRule> &lastRules);
 
             /**
-             * Creates an instance of ZoneRules that has fixed zone rules.
+             * Creates an INSTANCE of ZoneRules that has fixed zone rules.
              *
-             * @param offset  the offset this fixed zone rules is based on, not null
+             * @param offset  the offset this fixed zone rules is based on
              * @see #isFixedOffset()
              */
             CORE_EXPLICIT ZoneRules(const ZoneOffset &offset);
 
-            friend ZoneOffset;
-            friend ZoneRegion;
-            friend ZoneID;
+            CORE_FRATERNITY(ZoneID);
+            CORE_FRATERNITY(ZoneRegion);
+            CORE_FRATERNITY(ZoneOffset);
 
         public:
             /**
@@ -186,7 +181,7 @@ namespace core {
              *
              * @param epochSecond  the instant to find the offset fo, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the offset, not null
+             * @return the offset
              */
             ZoneOffset offset(glong epochSecond) const;
 
@@ -214,9 +209,9 @@ namespace core {
              * about the correct offset should use a combination of this method,
              * <b style="color:orange;"> validOffsets(LocalDateTime)</b>  and <b style="color:orange;"> transition(LocalDateTime)</b> .
              *
-             * @param dateTime  the local date-time to query, not null, but null
+             * @param dateTime  the local date-time to query, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the best available offset for the local date-time, not null
+             * @return the best available offset for the local date-time
              */
             ZoneOffset offset(const LocalDateTime &dateTime) const;
 
@@ -258,11 +253,11 @@ namespace core {
              * This has never happened in the history of time-zones and thus has no special handling.
              * However, if it were to happen, then the list would return more than 2 entries.
              *
-             * @param dateTime  the local date-time to query for valid offsets, not null, but null
+             * @param dateTime  the local date-time to query for valid offsets, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the list of valid offsets, may be immutable, not null
+             * @return the list of valid offsets, may be immutable
              */
-            util::ArrayList<ZoneOffset> validOffsets(const LocalDateTime &dateTime) const;
+            Array<ZoneOffset> validOffsets(const LocalDateTime &dateTime) const;
 
             /**
              * Gets the offset transition applicable at the specified local date-time in these rules.
@@ -294,7 +289,7 @@ namespace core {
              *  }
              * @endcode </pre>
              *
-             * @param dateTime  the local date-time to query for offset transition, not null, but null
+             * @param dateTime  the local date-time to query for offset transition, but null
              *  may be ignored if the rules have a single offset for all instants
              * @return the offset transition, null if the local date-time is not in transition
              */
@@ -308,9 +303,9 @@ namespace core {
              * The standard offset is the offset before any daylight saving time is applied.
              * This is typically the offset applicable during winter.
              *
-             * @param epochSecond  the instant to find the offset information for, not null, but null
+             * @param epochSecond  the instant to find the offset information for, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the standard offset, not null
+             * @return the standard offset
              */
             ZoneOffset standardOffset(glong epochSecond) const;
 
@@ -327,9 +322,9 @@ namespace core {
              * <b style="color:orange;"> actual</b>  and
              * <b style="color:orange;"> standard</b>  offsets.
              *
-             * @param epochSecond  the instant to find the daylight savings for, not null, but null
+             * @param epochSecond  the instant to find the daylight savings for, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the difference between the standard and actual offset, not null
+             * @return the difference between the standard and actual offset
              */
             gint daylightSavings(glong epochSecond) const;
 
@@ -343,9 +338,9 @@ namespace core {
              * This default implementation compares the <b style="color:orange;"> actual</b>
              * and <b style="color:orange;"> standard</b>  offsets.
              *
-             * @param epochSecond  the instant to find the offset information for, not null, but null
+             * @param epochSecond  the instant to find the offset information for, but null
              *  may be ignored if the rules have a single offset for all instants
-             * @return the standard offset, not null
+             * @return the standard offset
              */
             gbool isDaylightSavings(glong epochSecond) const;
 
@@ -358,7 +353,7 @@ namespace core {
              * This default implementation checks if <b style="color:orange;"> validOffsets(LocalDateTime)</b>
              * contains the specified offset.
              *
-             * @param dateTime  the date-time to check, not null, but null
+             * @param dateTime  the date-time to check, but null
              *  may be ignored if the rules have a single offset for all instants
              * @param offset  the offset to check, null returns false
              * @return true if the offset date-time is valid for these rules
@@ -372,7 +367,7 @@ namespace core {
              * For example, if the instant represents a point where "Summer" daylight savings time
              * applies, then the method will return the transition to the next "Winter" time.
              *
-             * @param epochSecond  the instant to get the next transition after, not null, but null
+             * @param epochSecond  the instant to get the next transition after, but null
              *  may be ignored if the rules have a single offset for all instants
              * @return the next transition after the specified instant, null if this is after the last transition
              */
@@ -385,7 +380,7 @@ namespace core {
              * For example, if the instant represents a point where "summer" daylight saving time
              * applies, then the method will return the transition from the previous "winter" time.
              *
-             * @param epochSecond  the instant to get the previous transition after, not null, but null
+             * @param epochSecond  the instant to get the previous transition after, but null
              *  may be ignored if the rules have a single offset for all instants
              * @return the previous transition before the specified instant, null if this is before the first transition
              */
@@ -394,21 +389,21 @@ namespace core {
             /**
              * Gets the complete list of fully defined transitions.
              * <p>
-             * The complete set of transitions for this rules instance is defined by this method
+             * The complete set of transitions for this rules INSTANCE is defined by this method
              * and <b style="color:orange;"> transitionRules()</b> . This method returns those transitions that have
              * been fully defined. These are typically historical, but may be in the future.
              * <p>
              * The list will be empty for fixed offset rules and for any time-zone where there has
              * only ever been a single offset. The list will also be empty if the transition rules are unknown.
              *
-             * @return an immutable list of fully defined transitions, not null
+             * @return an immutable list of fully defined transitions
              */
-            util::ArrayList<ZoneOffsetTransition> transitions() const;
+            Array<ZoneOffsetTransition> transitions() const;
 
             /**
              * Gets the list of transition rules for years beyond those defined in the transition list.
              * <p>
-             * The complete set of transitions for this rules instance is defined by this method
+             * The complete set of transitions for this rules INSTANCE is defined by this method
              * and <b style="color:orange;"> transitions()</b> . This method returns instances of <b style="color:orange;"> ZoneOffsetTransitionRule</b>
              * that define an algorithm for when transitions will occur.
              * <p>
@@ -424,9 +419,9 @@ namespace core {
              * The list will be empty for fixed offset rules and for any time-zone where there is no
              * daylight saving time. The list will also be empty if the transition rules are unknown.
              *
-             * @return an immutable list of transition rules, not null
+             * @return an immutable list of transition rules
              */
-            util::ArrayList<ZoneOffsetTransitionRule> transitionRules() const;
+            Array<ZoneOffsetTransitionRule> transitionRules() const;
 
             /**
              * Checks if this set of rules equals another.
@@ -452,26 +447,26 @@ namespace core {
             /**
              * Returns a string describing this object.
              *
-             * @return a string for debugging, not null
+             * @return a string for debugging
              */
             String toString() const override;
 
             Object &clone() const override;
 
         private:
-            gint findYear(glong epochSecond, const ZoneOffset &offset) const;
+            static gint findYear(glong epochSecond, const ZoneOffset &offset);
 
             /**
-             * Finds the appropriate transition array for the given year.
+             * Finds the appropriate transition root for the given year.
              *
-             * @param year  the year, not null
-             * @return the transition array, not null
+             * @param year  the year
+             * @return the transition root
              */
-            ReferenceArray transitionArray(gint year) const;
+            Array<ZoneOffsetTransition> transitionArray(gint year) const;
 
             Object &offsetInfo(const LocalDateTime &dateTime) const;
 
-            Object &offsetInfo(const LocalDateTime &dateTime, const ZoneOffsetTransition &transition) const;
+            static Object &offsetInfo(const LocalDateTime &dateTime, const ZoneOffsetTransition &transition);
         };
     } // time
 } // core

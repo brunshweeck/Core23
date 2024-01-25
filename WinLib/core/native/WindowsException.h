@@ -11,9 +11,11 @@
 namespace core {
     namespace native {
 
-        class WindowsException: public Exception {
+        class WindowsException CORE_FINAL : public Exception {
 
             gint error = 0;
+
+            String errorMsg;
 
         public:
             CORE_EXPLICIT WindowsException(gint lastError);
@@ -26,14 +28,16 @@ namespace core {
 
             String message() const override;
 
-            IOException& asIOException(String file) const;
+            CORE_NORETURN void throwAsIOException(const String& file) const;
+            CORE_NORETURN void throwAsIOException(const String& file, const Trace& trace) const;
 
-            IOException& asIOException(String file, String other) const;
+            CORE_NORETURN void throwAsIOException(const String& file, const String& other) const;
+            CORE_NORETURN void throwAsIOException(const String& file, const String& other, const Trace& trace) const;
 
             /**
              * Enumeration of basic error codes
              */
-            enum BasicError {
+            enum BasicError: gshort {
                 FILE_NOT_FOUND        = 2,
                 PATH_NOT_FOUND        = 3,
                 ACCESS_DENIED         = 5,
@@ -62,6 +66,6 @@ namespace core {
         };
 
     } // core
-} // native
+} // private
 
 #endif //CORE23_WINDOWSEXCEPTION_H

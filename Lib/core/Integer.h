@@ -5,8 +5,9 @@
 #ifndef CORE23_INTEGER_H
 #define CORE23_INTEGER_H
 
+#include <core/Math.h>
 #include <core/Comparable.h>
-#include "Math.h"
+#include <core/CharSequence.h>
 
 namespace core {
 
@@ -115,6 +116,33 @@ namespace core {
          *          If the string not contains parsable gint
          */
         static gint parseInt(const String &str, gint base);
+
+        /**
+         * Parses the <b style="color: orange;"> CharSequence</b> argument as a signed <b> int</b> in the
+         * specified <b> base</b>, beginning at the specified <b> beginIndex</b>
+         * and extending to <b> endIndex - 1</b>.
+         *
+         * <p>The method does not take steps to guard against the
+         * <b> CharSequence</b> being mutated while parsing.
+         *
+         * @param      s   the <b> CharSequence</b> containing the <b> int</b>
+         *                  representation to be parsed
+         * @param      beginIndex   the beginning index, inclusive.
+         * @param      endIndex     the ending index, exclusive.
+         * @param      base   the base to be used while parsing <b> s</b>.
+         * @return     the signed <b> int</b> represented by the subsequence in
+         *             the specified base.
+         * @throws     IndexException  if <b> beginIndex</b> is
+         *             negative, or if <b> beginIndex</b> is greater than
+         *             <b> endIndex</b> or if <b> endIndex</b> is greater than
+         *             <b> s.length()</b>.
+         * @throws     NumberFormatException  if the <b> CharSequence</b> does not
+         *             contain a parsable <b> int</b> in the specified
+         *             <b> base</b>, or if <b> base</b> is either smaller than
+         *             <b style="color: orange;"> 2</b> or larger than
+         *             <b style="color: orange;"> 36</b>.
+         */
+         static gint parseInt(const CharSequence& s, gint beginIndex, gint endIndex, gint base);
 
         /**
          * Parses the string argument as a signed decimal gint.
@@ -727,13 +755,15 @@ namespace core {
         static CORE_FAST gint min(gint x, gint y) { return Math::min(x, y); }
 
         /**
-         * Return sharable copy of this Integer instance
+         * Return sharable copy of this Integer INSTANCE
          */
         Object &clone() const override;
 
+        CORE_FAST static gint BYTES = 4;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gint, value, const)
 
-        CORE_ENABLE_IMPLICIT_CAST(gint &, value)
+        CORE_ENABLE_IMPLICIT_CAST(gint &, value, &)
     };
 
 } // core

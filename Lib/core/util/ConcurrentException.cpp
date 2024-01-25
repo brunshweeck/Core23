@@ -8,16 +8,18 @@
 namespace core {
     namespace util {
 
-        CORE_ALIAS(U, native::Unsafe);
+        Object &ConcurrentException::clone() const {
+            return Unsafe::allocateInstance<ConcurrentException>(*this);
+        }
 
-        Object &ConcurrentException::clone() const { return U::createInstance<ConcurrentException>(*this); }
-
-        void ConcurrentException::raise() &&{ throw *this; }
+        void ConcurrentException::raise() &&{
+            throw ConcurrentException(*this);
+        }
 
         ConcurrentException::ConcurrentException(String message) CORE_NOTHROW:
-                RuntimeException(U::moveInstance(message)) {}
+                RuntimeException(Unsafe::moveInstance(message)) {}
 
         ConcurrentException::ConcurrentException(String message, const Throwable &cause) CORE_NOTHROW:
-                RuntimeException(U::moveInstance(message), cause) {}
+                RuntimeException(Unsafe::moveInstance(message), cause) {}
     } // core
 } // util

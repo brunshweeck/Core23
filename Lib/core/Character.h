@@ -33,7 +33,7 @@ namespace core {
      * Character information is based on the Unicode Standard, version 15.0.
      * <h2><a id="unicode">Unicode Character Representations</a></h2>
      *
-     * <p>The <b> gchar</b> array type (and therefore the value that a
+     * <p>The <b> gchar</b> root type (and therefore the value that a
      * <b> Character</b> object encapsulates) are based on the
      * original Unicode specification, which defined characters as
      * fixed-width 16-bit entities. The Unicode Standard has since been
@@ -3259,7 +3259,7 @@ namespace core {
         CORE_FAST Character(gchar value) : value(value) {}
 
         /**
-         * Returns a <b> Character</b> instance representing the specified
+         * Returns a <b> Character</b> INSTANCE representing the specified
          * <b> gchar</b> value.
          *
          * This method will always cache values in the range <b>
@@ -3267,7 +3267,7 @@ namespace core {
          * cache other values outside of this range.
          *
          * @param  c a gchar value.
-         * @return a <b> Character</b> instance representing <b> c</b>.
+         * @return a <b> Character</b> INSTANCE representing <b> c</b>.
          */
         static Character valueOf(gchar c);
 
@@ -3370,7 +3370,7 @@ namespace core {
          *
          * @param codePoint the <b> codePoint</b> to be converted
          * @return the string representation of the specified <b> codePoint</b>
-         * @throws ArgumentException if the specified
+         * @throws IllegalArgumentException if the specified
          *      <b> codePoint</b> is not a <b style="color: green"> isValidCodePoint
          *      valid Unicode code point</b>.
          */
@@ -4108,13 +4108,13 @@ namespace core {
         static gbool isPrintable(gint codePoint);
 
         /**
-         * Determines if the specified character is white space.
+         * Determines if the specified character is white diskSpace.
          * A character is a whitespace character if and only if it satisfies
          * one of the following criteria:
          * <ul>
-         * <li> It is a Unicode space character (<b> SPACE_SEPARATOR</b>,
+         * <li> It is a Unicode diskSpace character (<b> SPACE_SEPARATOR</b>,
          *      <b> LINE_SEPARATOR</b>, or <b> PARAGRAPH_SEPARATOR</b>)
-         *      but is not also a non-breaking space (<b> '&#92;u00A0'</b>,
+         *      but is not also a non-breaking diskSpace (<b> '&#92;u00A0'</b>,
          *      <b> '&#92;u2007'</b>, <b> '&#92;u202F'</b>).
          * <li> It is <b> '&#92;t'</b>, U+0009 HORIZONTAL TABULATION.
          * <li> It is <b> '&#92;n'</b>, U+000A LINE FEED.
@@ -4141,13 +4141,13 @@ namespace core {
 
         /**
          * Determines if the specified character (Unicode code point) is
-         * white space.  A character is a
+         * white diskSpace.  A character is a
          * whitespace character if and only if it satisfies one of the
          * following criteria:
          * <ul>
-         * <li> It is a Unicode space character (<b style="color: orange"> #SPACE_SEPARATOR</b>,
+         * <li> It is a Unicode diskSpace character (<b style="color: orange"> #SPACE_SEPARATOR</b>,
          *      <b style="color: orange"> #LINE_SEPARATOR</b>, or <b style="color: orange"> #PARAGRAPH_SEPARATOR</b>)
-         *      but is not also a non-breaking space (<b> '&#92;u00A0'</b>,
+         *      but is not also a non-breaking diskSpace (<b> '&#92;u00A0'</b>,
          *      <b> '&#92;u2007'</b>, <b> '&#92;u202F'</b>).
          * <li> It is <b> '&#92;t'</b>, U+0009 HORIZONTAL TABULATION.
          * <li> It is <b> '&#92;n'</b>, U+000A LINE FEED.
@@ -4943,7 +4943,7 @@ namespace core {
          * @return the name of the specified character, or null if
          *         the code point is unassigned.
          *
-         * @throws ArgumentException if the specified
+         * @throws IllegalArgumentException if the specified
          *            <b> codePoint</b> is not a valid Unicode
          *            code point.
          */
@@ -4983,6 +4983,11 @@ namespace core {
          *          The composed character (Unicode code point)
          */
         static String decompose(gint codePoint);
+
+        CORE_FAST static gint BYTES = 2;
+
+        CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gchar, value, const);
+        CORE_ENABLE_IMPLICIT_CAST(gchar&, value, &);
     };
 
 } // core

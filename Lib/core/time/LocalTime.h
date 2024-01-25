@@ -9,10 +9,6 @@
 #include <core/Comparable.h>
 #include "UnsupportedTemporalException.h"
 
-namespace core::time {
- class ZoneID;
-}
-
 namespace core {
     namespace time {
 
@@ -170,7 +166,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalTime</b>  from an hour and minute.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from an hour and minute.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified hour and minute.
              * The second and nanosecond fields will be set to zero.
@@ -183,7 +179,7 @@ namespace core {
             CORE_EXPLICIT LocalTime(gint hour, gint minute);
 
             /**
-             * Obtains an instance of <b> LocalTime</b>  from an hour, minute and second.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from an hour, minute and second.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified hour, minute and second.
              * The nanosecond field will be set to zero.
@@ -197,7 +193,7 @@ namespace core {
             CORE_EXPLICIT LocalTime(gint hour, gint minute, gint second);
 
             /**
-             * Obtains an instance of <b> LocalTime</b>  from an hour, minute, second and nanosecond.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from an hour, minute, second and nanosecond.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified hour, minute, second and nanosecond.
              *
@@ -212,7 +208,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalTime</b>  from a second-of-day value.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from a second-of-day value.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified second-of-day.
              * The nanosecond field will be set to zero.
@@ -224,7 +220,7 @@ namespace core {
             static LocalTime ofSecondOfDay(glong secondOfDay);
 
             /**
-             * Obtains an instance of <b> LocalTime</b>  from a nanos-of-day value.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from a nanos-of-day value.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified nanosecond-of-day.
              *
@@ -237,11 +233,11 @@ namespace core {
             //-----------------------------------------------------------------------
 
             /**
-             * Obtains an instance of <b> LocalTime</b> from a temporal object.
+             * Obtains an INSTANCE of <b> LocalTime</b> from a temporal object.
              * <p>
              * This obtains a local time based on the specified temporal.
              * A <b> Temporal</b> represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> LocalTime</b>.
+             * which this factory converts to an INSTANCE of <b> LocalTime</b>.
              * <p>
              * The conversion uses the <b style="color:orange;"> Temporal::LOCAL_TIME</b> query, which relies
              * on extracting the <b style="color:orange;"> ChronoField#NANO_OF_DAY NANO_OF_DAY</b> field.
@@ -256,7 +252,7 @@ namespace core {
             static LocalTime from(const Temporal& temporal);
 
             /**
-             * Obtains an instance of <b> LocalTime</b>  from a text string such as <b> 10:15</b> .
+             * Obtains an INSTANCE of <b> LocalTime</b>  from a text string such as <b> 10:15</b> .
              * <p>
              * The string must represent a valid time and is parsed using
              * <b style="color:orange;"> DateTimeFormatter.ISO_LOCAL_TIME</b> .
@@ -268,7 +264,7 @@ namespace core {
             static LocalTime parse(const String &text);
 
             /**
-             * Obtains an instance of <b> LocalTime</b>  from a text string using a specific formatter.
+             * Obtains an INSTANCE of <b> LocalTime</b>  from a text string using a specific formatter.
              * <p>
              * The text is parsed using the formatter, returning a time.
              *
@@ -491,7 +487,7 @@ namespace core {
              * <p>
              * All other <b> Field</b>  instances will throw an <b> UnsupportedTemporalException</b> .
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param field  the field to set in the result
              * @param newValue  the new value of the field in the result
@@ -507,7 +503,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalTime</b>  with the hour-of-day altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hour  the hour-of-day to set in the result, from 0 to 23
              * @return a <b> LocalTime</b>  based on this time with the requested hour
@@ -518,7 +514,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalTime</b>  with the minute-of-hour altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minute  the minute-of-hour to set in the result, from 0 to 59
              * @return a <b> LocalTime</b>  based on this time with the requested minute
@@ -529,7 +525,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalTime</b>  with the second-of-minute altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param second  the second-of-minute to set in the result, from 0 to 59
              * @return a <b> LocalTime</b>  based on this time with the requested second
@@ -540,7 +536,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalTime</b>  with the nano-of-second altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanoOfSecond  the nano-of-second to set in the result, from 0 to 999,999,999
              * @return a <b> LocalTime</b>  based on this time with the requested nanosecond
@@ -562,7 +558,7 @@ namespace core {
              * This includes all supplied time units on <b style="color:orange;"> Unit</b>  and
              * <b style="color:orange;"> DAYS</b> . Other units throw an exception.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param unit  the unit to truncate to
              * @return a <b> LocalTime</b>  based on this time with the time truncated
@@ -610,7 +606,7 @@ namespace core {
              * All other <b> Unit</b>  instances will throw an <b> UnsupportedTemporalException</b> .
              *
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToAdd  the amount of the unit to add to the result, may be negative
              * @param unit  the unit of the amount to add
@@ -628,7 +624,7 @@ namespace core {
              * This adds the specified number of hours to this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hoursToAdd  the hours to add, may be negative
              * @return a <b> LocalTime</b>  based on this time with the hours added
@@ -641,7 +637,7 @@ namespace core {
              * This adds the specified number of minutes to this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minutesToAdd  the minutes to add, may be negative
              * @return a <b> LocalTime</b>  based on this time with the minutes added
@@ -654,7 +650,7 @@ namespace core {
              * This adds the specified number of seconds to this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param secondstoAdd  the seconds to add, may be negative
              * @return a <b> LocalTime</b>  based on this time with the seconds added
@@ -667,7 +663,7 @@ namespace core {
              * This adds the specified number of nanoseconds to this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanosToAdd  the nanos to add, may be negative
              * @return a <b> LocalTime</b>  based on this time with the nanoseconds added
@@ -684,7 +680,7 @@ namespace core {
              * This method is equivalent to <b style="color:orange;"> after(glong, Unit)</b>  with the amount negated.
              * See that method for a full description of how addition, and thus subtraction, works.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToSubtract  the amount of the unit to subtract from the result, may be negative
              * @param unit  the unit of the amount to subtract
@@ -703,7 +699,7 @@ namespace core {
              * This subtracts the specified number of hours from this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hoursToSubtract  the hours to subtract, may be negative
              * @return a <b> LocalTime</b>  based on this time with the hours subtracted
@@ -716,7 +712,7 @@ namespace core {
              * This subtracts the specified number of minutes from this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minutesToSubtract  the minutes to subtract, may be negative
              * @return a <b> LocalTime</b>  based on this time with the minutes subtracted
@@ -729,7 +725,7 @@ namespace core {
              * This subtracts the specified number of seconds from this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param secondsToSubtract  the seconds to subtract, may be negative
              * @return a <b> LocalTime</b>  based on this time with the seconds subtracted
@@ -742,7 +738,7 @@ namespace core {
              * This subtracts the specified number of nanoseconds from this time, returning a new time.
              * The calculation wraps around midnight.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanosToSubtract  the nanos to subtract, may be negative
              * @return a <b> LocalTime</b>  based on this time with the nanoseconds subtracted
@@ -772,7 +768,7 @@ namespace core {
              * <b> MINUTES</b> , <b> HOURS</b>  and <b> HALF_DAYS</b>  are supported.
              * Other <b> Unit</b>  values will throw an exception.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param endExclusive  the end time, exclusive, which is converted to a <b> LocalTime</b>
              * @param unit  the unit to measure the amount in

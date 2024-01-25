@@ -335,13 +335,15 @@ namespace core {
         }
 
         /**
-         * Return sharable copy of this Short instance
+         * Return sharable copy of this Short INSTANCE
          */
         Object &clone() const override;
 
+        CORE_FAST static gint BYTES = 2;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gshort, value, const)
 
-        CORE_ENABLE_IMPLICIT_CAST(gshort &, value)
+        CORE_ENABLE_IMPLICIT_CAST(gshort &, value, &)
     };
 
 } // core

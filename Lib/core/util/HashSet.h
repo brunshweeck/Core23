@@ -13,7 +13,7 @@ namespace core {
 
         /**
          * This class implements the <b> Set</b>  interface, backed by a hash table
-         * (actually a <b> HashMap</b>  instance).  It makes no guarantees as to the
+         * (actually a <b> HashMap</b>  INSTANCE).  It makes no guarantees as to the
          * iteration order of the set; in particular, it does not guarantee that the
          * order will remain constant over time.  This class permits the <b> null</b> 
          * element.
@@ -22,8 +22,8 @@ namespace core {
          * (<b> add</b> , <b> remove</b> , <b> contains</b>  and <b> size</b> ),
          * assuming the hash function disperses the elements properly among the
          * buckets.  Iterating over this set requires time proportional to the sum of
-         * the <b> HashSet</b>  instance's size (the number of elements) plus the
-         * "capacity" of the backing <b> HashMap</b>  instance (the number of
+         * the <b> HashSet</b>  INSTANCE's size (the number of elements) plus the
+         * "capacity" of the backing <b> HashMap</b>  INSTANCE (the number of
          * buckets).  Thus, it's very important not to set the initial capacity too
          * high (or the load factor too low) if iteration performance is important.
          *
@@ -65,29 +65,26 @@ namespace core {
          */
         template<class E>
         class HashSet : public Set<E> {
+        protected:
+            CORE_ALIAS(Unsafe, native::Unsafe);
+
+            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
+            CORE_ALIAS(ElementFilter, function::Predicate<E>);
+
         private:
-
-            CORE_ALIAS(U, native::Unsafe);
-
-            /**
-             * Capture<T> represent all type T that extends this value type E.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
 
             /**
              * The backing map (The Dummy value used is null instance)
              */
-            HashMap<E, Null> m;
+            HashMap<E, Object> m;
 
         public:
 
             /**
-             * Constructs a new, empty set; the backing <b> HashMap</b>  instance has
+             * Constructs a new, empty set; the backing <b> HashMap</b>  INSTANCE has
              * default initial capacity (16) and load factor (0.75).
              */
-            HashSet() : m() {}
+            HashSet() = default;
 
             /**
              * Constructs a new set containing the elements in the specified
@@ -97,28 +94,23 @@ namespace core {
              *
              * @param c the collection whose elements are to be placed into this set
              */
-            template<class T>
-            CORE_EXPLICIT HashSet(const Collection<Capture<T>> &c): m(Math::max(c.size(), 12)) {
+            CORE_EXPLICIT HashSet(const Collection<E> &c) : m(Math::max(c.size(), 12)) {
                 HashSet<E>::addAll(c);
             }
 
             /**
-             * Constructs a new, empty set; the backing <b> HashMap</b>  instance has
+             * Constructs a new, empty set; the backing <b> HashMap</b>  INSTANCE has
              * the specified initial capacity and the specified load factor.
-             *
-             * @apiNote
-             * To create a <b> HashSet</b>  with an initial capacity that accommodates
-             * an expected number of elements, use <b style="color:orange;"> #newHashSet(gint) newHashSet</b> .
              *
              * @param      initialCapacity   the initial capacity of the hash map
              * @param      loadFactor        the load factor of the hash map
              * @throws     IllegalArgumentException if the initial capacity is less
-             *             than zero, or if the load factor is nonpositive
+             *             than zero, or if the load factor is non-positive
              */
-             CORE_EXPLICIT HashSet(gint initialCapacity, gfloat loadFactor): m(initialCapacity, loadFactor) {}
+            CORE_EXPLICIT HashSet(gint initialCapacity, gfloat loadFactor) : m(initialCapacity, loadFactor) {}
 
             /**
-             * Constructs a new, empty set; the backing <b> HashMap</b>  instance has
+             * Constructs a new, empty set; the backing <b> HashMap</b>  INSTANCE has
              * the specified initial capacity and default load factor (0.75).
              *
              * @apiNote
@@ -129,7 +121,7 @@ namespace core {
              * @throws     IllegalArgumentException if the initial capacity is less
              *             than zero
              */
-             CORE_EXPLICIT HashSet(gint initialCapacity): m(initialCapacity) {}
+            CORE_EXPLICIT HashSet(gint initialCapacity) : m(initialCapacity) {}
 
             /**
              * Returns an iterator over the elements in this set.  The elements
@@ -171,7 +163,7 @@ namespace core {
              * element
              */
             gbool add(const E &e) override {
-                if(m.containsKey(e))
+                if (m.containsKey(e))
                     return false;
                 m.put(e, null);
                 return true;
@@ -198,17 +190,30 @@ namespace core {
             void clear() override { m.clear(); }
 
             /**
-             * Returns a shallow copy of this <b> HashSet</b>  instance: the elements
+             * Returns a shallow copy of this <b> HashSet</b>  INSTANCE: the elements
              * themselves are not cloned.
              *
              * @return a shallow copy of this set
              */
-            Object &clone() const override { return U::createInstance<HashSet<E>>(*this); }
+            Object &clone() const override {
+                HashSet &clone = Unsafe::allocateInstance<HashSet>();
+                // adding elements
+                CORE_TRY_ONLY
+                ({
+                     clone.addAll(*this);
+                 }, {
+                     // adding failed
+                     Unsafe::destroyInstance(clone);
+                     Error("Unable to clone class instance of " + this->classname(), th)
+                             .throws(__trace("core.util.HashSet"));
+                 })
+                return clone;
+            }
 
             /**
              *
              */
-            ReferenceArray toArray() const override { return m.keySet().toArray(); }
+            Array<E> toArray() const override { return m.keySet().toArray(); }
 
         };
 

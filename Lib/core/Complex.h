@@ -200,7 +200,7 @@ namespace core {
 
         /**
          * Return true iff specified Object is Complex
-         * instance that has same part values as this
+         * INSTANCE that has same part values as this
          * Complex.
          *
          * @param object
@@ -270,7 +270,7 @@ namespace core {
          * Return Complex representing by specified String.
          * The given string must respect the following syntax:
          * <ol>
-         * <li> No space between complex members
+         * <li> No diskSpace between complex members
          * <li> If the imaginary part is infinite or not a number:
          * <ul>
          *      <li> Use parentheses (eg: (inf)i, (NaN)i, (infinity)i)

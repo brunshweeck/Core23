@@ -2,19 +2,25 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Exception.h"
+#include <core/private/Unsafe.h>
 
 namespace core {
-    CORE_ALIAS(U, native::Unsafe);
 
-    Exception::Exception(String message) CORE_NOTHROW: Throwable(U::moveInstance(message)) {}
+    using namespace native;
 
-    Exception::Exception(String message, const Throwable &cause) CORE_NOTHROW: Throwable(U::moveInstance(message),
-                                                                                         cause) {}
+    Exception::Exception(String message) CORE_NOTHROW:
+            Throwable(Unsafe::moveInstance(message)) {}
 
-    void Exception::raise() &&{ throw *this; }
+    Exception::Exception(String message, const Throwable &cause) CORE_NOTHROW:
+            Throwable(Unsafe::moveInstance(message), cause) {}
 
-    Object &Exception::clone() const { return U::createInstance<Exception>(*this); }
+    void Exception::raise() &&{
+        throw Exception(*this);
+    }
+
+    Object &Exception::clone() const {
+        return Unsafe::allocateInstance<Exception>(*this);
+    }
 
 } // core

@@ -8,10 +8,6 @@
 #include <core/time/Temporal.h>
 #include <core/Comparable.h>
 
-namespace core::time {
- class ZoneID;
-}
-
 namespace core {
     namespace time {
 
@@ -152,73 +148,73 @@ namespace core {
             enum Month : gbyte {
 
                 /**
-                 * The singleton instance for the m of January with 31 days.
+                 * The singleton INSTANCE for the m of January with 31 days.
                  * This has the numeric value of <b> 1</b>.
                  */
                 JANUARY = 1,
 
                 /**
-                 * The singleton instance for the m of February with 28 days, or 29 in a leap year.
+                 * The singleton INSTANCE for the m of February with 28 days, or 29 in a leap year.
                  * This has the numeric value of <b> 2</b>.
                  */
                 FEBRUARY,
 
                 /**
-                 * The singleton instance for the m of March with 31 days.
+                 * The singleton INSTANCE for the m of March with 31 days.
                  * This has the numeric value of <b> 3</b>.
                  */
                 MARCH,
 
                 /**
-                 * The singleton instance for the m of April with 30 days.
+                 * The singleton INSTANCE for the m of April with 30 days.
                  * This has the numeric value of <b> 4</b>.
                  */
                 APRIL,
 
                 /**
-                 * The singleton instance for the m of May with 31 days.
+                 * The singleton INSTANCE for the m of May with 31 days.
                  * This has the numeric value of <b> 5</b>.
                  */
                 MAY,
 
                 /**
-                 * The singleton instance for the m of June with 30 days.
+                 * The singleton INSTANCE for the m of June with 30 days.
                  * This has the numeric value of <b> 6</b>.
                  */
                 JUNE,
 
                 /**
-                 * The singleton instance for the m of July with 31 days.
+                 * The singleton INSTANCE for the m of July with 31 days.
                  * This has the numeric value of <b> 7</b>.
                  */
                 JULY,
 
                 /**
-                 * The singleton instance for the m of August with 31 days.
+                 * The singleton INSTANCE for the m of August with 31 days.
                  * This has the numeric value of <b> 8</b>.
                  */
                 AUGUST,
 
                 /**
-                 * The singleton instance for the m of September with 30 days.
+                 * The singleton INSTANCE for the m of September with 30 days.
                  * This has the numeric value of <b> 9</b>.
                  */
                 SEPTEMBER,
 
                 /**
-                 * The singleton instance for the m of October with 31 days.
+                 * The singleton INSTANCE for the m of October with 31 days.
                  * This has the numeric value of <b> 10</b>.
                  */
                 OCTOBER,
 
                 /**
-                 * The singleton instance for the m of November with 30 days.
+                 * The singleton INSTANCE for the m of November with 30 days.
                  * This has the numeric value of <b> 11</b>.
                  */
                 NOVEMBER,
 
                 /**
-                 * The singleton instance for the m of December with 31 days.
+                 * The singleton INSTANCE for the m of December with 31 days.
                  * This has the numeric value of <b> 12</b>.
                  */
                 DECEMBER,
@@ -254,50 +250,50 @@ namespace core {
             enum DayOfWeek : gbyte {
 
                 /**
-                 * The singleton instance for the day-of-week of Monday.
+                 * The singleton INSTANCE for the day-of-week of Monday.
                  * This has the numeric value of <b> 1</b>.
                  */
                 MONDAY = 1,
 
                 /**
-                 * The singleton instance for the day-of-week of Tuesday.
+                 * The singleton INSTANCE for the day-of-week of Tuesday.
                  * This has the numeric value of <b> 2</b>.
                  */
                 TUESDAY,
 
                 /**
-                 * The singleton instance for the day-of-week of Wednesday.
+                 * The singleton INSTANCE for the day-of-week of Wednesday.
                  * This has the numeric value of <b> 3</b>.
                  */
                 WEDNESDAY,
 
                 /**
-                 * The singleton instance for the day-of-week of Thursday.
+                 * The singleton INSTANCE for the day-of-week of Thursday.
                  * This has the numeric value of <b> 4</b>.
                  */
                 THURSDAY,
 
                 /**
-                 * The singleton instance for the day-of-week of Friday.
+                 * The singleton INSTANCE for the day-of-week of Friday.
                  * This has the numeric value of <b> 5</b>.
                  */
                 FRIDAY,
 
                 /**
-                 * The singleton instance for the day-of-week of Saturday.
+                 * The singleton INSTANCE for the day-of-week of Saturday.
                  * This has the numeric value of <b> 6</b>.
                  */
                 SATURDAY,
 
                 /**
-                 * The singleton instance for the day-of-week of Sunday.
+                 * The singleton INSTANCE for the day-of-week of Sunday.
                  * This has the numeric value of <b> 7</b>.
                  */
                 SUNDAY,
             };
 
             /**
-             * Obtains an instance of <b> LocalDate</b> from a year, m and day.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a year, m and day.
              * <p>
              * This returns a <b> LocalDate</b> with the specified year, m and day-of-m.
              * The day must be valid for the year and m, otherwise an exception will be thrown.
@@ -312,7 +308,7 @@ namespace core {
             CORE_EXPLICIT LocalDate(gint year, Month month, gint dayOfMonth);
 
             /**
-             * Obtains an instance of <b> LocalDate</b> from a year, m and day.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a year, m and day.
              * <p>
              * This returns a <b> LocalDate</b> with the specified year, m and day-of-m.
              * The day must be valid for the year and m, otherwise an exception will be thrown.
@@ -328,7 +324,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDate</b> from a year and day-of-year.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a year and day-of-year.
              * <p>
              * This returns a <b> LocalDate</b> with the specified year and day-of-year.
              * The day-of-year must be valid for the year, otherwise an exception will be thrown.
@@ -343,7 +339,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDate</b> from the epoch day count.
+             * Obtains an INSTANCE of <b> LocalDate</b> from the epoch day count.
              * <p>
              * This returns a <b> LocalDate</b> with the specified epoch-day.
              * The <b style="color:orange;"> EPOCH_DAY</b> is a simple incrementing count
@@ -357,11 +353,11 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDate</b> from a temporal object.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a temporal object.
              * <p>
              * This obtains a local date based on the specified temporal.
              * A <b> Temporal</b> represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> LocalDate</b>.
+             * which this factory converts to an INSTANCE of <b> LocalDate</b>.
              * <p>
              * The conversion uses the <b style="color:orange;"> Temporal::LOCAL_DATE</b> query, which relies
              * on extracting the <b style="color:orange;"> ChronoField#EPOCH_DAY EPOCH_DAY</b> field.
@@ -377,7 +373,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDate</b> from a text string such as <b> 2007-12-03</b>.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a text string such as <b> 2007-12-03</b>.
              * <p>
              * The string must represent a valid date and is parsed using
              * <b style="color:orange;"> DateTimeFormatter::ISO_LOCAL_DATE</b>.
@@ -389,7 +385,7 @@ namespace core {
             static LocalDate parse(const String &text);
 
             /**
-             * Obtains an instance of <b> LocalDate</b> from a text string using a specific formatter.
+             * Obtains an INSTANCE of <b> LocalDate</b> from a text string using a specific formatter.
              * <p>
              * The text is parsed using the formatter, returning a date.
              *
@@ -744,7 +740,7 @@ namespace core {
              * passing <b> this</b> as the argument. In this case, the field determines
              * whether and how to adjust the instant.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param field  the field to set in the result
              * @param newValue  the new value of the field in the result
@@ -761,7 +757,7 @@ namespace core {
              * <p>
              * If the day-of-m is invalid for the year, it will be changed to the last valid day of the m.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param year  the year to set in the result, from MIN_YEAR to MAX_YEAR
              * @return a <b> LocalDate</b> based on this date with the requested year
@@ -774,7 +770,7 @@ namespace core {
              * <p>
              * If the day-of-m is invalid for the year, it will be changed to the last valid day of the m.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param month  the m-of-year to set in the result, from 1 (January) to 12 (December)
              * @return a <b> LocalDate</b> based on this date with the requested m
@@ -787,7 +783,7 @@ namespace core {
              * <p>
              * If the resulting date is invalid, an exception is thrown.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param dayOfMonth  the day-of-m to set in the result, from 1 to 28-31
              * @return a <b> LocalDate</b> based on this date with the requested day
@@ -801,7 +797,7 @@ namespace core {
              * <p>
              * If the resulting date is invalid, an exception is thrown.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param dayOfYear  the day-of-year to set in the result, from 1 to 365-366
              * @return a <b> LocalDate</b> based on this date with the requested day
@@ -882,7 +878,7 @@ namespace core {
              * passing <b> this</b> as the argument. In this case, the unit determines
              * whether and how to perform the addition.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToAdd  the amount of the unit to add to the result, may be negative
              * @param unit  the unit of the amount to add
@@ -908,7 +904,7 @@ namespace core {
              * invalid date 2009-02-29 (standard year). Instead of returning an invalid
              * result, the last valid day of the m, 2009-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param yearsToAdd  the years to add, may be negative
              * @return a <b> LocalDate</b> based on this date with the years added
@@ -930,7 +926,7 @@ namespace core {
              * 2007-04-31. Instead of returning an invalid result, the last valid day
              * of the m, 2007-04-30, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param monthsToAdd  the months to add, may be negative
              * @return a <b> LocalDate</b> based on this date with the months added
@@ -947,7 +943,7 @@ namespace core {
              * <p>
              * For example, 2008-12-31 after one week would result in 2009-01-07.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param weeksToAdd  the weeks to add, may be negative
              * @return a <b> LocalDate</b> based on this date with the weeks added
@@ -964,7 +960,7 @@ namespace core {
              * <p>
              * For example, 2008-12-31 after one day would result in 2009-01-01.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param daysToAdd  the days to add, may be negative
              * @return a <b> LocalDate</b> based on this date with the days added
@@ -984,7 +980,7 @@ namespace core {
              * This method is equivalent to <b style="color:orange;"> after(glong, TemporalUnit)</b> with the amount negated.
              * See that method for a full description of how addition, and thus subtraction, works.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToSubtract  the amount of the unit to subtract from the result, may be negative
              * @param unit  the unit of the amount to subtract
@@ -1010,7 +1006,7 @@ namespace core {
              * invalid date 2007-02-29 (standard year). Instead of returning an invalid
              * result, the last valid day of the m, 2007-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param yearsToSubtract  the years to subtract, may be negative
              * @return a <b> LocalDate</b> based on this date with the years subtracted
@@ -1032,7 +1028,7 @@ namespace core {
              * 2007-02-31. Instead of returning an invalid result, the last valid day
              * of the m, 2007-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param monthsToSubtract  the months to subtract, may be negative
              * @return a <b> LocalDate</b> based on this date with the months subtracted
@@ -1049,7 +1045,7 @@ namespace core {
              * <p>
              * For example, 2009-01-07 before one week would result in 2008-12-31.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param weeksToSubtract  the weeks to subtract, may be negative
              * @return a <b> LocalDate</b> based on this date with the weeks subtracted
@@ -1066,7 +1062,7 @@ namespace core {
              * <p>
              * For example, 2009-01-01 before one day would result in 2008-12-31.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param daysToSubtract  the days to subtract, may be negative
              * @return a <b> LocalDate</b> based on this date with the days subtracted
@@ -1122,7 +1118,7 @@ namespace core {
              * passing <b> this</b> as the first argument and the converted input temporal
              * as the second argument.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param endExclusive  the end date, exclusive, which is converted to a <b> LocalDate</b>
              * @param unit  the unit to measure the amount in

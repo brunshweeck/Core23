@@ -421,9 +421,9 @@ namespace core {
             if (query == OFFSET || query == ZONE_ID)
                 return null;
             if (query == LOCAL_DATE)
-                return U::copyInstance(toLocalDate());
+                return Unsafe::copyInstance(toLocalDate());
             if (query == LOCAL_TIME)
-                return U::copyInstance(toLocalTime());
+                return Unsafe::copyInstance(toLocalTime());
             try {
                 return query.queryFrom(*this);
             } catch (const Exception &ex) { ex.throws(__trace("core.time.LocalDateTime")); }
@@ -507,7 +507,7 @@ namespace core {
         }
 
         gint LocalDateTime::compareTo(const LocalDateTime &other) const {
-            int cmp = date.compareTo(other.date);
+            gint cmp = date.compareTo(other.date);
             if (cmp == 0) {
                 cmp = time.compareTo(other.time);
             }

@@ -2,17 +2,15 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Float.h"
-#include "String.h"
-#include "NumberFormatException.h"
-#include "Math.h"
-#include "Integer.h"
-#include "AssertionError.h"
+#include <core/NumberFormatException.h>
+#include <core/Math.h>
+#include <core/AssertionError.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gfloat Float::parseFloat(const String &str) {
         if (str.isEmpty())
@@ -575,7 +573,7 @@ namespace core {
         }
         gint begin = 0;
         if (digits[placeholder] == DIGITS[0]) {
-            // the space that has be leaved in begin has not used
+            // the diskSpace that has be leaved in begin has not used
             if (placeholder > 0) {
                 digits[placeholder] = digits[placeholder - 1];
                 begin = placeholder;
@@ -647,7 +645,7 @@ namespace core {
     }
 
     Object &Float::clone() const {
-        return U::createInstance<Float>(*this);
+        return Unsafe::allocateInstance<Float>(value);
     }
 
     gshort Float::toShortBits(gfloat f) {
@@ -736,7 +734,7 @@ namespace core {
         // the float and binary16 formats
         CORE_FAST gint SIGNIFICAND_SHIFT = (SIGNIFICAND_WIDTH - 11);
 
-        float const sign = (bin16SignBit != 0) ? -1.0F : 1.0F;
+        gfloat const sign = (bin16SignBit != 0) ? -1.0F : 1.0F;
 
         // Extract binary16 exponent, remove its bias, add in the bias
         // of a float exponent and shift to correct bit location

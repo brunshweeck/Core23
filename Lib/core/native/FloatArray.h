@@ -5,7 +5,9 @@
 #ifndef CORE23_FLOATARRAY_H
 #define CORE23_FLOATARRAY_H
 
-#include "Array.h"
+#include <core/Float.h>
+#include <core/MemoryError.h>
+#include <core/native/PrimitiveArray.h>
 
 namespace core {
     namespace native {
@@ -13,77 +15,61 @@ namespace core {
         /**
          * The FloatArray class wrap the static array of values from native type
          * (generic) gfloat in an object.
-         *
          * <p>
          * This class provide the instantaneous access from items
          *
-         * <p>
-         * The class can be used as view for all buffer using this native type
-         * (such as FloatBuffer)
-         *
-         * @author
-         *      Brunshweeck Tazeussong
+         * @author Brunshweeck Tazeussong
          */
-        class FloatArray : public Array<Float> {
+        class FloatArray CORE_FINAL : public PrimitiveArray<Float> {
         private:
-            /**
-             * gfloat[*]
-             */
-            CORE_ALIAS(STORAGE, typename Class<gfloat>::Ptr);
-
-            gint len = {};
+            CORE_ALIAS(Value, PrimitiveArray<Float>::Value);
+            // gfloat[*]
+            CORE_ALIAS(VALUE, typename Class<Value>::Ptr);
 
             /**
-             * The items storage
+             * The number of values on this array
              */
-            STORAGE value = {};
+            gint len;
 
-            gbool isLocal = false;
+            /**
+             * The container of this array
+             */
+            VALUE value;
 
-            friend util::ArraysSupport;
-            friend native::Unsafe;
-
-            template<class T>
-            CORE_ALIAS(CaptureArray, , typename Class<T>::template iff<Class<T>::isArray() &&
-                    Class<typename Class<T>::NoArray>::template isAssignable<gfloat>() >);
-
-            template<class T>
-            CORE_ALIAS(Capture, , typename Class<T>::template iff<Class<T>::template isAssignable<gfloat>()>);
+            CORE_FRATERNITY(::core::native::Unsafe);
 
         public:
 
             /**
-             * Construct new empty Float Array
+             * Construct new empty array
              */
-            FloatArray() : FloatArray(0) {}
+            FloatArray();
 
             /**
-             * Construct new FloatArray with specified number
-             * of items. After creation all items value will be
-             * initialized with random value.
+             * Construct new array with specified number
+             * of element. all elements are initialized with
+             * default initializer (0)
              *
-             * @param length
-             *          The number of items
+             * @param length The number of elements
              */
             CORE_EXPLICIT FloatArray(gint length);
 
             /**
-             * Construct new FloatArray with specified number
-             * of items. After creation all items value will be
-             * initialized with specified initial value.
+             * Construct new array with specified number
+             * of element and initialize elements with specified
+             * initial value.
              *
-             * @param length
-             *          The number of items
-             * @param initialValue
-             *          The value used to initialize all items after array creation
+             * @param length The number of elements
+             * @param initialValue The value used to initialize all elements of during
+             *                      array creation.
              */
-            CORE_EXPLICIT FloatArray(gint length, gfloat initialValue);
+            CORE_EXPLICIT FloatArray(gint length, Value initialValue);
 
             /**
              * Initialize newly created FloatArray with items of another.
              *
              * @param array
-             *          The array that items are used to initialize this array
+             *          The root that items are used to initialize this root
              */
             FloatArray(const FloatArray &array);
 
@@ -91,55 +77,63 @@ namespace core {
              * Initialize newly created FloatArray with items of another.
              *
              * @param array
-             *          The array that items are used to initialize this array
+             *          The root that items are used to initialize this root
              */
             FloatArray(FloatArray &&array) CORE_NOTHROW;
 
             /**
-             * Set with items of specified array, all items of this array.
+             * Set with items of specified root, all items of this root.
              *
              * @param array
-             *          The array that items are used to set this array items
+             *          The root that items are used to set this root items
              */
             FloatArray &operator=(const FloatArray &array);
 
             /**
-             * Exchange with items of specified array, all items of this array.
+             * Exchange with items of specified root, all items of this root.
              *
              * @param array
-             *          The array that items are  exchanged with items of this
+             *          The root that items are  exchanged with items of this
              */
             FloatArray &operator=(FloatArray &&array) CORE_NOTHROW;
 
+            /**
+             * Return number of elements on this array
+             */
             gint length() const override;
 
             /**
-             * Return item at specified index
-             *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
+             * Tell if this array has no elements
              */
-            gfloat &get(gint index) override;
+            gbool isEmpty() const override;
 
             /**
-             * Return item at specified index
+             * Return the element of this array at specified index.
              *
-             * @param index
-             *              The position of item
-             *
-             * @throws IndexException
-             *              If index out of bounds.
+             * @param index The position of item
+             * @throws IndexException If index out of bounds.
              */
-            gfloat get(gint index) const override;
+            Value &get(gint index) override;
 
             /**
-             * Return the sharable copy of this object.
+             * Return the element of this array at specified index.
              *
-             * @throws MemoryError
-             *         if memory allocation fail.
+             * @param index The position of item
+             * @throws IndexException If index out of bounds.
+             */
+            Value const &get(gint index) const override;
+
+            /**
+             * Set the value of element of this array at specified index.
+             *
+             * @param index The position of item
+             * @param newValue The value used to set element at given index
+             * @throws IndexException If index out of bounds.
+             */
+            void set(gint index, const Value &newValue) override;
+
+            /**
+             * Return the shadow copy of this array.
              */
             Object &clone() const override;
 
@@ -149,51 +143,182 @@ namespace core {
             ~FloatArray() override;
 
             /**
-             * Construct new FloatArray instance with address
+             * Return true if specified object is array of same element
+             * type and have same elements values as this array
              *
-             * @code
-             *  gbool b[50] = {...}
-             *  FloatArray ba = FloatArray::fromAddress((glong)b, 50);
-             *
-             * @endcode
-             *
-             * @param addr The local address (pointer)
-             * @param length The number of value
+             * @param o The object to be compared
              */
-            static FloatArray fromAddress(glong addr, gint length);
+            gbool equals(const Object &o) const override;
 
             /**
-             * Construct new Boolean Array with c static array
+             * Create new empty array
              */
-            template<class T, Class<gbool>::template Iff<
-                    Class<T>::isArray() && Class<typename Class<T>::NoArray>::template isAssignable<gfloat>()> = true>
-            static FloatArray copyOf(T &&array) {
-                gint size = sizeof(T) / sizeof(typename Class<T>::NoArray);
-                if (size == 0)
-                    return {};
-                FloatArray ba(size, (gfloat) array[0]);
-                for (int i = 1; i < size; ++i) {
-                    ba[i] = (gfloat) array[i];
+            static FloatArray of();
+
+            /**
+             * Create new array and initialize with one
+             * value
+             *
+             * @param v0 The first value.
+             */
+            static FloatArray of(Value v0);
+
+            /**
+             * Create new array and initialize with two
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             */
+            static FloatArray of(Value v0, Value v1);
+
+            /**
+             * Create new array and initialize with three
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2);
+
+            /**
+             * Create new array and initialize with four
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The third value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3);
+
+            /**
+             * Create new array and initialize with five
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4);
+
+            /**
+             * Create new array and initialize with six
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             * @param v5 The sixth value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4, Value v5);
+
+            /**
+             * Create new array and initialize with seven
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             * @param v5 The sixth value
+             * @param v6 The seventh value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4, Value v5, Value v6);
+
+            /**
+             * Create new array and initialize with eight
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             * @param v5 The sixth value
+             * @param v6 The seventh value
+             * @param v7 The eighth value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4, Value v5, Value v6, Value v7);
+
+            /**
+             * Create new array and initialize with nine
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             * @param v5 The sixth value
+             * @param v6 The seventh value
+             * @param v7 The eighth value
+             * @param v8 The ninth value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4, Value v5, Value v6, Value v7,
+                                   Value v8);
+
+            /**
+             * Create new array and initialize with teen
+             * values
+             *
+             * @param v0 The first value.
+             * @param v1 The second value
+             * @param v2 The third value
+             * @param v3 The fourth value
+             * @param v4 The fifth value
+             * @param v5 The sixth value
+             * @param v6 The seventh value
+             * @param v7 The eighth value
+             * @param v8 The ninth value
+             * @param v9 The tenth value
+             */
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3,
+                                   Value v4, Value v5, Value v6, Value v7,
+                                   Value v8, Value v9);
+
+            template<class ...Values>
+            static FloatArray of(Value v0, Value v1, Value v2, Value v3, Value v4, Value v5,
+                                   Value v6, Value v7, Value v8, Value v9, Values &&...others) {
+                CORE_STATIC_ASSERT(Class<FloatArray>::allIsTrue(Class<Values>::template isConvertible<Value>()...),
+                                   "Could not create array with given arguments");
+                try {
+                    CORE_FAST gint n = sizeof...(Values);
+                    FloatArray array{10 + n};
+                    Value tail[n] = {(Value) ((Values &&) others)...};
+                    for (int i = 0; i < n; i += 1) {
+                        array[10 + i] = tail[i];
+                    }
+                    array[0] = v0;
+                    array[1] = v1;
+                    array[2] = v2;
+                    array[3] = v3;
+                    array[4] = v4;
+                    array[5] = v5;
+                    array[6] = v6;
+                    array[7] = v7;
+                    array[8] = v8;
+                    array[9] = v9;
+                    return (FloatArray &&) array;
+                } catch (const MemoryError &error) {
+                    error.throws();
                 }
-                return ba;
+                return {};
             }
-
-            /**
-             * Construct new FloatArray list of value
-             */
-            /*template<class ...T, Class<gbool>::template Iff<Class<gfloat>::allIsTrue
-                    (Class<T>::template isAssignable<gfloat>()...)> = true>
-            static FloatArray of(T &&...a) {
-                gint size = sizeof...(a);
-                FloatArray ba(size);
-                for (gint i = 0; i < size; ++i) {
-                    ba[i] = Class<gfloat>::valueExactAt(i + 1, 0.0F, (gfloat) a...);
-                }
-                return ba;
-            }*/
         };
 
-    } // core
-} // native
+    } // native
+} // core
 
 #endif //CORE23_FLOATARRAY_H

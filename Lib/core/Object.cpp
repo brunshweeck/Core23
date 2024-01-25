@@ -2,132 +2,44 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <typeinfo>
 #include "Object.h"
-#include <core/String.h>
-#include "UnsupportedMethodException.h"
-#include "CloneNotSupportedException.h"
-#include <core/Long.h>
+#include <core/CloneNotSupportedException.h>
+#include <core/StringBuffer.h>
 #include <core/private/Unsafe.h>
+#include <typeinfo>
 
 #if __has_include(<cxxabi.h>)
 
 #include <cxxabi.h>
-#include <core/private/Unsafe.h>
 
 #endif
-
-static glong objectCounter = 0;
 
 namespace {
     using namespace core;
-    using std::type_info;
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace std;
 
-    String classname0(const Object &o) {
-        const type_info &t = typeid(o);
-#if __has_include(<cxxabi.h>)
-        // GCC
-        const char *rawName = t.name();
-        char name0[256] = {};
-        size_t len = 256;
-        gint status = 0;
-        const char *name1 = __cxxabiv1::__cxa_demangle(rawName, name0, &len, &status);
-        String name = status != 0 ? "?" : name1;
-#elif defined(CORE_COMPILER_MSVC)
-        // MSVC
-        const char *rawName = t.name();
-        String name = rawName;
-        static String CLASS_PREFIX = "class ";
-        static String CLASS_TEMPLATE_PREFIX = "<class ";
-        static String CLASS_FUNCTION_PREFIX = "(class ";
-        static String CLASS_NEXT_PREFIX = ",class ";
-
-        static String UNION_PREFIX = "union ";
-        static String UNION_TEMPLATE_PREFIX = "<union ";
-        static String UNION_FUNCTION_PREFIX = "(union ";
-        static String UNION_NEXT_PREFIX = ",union ";
-
-        static String ENUM_PREFIX = "enum ";
-        static String ENUM_TEMPLATE_PREFIX = "<enum ";
-        static String ENUM_FUNCTION_PREFIX = "(enum ";
-        static String ENUM_NEXT_PREFIX = ",enum ";
-
-        static String STRUCT_PREFIX = "struct ";
-        static String STRUCT_TEMPLATE_PREFIX = "<struct ";
-        static String STRUCT_FUNCTION_PREFIX = "(struct ";
-        static String STRUCT_NEXT_PREFIX = ",struct ";
-
-        // remove all prefix
-        if (name.startsWith(CLASS_PREFIX)) {
-            name = name.subString(6);
-        } else if (name.startsWith(UNION_PREFIX)) {
-            name = name.subString(6);
-        } else if (name.startsWith(ENUM_PREFIX)) {
-            name = name.subString(5);
-        } else if (name.startsWith(STRUCT_PREFIX)) {
-            name = name.subString(7);
-        }
-
-        // is all prefix after beginning of template specification ('<')
-        if (name.indexOf(CLASS_TEMPLATE_PREFIX) >= 0) {
-            name = name.replace(CLASS_TEMPLATE_PREFIX, "<");
-        }
-        if (name.indexOf(UNION_TEMPLATE_PREFIX) >= 0) {
-            name = name.replace(UNION_TEMPLATE_PREFIX, "<");
-        }
-        if (name.indexOf(ENUM_TEMPLATE_PREFIX) >= 0) {
-            name = name.replace(ENUM_TEMPLATE_PREFIX, "<");
-        }
-        if (name.indexOf(STRUCT_TEMPLATE_PREFIX) >= 0) {
-            name = name.replace(STRUCT_TEMPLATE_PREFIX, "<");
-        }
-
-        // is all prefix after beginning of function specification ('(')
-        if (name.indexOf(CLASS_FUNCTION_PREFIX) >= 0) {
-            name = name.replace(CLASS_FUNCTION_PREFIX, "(");
-        }
-        if (name.indexOf(UNION_FUNCTION_PREFIX) >= 0) {
-            name = name.replace(UNION_FUNCTION_PREFIX, "(");
-        }
-        if (name.indexOf(ENUM_FUNCTION_PREFIX) >= 0) {
-            name = name.replace(ENUM_FUNCTION_PREFIX, "(");
-        }
-        if (name.indexOf(STRUCT_FUNCTION_PREFIX) >= 0) {
-            name = name.replace(STRUCT_FUNCTION_PREFIX, "(");
-        }
-
-        // is all prefix after beginning of coma specification (',')
-        if (name.indexOf(CLASS_NEXT_PREFIX) >= 0) {
-            name = name.replace(CLASS_NEXT_PREFIX, "(");
-        }
-        if (name.indexOf(UNION_NEXT_PREFIX) >= 0) {
-            name = name.replace(UNION_NEXT_PREFIX, ",");
-        }
-        if (name.indexOf(ENUM_NEXT_PREFIX) >= 0) {
-            name = name.replace(ENUM_NEXT_PREFIX, ",");
-        }
-        if (name.indexOf(STRUCT_NEXT_PREFIX) >= 0) {
-            name = name.replace(STRUCT_NEXT_PREFIX, ",");
-        }
-#endif
-        return name;
+    gbool isPredecessor(gchar c) {
+        return c == ',' || c == '<' || c == '(' || c == ' ';
     }
 }
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gbool Object::equals(const Object &o) const { return this == &o; }
 
-    Object &Object::clone() const { CloneNotSupportedException().throws(__trace("core.Object")); }
+    Object &Object::clone() const {
+        if(this == &null)
+            return null;
+        CloneNotSupportedException().throws(__trace("core.Object"));
+    }
 
     String Object::toString() const {
-        if (this == &null) return "null";
-        glong h = hash();
-        return classname() + "@" + Long::toUnsignedString(
-                (h == 0 ? (glong) typeid(*this).hash_code() : h) ^ (glong) this, 16);
+        if (this == &null)
+            return u"null"_S;
+        glong const h = hash();
+        return classname() + "@" + Integer::toUnsignedString(identityHash(*this) & 0xFFFF);
     }
 
 
@@ -138,11 +50,122 @@ namespace core {
     gbool Object::equals(const Object &a, const Object &b) { return a.equals(b); }
 
     gint Object::identityHash(const Object &x) CORE_NOTHROW {
-        if (&x == &null)
-            return 0;
-        glong hashForClass = (glong) typeid(x).hash_code();
-        glong address = (glong) &x;
-        return Long::hash(hashForClass) ^ Long::hash(address);
+        return identityHash0(x);
+    }
+
+    gint Object::identityHash0(const Object &obj) {
+        return String(
+#ifdef CORE_COMPILER_MSVC
+                typeid(obj).raw_name()
+#else
+                typeid(obj).name()
+#endif
+        ).hash();
+    }
+
+    String Object::classname0(const Object &obj) {
+        const type_info &t = typeid(obj);
+#if __has_include(<cxxabi.h>)
+        // GCC
+        const char *rawName = t.name();
+        char name0[256] = {};
+        size_t len = 256;
+        gint status = 0;
+        const char *name1 = __cxxabiv1::__cxa_demangle(rawName, name0, &len, &status);
+        String name = status != 0 ? "?" : name1;
+        return name;
+#elif defined(CORE_COMPILER_MSVC)
+        // MSVC
+        const char *rawName = t.name();
+        StringBuffer name = StringBuffer(rawName);
+        static String const CLASS_PREFIX = "class ";
+        static String const UNION_PREFIX = "union ";
+        static String const ENUM_PREFIX = "enum ";
+        static String const STRUCT_PREFIX = "struct ";
+
+        {
+            // removing class specifier
+            gint i = name.indexOf(CLASS_PREFIX);
+            gint j = 0;
+            while (i >= 0) {
+                if (i > 0 && isPredecessor(name.charAt(i - 1))) {
+                    name.remove(i, i + CLASS_PREFIX.length());
+                    j = i + 1;
+                    i = name.indexOf(CLASS_PREFIX, j);
+                } else if (i == 0) {
+                    name.remove(0, CLASS_PREFIX.length());
+                    j = 0;
+                    i = name.indexOf(CLASS_PREFIX, j);
+                } else if (i == j) {
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        {
+            // removing struct specifier
+            gint i = name.indexOf(STRUCT_PREFIX);
+            gint j = 0;
+            while (i >= 0) {
+                if (i > 0 && isPredecessor(name.charAt(i - 1))) {
+                    name.remove(i, i + STRUCT_PREFIX.length());
+                    j = i + 1;
+                    i = name.indexOf(STRUCT_PREFIX, j);
+                } else if (i == 0) {
+                    name.remove(0, STRUCT_PREFIX.length());
+                    j = 0;
+                    i = name.indexOf(STRUCT_PREFIX, j);
+                } else if (i == j) {
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        {
+            // removing enum specifier
+            gint i = name.indexOf(ENUM_PREFIX);
+            gint j = 0;
+            while (i >= 0) {
+                if (i > 0 && isPredecessor(name.charAt(i - 1))) {
+                    name.remove(i, i + ENUM_PREFIX.length());
+                    j = i + 1;
+                    i = name.indexOf(ENUM_PREFIX, j);
+                } else if (i == 0) {
+                    name.remove(0, ENUM_PREFIX.length());
+                    j = 0;
+                    i = name.indexOf(ENUM_PREFIX, j);
+                } else if (i == j) {
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        {
+            // removing union specifier
+            gint i = name.indexOf(UNION_PREFIX);
+            gint j = 0;
+            while (i >= 0) {
+                if (i > 0 && isPredecessor(name.charAt(i - 1))) {
+                    name.remove(i, i + UNION_PREFIX.length());
+                    j = i + 1;
+                    i = name.indexOf(UNION_PREFIX, j);
+                } else if (i == 0) {
+                    name.remove(0, UNION_PREFIX.length());
+                    j = 0;
+                    i = name.indexOf(UNION_PREFIX, j);
+                } else if (i == j) {
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        // removing const specifier
+        return name.toString().strip();
+#endif
     }
 
 

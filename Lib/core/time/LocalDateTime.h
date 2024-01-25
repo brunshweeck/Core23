@@ -5,7 +5,6 @@
 #ifndef CORE23_LOCALDATETIME_H
 #define CORE23_LOCALDATETIME_H
 
-#include <core/time/Temporal.h>
 #include <core/time/LocalTime.h>
 #include <core/time/LocalDate.h>
 
@@ -117,7 +116,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour and minute, setting the second and nanosecond to zero.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -137,7 +136,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(gint year, Month month, gint dayOfMonth, gint hour, gint minute);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour, minute and second, setting the nanosecond to zero.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -158,7 +157,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(gint year, Month month, gint dayOfMonth, gint hour, gint minute, gint second);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour, minute, second and nanosecond.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -180,7 +179,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour and minute, setting the second and nanosecond to zero.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -200,7 +199,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(gint year, gint month, gint dayOfMonth, gint hour, gint minute);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour, minute and second, setting the nanosecond to zero.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -221,7 +220,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(gint year, gint month, gint dayOfMonth, gint hour, gint minute, gint second);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from year, m,
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from year, m,
              * day, hour, minute, second and nanosecond.
              * <p>
              * This returns a <b> LocalDateTime</b>  with the specified year, m,
@@ -242,7 +241,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(gint year, gint month, gint dayOfMonth, gint hour, gint minute, gint second, gint nanoOfSecond);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from a date and time.
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from a date and time.
              *
              * @param date  the local date
              * @param time  the local time
@@ -251,7 +250,7 @@ namespace core {
              CORE_EXPLICIT LocalDateTime(const LocalDate &date, const LocalTime &time);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  using seconds from the
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  using seconds from the
              * epoch of 1970-01-01T00:00:00Z.
              * <p>
              * This allows the <b style="color:orange;"> epoch-second</b>  field
@@ -269,11 +268,11 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDateTime</b> from a temporal object.
+             * Obtains an INSTANCE of <b> LocalDateTime</b> from a temporal object.
              * <p>
              * This obtains a local date-time based on the specified temporal.
              * A <b> Temporal</b> represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> LocalDateTime</b>.
+             * which this factory converts to an INSTANCE of <b> LocalDateTime</b>.
              * <p>
              * The conversion extracts and combines the <b> LocalDate</b> and the
              * <b> LocalTime</b> from the temporal object.
@@ -291,7 +290,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from a text string such as <b> 2007-12-03T10:15:30</b> .
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from a text string such as <b> 2007-12-03T10:15:30</b> .
              * <p>
              * The string must represent a valid date-time and is parsed using
              * <b style="color:orange;"> java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME</b> .
@@ -303,7 +302,7 @@ namespace core {
              static LocalDateTime parse(const String& text);
 
             /**
-             * Obtains an instance of <b> LocalDateTime</b>  from a text string using a specific formatter.
+             * Obtains an INSTANCE of <b> LocalDateTime</b>  from a text string using a specific formatter.
              * <p>
              * The text is parsed using the formatter, returning a date-time.
              *
@@ -590,7 +589,7 @@ namespace core {
              * passing <b> this</b>  as the argument. In this case, the field determines
              * whether and how to adjust the instant.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param field  the field to set in the result
              * @param newValue  the new value of the field in the result
@@ -608,7 +607,7 @@ namespace core {
              * The time does not affect the calculation and will be the same in the result.
              * If the day-of-m is invalid for the year, it will be changed to the last valid day of the m.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param year  the year to set in the result, from MIN_YEAR to MAX_YEAR
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested year
@@ -622,7 +621,7 @@ namespace core {
              * The time does not affect the calculation and will be the same in the result.
              * If the day-of-m is invalid for the year, it will be changed to the last valid day of the m.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param month  the m-of-year to set in the result, from 1 (January) to 12 (December)
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested m
@@ -636,7 +635,7 @@ namespace core {
              * If the resulting date-time is invalid, an exception is thrown.
              * The time does not affect the calculation and will be the same in the result.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param dayOfMonth  the day-of-m to set in the result, from 1 to 28-31
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested day
@@ -650,7 +649,7 @@ namespace core {
              * <p>
              * If the resulting date-time is invalid, an exception is thrown.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param dayOfYear  the day-of-year to set in the result, from 1 to 365-366
              * @return a <b> LocalDateTime</b>  based on this date with the requested day
@@ -663,7 +662,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the hour-of-day altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hour  the hour-of-day to set in the result, from 0 to 23
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested hour
@@ -674,7 +673,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the minute-of-hour altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minute  the minute-of-hour to set in the result, from 0 to 59
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested minute
@@ -685,7 +684,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the second-of-minute altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param second  the second-of-minute to set in the result, from 0 to 59
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested second
@@ -696,7 +695,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the nano-of-second altered.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanoOfSecond  the nano-of-second to set in the result, from 0 to 999,999,999
              * @return a <b> LocalDateTime</b>  based on this date-time with the requested nanosecond
@@ -718,7 +717,7 @@ namespace core {
              * This includes all supplied time units on <b style="color:orange;"> ChronoUnit</b>  and
              * <b style="color:orange;"> ChronoUnit::DAYS DAYS</b> . Other units throw an exception.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param unit  the unit to truncate to
              * @return a <b> LocalDateTime</b>  based on this date-time with the time truncated
@@ -746,7 +745,7 @@ namespace core {
              * passing <b> this</b>  as the argument. In this case, the unit determines
              * whether and how to perform the addition.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToAdd  the amount of the unit to add to the result, may be negative
              * @param unit  the unit of the amount to add
@@ -772,7 +771,7 @@ namespace core {
              * invalid date 2009-02-29 (standard year). Instead of returning an invalid
              * result, the last valid day of the m, 2009-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param years  the years to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the years added
@@ -794,7 +793,7 @@ namespace core {
              * 2007-04-31. Instead of returning an invalid result, the last valid day
              * of the m, 2007-04-30, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param months  the months to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the months added
@@ -811,7 +810,7 @@ namespace core {
              * <p>
              * For example, 2008-12-31 after one week would result in 2009-01-07.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param weeks  the weeks to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the weeks added
@@ -828,7 +827,7 @@ namespace core {
              * <p>
              * For example, 2008-12-31 after one day would result in 2009-01-01.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param days  the days to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the days added
@@ -840,7 +839,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of hours added.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hours  the hours to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the hours added
@@ -851,7 +850,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of minutes added.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minutes  the minutes to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the minutes added
@@ -862,7 +861,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of seconds added.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param seconds  the seconds to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the seconds added
@@ -873,7 +872,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of nanoseconds added.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanos  the nanos to add, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the nanoseconds added
@@ -891,7 +890,7 @@ namespace core {
              * This method is equivalent to <b style="color:orange;"> after(glong, TemporalUnit)</b>  with the amount negated.
              * See that method for a full description of how addition, and thus subtraction, works.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param amountToSubtract  the amount of the unit to subtract from the result, may be negative
              * @param unit  the unit of the amount to subtract
@@ -917,7 +916,7 @@ namespace core {
              * invalid date 2007-02-29 (standard year). Instead of returning an invalid
              * result, the last valid day of the m, 2007-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param years  the years to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the years subtracted
@@ -939,7 +938,7 @@ namespace core {
              * 2007-02-31. Instead of returning an invalid result, the last valid day
              * of the m, 2007-02-28, is selected instead.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param months  the months to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the months subtracted
@@ -956,7 +955,7 @@ namespace core {
              * <p>
              * For example, 2009-01-07 minus one week would result in 2008-12-31.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param weeks  the weeks to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the weeks subtracted
@@ -973,7 +972,7 @@ namespace core {
              * <p>
              * For example, 2009-01-01 minus one day would result in 2008-12-31.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param days  the days to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the days subtracted
@@ -985,7 +984,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of hours subtracted.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param hours  the hours to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the hours subtracted
@@ -996,7 +995,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of minutes subtracted.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param minutes  the minutes to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the minutes subtracted
@@ -1007,7 +1006,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of seconds subtracted.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param seconds  the seconds to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the seconds subtracted
@@ -1018,7 +1017,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified number of nanoseconds subtracted.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param nanos  the nanos to subtract, may be negative
              * @return a <b> LocalDateTime</b>  based on this date-time with the nanoseconds subtracted
@@ -1032,7 +1031,7 @@ namespace core {
             /**
              * Returns a copy of this <b> LocalDateTime</b>  with the specified period added.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param newDate  the new date to base the calculation on
              * @param hours  the hours to add, may be negative
@@ -1090,7 +1089,7 @@ namespace core {
              * <b> CENTURIES</b> , <b> MILLENNIA</b>  and <b> ERAS</b>  are supported.
              * Other <b> ChronoUnit</b>  values will throw an exception.
              * <p>
-             * This instance is immutable and unaffected by this method call.
+             * This INSTANCE is immutable and unaffected by this method call.
              *
              * @param endExclusive  the end date, exclusive, which is converted to a <b> LocalDateTime</b>
              * @param unit  the unit to measure the amount in
@@ -1124,7 +1123,7 @@ namespace core {
              * This default implementation calculates from the epoch-day of the date and the
              * second-of-day of the time.
              *
-             * @param offset  the offset to use for the conversion, not null
+             * @param offset  the offset to use for the conversion
              * @return the number of seconds from the epoch of 1970-01-01T00:00:00Z
              */
              glong toEpochSecond(const ZoneOffset& offset) const;

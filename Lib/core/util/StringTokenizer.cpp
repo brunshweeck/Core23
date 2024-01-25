@@ -3,7 +3,7 @@
 //
 
 #include <core/private/Unsafe.h>
-#include <core/NoSuchItemException.h>
+#include <core/NoSuchElementException.h>
 #include <core/native/IntArray.h>
 #include "StringTokenizer.h"
 
@@ -121,20 +121,19 @@ namespace core {
 
         String StringTokenizer::nextToken() {
             /*
-             * If next position already computed in hasMoreElements() and
+             * If next position already computed in hasMore() and
              * delimiters have changed between the computation and this invocation,
              * then use the computed value.
              */
 
-            cursor = (mark >= 0 && !delimsModified) ?
-                              mark : skipDelimiter(cursor);
+            cursor = (mark >= 0 && !delimsModified) ? mark : skipDelimiter(cursor);
 
             /* Reset these anyway */
             delimsModified = false;
             mark = -1;
 
             if (cursor >= limit)
-                NoSuchItemException().throws(__trace("core.util.StringTokenizer"));
+                NoSuchElementException().throws(__trace("core.util.StringTokenizer"));
             gint const start = cursor;
             cursor = scanToken(cursor);
             return str.subString(start, cursor);
@@ -161,6 +160,55 @@ namespace core {
                 count++;
             }
             return count;
+        }
+
+        gint StringTokenizer::lastIndex() const {
+            return cursor;
+        }
+
+        String StringTokenizer::lastToken() const {
+            if (cursor <= 0)
+                NoSuchElementException().throws(__trace("core.util.StringTokenizer"));
+            gint const end = cursor;
+            gint const cur = scanLastToken(cursor);
+            return str.subString(cur, end);
+        }
+
+        gint StringTokenizer::scanLastToken(gint startPos) const {
+            gint position = startPos - 1;
+            while (position > mark) {
+                if (!hasSurrogates) {
+                    gchar const c = str.charAt(position);
+                    if ((c <= maxDelim) && (delimiters.indexOf(c) >= 0))
+                        break;
+                    position--;
+                } else {
+                    gint c = str.charAt(position);
+                    gint const c2 = position > 0 ? str.charAt(position - 1) : 0;
+                    if (Character::isSurrogatePair(c, c2)) {
+                        c = Character::joinSurrogates(c, c2);
+                    }
+                    if ((c <= maxDelim) && isDelimiter(c))
+                        break;
+                    position -= Character::charCount(c);
+                }
+            }
+            if (retDelims && (startPos - 1 == position)) {
+                if (!hasSurrogates) {
+                    gchar const c = str.charAt(position);
+                    if ((c <= maxDelim) && (delimiters.indexOf(c) >= 0))
+                        position--;
+                } else {
+                    gint c = str.charAt(position);
+                    gint const c2 = position > 0 ? str.charAt(position - 1) : 0;
+                    if (Character::isSurrogatePair(c, c2)) {
+                        c = Character::joinSurrogates(c, c2);
+                    }
+                    if ((c <= maxDelim) && isDelimiter(c))
+                        position -= Character::charCount(c);
+                }
+            }
+            return position;
         }
 
     } // util

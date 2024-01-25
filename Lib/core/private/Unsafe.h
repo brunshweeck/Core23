@@ -6,7 +6,18 @@
 #define CORE23_UNSAFE_H
 
 #include <core/MemoryError.h>
+#include <core/IllegalArgumentException.h>
 #include <core/CloneNotSupportedException.h>
+#include <core/native/BooleanArray.h>
+#include <core/native/ByteArray.h>
+#include <core/native/ShortArray.h>
+#include <core/native/CharArray.h>
+#include <core/native/IntArray.h>
+#include <core/native/FloatArray.h>
+#include <core/native/LongArray.h>
+#include <core/native/DoubleArray.h>
+#include <core/native/ObjectArray.h>
+#include <core/private/Null.h>
 
 namespace core {
 
@@ -40,17 +51,17 @@ namespace core {
              * sizes of other native types (as stored in memory
              * blocks) is determined fully by their information content.
              */
-            const static gint ADDRESS_SIZE;
+            static CORE_FAST glong ADDRESS_SIZE = CORE_ADDRESS_SIZE;
 
             /**
              * Flag whose value is true if and only if the endianness
              * of this platform is big.
              */
-            const static gbool BIG_ENDIAN;
+            static CORE_FAST gbool BIG_ENDIAN = CORE_BYTE_ORDER == CORE_BIG_ENDIAN;
 
             /**
              * Fetches a value from a given variable.
-             * More specifically, fetches a field or array element within the given
+             * More specifically, fetches a field or root element within the given
              * object <b> o</b> at the given offset, or (if <b> o</b> is null)
              * from the memory address whose numerical value is the given offset.
              * <p>
@@ -64,17 +75,17 @@ namespace core {
              * non-null) were both obtained via <b style="color: orange;"> offsetof </b>
              * reflective <b style="color: orange;"> &lt;stddef.h&gt;</b> representation of some field.
              *
-             * <li>The object referred to by <b> o</b> is an array, and the offset
+             * <li>The object referred to by <b> o</b> is an root, and the offset
              * is an integer of the form <b> B+N*S</b>, where <b> N</b> is
-             * a valid index into the array, and <b> B</b> and <b> S</b> are
+             * a valid index into the root, and <b> B</b> and <b> S</b> are
              * the values obtained by <b style="color: orange;"> arrayBaseOffset</b> and <b style="color: orange;">
-             * arrayIndexScale</b> (respectively) from the array's class.  The value
-             * referred to is the <b> N</b><em>th</em> element of the array.
+             * arrayIndexScale</b> (respectively) from the root's class.  The value
+             * referred to is the <b> N</b><em>th</em> element of the root.
              *
              * </ul>
              * <p>
              * If one of the above cases is true, the call references a specific
-             * variable (field or array element).  However, the results are undefined
+             * variable (field or root element).  However, the results are undefined
              * if that variable is not in fact of the type returned by this method.
              * <p>
              * This method refers to a variable by means of two parameters, and so
@@ -97,7 +108,7 @@ namespace core {
              * <p>
              * The first two parameters are interpreted exactly as with
              * <b style="color: orange;"> getInt(Object, glong)</b> to refer to a specific
-             * variable (field or array element).  The given value
+             * variable (field or root element).  The given value
              * is stored into that variable.
              * <p>
              * The variable must be of the same type as the method
@@ -390,8 +401,9 @@ namespace core {
              * @throws RuntimeException if any of the arguments is invalid
              *
              */
-            static void
-            copyMemory(const Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes);
+            static void copyMemory(const Object &src, glong srcOffset,
+                                   Object &dest, glong destOffset,
+                                   glong sizeInBytes);
 
             /**
              * Sets all bytes in a given block of memory to a copy of another
@@ -423,8 +435,9 @@ namespace core {
              * @throws RuntimeException if any of the arguments is invalid
              *
              */
-            static void copySwapMemory(Object &src, glong srcOffset, Object &dest, glong destOffset, glong sizeInBytes,
-                                       glong elemSize);
+            static void copySwapMemory(const Object &src, glong srcOffset,
+                                       Object &dest, glong destOffset,
+                                       glong sizeInBytes, glong elemSizeInBytes);
 
             /**
              * Copies all elements from one block of memory to another block, byte swapping the
@@ -435,7 +448,7 @@ namespace core {
              *
              * Equivalent to <b> copySwapMemory(null, srcAddress, null, destAddress, bytes, elemSize)</b>.
              */
-            static void copySwapMemory(glong srcAddress, glong destAddress, glong bytes, glong elemSize);
+            static void copySwapMemory(glong srcAddress, glong destAddress, glong sizeInBytes, glong elemSizeInBytes);
 
             /**
              * Disposes of a block of native memory, as obtained from <b style="color: orange;">
@@ -457,59 +470,65 @@ namespace core {
              */
             static void freeMemory(glong address);
 
+            CORE_WARNING_PUSH
+            CORE_WARNING_DISABLE_INVALID_OFFSETOF
+            CORE_WARNING_DISABLE_DEPRECATED
+
             /** The value of <b> arrayBaseOffset<gbool>()</b> */
-            static const gint ARRAY_BOOLEAN_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_BOOLEAN_BASE_OFFSET = CORE_OFFSETOF(BooleanArray, value);
 
             /** The value of <b> arrayBaseOffset<gbyte>()</b> */
-            static const gint ARRAY_BYTE_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_BYTE_BASE_OFFSET = CORE_OFFSETOF(ByteArray, value);
 
             /** The value of <b> arrayBaseOffset<gshort>()</b> */
-            static const gint ARRAY_SHORT_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_SHORT_BASE_OFFSET = CORE_OFFSETOF(ShortArray, value);
 
             /** The value of <b> arrayBaseOffset<gchar>()</b> */
-            static const gint ARRAY_CHAR_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_CHAR_BASE_OFFSET = CORE_OFFSETOF(CharArray, value);
 
             /** The value of <b> arrayBaseOffset<gint>()</b> */
-            static const gint ARRAY_INT_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_INT_BASE_OFFSET = CORE_OFFSETOF(IntArray, value);
 
             /** The value of <b> arrayBaseOffset<glong>()</b> */
-            static const gint ARRAY_LONG_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_LONG_BASE_OFFSET = CORE_OFFSETOF(LongArray, value);
 
             /** The value of <b> arrayBaseOffset<gfloat>()</b> */
-            static const gint ARRAY_FLOAT_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_FLOAT_BASE_OFFSET = CORE_OFFSETOF(FloatArray, value);
 
             /** The value of <b> arrayBaseOffset<gdouble>()</b> */
-            static const gint ARRAY_DOUBLE_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_DOUBLE_BASE_OFFSET = CORE_OFFSETOF(DoubleArray, value);
 
             /** The value of <b> arrayBaseOffset<void*>()</b> */
-            static const gint ARRAY_REFERENCE_BASE_OFFSET;
+            static CORE_FAST glong ARRAY_REFERENCE_BASE_OFFSET = CORE_OFFSETOF(ObjectArray, value);
 
             /** The value of <b> arrayIndexScale<gbool>()</b> */
-            static const gint ARRAY_BOOLEAN_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_BOOLEAN_INDEX_SCALE = Boolean::BYTES;
 
             /** The value of <b> arrayIndexScale<gbyte>()</b> */
-            static const gint ARRAY_BYTE_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_BYTE_INDEX_SCALE = Byte::BYTES;
 
             /** The value of <b> arrayIndexScale<gshort>()</b> */
-            static const gint ARRAY_SHORT_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_SHORT_INDEX_SCALE = Short::BYTES;
 
             /** The value of <b> arrayIndexScale<gchar>()</b> */
-            static const gint ARRAY_CHAR_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_CHAR_INDEX_SCALE = Character::BYTES;
 
             /** The value of <b> arrayIndexScale<gint>()</b> */
-            static const gint ARRAY_INT_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_INT_INDEX_SCALE = Integer::BYTES;
 
             /** The value of <b> arrayIndexScale<glong>()</b> */
-            static const gint ARRAY_LONG_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_LONG_INDEX_SCALE = Long::BYTES;
 
             /** The value of <b> arrayIndexScale<gfloat>()</b> */
-            static const gint ARRAY_FLOAT_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_FLOAT_INDEX_SCALE = Float::BYTES;
 
             /** The value of <b> arrayIndexScale<gdouble>()</b> */
-            static const gint ARRAY_DOUBLE_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_DOUBLE_INDEX_SCALE = Double::BYTES;
 
             /** The value of <b> arrayIndexScale<void*>()</b> */
-            static const gint ARRAY_REFERENCE_INDEX_SCALE;
+            static CORE_FAST glong ARRAY_REFERENCE_INDEX_SCALE = ADDRESS_SIZE;
+
+            CORE_WARNING_POP
 
             // ---------------------------- [atomic reference] ------------------------
 
@@ -1004,7 +1023,7 @@ namespace core {
              * Versions of <b style="color: orange;"> putReferenceVolatile(Object, glong, Object)</b>
              * that do not guarantee immediate visibility of the store to
              * other threads. This method is generally only useful if the
-             * underlying field is a volatile (or if an array cell, one
+             * underlying field is a volatile (or if an root cell, one
              * that is otherwise only accessed using volatile accesses).
              *
              * Corresponds to C11 atomic_store_explicit(..., memory_order_release).
@@ -1095,10 +1114,10 @@ namespace core {
 
             /**
              * Atomically adds the given value to the current value of a field
-             * or array element within the given object <b> o</b>
+             * or root element within the given object <b> o</b>
              * at the given <b> offset</b>.
              *
-             * @param o object/array to update the field/element in
+             * @param o object/root to update the field/element in
              * @param offset field/element offset
              * @param delta the value to add
              * @return the previous value
@@ -1113,10 +1132,10 @@ namespace core {
 
             /**
              * Atomically adds the given value to the current value of a field
-             * or array element within the given object <b> o</b>
+             * or root element within the given object <b> o</b>
              * at the given <b> offset</b>.
              *
-             * @param o object/array to update the field/element in
+             * @param o object/root to update the field/element in
              * @param offset field/element offset
              * @param delta the value to add
              * @return the previous value
@@ -1171,10 +1190,10 @@ namespace core {
 
             /**
              * Atomically exchanges the given value with the current value of
-             * a field or array element within the given object <b> o</b>
+             * a field or root element within the given object <b> o</b>
              * at the given <b> offset</b>.
              *
-             * @param o object/array to update the field/element in
+             * @param o object/root to update the field/element in
              * @param offset field/element offset
              * @param newValue new value
              * @return the previous value
@@ -1189,10 +1208,10 @@ namespace core {
 
             /**
              * Atomically exchanges the given value with the current value of
-             * a field or array element within the given object <b> o</b>
+             * a field or root element within the given object <b> o</b>
              * at the given <b> offset</b>.
              *
-             * @param o object/array to update the field/element in
+             * @param o object/root to update the field/element in
              * @param offset field/element offset
              * @param newValue new value
              * @return the previous value
@@ -1263,7 +1282,7 @@ namespace core {
 
 
             // The following contain CAS-based implementations used on
-            // platforms not supporting native instructions
+            // platforms not supporting private instructions
 
             static gbyte getAndBitwiseOrByte(Object &o, glong offset, gbyte mask);
 
@@ -1443,6 +1462,68 @@ namespace core {
              */
             static void fullFence();
 
+        private:
+
+            // Zero-extend an integer
+            static gint toUnsignedInt(gbyte n);
+
+            static gint toUnsignedInt(gshort n);
+
+            static glong toUnsignedLong(gbyte n);
+
+            static glong toUnsignedLong(gshort n);
+
+            static glong toUnsignedLong(gint n);
+
+            static gint pickPos(gint top, gint pos);
+
+            // These methods construct integers from bytes.  The gbyte ordering
+            // is the private endianness of this platform.
+            static glong makeLong(gbyte i0, gbyte i1, gbyte i2, gbyte i3, gbyte i4, gbyte i5, gbyte i6, gbyte i7);
+
+            static glong makeLong(gshort i0, gshort i1, gshort i2, gshort i3);
+
+            static glong makeLong(gint i0, gint i1);
+
+            static gint makeInt(gshort i0, gshort i1);
+
+            static gint makeInt(gbyte i0, gbyte i1, gbyte i2, gbyte i3);
+
+            static gshort makeShort(gbyte i0, gbyte i1);
+
+            static gbyte pick(gbyte le, gbyte be);
+
+            static gshort pick(gshort le, gshort be);
+
+            static gint pick(gint le, gint be);
+
+            // These methods write integers to memory from smaller parts
+            // provided by their caller.  The ordering in which these parts
+            // are written is the private endianness of this platform.
+            static void putLongParts(Object &o, glong offset,
+                                     gbyte i0, gbyte i1, gbyte i2, gbyte i3, gbyte i4, gbyte i5, gbyte i6, gbyte i7);
+
+            static void putLongParts(Object &o, glong offset, gshort i0, gshort i1, gshort i2, gshort i3);
+
+            static void putLongParts(Object &o, glong offset, gint i0, gint i1);
+
+            static void putIntParts(Object &o, glong offset, gshort i0, gshort i1);
+
+            static void putIntParts(Object &o, glong offset, gbyte i0, gbyte i1, gbyte i2, gbyte i3);
+
+            static void putShortParts(Object &o, glong offset, gbyte i0, gbyte i1);
+
+            // Maybe gbyte-reverse an integer
+            static gchar convEndian(gbool big, gchar n);
+
+            static gshort convEndian(gbool big, gshort n);
+
+            static gint convEndian(gbool big, gint n);
+
+            static glong convEndian(gbool big, glong n);
+
+        public:
+
             /**
              * Fetches a value at some byte offset into a given object.
              * More specifically, fetches a value within the given object
@@ -1454,7 +1535,7 @@ namespace core {
              * getLong(Object, glong)</b> except that the offset does not need to
              * have been obtained from <b style="color: orange;"> offsetof </b> on the
              * <b style="color: orange;"> &lt;stddef.h&gt; </b> of some field.  The value
-             * in memory is raw array, and need not correspond to any
+             * in memory is raw root, and need not correspond to any
              * variable.  Unless <code>o</code> is null, the value accessed
              * must be entirely within the allocated object.  The endianness
              * of the value in memory is the endianness of the native platform.
@@ -1513,7 +1594,7 @@ namespace core {
              * getLong(Object, glong)</b> except that the offset does not need to
              * have been obtained from <b style="color: orange;"> offsetof </b> on the
              * <b style="color: orange;"> &lt;stddef.h&gt; </b> of some field.  The value
-             * in memory is raw array, and need not correspond to any
+             * in memory is raw root, and need not correspond to any
              * variable.  The endianness of the value in memory is the
              * endianness of the native platform.
              * <p>
@@ -1563,14 +1644,60 @@ namespace core {
             /** @see putLongUnaligned(Object, glong, glong, gbool) */
             static void putCharUnaligned(Object &o, glong offset, gchar x, gbool bigEndian);
 
+        private:
+
+            template<class T>
+            CORE_ALIAS(WithoutReference, typename Class<T>::NRef);
+
+            template<class T>
+            CORE_ALIAS(Reference, typename Class<WithoutReference<T>>::Ref);
+
+            static gbyte b2byte(gbool b);
+
+            static gbool b2bool(gbyte b);
+
+            static gshort c2s(gchar c);
+
+            static gchar s2c(gshort s);
+
+            static gint f2i(gfloat f);
+
+            static glong d2l(gdouble d);
+
+            static gfloat i2f(gint i);
+
+            static gdouble l2d(glong l);
+
+            static glong o2l(const Object &o);
+
+            static Object &l2o(glong l);
+
+            static gbool is32Bits(glong size);
+
+            static gbool checkSize(glong size);
+
+            static gbool checkNativeAddress(glong address);
+
+            static gbool checkOffset(const Object & /*o*/, glong offset);
+
+            static gbool checkPointer(const Object &o, glong offset);
+
+            static glong getNativeAddress(const Object &o, glong offset);
+
+            /**
+             * Round up allocation size to a multiple of HeapWordSize.
+             */
+            static glong alignToHeapWordSize(glong sizeInBytes);
+
+        public:
+
             /**
              * Convert given value to rvalue reference.
              *
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST typename Class<T>::NRef &&
-            moveInstance(T &&var) { return (typename Class<T>::NRef &&) var; }
+            static CORE_FAST WithoutReference<T> &&moveInstance(T &&var) { return (WithoutReference<T> &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1578,7 +1705,7 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST T &&forwardInstance(typename Class<T>::NRef &var) CORE_NOTHROW { return (T &&) var; }
+            static CORE_FAST T &&forwardInstance(WithoutReference<T> &var) CORE_NOTHROW { return (T &&) var; }
 
             /**
              * Perfect forwarding.
@@ -1586,42 +1713,105 @@ namespace core {
              * @param var The given value.
              */
             template<class T>
-            static CORE_FAST T &&forwardInstance(typename Class<T>::NRef &&var) CORE_NOTHROW {
+            static CORE_FAST T &&forwardInstance(WithoutReference<T> &&var) CORE_NOTHROW {
                 CORE_STATIC_ASSERT(Class<T>::isLvalueReference(), "Forwarding is supported by lvalue reference");
                 return (T &&) var;
             }
 
             /**
-             * create instance and store address for future utilisation.
-             * to reuse store instance use <b>copyInstance(..., true) </b>
+             * create INSTANCE and store address for future utilisation.
+             * to reuse store INSTANCE use <b>copyInstance(..., true) </b>
              */
             template<class T, class...Params>
-            static T &createInstance(Params &&...params) {
-                CORE_STATIC_ASSERT(!Class<T>::oneIsTrue(Class<Void>::isSimilar<Params>()...), "Illegal parameter type");
-                CORE_STATIC_ASSERT(Class<T>::template isConstructible<Params...>(), "Incompatible parameters");
-                CORE_ALIAS(PTR, typename Class<T>::Ptr);
+            static Reference<T> allocateInstance(Params &&...params) {
+                CORE_STATIC_ASSERT(!Class<WithoutReference<T>>::isAbstract(),
+                                   "Couldn't call constructor of abstract type");
+                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(),
+                                   "Couldn't create instance of non referencable type");
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::isClass(), "This method require class type");
+                CORE_STATIC_ASSERT(Class<Object>::isSuper<WithoutReference<T>>(), "Unsupported type");
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::template isConstructible<Params...>(),
+                                   "Incompatible parameters");
+                glong address = allocateMemory(sizeof(WithoutReference<T>));
                 try {
-                    GENERIC_PTR ptr = (new T(forwardInstance<Params>(params)...));
-                    glong addr = (glong) ptr;
-                    storeInstance(addr);
-                    return ((PTR) ptr)[/*offset*/0];
-                } catch (...) { Error("Unable to create object").throws(__trace("core.native.Unsafe")); }
+                    Reference<T> refT = initializeInstance<WithoutReference<T>>(address,
+                                                                                Unsafe::forwardInstance<Params>(
+                                                                                        params)...);
+                    storeInstance(address);
+                    return refT;
+                } catch (const Exception &ex) {
+                    Unsafe::freeMemory(address);
+                    Error("Unable to create object", ex).throws(__trace("core.private.Unsafe"));
+                } catch (const Error &err) {
+                    Unsafe::freeMemory(address);
+                    err.throws(__trace("core.private.Unsafe"));
+                } catch (const GENERIC_THROWABLE &x) {
+                    // for c++ standard exception (it will be converted to core.Exception
+                    Unsafe::freeMemory(address);
+                    Exception(x.what()).throws(__trace("core.private.Unsafe"));
+                } catch (...) {
+                    // for unexpected exception
+                    Unsafe::freeMemory(address);
+                    Error("Unable to create object").throws(__trace("core.private.Unsafe"));
+                }
             }
 
             /**
-             * Copy instance or load stored copy of given instance.
-             * <li> for singleton &copyInstance(o) == &o
-             * <li> for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
-             * <li> if o has previously created by Unsafe.createInstance<T>(...):
-             *  <ul>
-             *      <li> if second argument is true,  &copyInstance(o, ) == &o
-             *      <li> if second argument is false,  &copyInstance(o, ) != &o and copyInstance(o, ) == o
-             * @param o The instance to be copied
-             * @param oldCopy specified if this method return stored instance if it possible.
+             * create ARRAY of value initialized with default constructor
+             * and return address of array
              */
             template<class T>
-            static T &copyInstance(const T &o, gbool oldCopy = false) {
-                if (((glong) &o == (glong) &null) || (oldCopy) && loadInstance((glong) &o))
+            static glong allocateArray(gint size) {
+                if (size < 0)
+                    IllegalArgumentException("Illegal array size").throws(__trace("core.private.Unsafe"));
+                CORE_STATIC_ASSERT(Class<T>::template isConstructible(), "Incompatible parameters");
+                try {
+                    glong const address = allocateMemory(size);
+                    if (address != 0) {
+                        (new((GENERIC_PTR) address) T[size]);
+                    }
+                    return address;
+                } catch (const Error &err) {
+                    err.throws(__trace("core.private.Unsafe"));
+                }
+            }
+
+            /**
+             * create INSTANCE and store address for future utilisation.
+             * to reuse store INSTANCE use <b>copyInstance(..., true) </b>
+             */
+            template<class T, class...Params>
+            static Reference<T> initializeInstance(glong address, Params &&...params) {
+                CORE_STATIC_ASSERT(!Class<WithoutReference<T>>::isAbstract(),
+                                   "Couldn't call constructor of abstract type");
+                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(),
+                                   "Couldn't create instance of non referencable type");
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::isClass(), "This method require class type");
+                CORE_STATIC_ASSERT(Class<Object>::isSuper<WithoutReference<T>>(), "Unsupported type");
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::template isConstructible<Params...>(),
+                                   "Incompatible parameters");
+                if (address == 0)
+                    IllegalArgumentException("Couldn't construct object at null address")
+                            .throws(__trace("core.private.Unsafe"));
+                Reference<T> refT = *(new((GENERIC_PTR) address) WithoutReference<T>(
+                        forwardInstance<Params>(params)...));
+                return refT;
+            }
+
+            /**
+             * Copy INSTANCE or load stored copy of given INSTANCE.
+             * <li> for singleton &copyInstance(o) == &o
+             * <li> for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
+             * <li> if o has previously created by Unsafe.allocateInstance<T>(...):
+             *  <ul>
+             *      <li> if second argument is true,  &copyInstance(o, true) == &o (no more duplication)
+             *      <li> if second argument is false,  &copyInstance(o, false) != &o and copyInstance(o, false) == o
+             * @param o The INSTANCE to be copied
+             * @param oldCopy specified if this method return stored INSTANCE if it possible.
+             */
+            template<class T>
+            static T &copyInstance(const T &o, gbool oldCopy) {
+                if ((getNativeAddress((const Object &) o, 0) == 0) || (oldCopy) && loadInstance((glong) &o))
                     // it has been previously created dynamically
                     return (T &) o;
                 else {
@@ -1641,6 +1831,18 @@ namespace core {
             }
 
             /**
+             * Copy INSTANCE or load stored copy of given INSTANCE.
+             * <li> for singleton &copyInstance(o) == &o
+             * <li> for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
+             * @param o The INSTANCE to be copied
+             * @param oldCopy specified if this method return stored INSTANCE if it possible.
+             */
+            template<class T>
+            static T &copyInstance(const T &o) {
+                return copyInstance(o, false);
+            }
+
+            /**
              * Swap two values
              */
             template<class From, class To = From>
@@ -1653,8 +1855,8 @@ namespace core {
             }
 
             /**
-             * Destroy and free instance created dynamically.
-             * @note the given instance must be allocated by calling of Unsafe::createInstance<T>(...) method.
+             * Destroy and free INSTANCE created dynamically.
+             * @note the given INSTANCE must be allocated by calling of Unsafe::allocateInstance<T>(...) method.
              */
             template<class T>
             static void destroyInstance(T &var) CORE_NOTHROW {
@@ -1687,13 +1889,15 @@ namespace core {
             template<class T>
             class CopyImpl<T, true, false> CORE_FINAL {
             public:
-                static T &copy(const T &x) CORE_NOTHROW { return (T &) x.clone(); }
+                static T &copy(const T &x) CORE_NOTHROW {
+                    return CORE_CAST(T &, CORE_CAST(Object const&, x).clone());
+                }
             };
 
             template<class T>
             class CopyImpl<T, false, true> CORE_FINAL {
             public:
-                static T &copy(const T &x) CORE_NOTHROW { return createInstance<T>(x); }
+                static T &copy(const T &x) CORE_NOTHROW { return allocateInstance<T>(x); }
             };
 
             static gbool loadInstance(glong address);
@@ -1715,7 +1919,7 @@ namespace core {
             static void freeMemoryImpl(glong address);
 
         public:
-//            Method Used by Objects instance
+//            Method Used by Objects INSTANCE
             static Object &systemCache();
 
         };

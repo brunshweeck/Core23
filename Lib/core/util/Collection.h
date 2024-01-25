@@ -5,17 +5,17 @@
 #ifndef CORE23_COLLECTION_H
 #define CORE23_COLLECTION_H
 
-#include <core/NoSuchItemException.h>
-#include <core/StateException.h>
-#include <core/UnsupportedMethodException.h>
-#include <core/native/ReferenceArray.h>
+#include <core/StringBuffer.h>
+#include <core/NoSuchElementException.h>
+#include <core/IllegalStateException.h>
+#include <core/UnsupportedOperationException.h>
+#include <core/native/Array.h>
+#include <core/util/Comparator.h>
 #include <core/util/ConcurrentException.h>
 #include <core/util/Iterator.h>
 #include <core/util/SortedStruct.h>
-#include <core/util/Comparator.h>
-#include <core/util/function/Consumer.h>
-#include <core/util/function/Predicate.h>
-#include <core/StringBuffer.h>
+#include <core/function/Consumer.h>
+#include <core/function/Predicate.h>
 
 namespace core {
     namespace util {
@@ -47,7 +47,7 @@ namespace core {
          * <p>
          * Certain methods are specified to be <i>optional</i>. If a collection
          * implementation doesn't implement a particular operation, it should define
-         * the corresponding method to throw <b>UnsupportedMethodException</b>.
+         * the corresponding method to throw <b>UnsupportedOperationException</b>.
          * Such methods are marked "optional operation" in method specifications of
          * the collections interfaces.
          *
@@ -55,7 +55,7 @@ namespace core {
          * Some collection implementations have restrictions on the elements that they
          * may contain. For example, some have restrictions on the types of their elements.
          * Attempting to add an ineligible element throws an unchecked exception, typically
-         * <b>CastException</b>.  Attempting to query the presence of an ineligible element
+         * <b>ClassCastException</b>.  Attempting to query the presence of an ineligible element
          * may throw an exception, or it may simply return false; some implementations will
          * exhibit the former behavior and some will exhibit the latter.  More generally,
          * attempting an operation on an ineligible element whose completion would not result
@@ -122,9 +122,9 @@ namespace core {
          * Certain methods of this interface are considered "destructive" and are called
          * "mutator" methods in that they modify the group of objects contained within
          * the collection on which they operate. They can be specified to throw
-         * <b>UnsupportedMethodException</b> if this collection implementation
+         * <b>UnsupportedOperationException</b> if this collection implementation
          * does not support the operation. Such methods should (but are not required
-         * to) throw an <b>UnsupportedMethodException</b> if the invocation would
+         * to) throw an <b>UnsupportedOperationException</b> if the invocation would
          * have no effect on the collection. For example, consider a collection that
          * does not support the <b style="color: orange;"> add </b> operation. What will happen if the
          * <b style="color: orange;"> addAll </b> method is invoked on this collection, with an empty
@@ -137,7 +137,7 @@ namespace core {
          * <p>
          * An <i>unmodifiable collection</i> is a collection, all of whose
          * mutator methods (as defined above) are specified to throw
-         * <b>UnsupportedMethodException</b>. Such a collection thus cannot be
+         * <b>UnsupportedOperationException</b>. Such a collection thus cannot be
          * modified by calling any methods on it. For a collection to be properly
          * unmodifiable, any view collections derived from it must also be unmodifiable.
          * For example, if a List is unmodifiable, the List returned by
@@ -158,7 +158,7 @@ namespace core {
          * <p>
          * An <i>unmodifiable view collection</i> is a collection that is unmodifiable
          * and that is also a view onto a backing collection. Its mutator methods throw
-         * <b>UnsupportedMethodException</b>, as described above, while
+         * <b>UnsupportedOperationException</b>, as described above, while
          * reading and querying methods are delegated to the backing collection.
          * The effect is to provide read-only access to the backing collection.
          * This is useful for a component to provide users with read access to
@@ -196,7 +196,7 @@ namespace core {
          * be guaranteed to be serializable. The reason is that in general, collections
          * contain elements of other types, and it is not possible to determine statically
          * whether instances of some element type are actually serializable. For example, consider
-         * a serializable <b>Collection<E></b>, where <b>E</b> does not implement the
+         * a serializable <b>Collection&lt;<em>E</em>&gt;</b>, where <b>E</b> does not implement the
          * <b>Serializable</b> interface. The collection may be serializable, if it contains only
          * elements of some serializable subtype of <b>E</b>, or if it is empty. Collections are
          * thus said to be <i>conditionally serializable,</i> as the serializability of the collection
@@ -231,16 +231,10 @@ namespace core {
          * @see     Arrays
          */
         template<class E>
-        interface Collection : public Object {
-        private:
-            CORE_ALIAS(U, native::Unsafe);
-
-            /**
-             * Capture<T> represent all type T that extends this value type E.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
+        class Collection : public Object {
+        protected:
+            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
+            CORE_ALIAS(ElementFilter, function::Predicate<E>);
 
         public:
 
@@ -264,7 +258,7 @@ namespace core {
              *
              * @param o element whose presence in this collection is to be tested
              *
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this collection (optional)
              */
             virtual gbool contains(const E &o) const {
@@ -276,7 +270,7 @@ namespace core {
             /**
              * Returns an iterator over the elements in this collection.  There are no
              * guarantees concerning the order in which the elements are returned
-             * (unless this collection is an instance of some class that provides a
+             * (unless this collection is an INSTANCE of some class that provides a
              * guarantee).
              */
             virtual Iterator<const E> &iterator() const = 0;
@@ -301,43 +295,46 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            virtual void forEach(const Consumer<E> &action) const {
+            virtual void forEach(const ActionConsumer &action) const {
                 Iterator<const E> &it = iterator();
-                while (it.hasNext()) action.accept(it.next());
+                while (it.hasNext())
+                    action.accept(it.next());
             }
 
             /**
-             * Returns an array containing all of the elements in this collection.
+             * Returns an root containing all of the elements in this collection.
              * If this collection makes any guarantees as to what order its elements
              * are returned by its iterator, this method must return the elements in
-             * the same order. The returned array's <b style="color: green;"> runtime component type</b>
+             * the same order. The returned root's <b style="color: green;"> runtime component type</b>
              * is <b> Object</b>.
              *
-             * <p>The returned array will be "safe" in that no references to it are
+             * <p>The returned root will be "safe" in that no references to it are
              * maintained by this collection.  (In other words, this method must
-             * allocate a new array even if this collection is backed by an array).
-             * The caller is thus free to modify the returned array.
+             * allocate a new root even if this collection is backed by an root).
+             * The caller is thus free to modify the returned root.
              *
              * @note
-             * This method acts as a bridge between array-based and collection-based APIs.
-             * It returns an array whose runtime type is <b> ReferenceArray </b>.
+             * This method acts as a bridge between root-based and collection-based APIs.
+             * It returns an root whose runtime type is <b> ReferenceArray </b>.
              *
-             * @return an array, whose <b style="color: green;"> runtime component type</b>
+             * @return an root, whose <b style="color: green;"> runtime component type</b>
              *          is <b> Object</b>, containing all of the elements in this collection
              */
-            virtual ReferenceArray toArray() const {
-                // Estimate size of array; be prepared to see more or fewer elements
-                ReferenceArray r = ReferenceArray(size());
+            virtual Array<E> toArray() const {
+                if(isEmpty())
+                    return {};
+                // Estimate the size of root; be prepared to see more or fewer elements
                 Iterator<const E> &it = iterator();
+                CORE_IGNORE_DEPRECATIONS(Array<E> r = Array<E>(size());)
                 for (gint i = 0; i < r.length(); i++) {
                     if (!it.hasNext()) {
                         // fewer elements than expected
-                        ReferenceArray copy = ReferenceArray(i);
+                        CORE_IGNORE_DEPRECATIONS(Array<E> copy = Array<E>(i);)
                         for (gint j = 0; j < i; ++j)
                             copy.set(j, r[j]);
                         return copy;
                     }
-                    r.set(i, (Object &) it.next());
+                    r.set(i, it.next());
                 }
                 return r;
             }
@@ -368,17 +365,17 @@ namespace core {
              *         call
              * @throws UnsupportedMethodException if the <b>add</b> operation
              *         is not supported by this collection
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this collection
-             * @throws ArgumentException if some property of the element
+             * @throws IllegalArgumentException if some property of the element
              *         prevents it from being added to this collection
-             * @throws StateException if the element cannot be added at this
+             * @throws IllegalStateException if the element cannot be added at this
              *         time due to insertion restrictions
              */
-            virtual gbool add(const E &e) { UnsupportedMethodException().throws(__trace("core.util.Collection")); }
+            virtual gbool add(const E & /*e*/) { UnsupportedOperationException().throws(__trace("core.util.Collection")); }
 
             /**
-             * Removes a single instance of the specified element from this
+             * Removes a single INSTANCE of the specified element from this
              * collection, if it is present (optional operation).  More formally,
              * removes an element <b>e</b> such that <b>Object::equals(o, e)</b>, if
              * this collection contains one or more such elements.  Returns
@@ -387,7 +384,7 @@ namespace core {
              *
              * @param o element to be removed from this collection, if present
              * @return <b>true</b> if an element was removed as a result of this call
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this collection (optional)
              * @throws UnsupportedMethodException if the <b>remove</b> operation
              *         is not supported by this collection
@@ -408,7 +405,7 @@ namespace core {
              * in the specified collection.
              *
              * @param  c collection to be checked for containment in this collection
-             * @throws CastException if the types of one or more elements
+             * @throws ClassCastException if the types of one or more elements
              *         in the specified collection are incompatible with this
              *         collection (optional)
              * @see    contains(Object)
@@ -436,12 +433,12 @@ namespace core {
              * @return <b>true</b> if this collection changed as a result of the call
              * @throws UnsupportedMethodException if the <b>addAll</b> operation
              *         is not supported by this collection
-             * @throws CastException if the class of an element of the specified
+             * @throws ClassCastException if the class of an element of the specified
              *         collection prevents it from being added to this collection
-             * @throws ArgumentException if some property of an element of the
+             * @throws IllegalArgumentException if some property of an element of the
              *         specified collection prevents it from being added to this
              *         collection
-             * @throws StateException if not all the elements can be added at
+             * @throws IllegalStateException if not all the elements can be added at
              *         this time due to insertion restrictions
              * @see add(Object)
              */
@@ -464,7 +461,7 @@ namespace core {
              *         call
              * @throws UnsupportedMethodException if the <b>removeAll</b> method
              *         is not supported by this collection
-             * @throws CastException if the types of one or more elements
+             * @throws ClassCastException if the types of one or more elements
              *         in this collection are incompatible with the specified
              *         collection (optional)
              * @see remove(Object)
@@ -491,7 +488,7 @@ namespace core {
              * Note: The default implementation traverses all elements of the collection using
              * its <b style="color: orange;">iterator</b>.  Each matching element is removed using
              * <b style="color: orange;">Iterator::remove()</b>.  If the collection's iterator does not
-             * support removal then an <b>UnsupportedMethodException</b> will be
+             * support removal then an <b>UnsupportedOperationException</b> will be
              * thrown on the first matching element.
              *
              * @param filter a predicate which returns <b>true</b> for elements to be
@@ -502,7 +499,7 @@ namespace core {
              *         matching element cannot be removed or if, in general, removal is not
              *         supported.
              */
-            virtual gbool removeIf(const Predicate<E> &filter) {
+            virtual gbool removeIf(const ElementFilter &filter) {
                 gbool modified = false;
                 Iterator<const E> &it = iterator();
                 while (it.hasNext()) {
@@ -524,13 +521,13 @@ namespace core {
              * @return <b>true</b> if this collection changed as a result of the call
              * @throws UnsupportedMethodException if the <b>retainAll</b> operation
              *         is not supported by this collection
-             * @throws CastException if the types of one or more elements
+             * @throws ClassCastException if the types of one or more elements
              *         in this collection are incompatible with the specified
              *         collection (optional)
              * @see remove(Object)
              * @see contains(Object)
              */
-            virtual gbool retainAll(const Collection<E> &c) {
+            virtual gbool retainAll(const Collection &c) {
                 gbool modified = false;
                 Iterator<const E> &it = iterator();
                 while (it.hasNext()) {
@@ -597,7 +594,7 @@ namespace core {
              * representation consists of a list of the collection's elements in the
              * order they are returned by its iterator, enclosed in square brackets
              * (<b> "[]"</b>).  Adjacent elements are separated by the characters
-             * <b> ", "</b> (comma and space).  Elements are converted to strings as
+             * <b> ", "</b> (comma and diskSpace).  Elements are converted to strings as
              * by <b style="color: orange;"> String.valueOf(Object)</b>.
              */
             String toString() const override {
@@ -609,7 +606,7 @@ namespace core {
                 sb.append('[');
                 for (;;) {
                     const E &e = it.next();
-                    if (Collection<E>::equals(e)) sb.append("?"); else sb.append(e);
+                    if (Object::equals(e)) sb.append("?"); else sb.append(e);
                     if (!it.hasNext()) return sb.append(']').toString();
                     sb.append(',').append(' ');
                 }
@@ -622,29 +619,35 @@ namespace core {
             // }
             //
             template<class T = E>
-            class Itr CORE_FINAL : public Object {
+            class LinearIterator CORE_FINAL : public Object {
             private:
                 const Collection &root;
-                ReferenceArray array = {};
+
+                Array<E> array = {};
+
                 gint cursor = {};
+
+                CORE_FRATERNITY(Collection);
+
+                CORE_FRATERNITY_T1(List);
 
             public:
                 /**
-                 * Create new Native Iterator instance to mark begin of iterations
+                 * Create new Native Iterator INSTANCE to mark begin of iterations
                  */
-                Itr(const Collection &root, const ReferenceArray &a) : root(root), array(a) {}
+                LinearIterator(const Collection &root, const Array<E> &a) : root(root), array(a) {}
 
                 /**
-                 * Create new Native Iterator instance to mark the end of iterations
+                 * Create new Native Iterator INSTANCE to mark the end of iterations
                  */
-                Itr(const Collection &root) : root(root), cursor(root.size()) {}
+                LinearIterator(const Collection &root) : root(root), cursor(root.size()) {}
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
                         return true;
-                    if (!Class<Itr>::hasInstance(o))
+                    if (!Class<LinearIterator>::hasInstance(o))
                         return false;
-                    const Itr &it = (Itr &) o;
+                    const LinearIterator &it = (LinearIterator &) o;
                     return it.cursor == cursor && &it.root == &root;
                 }
 
@@ -653,11 +656,11 @@ namespace core {
                  */
                 inline T &operator*() {
                     if (cursor == array.length())
-                        StateException("").throws(__trace("core.util.Collection.Itr"));
+                        IllegalStateException("").throws(__trace("core.util.Collection.LinearIterator"));
                     return (T &) array[cursor++];
                 }
 
-                inline Itr &operator++() { return *this; }
+                inline LinearIterator &operator++() { return *this; }
             };
 
         public:
@@ -666,14 +669,14 @@ namespace core {
              * to mark the beginning of foreach statement.
              * by default collection not support modification during each
              */
-            inline Itr<const E> begin() const { return Itr<const E>(*this, toArray()); }
+            inline LinearIterator<const E> begin() const { return LinearIterator<const E>(*this, toArray()); }
 
             /**
              * Return The native iterator (The C iterator) used
              * to mark the ending of foreach statement.
              * by default collection not support modification during each
              */
-            inline Itr<const E> end() const { return Itr<const E>(*this); }
+            inline LinearIterator<const E> end() const { return LinearIterator<const E>(*this); }
 
             CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
                                "The valid parameters type must be a class deriving from core.Object");

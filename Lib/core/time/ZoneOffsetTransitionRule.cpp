@@ -73,11 +73,11 @@ namespace core {
                 const ZoneOffset &wallOffset) {
             switch (td) {
                 case UTC: {
-                    int const difference = wallOffset.totalSeconds() - ZoneOffset::UTC.totalSeconds();
+                    gint const difference = wallOffset.totalSeconds() - ZoneOffset::UTC.totalSeconds();
                     return dateTime.afterSeconds(difference);
                 }
                 case STANDARD: {
-                    int const difference = wallOffset.totalSeconds() - standardOffset.totalSeconds();
+                    gint const difference = wallOffset.totalSeconds() - standardOffset.totalSeconds();
                     return dateTime.afterSeconds(difference);
                 }
                 default:  // WALL
@@ -86,7 +86,7 @@ namespace core {
         }
 
         ZoneOffsetTransitionRule::ZoneOffsetTransitionRule(
-                LocalDate::Month month, int dayOfMonthIndicator,
+                LocalDate::Month month, gint dayOfMonthIndicator,
                 LocalDate::DayOfWeek dayOfWeek, const LocalTime &time,
                 gbool timeEndOfDay,
                 ZoneOffsetTransitionRule::TimeDefinition timeDefinition,
@@ -98,21 +98,21 @@ namespace core {
                 before(offsetBefore) {}
 
         ZoneOffsetTransitionRule
-        ZoneOffsetTransitionRule::of(LocalDate::Month month, int dayOfMonthIndicator, LocalDate::DayOfWeek dayOfWeek,
+        ZoneOffsetTransitionRule::of(LocalDate::Month month, gint dayOfMonthIndicator, LocalDate::DayOfWeek dayOfWeek,
                                      const LocalTime &time, gbool timeEndOfDay,
                                      ZoneOffsetTransitionRule::TimeDefinition timeDefinition,
                                      const ZoneOffset &standardOffset, const ZoneOffset &offsetBefore,
                                      const ZoneOffset &offsetAfter) {
             if (dayOfMonthIndicator < -28 || dayOfMonthIndicator > 31 || dayOfMonthIndicator == 0) {
-                ArgumentException("Day of m indicator must be between -28 and 31 inclusive excluding zero")
+                IllegalArgumentException("Day of m indicator must be between -28 and 31 inclusive excluding zero")
                         .throws(__trace("core.time.ZoneOffsetTransitionRule"));
             }
             if (timeEndOfDay && !time.equals(LocalTime::MIDNIGHT)) {
-                ArgumentException("Time must be midnight when end of day flag is true")
+                IllegalArgumentException("Time must be midnight when end of day flag is true")
                         .throws(__trace("core.time.ZoneOffsetTransitionRule"));
             }
             if (time.nano() != 0) {
-                ArgumentException("Time's nano-of-second must be zero")
+                IllegalArgumentException("Time's nano-of-second must be zero")
                         .throws(__trace("core.time.ZoneOffsetTransitionRule"));
             }
             return ZoneOffsetTransitionRule(month, dayOfMonthIndicator, dayOfWeek, time, timeEndOfDay, timeDefinition,
@@ -199,7 +199,7 @@ namespace core {
         }
 
         gint ZoneOffsetTransitionRule::hash() const {
-            int const hash = ((time.toSecondOfDay() + (timeEndOfDay ? 1 : 0)) << 15) +
+            gint const hash = ((time.toSecondOfDay() + (timeEndOfDay ? 1 : 0)) << 15) +
                              (m << 11) + ((dom + 32) << 5) +
                              (dow << 2) + (timeDef);
             return hash ^ standard.hash() ^ before.hash() ^ after.hash();
@@ -225,7 +225,7 @@ namespace core {
         }
 
         Object &ZoneOffsetTransitionRule::clone() const {
-            return  native::Unsafe::createInstance<ZoneOffsetTransitionRule>(*this);
+            return native::Unsafe::allocateInstance<ZoneOffsetTransitionRule>(*this);
         }
     } // time
 } // core

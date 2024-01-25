@@ -53,12 +53,24 @@ namespace core {
         CORE_EXPLICIT Error(String message, const Throwable &cause) CORE_NOTHROW;
 
         /**
+         * Constructs a new error with the specified cause and a detail
+         * message of <b> cause.toString()</b> (which
+         * typically contains the class and detail message of <b> cause</b>).
+         * This constructor is useful for errors that are little more than
+         * wrappers for other throwables.
+         *
+         * @param  cause the cause (which is saved for later retrieval by the
+         *         <b style="color: orange;">cause()</b> method).
+         */
+         CORE_EXPLICIT Error(const Throwable& cause);
+
+        /**
          * Return sharable copy of this error
          */
         Object &clone() const override;
     private:
         /**
-         * Thrown this instance of Error
+         * Thrown this INSTANCE of Error
          */
         void raise() && override;
     };

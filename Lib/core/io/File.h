@@ -6,14 +6,11 @@
 #define CORE23_FILE_H
 
 #include <core/String.h>
-#include <core/io/FileSystem.h>
 #include <core/net/URI.h>
-#include <core/util/function/Predicate.h>
+#include <core/function/Predicate.h>
 
 namespace core {
     namespace io {
-
-        class FileArray;
 
         /**
          * An abstract representation of file and directory pathnames.
@@ -106,11 +103,11 @@ namespace core {
          * will never change.
          */
         class File CORE_FINAL : public Object, public Comparable<File> {
-
+        private:
             /**
              * The FileSystem object representing the platform's local file system.
              */
-            static const FileSystem &fs;
+            static FileSystem &fs;
 
             /**
              * This abstract pathname's normalized pathname string. A normalized
@@ -119,7 +116,7 @@ namespace core {
              *
              * @serial
              */
-            String pathname;
+            String pathname = {};
 
             /**
              * Enum type that indicates the status of a file path.
@@ -148,9 +145,12 @@ namespace core {
              * The length of this abstract pathname's prefix, or zero if it has no
              * prefix. (Used by FileSystem classes)
              */
-            gint prefixLength;
+            gint prefixLength = {};
 
-            friend FileSystem;
+            CORE_FRATERNITY(FileSystem);
+
+            CORE_ALIAS(FileFilter, function::Predicate<File>);
+            CORE_ALIAS(FileNameFilter, function::Predicate<String>);
 
         public:
 
@@ -188,7 +188,7 @@ namespace core {
 
         public:
             /**
-             * Creates a new <b> File</b> instance by converting the given
+             * Creates a new <b> File</b> INSTANCE by converting the given
              * pathname string into an abstract pathname.  If the given string is
              * the empty string, then the result is the empty abstract pathname.
              *
@@ -204,7 +204,7 @@ namespace core {
                compatibility with the original behavior of this class. */
 
             /**
-             * Creates a new <b> File</b> instance from a parent pathname string
+             * Creates a new <b> File</b> INSTANCE from a parent pathname string
              * and a child pathname string.
              *
              * <p> The <b> parent</b> pathname string is taken to denote
@@ -212,7 +212,7 @@ namespace core {
              * denote either a directory or a file.  If the <b> child</b> pathname
              * string is absolute then it is converted into a relative pathname in a
              * system-dependent way.  If <b> parent</b> is the empty string then
-             * the new <b> File</b> instance is created by converting
+             * the new <b> File</b> INSTANCE is created by converting
              * <b> child</b> into an abstract pathname and resolving the result
              * against a system-dependent default directory.  Otherwise each pathname
              * string is converted into an abstract pathname and the child abstract
@@ -224,7 +224,7 @@ namespace core {
             CORE_EXPLICIT File(const String &parent, const String &child);
 
             /**
-             * Creates a new <b> File</b> instance from a parent abstract
+             * Creates a new <b> File</b> INSTANCE from a parent abstract
              * pathname and a child pathname string.
              *
              * <p> Otherwise the <b> parent</b> abstract pathname is taken to
@@ -232,7 +232,7 @@ namespace core {
              * to denote either a directory or a file.  If the <b> child</b>
              * pathname string is absolute then it is converted into a relative
              * pathname in a system-dependent way.  If <b> parent</b> is the empty
-             * abstract pathname then the new <b> File</b> instance is created by
+             * abstract pathname then the new <b> File</b> INSTANCE is created by
              * converting <b> child</b> into an abstract pathname and resolving
              * the result against a system-dependent default directory.  Otherwise each
              * pathname string is converted into an abstract pathname and the child
@@ -244,7 +244,7 @@ namespace core {
             CORE_EXPLICIT File(const File &parent, const String &child);
 
             /**
-             * Creates a new <b> File</b> instance by converting the given
+             * Creates a new <b> File</b> INSTANCE by converting the given
              * <b> file:</b> URI into an abstract pathname.
              *
              * <p> The exact form of a <b> file:</b> URI is system-dependent, hence
@@ -254,8 +254,8 @@ namespace core {
              * <p> For a given abstract pathname <i>f</i> it is guaranteed that
              *
              * <blockquote><code>
-             * File(</code><i>&nbsp;f</i><code>.<b style="color: orange;"> toURI()
-             * toURI</b>()).equals(</code><i>&nbsp;f</i><code>.<b style="color: orange;"> getAbsoluteFile</b>())
+             * File(</code><i>&nbsp;f</i><code>.<b style="color: orange;">
+             * toURI</b>()).equals(</code><i>&nbsp;f</i><code>.<b style="color: orange;"> absoluteFile</b>())
              * </code></blockquote>
              *
              * so long as the original abstract pathname, the URI, and the new abstract
@@ -270,7 +270,7 @@ namespace core {
              *         <b> "file"</b>, a non-empty path component, and undefined
              *         authority, query, and fragment components
              *
-             * @throws  ArgumentException
+             * @throws  IllegalArgumentException
              *          If the preconditions on the parameter do not hold
              *
              * @see toURI()
@@ -315,10 +315,8 @@ namespace core {
              * the pathname does not name a parent directory.
              *
              * @return  The abstract pathname of the parent directory named by this
-             *          abstract pathname, or <b> File("")</b> if this pathname
+             *          abstract pathname, or <b> File(".")</b> if this pathname
              *          does not name a parent
-             *
-             * @since 1.2
              */
             File parentFile() const;
 
@@ -372,8 +370,6 @@ namespace core {
              *
              * @throws  SecurityException
              *          If a required system property value cannot be accessed.
-             *
-             * @since 1.2
              */
             File absoluteFile() const;
 
@@ -460,9 +456,9 @@ namespace core {
             /**
              * Tests whether the application can read the file denoted by this
              * abstract pathname. On some platforms it may be possible to start the
-             * Java virtual machine with special privileges that allow it to read
-             * files that are marked as unreadable. Consequently this method may return
-             * <b> true</b> even though the file does not have read permissions.
+             * programs with special privileges that allow it to read files that are
+             * marked as unreadable. Consequently this method may return <b> true</b>
+             * even though the file does not have read permissions.
              *
              * @return  <b> true</b> if and only if the file specified by this
              *          abstract pathname exists <em>and</em> can be read by the
@@ -473,9 +469,9 @@ namespace core {
             /**
              * Tests whether the application can modify the file denoted by this
              * abstract pathname. On some platforms it may be possible to start the
-             * Java virtual machine with special privileges that allow it to modify
-             * files that are marked read-only. Consequently this method may return
-             * <b> true</b> even though the file is marked read-only.
+             * programs with special privileges that allow it to modify files that
+             * are marked read-only. Consequently this method may return <b> true</b>
+             * even though the file is marked read-only.
              *
              * @return  <b> true</b> if and only if the file system actually
              *          contains a file denoted by this abstract pathname <em>and</em>
@@ -487,14 +483,12 @@ namespace core {
             /**
              * Tests whether the application can execute the file denoted by this
              * abstract pathname. On some platforms it may be possible to start the
-             * Java virtual machine with special privileges that allow it to execute
-             * files that are not marked executable. Consequently this method may return
-             * <b> true</b> even though the file does not have execute permissions.
+             * programs with special privileges that allow it to execute files that
+             * are not marked executable. Consequently this method may return <b> true</b>
+             * even though the file does not have execute permissions.
              *
              * @return  <b> true</b> if and only if the abstract pathname exists
              *          <em>and</em> the application is allowed to execute the file
-             *
-             * @since 1.6
              */
             gbool isExecutable() const;
 
@@ -528,6 +522,16 @@ namespace core {
              *          <b> false</b> otherwise
              */
             gbool isFile() const;
+
+            /**
+             * Tests whether the file denoted by this abstract pathname is a symbolic
+             * link.
+             *
+             * @return  <b> true</b> if and only if the file denoted by this
+             *          abstract pathname exists <em>and</em> is a symbolic file;
+             *          <b> false</b> otherwise
+             */
+            gbool isSymbolicLink() const;
 
             /**
              * Tests whether the file named by this abstract pathname is a hidden
@@ -619,8 +623,7 @@ namespace core {
              * <P>
              * Note: this method should <i>not</i> be used for file-locking, as
              * the resulting protocol cannot be made to work reliably. The
-             * <b style="color: orange;"> java.nio.channels.FileLock FileLock</b>
-             * facility should be used instead.
+             * <b style="color: orange;"> FileLock</b> facility should be used instead.
              *
              * @return  <b> true</b> if the named file does not exist and was
              *          successfully created; <b> false</b> if the named file
@@ -632,6 +635,33 @@ namespace core {
             gbool createFile() const;
 
             /**
+             * Automatically create a new shortcut named by this abstract
+             * pathname and that have target denoted by specified pathname
+             *
+             * @param target The abstract pathname of link target
+             */
+            gbool createLink(const File& target) const;
+
+            /**
+             * Automatically create a new hard link named by this abstract
+             * pathname and that have target denoted by specified pathname
+             *
+             * @param target The abstract pathname of link target
+             */
+            gbool createHardLink(const File& target) const;
+
+            /**
+             * Automatically create a new symbolic link named by this abstract
+             * pathname and that have target denoted by specified abstract
+             * pathname
+             *
+             * @param target The abstract pathname of link target
+             *
+             * @return true If was successfully created
+             */
+            gbool createSymbolicLink(const File& target) const;
+
+            /**
              * Deletes the file or directory denoted by this abstract pathname.  If
              * this pathname denotes a directory, then the directory must be empty in
              * order to be deleted.
@@ -640,6 +670,14 @@ namespace core {
              *          successfully deleted; <b> false</b> otherwise
              */
             gbool deleteFile() const;
+
+            /**
+             * Move the file or directory denoted by this abstract pathname to trash.
+             *
+             * @return  <b> true</b> if and only if the file or directory is
+             *          successfully deleted; <b> false</b> otherwise
+             */
+            gbool recycleFile() const;
 
             /**
              * Requests that the file or directory denoted by this abstract
@@ -658,53 +696,53 @@ namespace core {
             void deleteOnExit() const;
 
             /**
-             * Returns an array of strings naming the files and directories in the
+             * Returns an root of strings naming the files and directories in the
              * directory denoted by this abstract pathname.
              *
              * <p> If this abstract pathname does not denote a directory, then this
-             * method returns <b> empty array</b>.  Otherwise an array of strings is
+             * method returns <b> empty root</b>.  Otherwise an root of strings is
              * returned, one for each file or directory in the directory.  Names
              * denoting the directory itself and the directory's parent directory are
              * not included in the result.  Each string is a file name rather than a
              * complete path.
              *
-             * <p> There is no guarantee that the name strings in the resulting array
+             * <p> There is no guarantee that the name strings in the resulting root
              * will appear in any specific order; they are not, in particular,
              * guaranteed to appear in alphabetical order.
              *
-             * @return  An array of strings naming the files and directories in the
-             *          directory denoted by this abstract pathname.  The array will be
-             *          empty if the directory is empty.  Returns <b> empty array </b> if
+             * @return  An root of strings naming the files and directories in the
+             *          directory denoted by this abstract pathname.  The root will be
+             *          empty if the directory is empty.  Returns <b> empty root </b> if
              *          this abstract pathname does not denote a directory, or if an
              *          I/O error occurs.
              */
             StringArray childList() const;
 
             /**
-             * Returns an array of strings naming the files and directories in the
+             * Returns an root of strings naming the files and directories in the
              * directory denoted by this abstract pathname that satisfy the specified
              * filter.  The behavior of this method is the same as that of the
-             * <b style="color: orange;"> childList()</b> method, except that the strings in the returned array
+             * <b style="color: orange;"> childList()</b> method, except that the strings in the returned root
              * must satisfy the filter.
              *
              * @param  filter
              *         A filename filter
              *
-             * @return  An array of strings naming the files and directories in the
+             * @return  An root of strings naming the files and directories in the
              *          directory denoted by this abstract pathname that were accepted
-             *          by the given <b> filter</b>.  The array will be empty if the
+             *          by the given <b> filter</b>.  The root will be empty if the
              *          directory is empty or if no names were accepted by the filter.
-             *          Returns <b> empty array</b> if this abstract pathname does not denote
+             *          Returns <b> empty root</b> if this abstract pathname does not denote
              *          a directory, or if an I/O error occurs.
              */
-            StringArray childList(const util::Predicate<String> &filter) const;
+            StringArray childList(const FileNameFilter &filter) const;
 
             /**
-             * Returns an array of abstract pathnames denoting the files in the
+             * Returns an root of abstract pathnames denoting the files in the
              * directory denoted by this abstract pathname.
              *
              * <p> If this abstract pathname does not denote a directory, then this
-             * method returns <b> empty array</b>.  Otherwise an array of <b> File</b> objects
+             * method returns <b> empty root</b>.  Otherwise an root of <b> File</b> objects
              * is returned, one for each file or directory in the directory.  Pathnames
              * denoting the directory itself and the directory's parent directory are
              * not included in the result.  Each resulting abstract pathname is
@@ -714,35 +752,35 @@ namespace core {
              * pathname is relative then each resulting pathname will be relative to
              * the same directory.
              *
-             * <p> There is no guarantee that the name strings in the resulting array
+             * <p> There is no guarantee that the name strings in the resulting root
              * will appear in any specific order; they are not, in particular,
              * guaranteed to appear in alphabetical order.
              *
-             * @return  An array of abstract pathnames denoting the files and
+             * @return  An root of abstract pathnames denoting the files and
              *          directories in the directory denoted by this abstract pathname.
-             *          The array will be empty if the directory is empty.  Returns
-             *          <b> empty array</b> if this abstract pathname does not denote a
+             *          The root will be empty if the directory is empty.  Returns
+             *          <b> empty root</b> if this abstract pathname does not denote a
              *          directory, or if an I/O error occurs.
              */
             FileArray childFiles() const;
 
             /**
-             * Returns an array of abstract pathnames denoting the files and
+             * Returns an root of abstract pathnames denoting the files and
              * directories in the directory denoted by this abstract pathname that
              * satisfy the specified filter.  The behavior of this method is the same
              * as that of the <b style="color: orange;"> childFiles()</b> method, except that the pathnames in
-             * the returned array must satisfy the filter.
+             * the returned root must satisfy the filter.
              *
              * @param  filter
              *         A filename filter
              *
-             * @return  An array of abstract pathnames denoting the files and
+             * @return  An root of abstract pathnames denoting the files and
              *          directories in the directory denoted by this abstract pathname.
-             *          The array will be empty if the directory is empty.  Returns
-             *          <b> empty array</b> if this abstract pathname does not denote a
+             *          The root will be empty if the directory is empty.  Returns
+             *          <b> empty root</b> if this abstract pathname does not denote a
              *          directory, or if an I/O error occurs.
              */
-            FileArray childFiles(const util::Predicate<File> &filter) const;
+            FileArray childFiles(const FileFilter &filter) const;
 
             /**
              * Creates the directory named by this abstract pathname.
@@ -790,36 +828,82 @@ namespace core {
              * <b style="color: orange;"> File.copy(File, CopyOption...)</b>, and <b style="color: orange;"> File.move(File, CopyOption...)</b>
              * methods to configure how a file is copied or moved.
              */
-            enum CopyOption : gbyte {
+            enum CopyOption : gshort {
                 /**
                  * No option
                  */
-                DEFAULT_OPTION = 0,
+                DEFAULT_OPTION = 0x00000000,
 
                 /**
-                 * Replace an existing file if it exists.
+                 * Replace contains of destination file if it exists.
+                 *
+                 * Operation fail if source or destination file is directory
                  */
-                REPLACE_EXISTING = 1,
+                REPLACE_EXISTING = 0x00000001,
 
                 /**
-                 * Copy attributes to the new file.
+                 * The copy operation is doe with encrypted I/O.
+                 * is recommended for large files
                  */
-                COPY_ATTRIBUTES = 2,
+                COPY_NO_BUFFERING = 0x00000002,
 
                 /**
-                 * Move the file as an atomic file system operation.
+                 * This option is used to copy symbolic link, not target (iff The source is symbolic link)
+                 * otherwise the copy is normal.
+                 * <ul>
+                 * <li> If CopyOption.COPY_SYMLINK is specified.
+                 * <ol>
+                 *    <li> If source file is symbolic link,
+                 *          The destination will be the symbolic link, not the source target
+                 *    <li> If source file isn't symbolic link, The destination is doing normally
+                 *    <li> If destination file exists and is symbolic link, it target will be replaced
+                 *    <li> If CopyOption.REPLACE_EXISTING isn't specified and destination file exists and is symbolic link,
+                 *          The operation fail.
+                 *  </ol>
+                 * <li> If CopyOption.COPY_SYMLINK isn't specified
+                 * <ol>
+                 *    <li> If CopyOption.REPLACE_EXISTING isn't specified and destination file exists and is symbolic link,
+                 *          The operation fail if and only if the source is symbolic link
+                 *    <li> If CopyOption.REPLACE_EXISTING is specified, the operation is doing normally.
+                 * </ol>
+                 * </ul>
                  */
-                ATOMIC_MOVE = 4,
+                COPY_SYMLINK = 0x00000004,
 
                 /**
-                 * Do not follow symbolic links.
+                 * The copy progress can be restarted after previous
+                 * failing.
                  */
-                NOFOLLOW_LINKS = 8,
+                COPY_RESTARTABLE = 0x00000008,
 
                 /**
-                 * The copy may be interrupted by the method.
+                 * The trying of encrypted file is success
+                 * even if the destination copy can't be encrypted
                  */
-                INTERRUPTIBLE = 16,
+                COPY_DECRYPTED_DESTINATION = 0x00000020,
+
+                /**
+                 * The move option is simulated by copying and deleting.
+                 * This recommended to use this option if destination
+                 * file is in other filesystem.
+                 */
+                MOVE_BY_COPY = 0x00000040,
+
+                /**
+                 * For future usage
+                 */
+                MOVE_CREATE_HARDLINK = 0x00000080,
+
+                /**
+                 * Move after system rebooting
+                 */
+                MOVE_UNTIL_REBOOT = 0x00000100,
+
+                /**
+                 * Move if and only if after operation the source if will be
+                 * always trackable.
+                 */
+                MOVE_TRACKABLE = 0x00000200,
             };
 
             /**
@@ -846,7 +930,7 @@ namespace core {
              * @return  <b> true</b> if and only if the renaming succeeded;
              *          <b> false</b> otherwise
              */
-            gbool moveTo(const File &dest, gint copyOptions) const;
+            gbool moveTo(const File &dest, gint copyOptions...) const;
 
             /**
              * Sets the last-modified time of the file or directory named by this
@@ -865,7 +949,7 @@ namespace core {
              * @return <b> true</b> if and only if the operation succeeded;
              *          <b> false</b> otherwise
              *
-             * @throws  ArgumentException  If the argument is negative
+             * @throws  IllegalArgumentException  If the argument is negative
              */
             gbool setLastModifiedTime(glong time) const;
 
@@ -886,7 +970,7 @@ namespace core {
              * @return <b> true</b> if and only if the operation succeeded;
              *          <b> false</b> otherwise
              *
-             * @throws  ArgumentException  If the argument is negative
+             * @throws  IllegalArgumentException  If the argument is negative
              */
             gbool setLastAccessTime(glong time) const;
 
@@ -907,7 +991,7 @@ namespace core {
              * @return <b> true</b> if and only if the operation succeeded;
              *          <b> false</b> otherwise
              *
-             * @throws  ArgumentException  If the argument is negative
+             * @throws  IllegalArgumentException  If the argument is negative
              */
             gbool setCreationTime(glong time) const;
 
@@ -1028,8 +1112,6 @@ namespace core {
              *          <b> readable</b> is <b> false</b> and the underlying
              *          file system does not implement a read permission, then the
              *          operation will fail.
-             *
-             * @since 1.6
              */
             gbool setReadable(gbool readable) const;
 
@@ -1102,7 +1184,7 @@ namespace core {
              * removable media and the disconnecting or unmounting of physical or
              * virtual disk drives.
              *
-             * <p> This method returns an array of <b> File</b> objects that denote the
+             * <p> This method returns an root of <b> File</b> objects that denote the
              * root directories of the available filesystem roots.  It is guaranteed
              * that the canonical pathname of any file physically present on the local
              * machine will begin with one of the roots returned by this method.
@@ -1117,9 +1199,9 @@ namespace core {
              * platform will be returned by this method, while <b> File</b> objects
              * containing UNC pathnames will not be returned by this method.
              *
-             * @return  An array of <b> File</b> objects denoting the available
-             *          filesystem roots, or <b> empty array</b> if the set of roots could not
-             *          be determined.  The array will be empty if there are no
+             * @return  An root of <b> File</b> objects denoting the available
+             *          filesystem roots, or <b> empty root</b> if the set of roots could not
+             *          be determined.  The root will be empty if there are no
              *          filesystem roots.
              */
             static FileArray rootFiles();
@@ -1137,7 +1219,7 @@ namespace core {
             glong totalDiskSpace() const;
 
             /**
-             * Returns the available space of the partition <a href="">named</a> by this
+             * Returns the available diskSpace of the partition <a href="">named</a> by this
              * abstract pathname. If the total number of bytes in the partition is
              * greater than <b style="color: orange;"> Long.MAX_VALUE</b>, then <b> Long.MAX_VALUE</b> will be
              * returned.
@@ -1149,7 +1231,7 @@ namespace core {
             glong availableDiskSpace() const;
 
             /**
-             * Returns the usable space of the partition <a href="">named</a> by this
+             * Returns the usable diskSpace of the partition <a href="">named</a> by this
              * abstract pathname. If the total number of bytes in the partition is
              * greater than <b style="color: orange;"> Long.MAX_VALUE</b>, then <b> Long.MAX_VALUE</b> will be
              * returned.
@@ -1223,7 +1305,7 @@ namespace core {
              *
              * @return  An abstract pathname denoting a newly-created empty file
              *
-             * @throws  ArgumentException
+             * @throws  IllegalArgumentException
              *          If the <b> prefix</b> argument contains fewer than three
              *          characters
              *
@@ -1246,7 +1328,7 @@ namespace core {
              *
              * @return  An abstract pathname denoting a newly-created empty file
              *
-             * @throws  ArgumentException
+             * @throws  IllegalArgumentException
              *          If the <b> prefix</b> argument contains fewer than three
              *          characters
              *
@@ -1268,8 +1350,6 @@ namespace core {
              *          lexicographically less than the argument, or a value greater
              *          than zero if this abstract pathname is lexicographically
              *          greater than the argument
-             *
-             * @since   1.2
              */
             gint compareTo(const File &pathname) const override;
 
@@ -1315,7 +1395,32 @@ namespace core {
              *
              * @return  The string form of this abstract pathname
              */
-            String toString() const;
+            String toString() const override;
+
+            Object &clone() const override;
+
+            /**
+             * Return abstract pathname representing the current directory.
+             * it is equivalent to call File("."_S)
+             */
+            static File currentDirectory();
+
+            /**
+             * Set current directory with specified abstract pathname
+             */
+            static gbool setCurrentDirectory(const File& f);
+
+            /**
+             * Return abstract pathname representing the path of
+             * current user directory. it is equivalent to File(""_S)
+             */
+            static File home();
+
+            /**
+             * Return abstract pathname representing the path of
+             * current user for temporary files
+             */
+            static File temp();
         };
 
     }

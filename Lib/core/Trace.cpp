@@ -2,26 +2,23 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Trace.h"
-#include "ArgumentException.h"
-#include "Character.h"
-#include "Integer.h"
-#include "CastException.h"
+#include <core/StringBuffer.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     namespace {
 
-        static gint findTemplateClosing(const String &str, gint start, gint limit) {
+        gint findTemplateClosing(const String &str, gint start, gint limit) {
             for (gint i = start + 1; i < limit; ++i) {
-                gchar ch = str.charAt(i);
+                gchar const ch = str.charAt(i);
                 if (ch == '>')
                     return i;
                 else if (ch == '<') {
-                    gint j = findTemplateClosing(str, i, limit);
+                    gint const j = findTemplateClosing(str, i, limit);
                     if (j == limit)
                         break;
                     i = j;
@@ -30,19 +27,23 @@ namespace core {
             return limit;
         }
 
-        static gint findParenthesesClosing(const String &str, gint start, gint limit) {
+        gint findParenthesesClosing(const String &str, gint start, gint limit) {
             for (gint i = start + 1; i < limit; ++i) {
-                gchar ch = str.charAt(i);
+                gchar const ch = str.charAt(i);
                 if (ch == ')')
                     return i;
                 else if (ch == '(') {
-                    gint j = findParenthesesClosing(str, i, limit);
+                    gint const j = findParenthesesClosing(str, i, limit);
                     if (j == limit)
                         break;
                     i = j;
                 }
             }
             return limit;
+        }
+
+        IllegalArgumentException error(const String &message, gint index) {
+            return IllegalArgumentException(message + u": at index "_S + String::valueOf(index));
         }
     }
 
@@ -54,49 +55,53 @@ namespace core {
         // remove all template specification (<.*>)
         gint i = str.indexOf('<');
         while (i >= 0) {
-            gint j = findTemplateClosing(str, i, length);
-            if (j == length)
-                ArgumentException("Malformed class name").throws(__trace("core.Trace"));
+            gint const j = findTemplateClosing(str, i, length);
+            if (j == length) {
+                IllegalArgumentException(u"Malformed classname: at index "_S + String::valueOf(i))
+                        .throws(__trace(u"core.Trace"_S));
+            }
             str2 += str.subString(last, i);
             i = j + 1;
             last = i;
             i = str.indexOf('<', last);
         }
         str2 += str.subString(last);
-        str = str2.replace(" ", "");
+        str = str2;
         length = str.length();
-        gbool letter = false;
-        gbool sep = false; // "::" or '.' found
-        gbool par = false;
+        gbool letter = false; // a-z or A-Z or $ or _ found
+        gbool separator = false; // "::" or '.' found
+        gbool const par = false;
         for (gint j = 0; j < length; ++j) {
             gchar ch = str.charAt(j);
             if (Character::isLetterOrNumber(ch) || ch == '$' || ch == '_') {
-                if (Character::isNumber(ch)) {
-                    if (!letter)
-                        ArgumentException("Malformed class name").throws(__trace("core.Trace"));
+                if (Character::isNumber(ch) && !letter) {
+                    error(u"Malformed classname"_S, j).throws(__trace(u"core.Trace"_S));
                 }
                 letter = true;
-                sep = false;
+                separator = false;
             } else if (ch == ':') {
-                if (j + 1 >= length || sep)
-                    // A:::B -> error
-                    ArgumentException("Malformed class name").throws(__trace("core.Trace"));
+                if (j + 1 >= length || separator) {
+                    // A:::B or A.:B -> error
+                    error(u"Malformed classname"_S, j).throws(__trace(u"core.Trace"_S));
+                }
                 ch = str.charAt(j + 1);
-                if (ch != ':')
+                if (ch != ':') {
                     // A:B -> error
-                    ArgumentException("Malformed class name").throws(__trace("core.Trace"));
-                sep = true;
+                    error(u"Malformed classname"_S, j + 1).throws(__trace(u"core.Trace"_S));
+                }
+                separator = true;
                 j += 1;
             } else if (ch == '.') {
-                if (sep)
-                    // A..B -> error
-                    ArgumentException("Malformed class name").throws(__trace("core.Trace"));
-                sep = true;
+                if (separator) {
+                    // A..B or A::.B -> error
+                    error(u"Malformed classname"_S, j).throws(__trace(u"core.Trace"_S));
+                }
+                separator = true;
                 j += 1;
             } else if (ch == '(' || ch == ')') {
                 continue;
             } else
-                ArgumentException("Malformed class name").throws(__trace("core.Trace"));
+                error(u"Malformed classname"_S, j).throws(__trace(u"core.Trace"_S));
         }
         return str;
     }
@@ -109,12 +114,17 @@ namespace core {
         // remove all template specification (<.*>)
         gint i = str.indexOf('<');
         while (i >= 0) {
-            gint j = findTemplateClosing(str, i, length);
+            gint const j = findTemplateClosing(str, i, length);
             if (j == length)
-                ArgumentException("Malformed method name").throws(__trace("core.Trace"));
+                error(u"Malformed method name"_S, i).throws(__trace(u"core.Trace"_S));
             str2 += str.subString(last, i);
-            if (str.startsWith("lambda(", i + 1))
-                str2 += "<lambda>";
+            if (str.startsWith(u"lambda("_S, i + 1)) {
+                gint const k = findParenthesesClosing(str, 6, length);
+                if (k == length) {
+                    error(u"Malformed classname"_S, 6).throws(__trace(u"core.Trace"_S));
+                }
+                str2 += u"<lambda>"_S;
+            }
             i = j + 1;
             last = i;
             i = str.indexOf('<', last);
@@ -127,9 +137,9 @@ namespace core {
         last = 0;
         i = str.indexOf('(');
         while (i >= 0) {
-            gint j = findParenthesesClosing(str, i, length);
+            gint const j = findParenthesesClosing(str, i, length);
             if (j == length)
-                ArgumentException("Malformed method name").throws(__trace("core.Trace"));
+                IllegalArgumentException("Malformed method name").throws(__trace("core.Trace"));
             str2 += str.subString(last, i);
             i = j + 1;
             last = i;
@@ -143,90 +153,77 @@ namespace core {
             if (!str2.startsWith("[with ", i + 1))
                 str2 = str2.subString(i + 1);
         }
+        // return definition of template types
         i = str2.indexOf(" [with ");
         if (i >= 0) {
             str2 = str2.subString(0, i);
         }
         str = str2;
-        if (str.startsWith("operator")) {
+        if (str.startsWith(u"operator"_S)) {
             if (str.length() == 8)
-                str = "<call>";
-            else if (str.endsWith("[]"))
-                str = "<get>";
-            else if (str.endsWith("="))
-                str = "<assign>";
-            else if (str.endsWith("=="))
-                str = "<eq>";
-            else if (str.endsWith("!="))
-                str = "<ne>";
-            else if (str.endsWith("<"))
-                str = "<lt>";
-            else if (str.endsWith("<="))
-                str = "<le>";
-            else if (str.endsWith(">"))
-                str = "<gt>";
-            else if (str.endsWith(">="))
-                str = "<ge>";
-            else if (str.endsWith("->"))
-                str = "<action>";
-            else if (str.endsWith("+"))
-                str = "<add>";
-            else if (str.endsWith("+="))
-                str = "<add-assign>";
-            else if (str.endsWith("++"))
-                str = "<inc>";
-            else if (str.endsWith("-"))
-                str = "<sub>";
-            else if (str.endsWith("-="))
-                str = "<sub-assign>";
-            else if (str.endsWith("--"))
-                str = "<dec>";
-            else if (str.endsWith("&"))
-                str = "<and>";
-            else if (str.endsWith("&="))
-                str = "<and-assign>";
-            else if (str.endsWith("&&"))
-                str = "<and>";
-            else if (str.endsWith("|"))
-                str = "<or>";
-            else if (str.endsWith("|="))
-                str = "<or-assign>";
-            else if (str.endsWith("||"))
-                str = "<or>";
-            else if (str.endsWith("*"))
-                str = "<mul>";
-            else if (str.endsWith("*="))
-                str = "<mul-assign>";
-            else if (str.endsWith("/"))
-                str = "<div>";
-            else if (str.endsWith("/="))
-                str = "<div-assign>";
-            else if (str.endsWith("^"))
-                str = "<xor>";
-            else if (str.endsWith("^="))
-                str = "<xor-assign>";
-            else if (str.endsWith("<=>"))
-                str = "<ord>";
-            else if (str.endsWith("!"))
-                str = "<not>";
-            else if (str.endsWith("~"))
-                str = "<compl>";
-            else if (str.startsWith("\"\"", 8))
-                str = "<uld>";
-            else if (str.startsWith("u\"\"", 8))
-                str = "<u16-uld>";
-            else if (str.startsWith("U\"\"", 8))
-                str = "<u32-uld>";
-            else if (str.startsWith("L\"\"", 8))
-                str = "<w-uld>";
-            else if (str.startsWith("R\"\"", 8))
-                str = "<raw-uld>";
-            else if (str.startsWith("uR\"()\"", 8))
-                str = "<u16raw-uld>";
-            else if (str.startsWith("UR\"()\"", 8))
-                str = "<u32raw-uld>";
-            else if (str.startsWith("LR\"()\"", 8))
-                str = "<wraw-uld>";
+                str = u"<CALL>"_S;
+            else if (str.endsWith(u"[]"_S))
+                str = u"<GET>"_S;
+            else if (str.endsWith(u"="_S))
+                str = u"<SET>"_S;
+            else if (str.endsWith(u"=="_S))
+                str = u"<EQ>"_S;
+            else if (str.endsWith(u"!="_S))
+                str = u"<NE>"_S;
+            else if (str.endsWith(u"<"_S))
+                str = u"<LT>"_S;
+            else if (str.endsWith(u"<="_S))
+                str = u"<LE>"_S;
+            else if (str.endsWith(u">"_S))
+                str = u"<GT>"_S;
+            else if (str.endsWith(u">="_S))
+                str = u"<GE>"_S;
+            else if (str.endsWith(u"->"_S))
+                str = u"<PTR>"_S;
+            else if (str.endsWith(u"+"_S))
+                str = u"<ADD>"_S;
+            else if (str.endsWith(u"+="_S))
+                str = u"<INC_SET>"_S;
+            else if (str.endsWith(u"++"_S))
+                str = u"<INC>"_S;
+            else if (str.endsWith(u"-"_S))
+                str = u"<SUB>"_S;
+            else if (str.endsWith(u"-="_S))
+                str = u"<DEC_SET>"_S;
+            else if (str.endsWith(u"--"_S))
+                str = u"<DEC>"_S;
+            else if (str.endsWith(u"&"_S))
+                str = u"<AND>"_S;
+            else if (str.endsWith(u"&="_S))
+                str = u"<AND_SET>"_S;
+            else if (str.endsWith(u"&&"_S))
+                str = u"<AND>"_S;
+            else if (str.endsWith(u"|"_S))
+                str = u"<OR>"_S;
+            else if (str.endsWith(u"|="_S))
+                str = u"<OR_SET>"_S;
+            else if (str.endsWith(u"||"_S))
+                str = u"<OR>"_S;
+            else if (str.endsWith(u"*"_S))
+                str = u"<MUL>"_S;
+            else if (str.endsWith(u"*="_S))
+                str = u"<MUL_SET>"_S;
+            else if (str.endsWith(u"/"_S))
+                str = u"<DIV>"_S;
+            else if (str.endsWith(u"/="_S))
+                str = u"<DIV_SET>"_S;
+            else if (str.endsWith(u"^"_S))
+                str = u"<XOR>"_S;
+            else if (str.endsWith(u"^="_S))
+                str = u"<XOR_SET>"_S;
+            else if (str.endsWith(u"<=>"_S))
+                str = u"<ORD>"_S;
+            else if (str.endsWith(u"!"_S))
+                str = u"<NOT>"_S;
+            else if (str.endsWith(u"~"_S))
+                str = u"<NOT>"_S;
+            else if (str.startsWith(uR"("")"_S, 8))
+                str = u"<UDL>"_S;
         }
         length = str.length();
         gbool letter = false;
@@ -236,22 +233,22 @@ namespace core {
             if (Character::isLetterOrNumber(ch) || ch == '$' || ch == '_') {
                 if (Character::isNumber(ch)) {
                     if (!letter)
-                        ArgumentException("Malformed method name: " + str).throws(__trace("core.Trace"));
+                        error(u"Malformed method name"_S, j).throws(__trace(u"core.Trace"_S));
                 }
                 letter = true;
                 sep = false;
             } else if (ch == ':') {
                 if (j + 1 >= length || sep)
-                    ArgumentException("Malformed method name: " + str).throws(__trace("core.Trace"));
+                    error(u"Malformed method name"_S, j).throws(__trace(u"core.Trace"_S));
                 ch = str.charAt(j + 1);
                 if (ch != ':')
-                    ArgumentException("Malformed method name: " + str).throws(__trace("core.Trace"));
+                    error(u"Malformed method name"_S, j).throws(__trace(u"core.Trace"_S));
                 sep = true;
                 j += 1;
             } else if (ch == '(' || ch == ')' || ch == '<' || ch == '>' || ch == '{' || ch == '}')
                 continue;
             else
-                ArgumentException("Malformed method name: " + str).throws(__trace("core.Trace"));
+                error(u"Malformed method name"_S, j).throws(__trace(u"core.Trace"_S));
         }
         // remove redundant classname and namespace
         i = str.lastIndexOf("::");
@@ -271,23 +268,31 @@ namespace core {
         if (className.isASCII()) {
             clsName = resolveClassName(className);
         } else {
-            ArgumentException("Illegal class name, for input \"" + className + "\"").throws(__trace("core.Trace"));
+            for (int i = 0; i < className.length(); i += 1) {
+                gchar const c = className.charAt(i);
+                if ('0' <= c && c <= '9' && i == 0) {
+                    error(u"Malformed method name"_S, i).throws(__trace(u"core.Trace"_S));
+                } else if (c > 0x7F) {
+                    error(u"Invalid classname"_S, i).throws(__trace(u"core.Trace"_S));
+                }
+            }
         }
         if (methodName.isASCII() && !methodName.isBlank()) {
             metName = resolveMethodName(methodName);
             if (metName.equals(className))
                 metName = "<constructor>";
             else {
-                gint i = clsName.lastIndexOf("::");
+                gint const i = clsName.lastIndexOf("::");
                 if (i >= 0 && i + 2 < clsName.length()) {
-                    String tmp = clsName.subString(i + 2);
+                    String const tmp = clsName.subString(i + 2);
                     if (metName.equals(tmp)) {
-                        metName = "<constructor>";
+                        metName = "<init>";
                     }
                 }
             }
         } else {
-            ArgumentException("Illegal method name, for input \"" + methodName + "\"").throws(__trace("core.Trace"));
+            IllegalArgumentException("Illegal method name, for input \"" + methodName + "\"").throws(
+                    __trace("core.Trace"));
         }
         if (!fileName.isBlank()) {
             fName = fileName;
@@ -299,32 +304,29 @@ namespace core {
             : Trace("", "", className, methodName, fileName, lineNumber) {}
 
     String Trace::toString() const {
-        String sb;
+        StringBuffer sb;
         if (!modName.isBlank()) {
-            sb += modName;
+            sb.append(modName);
             if (!modVersion.isBlank()) {
-                sb += "@";
-                sb += modVersion;
+                sb.append(u'@').append(modVersion);
             }
-            sb += "/";
+            sb.append(u'/');
         }
         if (!clsName.isBlank()) {
-            sb += clsName;
-            sb += ".";
+            sb.append(clsName.replace(u'.'_S, "::")).append(u'.');
         }
-        sb += metName.startsWith(clsName) ? "<init>" : metName;
+        sb.append(metName);
         if (fLine == 0)
-            sb += "(#)";
+            sb.append(u'(').append(u'#');
         else {
             if (!fName.isBlank()) {
-                sb += "(";
-                sb += fName;
-                sb += ":";
-            } else
-                sb += "(#:";
-            sb += Integer::toString(fLine) + ")";
+                sb.append(u'(').append(fName).append(u':');
+            } else {
+                sb.append(u'(').append(u'#').append(u':');
+            }
+            sb.append(fLine);
         }
-        return sb;
+        return sb.append(u')').toString();
     }
 
     gbool Trace::equals(const Object &object) const {
@@ -358,7 +360,7 @@ namespace core {
 
     gint Trace::lineNumber() const { return fLine; }
 
-    Object &Trace::clone() const { return U::createInstance<Trace>(*this); }
+    Object &Trace::clone() const { return Unsafe::allocateInstance<Trace>(*this); }
 
     gint Trace::hash() const {
         return (((modName.hash()

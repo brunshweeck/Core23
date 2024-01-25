@@ -13,7 +13,7 @@ namespace core {
 
     /**
      * Class represent type utility. contains the
-     * method to treat directly with class and instance.
+     * method to treat directly with class and INSTANCE.
      * For other class operations see header file <core/private/Unsafe.h>
      */
     template<class T>
@@ -21,7 +21,7 @@ namespace core {
     private:
 
         /**
-         * Construct new instance of Class
+         * Construct new INSTANCE of Class
          */
         CORE_FAST Class() = default;
 
@@ -274,7 +274,7 @@ namespace core {
         static CORE_FAST gbool isPointer() { return TEST_RESULT<5, T>(); }
 
         /**
-         * Return true if this type is static array type
+         * Return true if this type is static root type
          */
         static CORE_FAST gbool isArray() { return TEST_RESULT<9, NRef>(); }
 
@@ -319,7 +319,7 @@ namespace core {
         static CORE_FAST gbool isClass() { return TEST_RESULT<17, NRef>(); }
 
         /**
-         * Return true if this type is aggregate (class, union or array)
+         * Return true if this type is aggregate (class, union or root)
          */
         static CORE_FAST gbool isAggregate() { return TEST_RESULT<33, T>() || isClass() || isArray() || __is_union(T); }
 
@@ -329,7 +329,7 @@ namespace core {
         static CORE_FAST gbool isDestructible() { return TEST_RESULT<32, NCVRef>(); }
 
         /**
-         * Return true if instance of this type is constructible with values of specified types
+         * Return true if INSTANCE of this type is constructible with values of specified types
          *
          * @tparam Params The arguments parameters types
          */
@@ -337,7 +337,12 @@ namespace core {
         static CORE_FAST gbool isConstructible() { return MULTI_TEST_RESULT<18, T, Params...>(); }
 
         /**
-         * Return true if value of specified type is assignable to instance of this type
+         * Return true if INSTANCE of this type not require argument for him constructor
+         */
+        static CORE_FAST gbool isDefaultConstructible() { return isConstructible(); }
+
+        /**
+         * Return true if value of specified type is assignable to INSTANCE of this type
          *
          * @param U
          *        The assigning value type
@@ -417,7 +422,7 @@ namespace core {
         static CORE_FAST gbool isVoid() { return Class<NCVol>::template isSimilar<void>(); }
 
         /**
-         * Return true if instance of this type is callable with values of specified type
+         * Return true if INSTANCE of this type is callable with values of specified type
          *
          * @tparam Params The arguments types
          */
@@ -447,7 +452,7 @@ namespace core {
         }
 
         /**
-         * Return true if specified object is instance of this template type.
+         * Return true if specified object is INSTANCE of this template type.
          * Example:
          * <pre>
          * String str = "hello my friend";      <br>
@@ -458,15 +463,15 @@ namespace core {
          * </pre>
          *
          * @param o
-         *          The object instance to be tested
+         *          The object INSTANCE to be tested
          */
         template<class U>
-        static CORE_FAST gbool hasInstance(U &&o) {
+        static CORE_FAST gbool hasInstance(U &&obj) {
             CORE_STATIC_ASSERT(Class<T>::isClass(), "This Test require class type as Target");
             CORE_STATIC_ASSERT(Class<U>::isClass(), "This Test require class type as Arguments");
             CORE_ALIAS(NVRef, typename Class<NCVRef>::Const);
             CORE_ALIAS(NVRefPtr, typename Class<NVRef>::Ptr);
-            return CORE_DYN_CAST(NVRefPtr, &o);
+            return CORE_DYN_CAST(NVRefPtr, &obj) != 0;
         }
 
         /**
@@ -491,7 +496,7 @@ namespace core {
 
         /**
          * Return field represent the return type of value returned after calling
-         * instance of this template type as function with specified type parameters.
+         * INSTANCE of this template type as function with specified type parameters.
          *
          * <p>
          * Note: Return exist if and only of this template type is callable with instances
@@ -546,6 +551,40 @@ namespace core {
         template<class ...V>
         static CORE_FAST gbool oneIsTrue(gbool b, V &&...v) { return b || oneIsTrue((V &&) v...); }
 
+    private:
+        template<class Value, class V>
+        class ValueOrVoid {
+        public:
+            static CORE_FAST Value cast(V value) {
+                CORE_STATIC_ASSERT(Class<V>::template isConvertible<T>(), "Could not cast value");
+                CORE_ALIAS(Vr, , typename Class<V>::template IfElse<
+                        Class<V>::isReference() || Class<V>::isPrimitive(), V &&>);
+                return (Value) (Vr) value;
+            }
+        };
+
+        template<class Value>
+        class ValueOrVoid<Value, Value> {
+        public:
+            static CORE_FAST Value cast(Value value) {
+                CORE_ALIAS(Vr, , typename Class<Value>::template IfElse<
+                        Class<Value>::isReference() || Class<Value>::isPrimitive(), Value &&>);
+                return (Vr) value;
+            }
+        };
+
+        template<class Value>
+        class ValueOrVoid<void, Value> {
+        public:
+            static void cast(Value value) {
+                CORE_IGNORE(value);
+            }
+        };
+
+        CORE_ALIAS(Valuable,, IfElse<!isArray(), Object>);
+
+    public:
+
         /**
          * Return the value at specified position on the given list of values (varArgs).
          * the first position is 1, and the last is n (number of given values).
@@ -554,9 +593,10 @@ namespace core {
          * @param defaultValue the fallback value. is returned if given index out of bounds
          *                      in order world (i <= 0 || i > sizeof...(args))
          */
-        template<class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue) {
-            return defaultValue;
+        template<class = T>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return ValueOrVoid<T, T>::cast((Value) defaultValue);
         }
 
         /**
@@ -568,10 +608,12 @@ namespace core {
          *                      in order world (i <= 0 || i > sizeof...(args))
          * @param v1 The first value. is returned if given index is 1
          */
-        template<class V1, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            return i != 1 ? defaultValue : (_) (V1 &&) v1;
+        template<class V1>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1) {
+            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<T>(), "couldn't cast first argument to target type");
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return i < 1 ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   ValueOrVoid<T, V1>::cast((V1 &&) v1);
         }
 
         /**
@@ -584,14 +626,14 @@ namespace core {
          * @param v1 The first value. is returned if given index is 1
          * @param v2 The second value. is returned if given index is 2
          */
-        template<class V1, class V2, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   defaultValue;
+        template<class V1, class V2>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2) {
+            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<T>(), "couldn't cast first argument to target type");
+            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<T>(), "couldn't cast second argument to target type");
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 2) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   ValueOrVoid<T, V2>::cast((V2 &&) v2);
         }
 
         /**
@@ -605,16 +647,13 @@ namespace core {
          * @param v2 The second value. is returned if given index is 2
          * @param v3 The third value. is returned if given index is 3
          */
-        template<class V1, class V2, class V3, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   defaultValue;
+        template<class V1, class V2, class V3>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 3) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   ValueOrVoid<T, V3>::cast((V3 &&) v3);
         }
 
         /**
@@ -629,18 +668,14 @@ namespace core {
          * @param v3 The third value. is returned if given index is 3
          * @param v4 The fourth value. is returned if given index is 4
          */
-        template<class V1, class V2, class V3, class V4, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   defaultValue;
+        template<class V1, class V2, class V3, class V4>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 4) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   ValueOrVoid<T, V4>::cast((V4 &&) v4);
         }
 
         /**
@@ -656,20 +691,15 @@ namespace core {
          * @param v4 The fourth value. is returned if given index is 4
          * @param v5 The fifth value. is returned if given index is 5
          */
-        template<class V1, class V2, class V3, class V4, class V5, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   defaultValue;
+        template<class V1, class V2, class V3, class V4, class V5>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 5) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   ValueOrVoid<T, V5>::cast((V5 &&) v5);
         }
 
         /**
@@ -686,22 +716,16 @@ namespace core {
          * @param v5 The fifth value. is returned if given index is 5
          * @param v6 The sixth value. is returned if given index is 6
          */
-        template<class V1, class V2, class V3, class V4, class V5, class V6, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            CORE_STATIC_ASSERT(Class<V6>::template isConvertible<_>(), "couldn't cast sixth argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   i == 6 ? (_) (V6 &&) v6 :
-                   defaultValue;
+        template<class V1, class V2, class V3, class V4, class V5, class V6>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 6) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   ValueOrVoid<T, V6>::cast((V6 &&) v6);
         }
 
         /**
@@ -719,25 +743,18 @@ namespace core {
          * @param v6 The sixth value. is returned if given index is 6
          * @param v7 The seventh value. is returned if given index is 7
          */
-        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
-                                        V7 &&v7) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            CORE_STATIC_ASSERT(Class<V6>::template isConvertible<_>(), "couldn't cast sixth argument to target type");
-            CORE_STATIC_ASSERT(Class<V7>::template isConvertible<_>(), "couldn't cast seventh argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   i == 6 ? (_) (V6 &&) v6 :
-                   i == 7 ? (_) (V7 &&) v7 :
-                   defaultValue;
+        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
+                                        V6 &&v6, V7 &&v7) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 7) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   (i == 6) ? ValueOrVoid<T, V6>::cast((V6 &&) v6) :
+                   ValueOrVoid<T, V7>::cast((V7 &&) v7);
         }
 
         /**
@@ -756,27 +773,19 @@ namespace core {
          * @param v7 The seventh value. is returned if given index is 7
          * @param v8 The eighth value. is returned if given index is 8
          */
-        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
-                                        V7 &&v7, V8 &&v8) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            CORE_STATIC_ASSERT(Class<V6>::template isConvertible<_>(), "couldn't cast sixth argument to target type");
-            CORE_STATIC_ASSERT(Class<V7>::template isConvertible<_>(), "couldn't cast seventh argument to target type");
-            CORE_STATIC_ASSERT(Class<V8>::template isConvertible<_>(), "couldn't cast eighth argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   i == 6 ? (_) (V6 &&) v6 :
-                   i == 7 ? (_) (V7 &&) v7 :
-                   i == 8 ? (_) (V8 &&) v8 :
-                   defaultValue;
+        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
+                                        V6 &&v6, V7 &&v7, V8 &&v8) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 8) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   (i == 6) ? ValueOrVoid<T, V6>::cast((V6 &&) v6) :
+                   (i == 7) ? ValueOrVoid<T, V7>::cast((V7 &&) v7) :
+                   ValueOrVoid<T, V8>::cast((V8 &&) v8);
         }
 
         /**
@@ -796,29 +805,55 @@ namespace core {
          * @param v8 The eighth value. is returned if given index is 8
          * @param v9 The ninth value. is returned if given index is 9
          */
-        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
+        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
                                         V7 &&v7, V8 &&v8, V9 &&v9) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            CORE_STATIC_ASSERT(Class<V6>::template isConvertible<_>(), "couldn't cast sixth argument to target type");
-            CORE_STATIC_ASSERT(Class<V7>::template isConvertible<_>(), "couldn't cast seventh argument to target type");
-            CORE_STATIC_ASSERT(Class<V8>::template isConvertible<_>(), "couldn't cast eighth argument to target type");
-            CORE_STATIC_ASSERT(Class<V9>::template isConvertible<_>(), "couldn't cast ninth argument to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   i == 6 ? (_) (V6 &&) v6 :
-                   i == 7 ? (_) (V7 &&) v7 :
-                   i == 8 ? (_) (V8 &&) v8 :
-                   i == 9 ? (_) (V9 &&) v9 :
-                   defaultValue;
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 9) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   (i == 6) ? ValueOrVoid<T, V6>::cast((V6 &&) v6) :
+                   (i == 7) ? ValueOrVoid<T, V7>::cast((V7 &&) v7) :
+                   (i == 8) ? ValueOrVoid<T, V8>::cast((V8 &&) v8) :
+                   ValueOrVoid<T, V9>::cast((V9 &&) v9);
+        }
+
+        /**
+         * Return the value at specified position on the given list of values (varArgs).
+         * the first position is 1, and the last is n (number of given values).
+         * if given index is zero, the fallback value will be returned
+         * @param i The index of target value
+         * @param defaultValue the fallback value. is returned if given index out of bounds
+         *                      in order world (i <= 0 || i > sizeof...(args))
+         * @param v1 The first value. is returned if given index is 1
+         * @param v2 The second value. is returned if given index is 2
+         * @param v3 The third value. is returned if given index is 3
+         * @param v4 The fourth value. is returned if given index is 4
+         * @param v5 The fifth value. is returned if given index is 5
+         * @param v6 The sixth value. is returned if given index is 6
+         * @param v7 The seventh value. is returned if given index is 7
+         * @param v8 The eighth value. is returned if given index is 8
+         * @param v9 The ninth value. is returned if given index is 9
+         * @param v10 The ninth value. is returned if given index is 10
+         */
+        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class V10>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
+                                        V6 &&v6, V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 10) ? ValueOrVoid<T, T>::cast(defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   (i == 6) ? ValueOrVoid<T, V6>::cast((V6 &&) v6) :
+                   (i == 7) ? ValueOrVoid<T, V7>::cast((V7 &&) v7) :
+                   (i == 8) ? ValueOrVoid<T, V8>::cast((V8 &&) v8) :
+                   (i == 9) ? ValueOrVoid<T, V9>::cast((V9 &&) v9) :
+                   ValueOrVoid<T, V10>::cast((V10 &&) v10);
         }
 
         /**
@@ -840,35 +875,44 @@ namespace core {
          * @param v10 The ninth value. is returned if given index is 10
          * @param v The other values. is returned if given index is 10+n (n > 0 && n <= sizeof...(v))
          */
-        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class V10, class... V, class _ = T>
-        static CORE_FAST _ valueExactAt(gint i, _ defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
+        template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class V10, class... V>
+        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
                                         V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10, V &&...v) {
-            CORE_STATIC_ASSERT(Class<V1>::template isConvertible<_>(), "couldn't cast first argument to target type");
-            CORE_STATIC_ASSERT(Class<V2>::template isConvertible<_>(), "couldn't cast second argument to target type");
-            CORE_STATIC_ASSERT(Class<V3>::template isConvertible<_>(), "couldn't cast third argument to target type");
-            CORE_STATIC_ASSERT(Class<V4>::template isConvertible<_>(), "couldn't cast fourth argument to target type");
-            CORE_STATIC_ASSERT(Class<V5>::template isConvertible<_>(), "couldn't cast fifth argument to target type");
-            CORE_STATIC_ASSERT(Class<V6>::template isConvertible<_>(), "couldn't cast sixth argument to target type");
-            CORE_STATIC_ASSERT(Class<V7>::template isConvertible<_>(), "couldn't cast seventh argument to target type");
-            CORE_STATIC_ASSERT(Class<V8>::template isConvertible<_>(), "couldn't cast eighth argument to target type");
-            CORE_STATIC_ASSERT(Class<V9>::template isConvertible<_>(), "couldn't cast ninth argument to target type");
-            CORE_STATIC_ASSERT(Class<V10>::template isConvertible<_>(), "couldn't cast ninth argument to target type");
-            CORE_STATIC_ASSERT(allIsTrue(Class<V>::template isConvertible<_>()...),
-                               "couldn't cast arguments to target type");
-            return i <= 0 ? defaultValue :
-                   i == 1 ? (_) (V1 &&) v1 :
-                   i == 2 ? (_) (V2 &&) v2 :
-                   i == 3 ? (_) (V3 &&) v3 :
-                   i == 4 ? (_) (V4 &&) v4 :
-                   i == 5 ? (_) (V5 &&) v5 :
-                   i == 6 ? (_) (V6 &&) v6 :
-                   i == 7 ? (_) (V7 &&) v7 :
-                   i == 8 ? (_) (V8 &&) v8 :
-                   i == 9 ? (_) (V9 &&) v9 :
-                   i == 10 ? (_) (V9 &&) v10 :
-                   valueExactAt(i - 10, defaultValue, (V &&) v...);
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return (i < 1 || i > 10 + sizeof...(v)) ? ValueOrVoid<T, T>::cast(defaultValue) :
+                   (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
+                   (i == 2) ? ValueOrVoid<T, V2>::cast((V2 &&) v2) :
+                   (i == 3) ? ValueOrVoid<T, V3>::cast((V3 &&) v3) :
+                   (i == 4) ? ValueOrVoid<T, V4>::cast((V4 &&) v4) :
+                   (i == 5) ? ValueOrVoid<T, V5>::cast((V5 &&) v5) :
+                   (i == 6) ? ValueOrVoid<T, V6>::cast((V6 &&) v6) :
+                   (i == 7) ? ValueOrVoid<T, V7>::cast((V7 &&) v7) :
+                   (i == 8) ? ValueOrVoid<T, V8>::cast((V8 &&) v8) :
+                   (i == 9) ? ValueOrVoid<T, V9>::cast((V9 &&) v9) :
+                   (i == 10) ? ValueOrVoid<T, V10>::cast((V10 &&) v10) :
+                   valueExactAt2(i, (Value) defaultValue, (V &&) v...);
         }
 
+    private:
+        template<class... Values>
+        static CORE_FAST Valuable valueExactAt2(gint i, T defaultValue, Values &&...values) {
+            CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
+            return i < 11 || sizeof...(Values) < 11 ?
+                   valueExactAt(i - 0x0000, (Value) defaultValue, (Values &&) values...) :
+                   i == 11 ? valueExactAt(1, (Value) defaultValue, (Values &&) values...):
+                   i == 12 ? valueExactAt(2, (Value) defaultValue, (Values &&) values...):
+                   i == 13 ? valueExactAt(3, (Value) defaultValue, (Values &&) values...):
+                   i == 14 ? valueExactAt(4, (Value) defaultValue, (Values &&) values...):
+                   i == 15 ? valueExactAt(5, (Value) defaultValue, (Values &&) values...):
+                   i == 16 ? valueExactAt(6, (Value) defaultValue, (Values &&) values...):
+                   i == 17 ? valueExactAt(7, (Value) defaultValue, (Values &&) values...):
+                   i == 18 ? valueExactAt(8, (Value) defaultValue, (Values &&) values...):
+                   i == 19 ? valueExactAt(9, (Value) defaultValue, (Values &&) values...):
+                   i == 20 ? valueExactAt(10, (Value) defaultValue, (Values &&) values...):
+                   valueExactAt(i - 0x000A, (Value) defaultValue, (Values &&) values...);
+        }
+
+    public:
         /**
          * Return template type at specified position.
          * The first position is 1.

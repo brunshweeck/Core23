@@ -25,7 +25,7 @@ namespace core {
          * correctly implement the <b>Set</b> interface.  (See <b>Comparable</b>
          * or <b>Comparator</b> for a precise definition of <i>consistent with
          * equals</i>.)  This is so because the <b>Set</b> interface is defined in
-         * terms of the <b>equals</b> operation, but a <b>TreeSet</b> instance
+         * terms of the <b>equals</b> operation, but a <b>TreeSet</b> INSTANCE
          * performs all element comparisons using its <b>compareTo</b> (or
          * <b>compare</b>) method, so two elements that are deemed equal by this method
          * are, from the standpoint of the set, equal.  The behavior of a set
@@ -71,24 +71,18 @@ namespace core {
         class TreeSet : public Set<E>, public SortedStruct<E> {
         private:
 
-            CORE_ALIAS(U, native::Unsafe);
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(KeyComparator, Comparator<E>);
 
             /**
-             * Capture<T> represent all type T that extends this value type E.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
+             * The backing map (The Dummy value used is null INSTANCE)
              */
-            template<class T>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
-
-            /**
-             * The backing map (The Dummy value used is null instance)
-             */
-            TreeMap<E, Null> m;
+            TreeMap<E, Object> m;
 
             /**
              * Constructs a set backed by the specified map.
              */
-            CORE_EXPLICIT TreeSet(const TreeMap<E, Null> &m) : m(m) {}
+            CORE_EXPLICIT TreeSet(const TreeMap<E, Object> &m) : m(m) {}
 
         public:
 
@@ -98,30 +92,29 @@ namespace core {
              * the set must implement the <b style="color:orange;"> Comparable</b>  interface.
              * Furthermore, all such elements must be <i>mutually
              * comparable</i>: <b> e1.compareTo(e2)</b>  must not throw a
-             * <b> CastException</b>  for any elements <b> e1</b>  and
+             * <b> ClassCastException</b>  for any elements <b> e1</b>  and
              * <b> e2</b>  in the set.  If the user attempts to add an element
              * to the set that violates this constraint (for example, the user
              * attempts to add a string element to a set whose elements are
              * integers), the <b> add</b>  call will throw a
-             * <b> CastException</b> .
+             * <b> ClassCastException</b> .
              */
-            CORE_IMPLICIT TreeSet() : TreeSet(TreeMap<E, Null>{}) {}
+            CORE_IMPLICIT TreeSet() : TreeSet(TreeMap<E, Object>{}) {}
 
             /**
              * Constructs a new, empty tree set, sorted according to the specified
              * comparator.  All elements inserted into the set must be <i>mutually
              * comparable</i> by the specified comparator: <b> comparator.compare(e1,
-             * e2)</b>  must not throw a <b> CastException</b>  for any elements
+             * e2)</b>  must not throw a <b> ClassCastException</b>  for any elements
              * <b> e1</b>  and <b> e2</b>  in the set.  If the user attempts to add
              * an element to the set that violates this constraint, the
-             * <b> add</b>  call will throw a <b> CastException</b> .
+             * <b> add</b>  call will throw a <b> ClassCastException</b> .
              *
              * @param comparator the comparator that will be used to order this set.
              *        If <b> null</b> , the <b style="color:green;"> natural
              *        ordering</b>  of the elements will be used.
              */
-            template<class T = E>
-            CORE_EXPLICIT TreeSet(const Comparator<Capture<T>> &comparator): TreeSet(TreeMap<E, Null>(comparator)) {}
+            CORE_EXPLICIT TreeSet(const KeyComparator &comparator) : TreeSet(TreeMap<E, Object>(comparator)) {}
 
             /**
              * Constructs a new tree set containing the elements in the specified
@@ -129,22 +122,25 @@ namespace core {
              * elements.  All elements inserted into the set must implement the
              * <b style="color:orange;"> Comparable</b>  interface.  Furthermore, all such elements must be
              * <i>mutually comparable</i>: <b> e1.compareTo(e2)</b>  must not throw a
-             * <b> CastException</b>  for any elements <b> e1</b>  and
+             * <b> ClassCastException</b>  for any elements <b> e1</b>  and
              * <b> e2</b>  in the set.
              *
              * @param c collection whose elements will comprise the new set
-             * @throws CastException if the elements in <b> c</b>  are
+             * @throws ClassCastException if the elements in <b> c</b>  are
              *         not <b style="color:orange;"> Comparable</b> , or are not mutually comparable
              */
-            template<class T = E>
-            CORE_EXPLICIT TreeSet(const Collection<Capture<T>> &c): TreeSet() { TreeSet<E>::addAll(c); }
+            CORE_EXPLICIT TreeSet(const Collection<E> &c) {
+                CORE_TRY_RETHROW_EXCEPTION({ addAll(c); }, , __trace("core.util.TreeSet"))
+            }
 
             /**
              * Returns an iterator over the elements in this set in ascending order.
              *
              * @return an iterator over the elements in this set in ascending order
              */
-            Iterator<const E> &iterator() const override { return m.keySet().iterator(); }
+            Iterator<const E> &iterator() const override {
+                CORE_TRY_RETHROW_EXCEPTION({ return m.keySet().iterator(); }, , __trace("core.util.TreeSet"))
+            }
 
             /**
              * Returns an iterator over the elements in this set in descending order.
@@ -152,7 +148,9 @@ namespace core {
              * @return an iterator over the elements in this set in descending order
              *
              */
-            virtual Iterator<const E> &reversedIterator() { return m.reversedKeySet().iterator(); }
+            virtual Iterator<const E> &reversedIterator() {
+                CORE_TRY_RETHROW_EXCEPTION({ return m.reversedKeySet().iterator(); }, , __trace("core.util.TreeSet"))
+            }
 
             /**
              * Returns the number of elements in this set (its cardinality).
@@ -169,7 +167,7 @@ namespace core {
              *
              * @param o object to be checked for containment in this set
              * @return <b> true</b>  if this set contains the specified element
-             * @throws CastException if the specified object cannot be compared
+             * @throws ClassCastException if the specified object cannot be compared
              *         with the elements currently in the set
              */
             gbool contains(const E &o) const override { return m.containsKey(o); }
@@ -185,14 +183,18 @@ namespace core {
              * @param e element to be added to this set
              * @return <b> true</b>  if this set did not already contain the specified
              *         element
-             * @throws CastException if the specified object cannot be compared
+             * @throws ClassCastException if the specified object cannot be compared
              *         with the elements currently in this set
              */
             gbool add(const E &e) override {
-                if (m.containsKey(e))
-                    return false;
-                m.put(e, null);
-                return true;
+                try{
+                    if (m.containsKey(e))
+                        return false;
+                    m.put(e, null);
+                    return true;
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.TreeSet"));
+                }
             }
 
             /**
@@ -206,7 +208,7 @@ namespace core {
              *
              * @param o object to be removed from this set, if present
              * @return <b> true</b>  if this set contained the specified element
-             * @throws CastException if the specified object cannot be compared
+             * @throws ClassCastException if the specified object cannot be compared
              *         with the elements currently in this set
              */
             gbool remove(const E &o) override { return m.remove(o, null); }
@@ -222,44 +224,50 @@ namespace core {
              *
              * @param c collection containing elements to be added to this set
              * @return <b> true</b>  if this set changed as a result of the call
-             * @throws CastException if the elements provided cannot be compared
+             * @throws ClassCastException if the elements provided cannot be compared
              *         with the elements currently in the set
              */
-            gbool addAll(const Collection<E> &c) override { return addAll<E>(c); }
-
-            /**
-             * Adds all of the elements in the specified collection to this set.
-             *
-             * @param c collection containing elements to be added to this set
-             * @return <b> true</b>  if this set changed as a result of the call
-             * @throws CastException if the elements provided cannot be compared
-             *         with the elements currently in the set
-             */
-            template<class T = E>
-            gbool addAll(const Collection<Capture<T>> &c) {
+            gbool addAll(const Collection<E> &c) override {
                 // Use linear-time version if applicable
-                if (m.size() == 0 && c.size() > 0 && Class<SortedStruct<T>>::hasInstance(c)) {
-                    const SortedStruct<T> &s = (SortedStruct<E> &) c;
-                    if (Object::equals(s.comparator(), m.comparator())) {
-                        m.buildFromSorted(c.size(), c.iterator(), null);
-                        return true;
+                try {
+                    if (m.size() == 0 && c.size() > 0 && Class<SortedStruct<E>>::hasInstance(c)) {
+                        const SortedStruct<E> &s = CORE_DYN_CAST(const SortedStruct<E>&, c);
+                        if (Object::equals(s.comparator(), m.comparator())) {
+                            m.buildFromSorted(c.size(), c.iterator(), null);
+                            return true;
+                        }
                     }
+                    return Set<E>::addAll(c);
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.TreeSet"));
                 }
-                return Set<E>::addAll(c);
             }
 
             /**
              *
              */
-            const Comparator<E> &comparator() const override { return m.comparator(); }
+            const KeyComparator &comparator() const override { return m.comparator(); }
 
             /**
-             * Returns a shallow copy of this <b> TreeSet</b>  instance. (The elements
+             * Returns a shallow copy of this <b> TreeSet</b>  INSTANCE. (The elements
              * themselves are not cloned.)
              *
              * @return a shallow copy of this set
              */
-            Object &clone() const override { return U::createInstance<TreeSet<E>>(*this); }
+            Object &clone() const override {
+                TreeSet &clone = Unsafe::allocateInstance<TreeSet>();
+                // adding elements
+                CORE_TRY_ONLY
+                ({
+                     clone.addAll(*this);
+                 }, {
+                     // adding failed
+                     Unsafe::destroyInstance(clone);
+                     Error("Unable to clone class instance of " + this->classname(), th)
+                             .throws(__trace("core.util.TreeSet"));
+                 })
+                return clone;
+            }
 
         };
 

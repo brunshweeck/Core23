@@ -19,12 +19,12 @@ namespace core {
     public:
 
         /**
-         * Construct new Object instance.
+         * Construct new Object INSTANCE.
          */
         CORE_FAST Object() CORE_NOTHROW = default;
 
         /**
-         * Return true if this Object instance equals to
+         * Return true if this Object INSTANCE equals to
          * specified object. by default this method
          * compare the objects address and return true
          * if it are same.
@@ -68,9 +68,9 @@ namespace core {
          * specific cloning operation. First, if the class of this object does
          * not support cloning, then a <b>CloneNotSupportedException</b> is thrown.
          * Note that all arrays are considered cloneable and that
-         * the return type of the <b>clone</b> method of an array type <b>T</b>
-         * is array of type <b>T</b> where T is any reference or native type.
-         * Otherwise, this method creates a new instance of the class of this
+         * the return type of the <b>clone</b> method of an root type <b>T</b>
+         * is root of type <b>T</b> where T is any reference or native type.
+         * Otherwise, this method creates a new INSTANCE of the class of this
          * object and initializes all its fields with exactly the contents of
          * the corresponding fields of this object, as if by assignment; the
          * contents of the fields are not themselves cloned. Thus, this method
@@ -81,11 +81,11 @@ namespace core {
          * whose class is <b>Object</b> will result in throwing an
          * exception at run time.
          *
-         * @return     a clone of this instance.
+         * @return     a clone of this INSTANCE.
          * @throws  CloneNotSupportedException  if the object's class does not
          *               support the cloning operation. Subclasses
          *               that override the <b>clone</b> method can also
-         *               throw this exception to indicate that an instance cannot
+         *               throw this exception to indicate that an INSTANCE cannot
          *               be cloned.
          */
         virtual Object &clone() const;
@@ -98,9 +98,22 @@ namespace core {
         virtual String toString() const;
 
         /**
-         * Return true classname
+         * Return true classname of this object as String
          */
         String classname() const;
+
+    private:
+        /**
+         * Return the classname of given object.
+         */
+        static String classname0(const Object& obj);
+
+        /**
+         * Return The identity hash code of given object
+         */
+         static gint identityHash0(const Object& obj);
+
+    public:
 
         /**
          * Return hash code of this class or 0 if this class is not

@@ -80,15 +80,25 @@
     </Type>
     <Type Name="core::Trace">
         <Expand HideRawView="true">
-            <Item Name="File">{fName}</Item>
-            <Item Name="Line">{fLine}</Item>
             <Item Name="Module">{modName}</Item>
             <Item Name="Class">{clsName}</Item>
             <Item Name="Method">{metName}</Item>
+            <Item Name="File">{fName}</Item>
+            <Item Name="Line">{fLine}</Item>
         </Expand>
     </Type>
     <Type Name="core::String">
-        <DisplayString Optional="true" Condition="len==0||value==0">{u""}</DisplayString>
+        <DisplayString Optional="true" Condition="len==0||value==0">u""</DisplayString>
+        <DisplayString Optional="true">{((char16_t*) value),su}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems Condition="len != 0 &amp;&amp; value!=0">
+                <Size>(len * 2)</Size>
+                <ValuePointer>value</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="core::StringBuffer">
+        <DisplayString Optional="true" Condition="len==0 || value == 0">u""</DisplayString>
         <DisplayString Optional="true">{((char16_t*) value),su}</DisplayString>
         <Expand HideRawView="true">
             <ArrayItems Condition="len != 0 &amp;&amp; value!=0">
@@ -98,8 +108,8 @@
         </Expand>
     </Type>
 
-    <!--    namespace core.native -->
-    <Type Name="core::native::Array&lt;*&gt;">
+    <!--    namespace core.private -->
+    <Type Name="core::native::AbstractArray&lt;*&gt;">
         <DisplayString Optional="true">Array[{len}]</DisplayString>
         <DisplayString Optional="true">Array[?]</DisplayString>
     </Type>
@@ -200,6 +210,13 @@
     </Type>
 
     <!--    namespace core.util -->
+    <Type Name="core::util::Array&lt;*&gt;">
+        <DisplayString>Size={data.len}</DisplayString>
+        <Expand>
+            <ExpandedItem Optional="true">data</ExpandedItem>
+        </Expand>
+    </Type>
+
     <Type Name="core::util::Iterator&lt;*&gt;" Inheritable="true">
         <DisplayString Optional="true">cursor={cursor}</DisplayString>
         <DisplayString Optional="true">Iterator</DisplayString>
@@ -311,7 +328,7 @@
                 <HeadPointer>root</HeadPointer>
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
-                <ValueNode Name="{k[0]}">v[0]</ValueNode>
+                <ValueNode>this[0]</ValueNode>
             </TreeItems>
         </Expand>
     </Type>
@@ -388,7 +405,7 @@
                     <Loop Condition="index &lt; capacity">
                         <Exec>e = tab[index++]</Exec>
                         <Loop Condition="e != 0">
-                            <Item Name="{e-&gt;k[0]}">e-&gt;v[0]</Item>
+                            <Item>e[0]</Item>
                             <Exec>e = e-&gt;next</Exec>
                         </Loop>
                     </Loop>
@@ -545,29 +562,29 @@
         <Expand HideRawView="true"/>
     </Type>
     <Type Name="core::util::AtomicIntegerArray">
-        <DisplayString Optional="true">int[{array.len}]</DisplayString>
+        <DisplayString Optional="true">int[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems Optional="true">
-                <Size>array.len</Size>
-                <ValueNode>array.value[$i]</ValueNode>
+                <Size>root.len</Size>
+                <ValueNode>root.value[$i]</ValueNode>
             </IndexListItems>
         </Expand>
     </Type>
     <Type Name="core::util::AtomicLongArray">
-        <DisplayString Optional="true">glong[{array.len}]</DisplayString>
+        <DisplayString Optional="true">glong[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems Optional="true">
-                <Size>array.len</Size>
-                <ValueNode>array.value[$i]</ValueNode>
+                <Size>root.len</Size>
+                <ValueNode>root.value[$i]</ValueNode>
             </IndexListItems>
         </Expand>
     </Type>
     <Type Name="core::util::AtomicReferenceArray">
-        <DisplayString Optional="true">Object[{array.len}]</DisplayString>
+        <DisplayString Optional="true">Object[{root.len}]</DisplayString>
         <Expand HideRawView="true">
             <IndexListItems Optional="true">
-                <Size>array.len</Size>
-                <ValueNode Condition="array.value[$i] != 0">array.value[$i][0]</ValueNode>
+                <Size>root.len</Size>
+                <ValueNode Condition="root.value[$i] != 0">root.value[$i][0]</ValueNode>
                 <ValueNode>null</ValueNode>
             </IndexListItems>
         </Expand>
@@ -576,5 +593,51 @@
     <!-- directory random -->
     <!-- directory regex -->
 
+<!--    namespace core.io -->
+
+    <!-- File -->
+    <Type Name="core::io::File">
+        <DisplayString Optional="true">{pathname}</DisplayString>
+    </Type>
+
+    <!-- NTFS -->
+    <Type Name="core::io::NTFS">
+        <DisplayString Optional="true">NTFS</DisplayString>
+        <Expand HideRawView="true"/>
+    </Type>
+
+    <!-- FileArray -->
+    <Type Name="core::io::FileArray">
+        <DisplayString Optional="true">File[{len}]</DisplayString>
+        <Expand HideRawView="true">
+            <IndexListItems>
+                <Size>len</Size>
+                <ValueNode>value[$i]</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
+
+    <!-- Buffer -->
+    <Type Name="core::io::Buffer" Inheritable="true">
+        <Expand HideRawView="true">
+            <Item Name="mark" Condition="mark &gt;= 0" Optional="true">mark</Item>
+            <Item Name="position" Condition="mark &gt;= 0" Optional="true">pos</Item>
+            <Item Name="limit" Condition="mark &gt;= 0" Optional="true">lim</Item>
+            <Item Name="capacity" Condition="mark &gt;= 0" Optional="true">cap</Item>
+            <Item Name="content" Optional="true">hb[0]</Item>
+            <Item Name="address" Optional="true">address</Item>
+        </Expand>
+    </Type>
+
+    <!-- NativeBuffer -->
+    <Type Name="core::io::NativeBuffer" Inheritable="true">
+        <DisplayString Optional="true">Capacity={sizeInBytes}</DisplayString>
+        <Expand HideRawView="true">
+            <ArrayItems Optional="true">
+                <Size>sizeInBytes</Size>
+                <ValuePointer Condition="memoryAddress != 0">(char*)memoryAddress</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
 
 </AutoVisualizer>

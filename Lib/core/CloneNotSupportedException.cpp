@@ -2,21 +2,23 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "CloneNotSupportedException.h"
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     CloneNotSupportedException::CloneNotSupportedException(String message) CORE_NOTHROW:
-            UnsupportedMethodException(U::moveInstance(message)) {}
+            UnsupportedOperationException(Unsafe::moveInstance(message)) {}
 
 
-    void CloneNotSupportedException::raise() &&{ throw *this; }
+    void CloneNotSupportedException::raise() &&{
+        throw CloneNotSupportedException(*this);
+    }
 
     Object &CloneNotSupportedException::clone() const {
-        return U::createInstance<CloneNotSupportedException>(*this);
+        return Unsafe::allocateInstance<CloneNotSupportedException>(*this);
     }
 
 } // core

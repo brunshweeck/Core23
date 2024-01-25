@@ -38,7 +38,14 @@ namespace core {
          * @see Iterator
          */
         template<class E>
-        interface ListIterator: public Iterator<E> {
+        class ListIterator: public Iterator<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E&>);
+
+        public:
 
             /**
              * Returns <b>true</b> if this list iterator has more elements when
@@ -115,9 +122,9 @@ namespace core {
              *          <b>next</b> or <b>previous</b>
              * @throws UnsupportedMethodException if the <b>set</b> operation
              *         is not supported by this list iterator
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
-             * @throws ArgumentException if some aspect of the specified
+             * @throws IllegalArgumentException if some aspect of the specified
              *         element prevents it from being added to this list
              * @throws IllegalStateException if neither <b>next</b> nor
              *         <b>previous</b> have been called, or <b>remove</b> or
@@ -141,12 +148,70 @@ namespace core {
              * @param e the element to insert
              * @throws UnsupportedMethodException if the <b>add</b> method is
              *         not supported by this list iterator
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
-             * @throws ArgumentException if some aspect of this element
+             * @throws IllegalArgumentException if some aspect of this element
              *         prevents it from being added to this list
              */
              virtual void add(const E& e) = 0;
+
+            /**
+             * Performs the given action for each remaining element until all elements
+             * have been processed or the action throws an exception.  Actions are
+             * performed in the order of iteration, if that order is specified.
+             * Exceptions thrown by the action are relayed to the caller.
+             * <p>
+             * The behavior of an iterator is unspecified if the action modifies the
+             * collection in any way (even by calling the <b style="color:orange;">Iterator.remove</b> method
+             * or other mutator methods of <b>Iterator</b> subtypes),
+             * unless an overriding class has specified a concurrent modification policy.
+             * <p>
+             * Subsequent behavior of an iterator is unspecified if the action throws an
+             * exception.
+             *
+             * @implSpec
+             * <p>The default implementation behaves as if:
+             * <pre> <b>
+             *     while (hasNext())
+             *         action.accept(next());
+             * </b>
+             * </pre>
+             *
+             * @param action The action to be performed for each element
+             */
+            void forEach(const ActionConsumer &action) override {
+                while (hasNext())
+                    action.accept(next());
+            }
+
+            /**
+             * Performs the given action for each remaining element until all elements
+             * have been processed or the action throws an exception.  Actions are
+             * performed in the order of iteration, if that order is specified.
+             * Exceptions thrown by the action are relayed to the caller.
+             * <p>
+             * The behavior of an iterator is unspecified if the action modifies the
+             * collection in any way (even by calling the <b style="color:orange;">Iterator.remove</b> method
+             * or other mutator methods of <b>Iterator</b> subtypes),
+             * unless an overriding class has specified a concurrent modification policy.
+             * <p>
+             * Subsequent behavior of an iterator is unspecified if the action throws an
+             * exception.
+             *
+             * @implSpec
+             * <p>The default implementation behaves as if:
+             * <pre> <b>
+             *     while (hasNext())
+             *         action.accept(next());
+             * </b>
+             * </pre>
+             *
+             * @param action The action to be performed for each element
+             */
+            virtual void forEach(const MutableActionConsumer &action) {
+                while (hasNext())
+                    action.accept(next());
+            }
         };
 
     } // core

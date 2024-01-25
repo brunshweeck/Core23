@@ -2,7 +2,7 @@
 // Created by T.N.Brunshweeck on 20/11/2023.
 //
 
-#include <core/ArgumentException.h>
+#include <core/IllegalArgumentException.h>
 #include <core/Integer.h>
 #include "UnicodeTable.h"
 
@@ -4098,13 +4098,13 @@ namespace core {
 
         //
         Object &UnicodeTable::clone() const {
-            return instance;
+            return INSTANCE;
         }
 
         glong UnicodeTable::query(gint ch, UnicodeTable::Column c) {
             gint row = readProperties(ch);
             if (row < 0) {
-                ArgumentException("Invalid unicode code point: " + Integer::toUnsignedString(ch, 16))
+                IllegalArgumentException("Invalid unicode code point: " + Integer::toUnsignedString(ch, 16))
                         .throws(__trace("core.foreign.UnicodeTable"));
             }
             glong retVal = -1;
@@ -4204,7 +4204,7 @@ namespace core {
             return retVal;
         }
 
-        UnicodeTable UnicodeTable::instance = {};
+        UnicodeTable UnicodeTable::INSTANCE = {};
 
     } // core
 } // foreign

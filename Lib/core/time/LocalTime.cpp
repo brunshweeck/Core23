@@ -3,7 +3,6 @@
 //
 
 #include "LocalTime.h"
-#include <core/Long.h>
 #include <core/StringBuffer.h>
 #include <core/time/LocalDate.h>
 #include <core/time/LocalDateTime.h>
@@ -12,7 +11,7 @@
 namespace core {
     namespace time {
 
-        CORE_ALIAS(U, native::Unsafe);
+        using namespace native;
 
         namespace {
             String const FieldName[30] = {
@@ -495,10 +494,7 @@ namespace core {
         }
 
         glong LocalTime::toEpochSecond(const LocalDate &date, const ZoneOffset &offset) const {
-            gint const hour = this->hour();
-            gint const minute = this->minute();
-            gint const second = this->second();
-            gint const nano = this->nano();
+            return atDate(date).toEpochSecond(offset);
         }
 
         gint LocalTime::compareTo(const LocalTime &other) const {

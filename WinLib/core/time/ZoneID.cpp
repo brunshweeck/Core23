@@ -5,6 +5,7 @@
 #include <core/time/ZoneID.h>
 #include <core/util/HashMap.h>
 #include <Windows.h>
+#include <core/native/CharArray.h>
 
 #include "core/time/ZoneRegion.h"
 
@@ -39,7 +40,7 @@ namespace core {
                             case REG_SZ:
                                 if (size > 0) {
                                     String const ID = String(array, 0, (gint) size);
-                                    systemID = &(ZoneID &) ID_CACHE.putIfAbsent(ID, ZoneID::of(ID));
+                                    systemID = &ZoneID::of(ID);
                                     return *systemID;
                                 }
                             default:

@@ -3,16 +3,14 @@
 //
 
 #include "Boolean.h"
-#include "CastException.h"
-#include <core/String.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gbool Boolean::parseBoolean(const String &str) {
-        return str.equalsIgnoreCase("true");
+        return str.equalsIgnoreCase(u"true"_S);
     }
 
     Boolean Boolean::valueOf(const String &str) {
@@ -20,7 +18,7 @@ namespace core {
     }
 
     String Boolean::toString(gbool b) {
-        return b ? "true" : "false";
+        return b ? u"true"_S : u"false"_S;
     }
 
     String Boolean::toString() const {
@@ -42,8 +40,8 @@ namespace core {
     }
 
     Object &Boolean::clone() const {
-        return U::createInstance<Boolean>(*this);
+        return Unsafe::allocateInstance<Boolean>(value);
     }
 
-    Boolean Boolean::valueOf(gbool b) { return {b}; }
+    Boolean Boolean::valueOf(gbool b) { return b; }
 } // core

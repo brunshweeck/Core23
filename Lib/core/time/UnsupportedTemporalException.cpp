@@ -7,20 +7,19 @@
 
 namespace core {
     namespace time {
-        CORE_ALIAS(U, native::Unsafe);
 
         UnsupportedTemporalException::UnsupportedTemporalException(String message) :
-                DateTimeException(U::moveInstance(message)) {}
+                DateTimeException(Unsafe::moveInstance(message)) {}
 
         UnsupportedTemporalException::UnsupportedTemporalException(String message, const Throwable &cause) :
-                DateTimeException(U::moveInstance(message), cause) {}
+                DateTimeException(Unsafe::moveInstance(message), cause) {}
 
         Object &UnsupportedTemporalException::clone() const {
-            return U::createInstance<UnsupportedTemporalException>(*this);
+            return Unsafe::allocateInstance<UnsupportedTemporalException>(*this);
         }
 
         void UnsupportedTemporalException::raise() &&{
-            throw *this;
+            throw UnsupportedTemporalException(*this);
         }
     } // time
 } // core

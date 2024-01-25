@@ -20,7 +20,7 @@ namespace core {
          * used.  A priority queue does not permit <b>null</b> elements.
          * A priority queue relying on natural ordering also does not permit
          * insertion of non-comparable objects (doing so may result in
-         * <b>CastException</b>).
+         * <b>ClassCastException</b>).
          *
          * <p>The <em>head</em> of this queue is the <em>least</em> element
          * with respect to the specified ordering.  If multiple elements are
@@ -30,7 +30,7 @@ namespace core {
          * element at the head of the queue.
          *
          * <p>A priority queue is unbounded, but has an internal
-         * <i>capacity</i> governing the size of an array used to store the
+         * <i>capacity</i> governing the size of an root used to store the
          * elements on the queue.  It is always at least as large as the queue
          * size.  As elements are added to a priority queue, its capacity
          * grows automatically.  The details of the growth policy are not
@@ -44,7 +44,7 @@ namespace core {
          *
          * <p><strong>Note that this implementation is not synchronized.</strong>
          * Multiple threads should not access a <b>PriorityQueue</b>
-         * instance concurrently if any of the threads modifies the queue.
+         * INSTANCE concurrently if any of the threads modifies the queue.
          * Instead, use the thread-safe <b style="color:orange;">
          * core.util.PrioritySynchronizedQueue</b> class.
          *
@@ -60,6 +60,13 @@ namespace core {
          */
         template<class E>
         class PriorityQueue : public Queue<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
+            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
+
         private:
 
             /**
@@ -70,15 +77,6 @@ namespace core {
             CORE_ALIAS(VRef, typename Class<E>::Ptr);
             CORE_ALIAS(ARRAY, typename Class<VRef>::Ptr);
             CORE_ALIAS(COMPARATOR, typename Class<Comparator<E>>::Ptr);
-
-            CORE_ALIAS(U, native::Unsafe);
-
-            /**
-             * Capture<T> represent all type T that extends this Queue element type E.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
 
             /**
              * Priority queue represented as a balanced binary heap: the two
@@ -131,12 +129,12 @@ namespace core {
              * <b style="color:green;">natural ordering</b>.
              *
              * @param initialCapacity the initial capacity for this priority queue
-             * @throws ArgumentException if <b>initialCapacity</b> is negative
+             * @throws IllegalArgumentException if <b>initialCapacity</b> is negative
              */
-            CORE_EXPLICIT PriorityQueue(gint initialCapacity) : cmp((COMPARATOR) &Comparator<E>::naturalOrder()) {
+            CORE_EXPLICIT PriorityQueue(gint initialCapacity) : cmp(&Comparator<E>::naturalOrder()) {
                 if (initialCapacity < 0)
-                    ArgumentException("Negative initial capacity").throws(__trace("core.util.PriorityQueue"));
-                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, initialCapacity)));
+                    IllegalArgumentException("Negative initial capacity").throws(__trace("core.util.PriorityQueue"));
+                queue = (ARRAY) Unsafe::allocateMemory(L(capacity = Math::max(1, initialCapacity)));
             }
 
             /**
@@ -147,10 +145,9 @@ namespace core {
              *         priority queue.  If <b>null</b>, the <b style="color:green;">Comparable
              *         natural ordering</b> of the elements will be used.
              */
-            template<class T = E>
-            CORE_EXPLICIT PriorityQueue(const Comparator<Capture<T>> &comparator) :
-                    cmp((COMPARATOR) &Comparator<E>::copyOf(comparator)) {
-                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, DEFAULT_CAPACITY)));
+            CORE_EXPLICIT PriorityQueue(const Comparator<E> &comparator) :
+                    cmp(&Unsafe::copyInstance(comparator, true)) {
+                queue = (ARRAY) Unsafe::allocateMemory(L(capacity = Math::max(1, DEFAULT_CAPACITY)));
             }
 
             /**
@@ -161,21 +158,20 @@ namespace core {
              * @param  comparator the comparator that will be used to order this
              *         priority queue.  If <b>null</b>, the <b style="color:green;">Comparable
              *         natural ordering</b> of the elements will be used.
-             * @throws ArgumentException if <b>initialCapacity</b> is
+             * @throws IllegalArgumentException if <b>initialCapacity</b> is
              *         less than 1
              */
-            template<class T = E>
-            CORE_EXPLICIT PriorityQueue(gint initialCapacity, const Comparator<Capture<T>> &comparator) {
-                // Note: This restriction of at least one is not actually needed
+            CORE_EXPLICIT PriorityQueue(gint initialCapacity, const Comparator<E> &comparator) {
+                // Note: This restriction of at least one is not needed
                 if (initialCapacity < 1)
-                    ArgumentException().throws(__trace("core.util.PriorityQueue"));
-                cmp = (COMPARATOR) &U::copyInstance(comparator, true);
-                queue = (ARRAY) U::allocateMemory(L(capacity = initialCapacity));
+                    IllegalArgumentException().throws(__trace("core.util.PriorityQueue"));
+                cmp = (COMPARATOR) &Unsafe::copyInstance(comparator, true);
+                queue = (ARRAY) Unsafe::allocateMemory(L(capacity = initialCapacity));
             }
 
             /**
              * Creates a <b>PriorityQueue</b> containing the elements in the
-             * specified collection.  If the specified collection is an instance of
+             * specified collection.  If the specified collection is an INSTANCE of
              * a <b style="color:orange;">SortedSet</b> or is another <b>PriorityQueue</b>, this
              * priority queue will be ordered according to the same ordering.
              * Otherwise, this priority queue will be ordered according to the
@@ -183,31 +179,29 @@ namespace core {
              *
              * @param  c the collection whose elements are to be placed
              *         into this priority queue
-             * @throws CastException if elements of the specified collection
+             * @throws ClassCastException if elements of the specified collection
              *         cannot be compared to one another according to the priority
              *         queue's ordering
              */
-            template<class T = E>
-            CORE_EXPLICIT PriorityQueue(const Collection<Capture<T>> &c) {
+            CORE_EXPLICIT PriorityQueue(const Collection<E> &c) {
                 gbool doHeapify = false;
-                if (Class<PriorityQueue<T>>::hasInstance(c)) {
-                    const PriorityQueue<T> &pq = (PriorityQueue<T> &) c;
+                if (Class<PriorityQueue>::hasInstance(c)) {
+                    const PriorityQueue &pq = (PriorityQueue &) c;
                     cmp = (COMPARATOR) &Comparator<E>::copyOf(pq.comparator());
-                } else if (Class<SortedStruct<T>>::hasInstance(c) != 0) {
-                    const SortedStruct<T> &aStruct = (SortedStruct<T> &) c;
+                } else if (Class<SortedStruct<E>>::hasInstance(c) != 0) {
+                    const SortedStruct<E> &aStruct = CORE_DYN_CAST(const SortedStruct<E> &, c);
                     cmp = (COMPARATOR) &Comparator<E>::copyOf(aStruct.comparator());
                 } else {
                     cmp = (COMPARATOR) &Comparator<E>::naturalOrder();
                     doHeapify = true;
                 }
-                ReferenceArray ra = c.toArray();
+                Array<E> ra = c.toArray();
                 if (ra.length() == 0)
-                    queue = (ARRAY) U::allocateMemory(L(capacity = 1));
+                    queue = (ARRAY) Unsafe::allocateMemory(L(capacity = 1));
                 else {
-                    queue = ra.value;
-                    len = capacity = ra.len;
-                    ra.len = 0;
-                    ra.value = null;
+                    Unsafe::swapValues(queue, ((ObjectArray &) ra).value);
+                    Unsafe::swapValues(len, ((ObjectArray &) ra).len);
+                    capacity = len;
                     if (doHeapify)
                         heapify();
                 }
@@ -221,30 +215,9 @@ namespace core {
              *
              * @param  pq the priority queue whose elements are to be placed
              *         into this priority queue
-             * @throws CastException if elements of <b>c</b> cannot be
-             *         compared to one another according to <b>c</b>'s
-             *         ordering
-             */
-            template<class T = E>
-            CORE_EXPLICIT PriorityQueue(const PriorityQueue<Capture<T>> &pq) {
-                if (pq.cmp != null)
-                    cmp = &Comparator<E>::copyOf(pq.comparator());
-                gint pSize = pq.size();
-                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, pSize)));
-                arraycopy(pq.queue, 0, queue, 0, len = pSize);
-            }
-
-            /**
-             * Creates a <b>PriorityQueue</b> containing the elements in the
-             * specified priority queue.  This priority queue will be
-             * ordered according to the same ordering as the given priority
-             * queue.
-             *
-             * @param  pq the priority queue whose elements are to be placed
-             *         into this priority queue
              */
             PriorityQueue(const PriorityQueue &pq) : cmp(pq.cmp) {
-                queue = (ARRAY) U::allocateMemory(L(capacity = Math::max(1, pq.len)));
+                queue = (ARRAY) Unsafe::allocateMemory(L(capacity = Math::max(1, pq.len)));
                 arraycopy(pq.queue, 0, queue, 0, len = pq.len);
             }
 
@@ -257,10 +230,12 @@ namespace core {
              * @param  pq the priority queue whose elements are to be placed
              *         into this priority queue
              */
-            PriorityQueue(PriorityQueue &&pq) CORE_NOTHROW:
-                    queue(pq.queue), len(pq.len), capacity(pq.capacity), cmp(pq.cmp) {
-                pq.len = pq.capacity = 0;
-                pq.queue = null;
+            PriorityQueue(PriorityQueue &&pq) CORE_NOTHROW {
+                Unsafe::swapValues(queue, pq.queue);
+                Unsafe::swapValues(len, pq.len);
+                Unsafe::swapValues(capacity, pq.capacity);
+                Unsafe::swapValues(cmp, pq.cmp);
+                Unsafe::swapValues(modNum, pq.modNum);
             }
 
             PriorityQueue &operator=(const PriorityQueue &pq) {
@@ -270,11 +245,11 @@ namespace core {
                         for (gint i = pq.len; i < len; ++i) queue[i] = null;
                         len = pq.len;
                     } else {
-                        // This queue has not sufficient space
+                        // This queue has not sufficient diskSpace
                         gint newCapacity = Math::max(pq.len, 1);
-                        ARRAY newQueue = (ARRAY) U::allocateMemory(L(pq.len));
+                        ARRAY newQueue = (ARRAY) Unsafe::allocateMemory(L(pq.len));
                         arraycopy(pq.queue, 0, newQueue, 0, pq.len);
-                        U::freeMemory((glong) queue);
+                        Unsafe::freeMemory((glong) queue);
                         len = pq.len;
                         capacity = newCapacity;
                         queue = newQueue;
@@ -285,24 +260,19 @@ namespace core {
             }
 
             PriorityQueue &operator=(PriorityQueue &&pq) CORE_NOTHROW {
-                ARRAY oldQueue = queue;
-                gint oldLen = len;
-                gint oldCapacity = capacity;
                 modNum += 1;
                 pq.modNum += 1;
-                len = pq.len;
-                capacity = pq.capacity;
-                queue = pq.queue;
-                pq.len = oldLen;
-                pq.capacity = oldCapacity;
-                pq.queue = oldQueue;
+                Unsafe::swapValues(queue, pq.queue);
+                Unsafe::swapValues(len, pq.len);
+                Unsafe::swapValues(capacity, pq.capacity);
+                Unsafe::swapValues(cmp, pq.cmp);
                 return *this;
             }
 
         private:
 
             /**
-             * Increases the capacity of the array.
+             * Increases the capacity of the root.
              *
              * @param minCapacity the desired minimum capacity
              */
@@ -313,9 +283,9 @@ namespace core {
                         oldCapacity,
                         minCapacity - oldCapacity, /* minimum growth */
                         oldCapacity < 64 ? oldCapacity + 2 : oldCapacity >> 1/* preferred growth */);
-                ARRAY copy = (ARRAY) U::allocateMemory(L(newCapacity));
+                ARRAY copy = (ARRAY) Unsafe::allocateMemory(L(newCapacity));
                 arraycopy(queue, 0, copy, 0, len);
-                U::freeMemory((glong) queue);
+                Unsafe::freeMemory((glong) queue);
                 queue = copy;
                 capacity = newCapacity;
             }
@@ -326,7 +296,7 @@ namespace core {
              * Inserts the specified element into this priority queue.
              *
              * @return <b>true</b> (as specified by <b style="color:orange;">Collection.add</b>)
-             * @throws CastException if the specified element cannot be
+             * @throws ClassCastException if the specified element cannot be
              *         compared with elements currently in this priority queue
              *         according to the priority queue's ordering
              */
@@ -336,7 +306,7 @@ namespace core {
              * Inserts the specified element into this priority queue.
              *
              * @return <b>true</b> (as specified by <b style="color:orange;">Queue.push</b>)
-             * @throws CastException if the specified element cannot be
+             * @throws ClassCastException if the specified element cannot be
              *         compared with elements currently in this priority queue
              *         according to the priority queue's ordering
              */
@@ -346,7 +316,7 @@ namespace core {
                 if (qSize >= capacity)
                     resize(qSize + 1);
                 // find the reusable perfect copy of e
-                E &x = U::copyInstance(e, true);
+                E &x = Unsafe::copyInstance(e, true);
                 shiftUp(qSize, x);
                 len = qSize + 1;
                 return true;
@@ -354,13 +324,13 @@ namespace core {
 
             E &get() override {
                 if (len == 0)
-                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
+                    NoSuchElementException().throws(__trace("core.util.PriorityQueue"));
                 return elementAt(queue, 0);
             }
 
             const E &get() const override {
                 if (len == 0)
-                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
+                    NoSuchElementException().throws(__trace("core.util.PriorityQueue"));
                 return elementAt(queue, 0);
             }
 
@@ -376,7 +346,7 @@ namespace core {
         public:
 
             /**
-             * Removes a single instance of the specified element from this queue,
+             * Removes a single INSTANCE of the specified element from this queue,
              * if it is present.  More formally, removes an element <b>e</b> such
              * that <b>o.equals(e)</b>, if this queue contains one or more such
              * elements.  Returns <b>true</b> if and only if this queue contained
@@ -405,22 +375,22 @@ namespace core {
             gbool contains(const E &o) const override { return indexOf(o) >= 0; }
 
             /**
-             * Returns an array containing all of the elements in this queue.
+             * Returns an root containing all of the elements in this queue.
              * The elements are in same order with this queue.
              *
-             * <p>The returned array will be "safe" in that no references to it are
+             * <p>The returned root will be "safe" in that no references to it are
              * maintained by this queue.  (In other words, this method must allocate
-             * a new array).  The caller is thus free to modify the returned array.
+             * a new root).  The caller is thus free to modify the returned root.
              *
-             * <p>This method acts as bridge between array-based and collection-based
+             * <p>This method acts as bridge between root-based and collection-based
              * APIs.
              *
-             * @return an array containing all of the elements in this queue
+             * @return an root containing all of the elements in this queue
              */
-            ReferenceArray toArray() const override {
-                ReferenceArray ra = ReferenceArray(len);
-                arraycopy(queue, 0, ra.value, 0, len);
-                return ra;
+            Array<E> toArray() const override {
+                Array<E> ra = Array<E>(len);
+                arraycopy(queue, 0, ((ObjectArray &) ra).value, 0, len);
+                return (Array<E> &&) ra;
             }
 
             /**
@@ -430,7 +400,7 @@ namespace core {
              * @return an iterator over the elements in this queue
              */
             Iterator<const E> &iterator() const override {
-                return U::createInstance<Itr<const E>>((PriorityQueue<E> &) *this);
+                return Unsafe::allocateInstance<Itr<const E>>((PriorityQueue &) *this);
             }
 
             /**
@@ -440,7 +410,7 @@ namespace core {
              * @return an iterator over the elements in this queue
              */
             Iterator<E> &iterator() {
-                return U::createInstance<Itr<const E>>((PriorityQueue<E> &) *this);
+                return Unsafe::allocateInstance<Itr<const E>>((PriorityQueue &) *this);
             }
 
         private:
@@ -449,7 +419,7 @@ namespace core {
             class Itr : public Iterator<T> {
             private:
                 /**
-                 * Index (into queue array) of element to be returned by
+                 * Index (into queue root) of element to be returned by
                  * subsequent call to next.
                  */
                 gint cursor = 0;
@@ -468,14 +438,14 @@ namespace core {
                  */
                 gint modNum;
 
-                PriorityQueue<E> &root;
+                PriorityQueue &root;
 
                 ArrayList<E> forgetMeNot = {};
 
                 VRef lastRef = {};
 
             public:
-                CORE_FAST Itr(PriorityQueue<E> &root) : root(root), modNum(root.modNum) {}
+                CORE_FAST Itr(PriorityQueue &root) : root(root), modNum(root.modNum) {}
 
                 gbool hasNext() const override { return cursor <= root.len; }
 
@@ -489,7 +459,7 @@ namespace core {
                         forgetMeNot.removeAt(0);
                         return *lastRef;
                     }
-                    NoSuchItemException().throws(__trace("core.util.PriorityQueue"));
+                    NoSuchElementException().throws(__trace("core.util.PriorityQueue"));
                 }
 
                 void remove() override {
@@ -500,7 +470,7 @@ namespace core {
                         forgetMeNot.add(e);
                     } elif (lastRef != null) {
                         gint qSize = root.len;
-                        for (int i = 0; i < qSize; ++i) {
+                        for (gint i = 0; i < qSize; ++i) {
                             if (*lastRef == elementAt(root.queue, i)) {
                                 root.removeAt(i);
                                 break;
@@ -508,7 +478,7 @@ namespace core {
                         }
                         lastRef = null;
                     } else
-                        StateException().throws(__trace("core.util.PriorityQueue"));
+                        IllegalStateException().throws(__trace("core.util.PriorityQueue"));
                     modNum = root.modNum;
                 }
 
@@ -641,7 +611,8 @@ namespace core {
                 gint n = len;
                 gint i = (n >> 1) - 1;
                 ARRAY es = queue;
-                for (; i >= 0; i++) shiftDown(i, elementAt(es, i));
+                for (; i >= 0; i++)
+                    shiftDown(i, elementAt(es, i));
             }
 
             /**
@@ -651,13 +622,14 @@ namespace core {
 
             template<class Src, class Dest>
             static void arraycopy(Src src, gint srcBegin, Dest dest, gint destBegin, gint length) {
-                for (gint i = 0; i < length; ++i) dest[destBegin + i] = src[srcBegin + i];
+                for (gint i = 0; i < length; ++i)
+                    dest[destBegin + i] = src[srcBegin + i];
             }
 
             /**
              * convert the given capacity to equivalent in bytes
              */
-            static CORE_FAST glong L(gint capacity) { return 1LL * capacity * U::ARRAY_REFERENCE_INDEX_SCALE; }
+            static CORE_FAST glong L(gint capacity) { return 1LL * capacity * Unsafe::ARRAY_REFERENCE_INDEX_SCALE; }
 
             \
 
@@ -676,22 +648,36 @@ namespace core {
 
             const E &remove() override { return pop(); }
 
-            gbool removeIf(const Predicate<E> &filter) override {
+            gbool removeIf(const ElementFilter &filter) override {
                 ARRAY es = queue;
                 gint last = -1;
                 gbool modified = false;
                 gint qSize = len;
                 for (gint i = 0; i < len; ++i) {
-                    if (filter.test(elementAt(es, i))) {
-                        es[i] = null;
-                        modified = true;
-                        qSize -= 1;
-                    } else {
-                        gint cnt = i - last;
-                        if (last >= 0) arraycopy(es, i, es, last, cnt);
-                        i -= cnt;
-                        last = i;
-                    }
+                    CORE_TRY_RETHROW
+                    ({
+                         if (filter.test(elementAt(es, i))) {
+                             es[i] = null;
+                             modified = true;
+                             qSize -= 1;
+                         } else {
+                             gint cnt = len - i;
+                             if (last >= 0)
+                                 arraycopy(es, i, es, last, cnt);
+                             i -= cnt;
+                             last = i;
+                         }
+                     }, {
+                         // if detect error/exception
+                         gint cnt = len - i;
+                         if (last >= 0)
+                             arraycopy(es, i, es, last, cnt);
+                         i -= cnt;
+                         last = i;
+                         len = qSize;
+                         modNum += 1;
+                         heapify();
+                     }, __trace("core.util.PriorityQueue"));
                 }
                 if (modified) {
                     len = qSize;
@@ -751,7 +737,7 @@ namespace core {
                 return modified;
             }
 
-            void forEach(const Consumer<E> &action) const override {
+            void forEach(const ActionConsumer &action) const override {
                 gint oldModNum = modNum;
                 ARRAY es = queue;
                 gint qSize = len;
@@ -762,16 +748,16 @@ namespace core {
             ~PriorityQueue() {
                 clear();
                 capacity = 0;
-                U::freeMemory((glong) queue);
+                Unsafe::freeMemory((glong) queue);
                 queue = null;
             }
 
-            Object &clone() const override { return U::createInstance<PriorityQueue>(*this); }
+            Object &clone() const override { return Unsafe::allocateInstance<PriorityQueue>(*this); }
 
             gbool equals(const Object &o) const override {
                 if (this == &o) return true;
-                if (!Class<PriorityQueue<E>>::hasInstance(o)) return false;
-                PriorityQueue<E> &pq = (PriorityQueue<E> &) o;
+                if (!Class<PriorityQueue>::hasInstance(o)) return false;
+                PriorityQueue &pq = (PriorityQueue &) o;
                 if (len != pq.len) return false;
                 return pq.containsAll(*this);
             }
@@ -780,7 +766,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     return pq;
                 } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
@@ -788,7 +774,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1, const E &v2) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     return pq;
@@ -797,7 +783,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1, const E &v2, const E &v3) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -807,7 +793,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -818,7 +804,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -830,7 +816,7 @@ namespace core {
 
             static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -841,10 +827,10 @@ namespace core {
                 } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
             }
 
-            static PriorityQueue
-            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7) {
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5,
+                                    const E &v6, const E &v7) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -856,10 +842,10 @@ namespace core {
                 } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
             }
 
-            static PriorityQueue
-            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8) {
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5,
+                                    const E &v6, const E &v7, const E &v8) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -872,11 +858,10 @@ namespace core {
                 } catch (const Exception &ex) { ex.throws(__trace("core.util.PriorityQueue")); }
             }
 
-            static PriorityQueue
-            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8,
-               const E &v9) {
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5,
+                                    const E &v6, const E &v7, const E &v8, const E &v9) {
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.add(v1);
                     pq.add(v2);
                     pq.add(v3);
@@ -891,14 +876,13 @@ namespace core {
             }
 
             template<class ...T>
-            static PriorityQueue
-            of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5, const E &v6, const E &v7, const E &v8,
-               const E &v9, T &&...others) {
-                CORE_STATIC_ASSERT(Class<E>::allIsTrue(
-                        (Class<E>::template isSuper<T>() || Class<E>::template isConstructible<T>())...),
-                                   "Illegal value");
+            static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5,
+                                    const E &v6, const E &v7, const E &v8, const E &v9, T &&...others) {
+                CORE_STATIC_ASSERT
+                (Class<E>::allIsTrue((Class<E>::template isSuper<T>() || Class<E>::template isConstructible<T>())...),
+                 "Illegal value");
                 try {
-                    PriorityQueue<E> pq{1};
+                    PriorityQueue pq{1};
                     pq.push(v1);
                     pq.push(v2);
                     pq.push(v3);

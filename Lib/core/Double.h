@@ -109,7 +109,7 @@ namespace core {
      *
      * <p>The adjusted behaviors defined for <b> equals</b> and <b>
      * compareTo</b> allow instances of wrapper classes to work properly with
-     * conventional array structures. For example, defining NaN
+     * conventional root structures. For example, defining NaN
      * values to be <b> equals</b> to one another allows NaN to be used as
      * an element of a <b style="color: orange"> HashSet</b> or as the key of
      * a <b style="color: orange"> HashMap</b>. Similarly, defining <b>
@@ -184,7 +184,7 @@ namespace core {
      *
      * @author  Brunshweeck Tazeussong
      */
-    class Double CORE_FINAL  : public Object, public Comparable<Double> {
+    class Double CORE_FINAL : public Object, public Comparable<Double> {
     private:
         /**
          * The value of Double
@@ -342,7 +342,7 @@ namespace core {
          *
          * <p>Leading and trailing whitespace characters in <b>str</b>
          * are ignored.  Whitespace is removed as if by the <b>
-         * String.strip</b> method; that is, both ASCII space and control
+         * String.strip</b> method; that is, both ASCII diskSpace and control
          * characters are removed. The rest of <b>str</b> should
          * constitute a <i>FloatValue</i> as described by the lexical
          * syntax rules:
@@ -489,7 +489,7 @@ namespace core {
         static Double valueOf(const String &str);
 
         /**
-         * Returns a <b>Double</b> instance representing the specified
+         * Returns a <b>Double</b> INSTANCE representing the specified
          * <b>double</b> value.
          *
          * @param d
@@ -606,7 +606,7 @@ namespace core {
          * <li>Otherwise, the result is a string that represents the sign and
          * magnitude (absolute value) of the argument. If the sign is negative,
          * the first character of the result is '<b>-</b>'
-         * (<b>'\u005Cu002D'</b>); if the sign is positive, no sign character
+         * (<b>'\\u002D'</b>); if the sign is positive, no sign character
          * appears in the result. As for the magnitude <i>m</i>:
          * <ul>
          * <li>If <i>m</i> is infinity, it is represented by the characters
@@ -672,8 +672,8 @@ namespace core {
          * be the usual decimal expansion of <i>str</i>.
          * Note that <i>str</i><sub>1</sub> &ne; 0
          * and <i>str</i><sub><i>n</i></sub> &ne; 0.
-         * Below, the decimal point <b>'.'</b> is <b>'\u005Cu002E'</b>
-         * and the exponent indicator <b>'E'</b> is <b>'\u005Cu0045'</b>.
+         * Below, the decimal point <b>'.'</b> is <b>'\\u002E'</b>
+         * and the exponent indicator <b>'E'</b> is <b>'\\u0045'</b>.
          * <ul>
          * <li>Case -3 &le; <i>e</i> &lt; 0:
          * <i>d</i><sub><i>m</i></sub> is formatted as
@@ -741,7 +741,7 @@ namespace core {
          * <li>Otherwise, the result is a string that represents the sign
          * and magnitude of the argument. If the sign is negative, the
          * first character of the result is '<b>-</b>'
-         * (<b>'\u005Cu002D'</b>); if the sign is positive, no sign
+         * (<b>'\\u002D'</b>); if the sign is positive, no sign
          * character appears in the result. As for the magnitude <i>m</i>:
          *
          * <ul>
@@ -900,7 +900,11 @@ namespace core {
          * @param y the second <b>double</b> to compare
          */
         static CORE_FAST gint compare(gdouble x, gdouble y) {
-            return (x < y) ? -1 : ((x > y) ? 1 : 0);
+            return (x < y) ? -1 :
+                   ((x > y) ? 1 :
+                    ((x == y) ? 0 :
+                     (isNaN(x) ? (isNaN(y) ? 0 : +1) :
+                      -1)));
         }
 
         /**
@@ -1026,7 +1030,7 @@ namespace core {
          */
         static CORE_FAST gdouble max(gdouble x, gdouble y) {
             return isNaN(x) ? x :
-                   ((x == 0.0f) && (y == 0.0) && toLongBits(x) == toLongBits(-0.0)) ? x :
+                   ((x == 0.0) && (y == 0.0) && toLongBits(x) == toLongBits(-0.0)) ? x :
                    (x >= y) ? x : y;
         }
 
@@ -1046,9 +1050,11 @@ namespace core {
                    (x <= y) ? x : y;
         }
 
+        CORE_FAST static gint BYTES = 8;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gdouble, value, const);
 
-        CORE_ENABLE_IMPLICIT_CAST(gdouble &, value);
+        CORE_ENABLE_IMPLICIT_CAST(gdouble &, value, &);
 
         CORE_STATIC_ASSERT(((SIGN_BIT_MASK | EXPONENT_BIT_MASK | SIGNIFICAND_BIT_MASK) == ~0LL) &&
                            (((SIGN_BIT_MASK & EXPONENT_BIT_MASK) == 0LL) &&

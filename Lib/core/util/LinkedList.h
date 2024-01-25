@@ -58,6 +58,14 @@ namespace core {
          */
         template<class E>
         class LinkedList : public List<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E &>);
+            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
+            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
+
         private:
 
             /**
@@ -85,15 +93,6 @@ namespace core {
 
             using List<E>::modNum;
 
-            CORE_ALIAS(U, native::Unsafe);
-
-            /**
-             * Capture<T> represent all type T that extends this List element type E.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
-             */
-            template<class T>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
-
         public:
 
             /**
@@ -108,8 +107,7 @@ namespace core {
              *
              * @param  c the collection whose elements are to be placed into this list
              */
-            template<class T = E>
-            CORE_EXPLICIT LinkedList(const Collection<Capture<T>> &c) { addAll<T>(c); }
+            CORE_EXPLICIT LinkedList(const Collection<E> &c) { addAll(c); }
 
             /**
              * Constructs a list containing the elements of the specified
@@ -128,9 +126,9 @@ namespace core {
              * @param  ll the collection whose elements are to be placed into this list
              */
             LinkedList(LinkedList &&ll) CORE_NOTHROW {
-                U::swapValues(len, ll.len);
-                U::swapValues(first, ll.first);
-                U::swapValues(last, ll.last);
+                Unsafe::swapValues(len, ll.len);
+                Unsafe::swapValues(first, ll.first);
+                Unsafe::swapValues(last, ll.last);
             }
 
             /**
@@ -147,7 +145,7 @@ namespace core {
                     LnkNode x = null;
                     gint i = 0;
                     // self copy of elements (while i < Math::min(len, ll.len))
-                    for (gint limit = Math::min(len, ll.len); i < limit; i += 1) {
+                    for (gint limit = len < ll.len ? len : ll.len; i < limit; i += 1) {
                         x1->item = x2->item;
                         x = x1;
                         x1 = x1->next;
@@ -186,9 +184,9 @@ namespace core {
              */
             LinkedList &operator=(LinkedList &&ll) CORE_NOTHROW {
                 if (this == &ll) {
-                    U::swapValues(len, ll.len);
-                    U::swapValues(first, ll.first);
-                    U::swapValues(last, ll.last);
+                    Unsafe::swapValues(len, ll.len);
+                    Unsafe::swapValues(first, ll.first);
+                    Unsafe::swapValues(last, ll.last);
                 }
                 return *this;
             }
@@ -199,24 +197,35 @@ namespace core {
              * Links e as first element.
              */
             void linkFirst(E &e) {
-                LnkNode f = first;
-                LnkNode newNode = &U::createInstance<Node>(null, e, f);
-                first = newNode;
-                if (f == null) last = newNode; else f->prev = newNode;
-                len += 1;
-                modNum += 1;
+                CORE_TRY_ONLY_EX
+                ({
+
+                     LnkNode f = first;
+                     LnkNode newNode = new Node(null, e, f);
+                     first = newNode;
+                     (f == null ? last : f->prev) = newNode;
+                     len += 1;
+                     modNum += 1;
+                     return;
+                 })
+                MemoryError("Unable to allocate more element").throws(__trace("core.util.LinkedList"));
             }
 
             /**
              * Links e as last element.
              */
             void linkLast(E &e) {
-                LnkNode l = last;
-                LnkNode newNode = &U::createInstance<Node>(l, e, null);
-                last = newNode;
-                if (l == null) first = newNode; else l->next = newNode;
-                len += 1;
-                modNum += 1;
+                CORE_TRY_ONLY_EX
+                ({
+                     LnkNode l = last;
+                     LnkNode newNode = new Node(l, e, null);
+                     last = newNode;
+                     (l == null ? first : l->next) = newNode;
+                     len += 1;
+                     modNum += 1;
+                     return;
+                 })
+                MemoryError("Unable to allocate more element").throws(__trace("core.util.LinkedList"));
             }
 
             /**
@@ -224,12 +233,17 @@ namespace core {
              */
             void linkBefore(E &e, LnkNode succ) {
                 // CORE_ASSERT(succ != null, "core.util.LinkedList");
-                LnkNode pred = succ->prev;
-                LnkNode newNode = &U::createInstance<Node>(pred, e, succ);
-                succ->prev = newNode;
-                if (pred == null) first = newNode; else pred->next = newNode;
-                len += 1;
-                modNum += 1;
+                CORE_TRY_ONLY_EX
+                ({
+                     LnkNode pred = succ->prev;
+                     LnkNode newNode = new Node(pred, e, succ);
+                     succ->prev = newNode;
+                     (pred == null ? first : pred->next) = newNode;
+                     len += 1;
+                     modNum += 1;
+                     return;
+                 })
+                MemoryError("Unable to allocate more element").throws(__trace("core.util.LinkedList"));
             }
 
             /**
@@ -242,9 +256,10 @@ namespace core {
                 f->item = null;
                 f->next = null; // help GC
                 first = next;
-                if (next == null) last = null; else next->prev = null;
+                (next == null ? last : next->prev) = null;
                 len -= 1;
                 modNum += 1;
+                delete f;
                 return element;
             }
 
@@ -258,9 +273,10 @@ namespace core {
                 l->item = null;
                 l->prev = null; // help GC
                 last = prev;
-                if (prev == null) first = null; else prev->next = null;
+                (prev == null ? first : prev->next) = null;
                 len -= 1;
                 modNum += 1;
+                delete l;
                 return element;
             }
 
@@ -287,6 +303,7 @@ namespace core {
                 x->item = null;
                 len -= 1;
                 modNum += 1;
+                delete x;
                 return element;
             }
 
@@ -319,7 +336,7 @@ namespace core {
              * @return <b>true</b> (as specified by <b style="color:orange;">Collection::add</b>)
              */
             gbool add(const E &e) override {
-                linkLast(U::copyInstance(e, true));
+                linkLast(Unsafe::copyInstance(e, true));
                 return true;
             }
 
@@ -360,20 +377,6 @@ namespace core {
             gbool addAll(const Collection<E> &c) override { return addAll(len, c); }
 
             /**
-             * Appends all of the elements in the specified collection to the end of
-             * this list, in the order that they are returned by the specified
-             * collection's iterator.  The behavior of this operation is undefined if
-             * the specified collection is modified while the operation is in
-             * progress.  (Note that this will occur if the specified collection is
-             * this list, and it's nonempty.)
-             *
-             * @param c collection containing elements to be added to this list
-             * @return <b>true</b> if this list changed as a result of the call
-             */
-            template<class T = E>
-            gbool addAll(const Collection<Capture<T>> &c) { return addAll<T>(len, c); }
-
-            /**
              * Inserts all of the elements in the specified collection into this
              * list, starting at the specified position.  Shifts the element
              * currently at that position (if any) and any subsequent elements to
@@ -387,55 +390,46 @@ namespace core {
              * @return <b>true</b> if this list changed as a result of the call
              * @throws IndexException
              */
-            gbool addAll(gint index, const Collection<E> &c) override { return addAll<E>(index, c); }
-
-            /**
-             * Inserts all of the elements in the specified collection into this
-             * list, starting at the specified position.  Shifts the element
-             * currently at that position (if any) and any subsequent elements to
-             * the right (increases their indices).  The new elements will appear
-             * in the list in the order that they are returned by the
-             * specified collection's iterator.
-             *
-             * @param index index at which to insert the first element
-             *              from the specified collection
-             * @param c collection containing elements to be added to this list
-             * @return <b>true</b> if this list changed as a result of the call
-             * @throws IndexException
-             */
-            template<class T = E>
-            gbool addAll(gint index, const Collection<Capture<T>> &c) {
-                try {
-                    Preconditions::checkIndexForAdding(index, len);
-                    ReferenceArray a = c.toArray();
-                    gint const aSize = a.length();
-                    if (aSize == 0) return false;
-                    LnkNode succ = {};
-                    LnkNode pred = {};
-                    if (index == len) {
-                        succ = null;
-                        pred = last;
-                    } else {
-                        succ = nodeAt(index);
-                        pred = succ->prev;
-                    }
-                    for (Object &t: a) {
-                        E &e = (E &) t;
-                        LnkNode newNode = &U::createInstance<Node>(pred, e, null);
-                        if (pred == null) first = newNode; else pred->next = newNode;
-                        pred = newNode;
-                    }
-
-                    if (succ == null)
-                        last = pred;
-                    else {
-                        pred->next = succ;
-                        succ->prev = pred;
-                    }
-                    len += aSize;
-                    modNum += 1;
-                    return true;
-                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+            gbool addAll(gint index, const Collection<E> &c) override {
+                CORE_TRY_RETHROW_EXCEPTION
+                ({ Preconditions::checkIndexForAdding(index, len); }, , __trace("core.util.LinkedList"))
+                Array<E> a = c.toArray();
+                gint const aSize = a.length();
+                if (aSize == 0)
+                    return false;
+                LnkNode succ = {};
+                LnkNode pred = {};
+                if (index == len) {
+                    succ = null;
+                    pred = last;
+                } else {
+                    succ = nodeAt(index);
+                    pred = succ->prev;
+                }
+                gint success = 0; // number of elements that are always copied
+                CORE_TRY_ONLY
+                ({
+                     // fail if and only if new operator fails
+                     for (E &e: a) {
+                         LnkNode newNode = new Node(pred, e, null);
+                         (pred == null ? first : pred->next) = newNode;
+                         pred = newNode;
+                         success += 1;
+                     }
+                 })
+                if (succ == null) {
+                    last = pred;
+                } else {
+                    pred->next = succ;
+                    succ->prev = pred;
+                }
+                len += success;
+                modNum += 1;
+                if (success < aSize) {
+                    // all elements of given collection are not copied
+                    MemoryError("Unable to allocate more elements").throws(__trace("core.util.LinkedList"));
+                }
+                return true;
             }
 
             /**
@@ -443,20 +437,21 @@ namespace core {
              * The list will be empty after this call returns.
              */
             void clear() override {
-                // Clearing all of the links between nodes is "unnecessary", but:
+                // Clearing all the links between nodes is "unnecessary", but:
                 // - helps a generational GC if the discarded nodes inhabit
                 //   more than one generation
                 // - is sure to free memory even if there is a reachable Iterator
-                for (LnkNode x = first; x != null;) {
-                    LnkNode next = x->next;
-                    x->item = null;
-                    x->next = null;
-                    x->prev = null;
-                    x = next;
-                }
+                LnkNode f = first;
                 first = last = null;
                 len = 0;
                 modNum += 1;
+                for (LnkNode x = f; x != null;) {
+                    LnkNode next = x->next;
+                    x->item = null;
+                    x->next = x->prev = null;
+                    delete x;
+                    x = next;
+                }
             }
 
             /**
@@ -464,7 +459,7 @@ namespace core {
              *
              * @param index index of the element to return
              * @return the element at the specified position in this list
-             * @throws IndexException 
+             * @throws IndexException
              */
             E &get(gint index) override {
                 try {
@@ -478,7 +473,7 @@ namespace core {
              *
              * @param index index of the element to return
              * @return the element at the specified position in this list
-             * @throws IndexException 
+             * @throws IndexException
              */
             const E &get(gint index) const override {
                 try {
@@ -494,14 +489,14 @@ namespace core {
              * @param index index of the element to replace
              * @param element element to be stored at the specified position
              * @return the element previously at the specified position
-             * @throws IndexException 
+             * @throws IndexException
              */
             const E &set(gint index, const E &element) override {
                 try {
                     Preconditions::checkIndex(index, len);
                     LnkNode x = nodeAt(index);
                     E &oldValue = *x->item;
-                    x->item = &U::copyInstance(element, true);
+                    x->item = &Unsafe::copyInstance(element, true);
                     return oldValue;
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
@@ -513,13 +508,13 @@ namespace core {
              *
              * @param index index at which the specified element is to be inserted
              * @param element element to be inserted
-             * @throws IndexException 
+             * @throws IndexException
              */
             void add(gint index, const E &element) override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    if (index == len) linkLast(U::copyInstance(element, true));
-                    else linkBefore(U::copyInstance(element, true), nodeAt(index));
+                    if (index == len) linkLast(Unsafe::copyInstance(element, true));
+                    else linkBefore(Unsafe::copyInstance(element, true), nodeAt(index));
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
@@ -530,7 +525,7 @@ namespace core {
              *
              * @param index the index of the element to be removed
              * @return the element previously at the specified position
-             * @throws IndexException 
+             * @throws IndexException
              */
             const E &removeAt(gint index) override {
                 try {
@@ -617,14 +612,13 @@ namespace core {
              *              list-iterator (by a call to <b>next</b>)
              * @return a ListIterator of the elements in this list (in proper
              *         sequence), starting at the specified position in the list
-             * @throws IndexException 
+             * @throws IndexException
              * @see List::iterator(gint)
              */
             ListIterator<E> &iterator(gint index) override {
-                try {
-                    Preconditions::checkIndexForAdding(index, len);
-                    return U::createInstance < ListItr < E >> ((LinkedList &) *this, index);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
+                CORE_TRY_RETHROW_EXCEPTION
+                ({Preconditions::checkIndexForAdding(index, len);}, , __trace("core.util.LinkedList"))
+                 return Unsafe::allocateInstance < ListItr < E >> (*this, index);
             }
 
             /**
@@ -645,13 +639,13 @@ namespace core {
              *              list-iterator (by a call to <b>next</b>)
              * @return a ListIterator of the elements in this list (in proper
              *         sequence), starting at the specified position in the list
-             * @throws IndexException 
+             * @throws IndexException
              * @see List::iterator(gint)
              */
             ListIterator<const E> &iterator(gint index) const override {
                 try {
                     Preconditions::checkIndexForAdding(index, len);
-                    return U::createInstance<ListItr<const E>>((LinkedList &) *this, index);
+                    return Unsafe::allocateInstance<ListItr<const E>>((LinkedList &) *this, index);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.LinkedList")); }
             }
 
@@ -687,7 +681,7 @@ namespace core {
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     if (!hasNext())
-                        NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
+                        NoSuchElementException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = cursor;
                     cursor = cursor->next;
                     index += 1;
@@ -700,7 +694,7 @@ namespace core {
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     if (!hasNext())
-                        NoSuchItemException().throws(__trace("core.util.LinkedList.ListItr"));
+                        NoSuchElementException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = cursor = (cursor == null) ? root.last : cursor->prev;
                     index -= 1;
                     return *last->item;
@@ -708,7 +702,7 @@ namespace core {
 
                 void remove() override {
                     if (last == null)
-                        StateException().throws(__trace("core.util.LinkedList.ListItr"));
+                        IllegalStateException().throws(__trace("core.util.LinkedList.ListItr"));
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     LnkNode lastNext = last->next;
@@ -720,10 +714,10 @@ namespace core {
 
                 void set(const T &e) override {
                     if (last == null)
-                        StateException().throws(__trace("core.util.LinkedList.ListItr"));
+                        IllegalStateException().throws(__trace("core.util.LinkedList.ListItr"));
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
-                    last->item = &U::copyInstance(e, true);
+                    last->item = &Unsafe::copyInstance(e, true);
                 }
 
                 void add(const T &e) override {
@@ -731,9 +725,9 @@ namespace core {
                         ConcurrentException().throws(__trace("core.util.LinkedList.ListItr"));
                     last = null;
                     if (cursor == null)
-                        root.linkLast(U::copyInstance(e, true));
+                        root.linkLast(Unsafe::copyInstance(e, true));
                     else
-                        root.linkBefore(U::copyInstance(e, true), cursor);
+                        root.linkBefore(Unsafe::copyInstance(e, true), cursor);
                     index += 1;
                     modNum = root.modNum;
                 }
@@ -757,30 +751,33 @@ namespace core {
              * Returns a shallow copy of this <b>LinkedList</b>. (The elements
              * themselves are not cloned.)
              *
-             * @return a shallow copy of this <b>LinkedList</b> instance
+             * @return a shallow copy of this <b>LinkedList</b> INSTANCE
              */
-            Object &clone() const override { return U::createInstance<LinkedList>(*this); }
+            Object &clone() const override { return Unsafe::allocateInstance<LinkedList>(*this); }
 
             /**
-             * Returns an array containing all of the elements in this list
+             * Returns an root containing all of the elements in this list
              * in proper sequence (from first to last element).
              *
-             * <p>The returned array will be "safe" in that no references to it are
+             * <p>The returned root will be "safe" in that no references to it are
              * maintained by this list.  (In other words, this method must allocate
-             * a new array).  The caller is thus free to modify the returned array.
+             * a new root).  The caller is thus free to modify the returned root.
              *
-             * <p>This method acts as bridge between array-based and collection-based
+             * <p>This method acts as bridge between root-based and collection-based
              * APIs.
              *
-             * @return an array containing all of the elements in this list
+             * @return an root containing all of the elements in this list
              *         in proper sequence
              */
-            ReferenceArray toArray() const override {
-                ReferenceArray a = ReferenceArray(len);
-                gint i = 0;
-                for (LnkNode x = first; x != null; x = x->next)
-                    a.set(i++, *x->item);
-                return a;
+            Array<E> toArray() const override {
+                CORE_IGNORE_DEPRECATIONS
+                ({
+                     Array<E> a = Array<E>(len);
+                     gint i = 0;
+                     for (LnkNode x = first; x != null; x = x->next)
+                         a.set(i++, x->item[0]);
+                     return a;
+                })
             }
 
             ~LinkedList() override {

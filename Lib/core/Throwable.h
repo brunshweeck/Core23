@@ -22,7 +22,7 @@ namespace core {
      * Instances of two subclasses, <b>core::Error</b> and <b>core::Exception</b>, are conventionally
      * used to indicate that exceptional situations have occurred. Typically, these instances
      * are freshly created in the context of the exceptional situation so as to include relevant information
-     * (such as stack trace array).
+     * (such as stack trace root).
      *
      * <p>
      * A throwable contains a snapshot of the execution stack of its thread at the time it was created.
@@ -149,7 +149,7 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          *          The cause.
          *
          * @see MemoryError
-         * @see ArgumentException
+         * @see IllegalArgumentException
          * @see ArithmeticException
          */
         CORE_EXPLICIT Throwable(String message, const Throwable &cause) CORE_NOTHROW;
@@ -201,7 +201,7 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          * @param  cause
          *              The cause
          *
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *              If cause is this throwable.  (A throwable cannot be its own cause.)
          */
         void setCause(const Throwable &cause);
@@ -211,14 +211,14 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          * The result is the concatenation of:
          * <ul>
          * <li> the name of the class of this object
-         * <li> ": " (a colon and a space)
+         * <li> ": " (a colon and a diskSpace)
          * <li> the result of invoking this object's message() method
          * </ul>
          */
         String toString() const override;
 
         /**
-         * Return true specified Object is an instance of Throwable
+         * Return true specified Object is an INSTANCE of Throwable
          * that have same properties as this throwable
          *
          * @param object
@@ -234,7 +234,7 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
         /**
          * Thrown this throwable with specified execution point.
          * This method is recommended to use for preserving true
-         * instance and chaining. it unnecessary to override this
+         * INSTANCE and chaining. it unnecessary to override this
          * method because it use the clone() and raise() method.
          * It recommended to call this method with __trace()
          * macro because __trace() macro detect automatically
@@ -242,22 +242,90 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          * except module name, and, classname.
          * <p>
          * Example:
-         * <pre>
-         *  MemoryError().throws(__trace("MyClass")); // into of class
-         * </pre>
-         * <pre>
-         *  MemoryError().throws(__trace("")); // out of class
-         * </pre>
+         * <pre> @code
+         *  class X : public Exception {
+         *      ...
+         *  private:
+         *      void raise() && override {
+         *          ...
+         *          throw X(*this);
+         *      }
+         *  };
+         *
+         *  class MyClass: public Object {
+         *      ...
+         *      void myMethod() const {
+         *          ...
+         *          X().throws(__trace(classname())); // into class
+         *          // or X.throws(__trace("MyClass"));
+         *      }
+         *  };
+         *
+         *  int myFunction() {
+         *      ...
+         *      X().throws(__trace("")); // out of class
+         *  }
+         *
+         * @endcode </pre>
          *
          * @param trace
          *          The execution point
          */
         CORE_NORETURN void throws(const Trace &trace) const;
 
+        /**
+         * Thrown/rethrown this throwable and with the previous execution point.
+         * This method is recommended to use for preserving true
+         * INSTANCE and chaining. it unnecessary to override this
+         * method because it use the clone() and raise() method.
+         * <p>
+         * Example:
+         * <pre> @code
+         *   class X : public Exception {
+         *      ...
+         *   private:
+         *      void raise() && override {
+         *          ...
+         *          throw X(*this);
+         *      }
+         *   };
+         *
+         *   int main() {
+         *      ...
+         *      try{
+         *          ...
+         *          X.throws(__trace(""));
+         *      } catch(const Exception& ex) {
+         *          X.throws(); // rethrow X
+         *      }
+         *   }
+         * @endcode </pre>
+         * <p>
+         *  This code is similar to C++ standard code
+         *  (DEPRECATED: The C++ standard not guaranteed to produce same result
+         *              If the class X extends Exception/Error/Throwable class.):
+         *  <pre>@code
+         *  class X : public std::exception {...};
+         *
+         *  int main() {
+         *      ...
+         *      try {
+         *          throw X();
+         *      } catch(...) {
+         *          throw;
+         *      }
+         *  }
+         *  @endcode</pre>
+         *
+         * @param trace
+         *          The execution point
+         */
+        CORE_NORETURN void throws() const;
+
     private:
         /**
          * Thrown this throwable basically
-         * This method is used to preserve instance.
+         * This method is used to preserve INSTANCE.
          *
          * It same to do throw X; for specific class X.
          */

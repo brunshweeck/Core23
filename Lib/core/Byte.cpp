@@ -3,14 +3,12 @@
 //
 
 #include "Byte.h"
-#include "NumberFormatException.h"
-#include "CastException.h"
-#include <core/Integer.h>
+#include <core/NumberFormatException.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gbyte Byte::parseByte(const String &s, gint base) {
         gint i = {};
@@ -73,7 +71,10 @@ namespace core {
     }
 
     gbool Byte::equals(const Object &object) const {
-        if (Class<Byte>::hasInstance(object)) return value == ((Byte &) object).value;
+        if (this == &object)
+            return true;
+        if (Class<Byte>::hasInstance(object))
+            return value == ((Byte &) object).value;
         return false;
     }
 
@@ -82,7 +83,7 @@ namespace core {
     }
 
     Object &Byte::clone() const {
-        return U::createInstance<Byte>(*this);
+        return Unsafe::allocateInstance<Byte>(value);
     }
 
     Byte Byte::valueOf(gbyte b) { return b; }

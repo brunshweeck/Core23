@@ -41,30 +41,30 @@ namespace core {
 
         private:
             /**
-             * The m of the m-day of the first day of the cutover week.
+             * The m of the m-day of the first day of the cut-over week.
              * The actual date will be adjusted by the dowChange field.
              */
             LocalDate::Month m;
             /**
-             * The day-of-m of the m-day of the cutover week.
-             * If positive, it is the start of the week where the cutover can occur.
-             * If negative, it represents the end of the week where cutover can occur.
+             * The day-of-m of the m-day of the cut-over week.
+             * If positive, it is the start of the week where the cut-over can occur.
+             * If negative, it represents the end of the week where cut-over can occur.
              * The value is the number of days from the end of the m, such that
-             * {@code -1} is the last day of the m, {@code -2} is the second
+             * <b> -1} is the last day of the m, <b> -2} is the second
              * to last day, and so on.
              */
             gint dom: 8;
 
             /**
-             * The cutover day-of-week, null to retain the day-of-m.
+             * The cut-over day-of-week, null to retain the day-of-m.
              */
             LocalDate::DayOfWeek dow;
             /**
-             * The cutover time in the 'before' offset.
+             * The cut-over time in the 'before' offset.
              */
             LocalTime time;
             /**
-             * Whether the cutover time is midnight at the end of day.
+             * Whether the cut-over time is midnight at the end of day.
              */
             gbool timeEndOfDay;
             /**
@@ -73,16 +73,16 @@ namespace core {
             TimeDefinition timeDef;
 
             /**
-             * The standard offset at the cutover.
+             * The standard offset at the cut-over.
              */
             ZoneOffset standard;
 
             /**
-             * The offset before the cutover.
+             * The offset before the cut-over.
              */
             ZoneOffset before;
             /**
-             * The offset after the cutover.
+             * The offset after the cut-over.
              */
             ZoneOffset after;
 
@@ -98,10 +98,10 @@ namespace core {
              * The WALL type returns the input date-time.
              * The result is intended for use with the wall-offset.
              *
-             * @param dateTime  the local date-time, not null
-             * @param standardOffset  the standard offset, not null
-             * @param wallOffset  the wall offset, not null
-             * @return the date-time relative to the wall/before offset, not null
+             * @param dateTime  the local date-time
+             * @param standardOffset  the standard offset
+             * @param wallOffset  the wall offset
+             * @return the date-time relative to the wall/before offset
              */
             static LocalDateTime createDateTime(TimeDefinition td, const LocalDateTime &dateTime,
                                                 const ZoneOffset &standardOffset, const ZoneOffset &wallOffset);
@@ -109,30 +109,30 @@ namespace core {
         public:
 
             /**
-             * Obtains an instance defining the yearly rule to create transitions between two offsets.
+             * Obtains an INSTANCE defining the yearly rule to create transitions between two offsets.
              * <p>
-             * Applications should normally obtain an instance from {@link ZoneRules}.
-             * This factory is only intended for use when creating {@link ZoneRules}.
+             * Applications should normally obtain an INSTANCE from <b style="color:orange;"> ZoneRules}.
+             * This factory is only intended for use when creating <b style="color:orange;"> ZoneRules}.
              *
-             * @param month  the m of the m-day of the first day of the cutover week, not null
-             * @param dayOfMonthIndicator  the day of the m-day of the cutover week, positive if the week is that
+             * @param month  the m of the m-day of the first day of the cut-over week
+             * @param dayOfMonthIndicator  the day of the m-day of the cut-over week, positive if the week is that
              *  day or later, negative if the week is that day or earlier, counting from the last day of the m,
              *  from -28 to 31 excluding 0
              * @param dayOfWeek  the required day-of-week, null if the m-day should not be changed
-             * @param time  the cutover time in the 'before' offset, not null
+             * @param time  the cut-over time in the 'before' offset
              * @param timeEndOfDay  whether the time is midnight at the end of day
-             * @param timeDefinition  how to interpret the cutover
-             * @param standardOffset  the standard offset in force at the cutover, not null
-             * @param offsetBefore  the offset before the cutover, not null
-             * @param offsetAfter  the offset after the cutover, not null
-             * @return the rule, not null
+             * @param timeDefinition  how to interpret the cut-over
+             * @param standardOffset  the standard offset in force at the cut-over
+             * @param offsetBefore  the offset before the cut-over
+             * @param offsetAfter  the offset after the cut-over
+             * @return the rule
              * @throws IllegalArgumentException if the day of m indicator is invalid
              * @throws IllegalArgumentException if the end of day flag is true when the time is not midnight
-             * @throws IllegalArgumentException if {@code time.getNano()} returns non-zero value
+             * @throws IllegalArgumentException if <b> time.getNano()} returns non-zero value
              */
             static ZoneOffsetTransitionRule of(
                     LocalDate::Month month,
-                    int dayOfMonthIndicator,
+                    gint dayOfMonthIndicator,
                     LocalDate::DayOfWeek dayOfWeek,
                     const LocalTime &time,
                     gbool timeEndOfDay,
@@ -144,25 +144,25 @@ namespace core {
         private:
 
             /**
-             * Creates an instance defining the yearly rule to create transitions between two offsets.
+             * Creates an INSTANCE defining the yearly rule to create transitions between two offsets.
              *
-             * @param month  the m of the m-day of the first day of the cutover week, not null
-             * @param dayOfMonthIndicator  the day of the m-day of the cutover week, positive if the week is that
+             * @param month  the m of the m-day of the first day of the cut-over week
+             * @param dayOfMonthIndicator  the day of the m-day of the cut-over week, positive if the week is that
              *  day or later, negative if the week is that day or earlier, counting from the last day of the m,
              *  from -28 to 31 excluding 0
              * @param dayOfWeek  the required day-of-week, null if the m-day should not be changed
-             * @param time  the cutover time in the 'before' offset, not null
+             * @param time  the cut-over time in the 'before' offset
              * @param timeEndOfDay  whether the time is midnight at the end of day
-             * @param timeDefinition  how to interpret the cutover
-             * @param standardOffset  the standard offset in force at the cutover, not null
-             * @param offsetBefore  the offset before the cutover, not null
-             * @param offsetAfter  the offset after the cutover, not null
+             * @param timeDefinition  how to interpret the cut-over
+             * @param standardOffset  the standard offset in force at the cut-over
+             * @param offsetBefore  the offset before the cut-over
+             * @param offsetAfter  the offset after the cut-over
              * @throws IllegalArgumentException if the day of m indicator is invalid
              * @throws IllegalArgumentException if the end of day flag is true when the time is not midnight
              */
             CORE_EXPLICIT ZoneOffsetTransitionRule(
                     LocalDate::Month month,
-                    int dayOfMonthIndicator,
+                    gint dayOfMonthIndicator,
                     LocalDate::DayOfWeek dayOfWeek,
                     const LocalTime &time,
                     gbool timeEndOfDay,
@@ -180,9 +180,9 @@ namespace core {
              * If the rule defines an exact date then the m is the m of that date.
              * <p>
              * If the rule defines a week where the transition might occur, then the m
-             * if the m of either the earliest or latest possible date of the cutover.
+             * if the m of either the earliest or latest possible date of the cut-over.
              *
-             * @return the m of the transition, not null
+             * @return the m of the transition
              */
              LocalDate::Month month() const;
 
@@ -199,7 +199,7 @@ namespace core {
              * The date may refer to 29th February which should be treated as 1st March in non-leap years.
              * <p>
              * If the value is negative, then it represents the number of days back from the
-             * end of the month where {@code -1} is the last day of the month.
+             * end of the month where <b> -1} is the last day of the month.
              * In this case, the day identified is the latest possible date that the transition can be.
              *
              * @return the day-of-month indicator, from -28 to 31 excluding 0
@@ -211,7 +211,7 @@ namespace core {
              * <p>
              * If the rule defines an exact date then this returns null.
              * <p>
-             * If the rule defines a week where the cutover might occur, then this method
+             * If the rule defines a week where the cut-over might occur, then this method
              * returns the day-of-week that the month-day will be adjusted to.
              * If the day is positive then the adjustment is later.
              * If the day is negative then the adjustment is earlier.
@@ -222,11 +222,11 @@ namespace core {
 
             /**
              * Gets the local time of day of the transition which must be checked with
-             * {@link #isMidnightEndOfDay()}.
+             * <b style="color:orange;"> #isMidnightEndOfDay()}.
              * <p>
              * The time is converted into an instant using the time definition.
              *
-             * @return the local time of day of the transition, not null
+             * @return the local time of day of the transition
              */
              LocalTime localTime() const;
 
@@ -245,39 +245,39 @@ namespace core {
              * The local time can be converted to an instant using the standard offset,
              * the wall offset or UTC.
              *
-             * @return the time definition, not null
+             * @return the time definition
              */
              TimeDefinition timeDefinition() const;
 
             /**
              * Gets the standard offset in force at the transition.
              *
-             * @return the standard offset, not null
+             * @return the standard offset
              */
              ZoneOffset standardOffset() const;
 
             /**
              * Gets the offset before the transition.
              *
-             * @return the offset before, not null
+             * @return the offset before
              */
              ZoneOffset offsetBefore() const;
 
             /**
              * Gets the offset after the transition.
              *
-             * @return the offset after, not null
+             * @return the offset after
              */
              ZoneOffset offsetAfter() const;
 
             //-----------------------------------------------------------------------
             /**
-             * Creates a transition instance for the specified year.
+             * Creates a transition INSTANCE for the specified year.
              * <p>
              * Calculations are performed using the ISO-8601 chronology.
              *
-             * @param year  the year to create a transition for, not null
-             * @return the transition instance, not null
+             * @param year  the year to create a transition for
+             * @return the transition INSTANCE
              */
              ZoneOffsetTransition createTransition(gint year) const;
 
@@ -303,7 +303,7 @@ namespace core {
             /**
              * Returns a string describing this object.
              *
-             * @return a string for debugging, not null
+             * @return a string for debugging
              */
              String toString() const override;
 

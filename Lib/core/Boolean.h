@@ -81,7 +81,7 @@ namespace core {
         CORE_FAST gbool booleanValue() const { return value; }
 
         /**
-         * Return the Boolean instance representing by specified
+         * Return the Boolean INSTANCE representing by specified
          * value.
          *
          * @param b The boolean value
@@ -89,7 +89,7 @@ namespace core {
         static Boolean valueOf(gbool b);
 
         /**
-         * Return the Boolean instance representing by string
+         * Return the Boolean INSTANCE representing by string
          *
          * @param str
          *        The String representation
@@ -135,10 +135,10 @@ namespace core {
         gbool equals(const Object &object) const override;
 
         /**
-         * Compares this Boolean instance with another.
+         * Compares this Boolean INSTANCE with another.
          *
          * @param other
-         *          The Boolean instance to be compared
+         *          The Boolean INSTANCE to be compared
          */
         gint compareTo(const Boolean &other) const override;
 
@@ -186,16 +186,18 @@ namespace core {
         static CORE_FAST gbool XOR(gbool x, gbool y) { return x ^ y; }
 
         /**
-         * Return sharable copy of this Boolean instance
+         * Return sharable copy of this Boolean INSTANCE
          *
          * @throws MemoryError
          *          If memory allocating failed
          */
         Object &clone() const override;
 
+        CORE_FAST static gint BYTES = 1;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gbool, value, const);
 
-        CORE_ENABLE_IMPLICIT_CAST(gbool &, value);
+        CORE_ENABLE_IMPLICIT_CAST(gbool &, value, &);
 
     };
 

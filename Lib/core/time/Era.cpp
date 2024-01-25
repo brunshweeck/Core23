@@ -67,12 +67,12 @@ namespace core {
 
         const Object &Era::query(const Temporal::Query &query) const {
             if (query == PRECISION)
-                return native::Unsafe::createInstance<Enum<Unit>>(ERAS);
+                return native::Unsafe::allocateInstance<Enum<Unit>>(ERAS);
             return query.queryFrom(*this);
         }
 
         glong Era::until(const Temporal &endExclusive, Temporal::TemporalUnit unit) const {
-            UnsupportedMethodException("until").throws(__trace("core.time.Era"));
+            UnsupportedOperationException("until").throws(__trace("core.time.Era"));
         }
 
         const Era::MinguoEra &Era::MinguoEra::of(gint era) {
@@ -125,7 +125,17 @@ namespace core {
         }
 
         const Era::JapaneseEra &Era::JapaneseEra::valueOf(const String &era) {
-            //
+            if(era.equals(MEIJI.toString()))
+                return MEIJI;
+            if(era.equals(TAISHO.toString()))
+                return TAISHO;
+            if(era.equals(TAISHO.toString()))
+                return TAISHO;
+            if(era.equals(SHOWA.toString()))
+                return SHOWA;
+            if(era.equals(HEISEI.toString()))
+                return HEISEI;
+            return REIWA;
         }
 
         String Era::JapaneseEra::displayName(DateTimeFormatter::TextStyle style, const LocalDate &localDate) const {

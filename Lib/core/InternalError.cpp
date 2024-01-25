@@ -3,20 +3,23 @@
 //
 
 #include "InternalError.h"
-
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     InternalError::InternalError(String message) CORE_NOTHROW:
-            SystemError(U::moveInstance(message)) {}
+            SystemError(Unsafe::moveInstance(message)) {}
 
     InternalError::InternalError(String message, const Throwable &cause) CORE_NOTHROW:
-            SystemError(U::moveInstance(message), cause) {}
+            SystemError(Unsafe::moveInstance(message), cause) {}
 
-    void InternalError::raise() &&{ throw *this; }
+    void InternalError::raise() &&{
+        throw InternalError(*this);
+    }
 
-    Object &InternalError::clone() const { return U::createInstance<InternalError>(*this); }
+    Object &InternalError::clone() const {
+        return Unsafe::allocateInstance<InternalError>(*this);
+    }
 } // core

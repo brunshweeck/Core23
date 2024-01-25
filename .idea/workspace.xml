@@ -20,84 +20,370 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a33b91f6-c6fe-4f22-b703-dcfef58b06eb" name="Changes" comment="update on 03/12/2023 22:03&#10;&#10;second building">
-      <change afterPath="$PROJECT_DIR$/.gdbinit" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/AutoClosable.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/Closeable.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/Closeable.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/Chronology.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/Chronology.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/Era.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/Era.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Meta/CLDR/cldr.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UnixLib/time/LocalDateTime.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UnixLib/time/ZoneID.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WinLib/core/time/LocalDateTime.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WinLib/core/time/ZoneID.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Docs/Core23.adoc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Docs/ICON.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/CharSequence.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/CharSequence.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharacterCodingException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharacterCodingException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/Charset.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/Charset.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharsetDecoder.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharsetDecoder.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharsetEncoder.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CharsetEncoder.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CoderMalfunctionError.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CoderMalfunctionError.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CoderResult.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/CoderResult.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/IllegalCharsetNameException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/IllegalCharsetNameException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/MalformedInputException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/MalformedInputException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/UnmappableCharacterException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/UnmappableCharacterException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/UnsupportedCharsetException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/UnsupportedCharsetException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/CESU8.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/CESU8.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/DoubleByte.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/DoubleByte.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/GB18030.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/GB18030.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/GBK.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/GBK.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM437.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM437.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM737.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM737.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM775.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM775.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM850.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM850.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM852.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM852.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM855.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM855.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM857.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM857.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM858.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM858.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM862.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM862.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM866.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM866.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM874.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/IBM874.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_1.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_1.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_13.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_13.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_15.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_15.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_16.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_16.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_2.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_2.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_4.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_4.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_5.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_5.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_7.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_7.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_9.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/ISO8859_9.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/JIS_X0201.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/JIS_X0201.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Johab.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Johab.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/KOI8_R.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/KOI8_R.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/KOI8_U.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/KOI8_U.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/SJIS.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/SJIS.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/SingleByte.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/SingleByte.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Surrogate.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Surrogate.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/US_ASCII.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/US_ASCII.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16BE.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16BE.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16LE.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16LE.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16LE_BOM.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF16LE_BOM.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32BE.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32BE.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32BE_BOM.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32BE_BOM.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32Coder.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32Coder.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32LE.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32LE.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32LE_BOM.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF32LE_BOM.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF8.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/UTF8.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Unicode.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Unicode.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1250.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1250.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1251.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1251.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1252.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1252.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1253.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1253.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1254.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1254.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1255.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1255.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1256.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1256.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1257.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1257.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1258.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows1258.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows874.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows874.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows932.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows932.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows936.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows936.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows949.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows949.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows950.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/charset/private/Windows950.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/foreign/TzInfos.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTableN.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/Buffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/Buffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/BufferOverflowException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/BufferOverflowException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/BufferUnderflowException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/BufferUnderflowException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/ByteBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/ByteBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/CharBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/CharBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/DoubleBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/DoubleBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FloatBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/FloatBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/IntBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/IntBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/InvalidMarkException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/InvalidMarkException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/LongBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/LongBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/ShortBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/ShortBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapDoubleBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapDoubleBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapFloatBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapFloatBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapIntBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapIntBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapLongBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapLongBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapShortBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/HeapShortBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyBufferException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyBufferException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapCharBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapCharBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapDoubleBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapDoubleBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapFloatBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapFloatBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapIntBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapIntBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapLongBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapLongBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapShortBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/ReadOnlyHeapShortBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/StringCharBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/io/private/StringCharBuffer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ByteArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ByteArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/CharArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/CharArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/DoubleArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/DoubleArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/FloatArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/FloatArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/IntArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/IntArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/LongArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/LongArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ObjectArray.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ObjectArray.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/PrimitiveArray.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/PrimitiveArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/StringArray2D.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/native/StringArray2D.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Duration.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/time/Duration.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/MissingResourceException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/MissingResourceException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/Optional.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LanguageTag.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LanguageTag.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleBuilder.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleBuilder.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleISOData.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleISOData.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleSyntaxException.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleSyntaxException.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleUtils.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/LocaleUtils.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/ParseStatus.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Lib/core/util/private/ParseStatus.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Meta/Temporary.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/io/NTFS.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/io/NTFS.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/io/charset/Charset.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WinLib/core/util/Locale.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/myHardLink" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gdbinit" beforeDir="false" afterPath="$PROJECT_DIR$/.gdbinit" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/Core23.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Core23.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/cmake.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cmake.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core23.natvis" beforeDir="false" afterPath="$PROJECT_DIR$/Core23.natvis" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/ArgumentException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ArgumentException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/ArgumentException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IllegalArgumentException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/ArgumentException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IllegalArgumentException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/ArithmeticException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ArithmeticException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/ArithmeticException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ArithmeticException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/AssertionError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/AssertionError.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/AssertionError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/AssertionError.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/AutoClosable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/AutoClosable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Boolean.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Boolean.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Boolean.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Boolean.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Byte.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Byte.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Byte.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Byte.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/CastException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ClassCastException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/CastException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/ClassCastException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Character.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Character.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Character.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Character.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Class.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Class.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/CloneNotSupportedException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/CloneNotSupportedException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/CloneNotSupportedException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/CloneNotSupportedException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Comparable.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Comparable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Comparable.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Complex.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Complex.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Complex.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Double.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Double.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Double.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Enum.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Enum.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Enum.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Enum.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Error.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Error.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Error.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Error.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Exception.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Exception.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Exception.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Exception.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Float.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Float.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Float.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/IndexException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IndexException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/IndexException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IndexException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Integer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Integer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Integer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/InternalError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/InternalError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchKeyException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/KeyNotFoundException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchKeyException.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Long.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Long.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Long.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MatchException.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MatchException.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/Math.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MemoryError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/MemoryError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/MemoryError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/MemoryError.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NoSuchItemException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchElementException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NoSuchItemException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NoSuchElementException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NumberFormatException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NumberFormatException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/NumberFormatException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/NumberFormatException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Object.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Object.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/RuntimeException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/RuntimeException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/RuntimeException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/RuntimeException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SecurityException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SecurityException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SecurityException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SecurityException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Short.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Short.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Short.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Short.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StateException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IllegalStateException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/StateException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/IllegalStateException.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/String.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/String.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/String.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/StringBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/StringBuffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SystemError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SystemError.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/SystemError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/SystemError.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/Throwable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Throwable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Trace.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Trace.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Trace.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Trace.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/UnknownError.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/UnknownError.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/UnsupportedMethodException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/UnsupportedOperationException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/UnsupportedMethodException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/UnsupportedOperationException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/Void.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/Void.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTableD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTableD.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTableP.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/foreign/UnicodeTableP.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/Closeable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/Closeable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/File.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/File.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/io/File.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/File.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileDescriptor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/FileSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/FileSystem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/io/IOError.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOError.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/io/IOError.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOError.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/io/IOException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOException.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/io/IOException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/IOException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Charset.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Charset.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/CodingException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/charset/CodingException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/CodingException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/charset/CodingException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Decoder.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Decoder.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Encoder.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/charset/Encoder.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/ByteBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/ByteBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/CharBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/CharBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/DoubleBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/DoubleBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/FloatBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/FloatBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/IntBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/IntBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/LongBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/LongBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/private/NativeBuffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/NativeBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/io/private/NativeBuffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/ShortBuffer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/io/native/ShortBuffer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/math/BigDecimal.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/math/BigDecimal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/math/BigInteger.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/math/BigInteger.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/Array.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/Array.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/BooleanArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/BooleanArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/BooleanArray.h" afterDir="false" />
@@ -113,130 +399,185 @@
       <change beforePath="$PROJECT_DIR$/Lib/core/native/IntArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/IntArray.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/LongArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/LongArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/LongArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/LongArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/native/ReferenceArray.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/ShortArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/ShortArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/ShortArray.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/StringArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/native/StringArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/native/StringArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPAddress.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPAddress.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPv4Address.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPv4Address.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPv6Address.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/IPv6Address.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/ServerSocket.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/ServerSocket.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/Socket.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/Socket.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/SocketException.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/SocketException.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/SyntaxException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/net/URISyntaxException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/SyntaxException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/net/URISyntaxException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/URI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/net/URI.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/net/URI.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/net/URI.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/ArraysSupport.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Compiler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Compiler.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Generics.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Generics.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/private/Null.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Null.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/private/OperatingSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/OperatingSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Literals.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Literals.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/private/Null.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Null.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Templates.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Templates.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Unsafe.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/private/Unsafe.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/text/Formatter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/text/Formatter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Calendar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Calendar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/BasicDateFormatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/BasicDateFormatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Collator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Collator.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/DateFormatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/DateFormatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/DecimalFormatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/DecimalFormatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Formatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Formatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/MessageFormatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/MessageFormatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Normalizer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/Normalizer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/NumberFormatter.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/NumberFormatter.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/ParseException.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/text/ParseException.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/time/Calendar.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Calendar.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Chrono.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Chrono.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/time/Chrono.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Chrono.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Date.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Date.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTime.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/DeadLine.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DeadLine.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Formatter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Formatter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Chronology.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Chronology.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTimeException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTimeException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/DateTimeFormatter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DeadLine.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/DeadLine.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Era.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Era.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/Era.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Era.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalDate.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalDate.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDate.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalDateTime.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalTime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/LocalTime.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/time/Temporal.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Temporal.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/time/Temporal.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/Temporal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Time.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/Time.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/LocalTime.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/TimeZone.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/time/TimeZone.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/UnsupportedTemporalException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneID.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneID.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneID.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffset.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransition.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneOffsetTransitionRule.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRegion.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/time/ZoneRules.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/time/ZoneRules.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/ArrayList.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/ArrayList.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ArrayList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Collection.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Collection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Collection.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Comparator.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Comparator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Comparator.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ConcurrentException.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/HashMap.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/HashMap.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/HashMap.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/HashSet.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/HashSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/HashSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/HashTable.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Iterator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Iterator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Iterator.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/LinkedList.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/LinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/LinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/List.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/List.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/List.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/ListIterator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/ListIterator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/ListIterator.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Locale.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Locale.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Locale.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Locale.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Map.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Map.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Map.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Preconditions.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Preconditions.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/PriorityQueue.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/PriorityQueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/PriorityQueue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Queue.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/Queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Queue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Set.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Set.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Set.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/SortedStruct.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/StringTokenizer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeMap.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeMap.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/TreeMap.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeSet.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Lib/core/util/TreeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/TreeSet.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Consumer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Consumer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Predicate.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Predicate.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Supplier.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/function/Supplier.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Vector.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/Vector.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/util/Vector.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicBoolean.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicBoolean.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicBoolean.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicInteger.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicInteger.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicInteger.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicIntegerArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicIntegerArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicIntegerArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicLong.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLong.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicLong.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicLongArray.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicLongArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicLongArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReference.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicReference.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/AtomicReferenceArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/AtomicReferenceArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Condition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/Condition.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Condition.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/Condition.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Locker.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Locker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/Lock.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/ReadWriteLocker.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReadWriteLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/ReadWriteLocker.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/ReentrantLock.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/ReentrantLocker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/ReentrantLock.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/Semaphore.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/concurrent/Semaphore.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/concurrent/Semaphore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiConsumer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiConsumer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/BiConsumer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiFunction.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiFunction.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/BiFunction.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiPredicate.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BiPredicate.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/BiPredicate.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BinaryOperator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/BinaryOperator.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Consumer.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Consumer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Consumer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Function.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Function.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Function.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Functional.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Functional.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Functional.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Functional.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Predicate.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Predicate.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Predicate.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Supplier.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/Supplier.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/function/Supplier.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/UnaryOperator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/function/UnaryOperator.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/random/Generator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/random/Generator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/random/Generator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/random/Generator.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/random/Random.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/random/Random.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/random/Random.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/random/Random.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/regex/Pattern.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/regex/Pattern.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lib/core/util/regex/Pattern.h" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/core/regex/Pattern.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Meta/CLDR/cldr.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UnixLib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/UnixLib/core/private/Unsafe.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WinLib/core/native/WindowsException.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/core/native/WindowsException.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WinLib/core/native/WindowsException.h" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/core/native/WindowsException.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/query/client-vscode/query.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cache-v2-ea4def6e16c0f9aa1551.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/cmakeFiles-v1-30f046d9f6e6f665026a.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/codemodel-v2-978de79086a1e0967158.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Debug-d0094a50bb2071803777.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-MinSizeRel-d0094a50bb2071803777.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-RelWithDebInfo-d0094a50bb2071803777.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/directory-.-Release-d0094a50bb2071803777.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/index-2023-12-10T04-13-03-0902.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Debug-423c72a1d064dc070f3f.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-MinSizeRel-423c72a1d064dc070f3f.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-RelWithDebInfo-423c72a1d064dc070f3f.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ALL_BUILD-Release-423c72a1d064dc070f3f.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Debug-5a2af753093bd35b11f2.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-MinSizeRel-22adae358f14d3223594.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-RelWithDebInfo-ca88672436cb16feadee.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Core23-Release-2dcc13b7392c9e7c398c.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Debug-55706b6db0ca1c4e3c3c.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-MinSizeRel-3c7ca9b60c4804775c78.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-RelWithDebInfo-00d441c35d0204509c74.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-Main23-Release-a61f54b3da4c31da1893.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Debug-61ffd5987f9b41a4b76a.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-MinSizeRel-61ffd5987f9b41a4b76a.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-RelWithDebInfo-61ffd5987f9b41a4b76a.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/target-ZERO_CHECK-Release-61ffd5987f9b41a4b76a.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/.cmake/api/v1/reply/toolchains-v1-db24326a19c8c55b6d57.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ALL_BUILD.vcxproj.filters" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CMakeSystem.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/CompilerIdCXX.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.exe.recipe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.command.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.read.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.write.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CompilerIdCXX.lastbuildstate" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.command.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.write.1.tlog" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.recipe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.27.2-msvc1/VCTargetsPath.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Core23.sln" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Core23.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Core23.vcxproj.filters" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Main23.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Main23.vcxproj.filters" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ZERO_CHECK.vcxproj.filters" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/cmake_install.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WinLib/core/time/ZoneID.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/WinLib/core/time/ZoneID.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,13 +587,15 @@
   <component name="ClangdSettings">
     <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
+    <option name="clangWarnings" value="-Wno-unused-variable,-Wno-infinite-recursion,-Wno-array-bounds,-Wno-return-stack-address,-Werror=implicit-function-declaration,-Wshadow,-Wno-shadow-field-in-constructor-modified,-Wno-shadow-ivar,-Wuninitialized,-Wunused-label,-Wunused-lambda-capture,-Wno-shift-negative-value" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-MinGW" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-VS2019" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
         <option value="Python Script" />
+        <option value="Article" />
       </list>
     </option>
   </component>
@@ -285,50 +628,56 @@
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "CMake Application.Main23.executor": "Debug",
-    "CMake Debug.Project.executor": "Debug",
-    "Python.cldr2LocaleGenerator.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/Meta/CLDR",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "structure.view.defaults.are.configured": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;CMake Application.Main23.executor&quot;: &quot;Debug&quot;,
+    &quot;CMake Debug.Project.executor&quot;: &quot;Debug&quot;,
+    &quot;DefaultPlantUmlFileTemplate&quot;: &quot;Article&quot;,
+    &quot;Python.cldr2LocaleGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/T.N.Brunshweeck/CLionProjects/Core23/Docs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Docs" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Meta\CLDR" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\UnixLib\time" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\UnixLib" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Lib\core" />
+      <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Lib\core\io" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Lib\core\util" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23" />
       <recent name="C:\Users\T.N.Brunshweeck\CLionProjects\Core23\Lib\Core\io" />
@@ -340,15 +689,10 @@
     </option>
   </component>
   <component name="RunManager" selected="CMake Application.Main23">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Project" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
       <method v="2" />
     </configuration>
-    <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-MinGW">
+    <configuration name="Core23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Core23" CONFIG_NAME="Debug-VS2019">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -368,7 +712,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-MinGW" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
+    <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-VS2019" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -384,6 +728,11 @@
       </method>
     </configuration>
     <configuration name="Main23" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Core23" TARGET_NAME="Main23" CONFIG_NAME="Debug-VS2019" RUN_TARGET_PROJECT_NAME="Core23" RUN_TARGET_NAME="Main23">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -508,6 +857,51 @@
       <workItem from="1703740560198" duration="30054000" />
       <workItem from="1703800557774" duration="10303000" />
       <workItem from="1703816793872" duration="19454000" />
+      <workItem from="1703874763180" duration="1708000" />
+      <workItem from="1703876972326" duration="26468000" />
+      <workItem from="1703920025643" duration="20503000" />
+      <workItem from="1704025437479" duration="944000" />
+      <workItem from="1704095444449" duration="23900000" />
+      <workItem from="1704169598052" duration="26127000" />
+      <workItem from="1704250515557" duration="26888000" />
+      <workItem from="1704332998679" duration="12342000" />
+      <workItem from="1704381545327" duration="4057000" />
+      <workItem from="1704392242350" duration="4191000" />
+      <workItem from="1704410770797" duration="21371000" />
+      <workItem from="1704449810019" duration="6116000" />
+      <workItem from="1704465303377" duration="2281000" />
+      <workItem from="1704470028035" duration="6205000" />
+      <workItem from="1704487115913" duration="8203000" />
+      <workItem from="1704547701051" duration="16590000" />
+      <workItem from="1704596840482" duration="12147000" />
+      <workItem from="1704647335758" duration="34069000" />
+      <workItem from="1704710541926" duration="19482000" />
+      <workItem from="1704777724249" duration="16845000" />
+      <workItem from="1704800897636" duration="6226000" />
+      <workItem from="1704857746333" duration="48355000" />
+      <workItem from="1704972150858" duration="14667000" />
+      <workItem from="1705003481810" duration="31826000" />
+      <workItem from="1705080571243" duration="58297000" />
+      <workItem from="1705180615715" duration="37483000" />
+      <workItem from="1705247894900" duration="11075000" />
+      <workItem from="1705303321077" duration="12701000" />
+      <workItem from="1705357522858" duration="15925000" />
+      <workItem from="1705437108899" duration="21669000" />
+      <workItem from="1705488921290" duration="1646000" />
+      <workItem from="1705491091684" duration="1133000" />
+      <workItem from="1705508991758" duration="18309000" />
+      <workItem from="1705539387013" duration="20487000" />
+      <workItem from="1705568848566" duration="15838000" />
+      <workItem from="1705618039918" duration="27167000" />
+      <workItem from="1705695695947" duration="50482000" />
+      <workItem from="1705824898134" duration="6108000" />
+      <workItem from="1705890831910" duration="3236000" />
+      <workItem from="1705902493739" duration="8212000" />
+      <workItem from="1705914518704" duration="12548000" />
+      <workItem from="1705947625973" duration="1157000" />
+      <workItem from="1705985814814" duration="11898000" />
+      <workItem from="1706053912739" duration="21428000" />
+      <workItem from="1706126956563" duration="16900000" />
     </task>
     <task id="LOCAL-00001" summary="update on 24/11/2023 20:49">
       <option name="closed" value="true" />
@@ -533,7 +927,15 @@
       <option name="project" value="LOCAL" />
       <updated>1701637385091</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="update on 03/12/2023 22:03&#10;&#10;second building">
+      <option name="closed" value="true" />
+      <created>1703876863110</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1703876863110</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -566,29 +968,39 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
-          <line>518</line>
-          <option name="timeStamp" value="84" />
+          <url>file://$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp</url>
+          <line>134</line>
+          <option name="timeStamp" value="118" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
-          <line>509</line>
-          <option name="timeStamp" value="85" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/time/ZoneRules.cpp</url>
-          <line>500</line>
-          <option name="timeStamp" value="86" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Lib/core/native/ReferenceArray.cpp</url>
-          <line>38</line>
-          <option name="timeStamp" value="91" />
+          <url>file://$PROJECT_DIR$/WinLib/core/private/Unsafe.cpp</url>
+          <line>91</line>
+          <option name="timeStamp" value="131" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/Lib/core/Throwable.cpp</url>
-          <line>221</line>
-          <option name="timeStamp" value="104" />
+          <line>212</line>
+          <option name="timeStamp" value="184" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Lib/core/private/Null.cpp</url>
+          <line>173</line>
+          <option name="timeStamp" value="195" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Main.cpp</url>
+          <line>32</line>
+          <option name="timeStamp" value="199" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Main.cpp</url>
+          <line>23</line>
+          <option name="timeStamp" value="200" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Lib/core/native/ShortArray.h</url>
+          <line>316</line>
+          <option name="timeStamp" value="206" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

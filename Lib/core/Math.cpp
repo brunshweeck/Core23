@@ -10,11 +10,11 @@
 #include "ArithmeticException.h"
 #include "AssertionError.h"
 
-#if !__has_builtin(__builtin_sqrt)
+#if __has_builtin(__builtin_sqrt)
 #define StrictMath(op) __builtin_ ## op ## l
 #else
 #include <math.h>
-#define StrictMath(op) ::op ## l
+#define StrictMath(op) op ## l
 #endif
 
 namespace core {
@@ -75,7 +75,7 @@ namespace core {
     }
 
     namespace {
-        CORE_FAST gdouble powerOfTenD(gint n) {
+        gdouble powerOfTenD(gint n) {
 //            return n < 0 ? 1 / powerOfTenD(-n) :
 //                   n >= 100 ? 1e+100 * powerOfTenD(n - 100) :
 //                   n >= 50 ? 1e10 * powerOfTenD(n - 50) :

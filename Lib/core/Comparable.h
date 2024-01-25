@@ -112,7 +112,7 @@ namespace core {
          * @return  a negative integer, zero, or a positive integer as this object
          *          is less than, equal to, or greater than the specified object.
          *
-         * @throws CastException if the specified object's type prevents it
+         * @throws ClassCastException if the specified object's type prevents it
          *         from being compared to this object.
          */
         virtual gint compareTo(const T& other) const = 0;

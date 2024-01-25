@@ -46,6 +46,7 @@ namespace core {
 
         Object &clone() const override;
 
+    private:
         CORE_NORETURN void raise() && override;
     };
 

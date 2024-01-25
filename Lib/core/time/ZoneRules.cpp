@@ -18,14 +18,14 @@ namespace core {
 
         namespace {
 
-            template<class T>
-            gint binarySearch(const ReferenceArray &a, const T &x) {
+            template<class E, class T>
+            gint binarySearch(const Array<E> &a, const T &x) {
                 gint start = 0;
                 gint end = a.length();
                 gint i = end >> 1;
                 gint r = 0;
                 do {
-                    r = x.compareTo((const T &) a[i]);
+                    r = x.compareTo(a[i]);
                     if (r == 0)
                         return i;
                     else if (r > 0)
@@ -54,7 +54,6 @@ namespace core {
                 } while (start < end);
                 return -1;
             }
-
         }
 
         ZoneRules ZoneRules::of(const ZoneOffset &baseStandardOffset, const ZoneOffset &baseWallOffset,
@@ -78,20 +77,16 @@ namespace core {
                              const List<ZoneOffsetTransitionRule> &lastRules) {
 
             // convert standard transitions
-
             this->standardTransitions = LongArray(standardOffsetTransitionList.size());
-
-            this->standardOffsets = ReferenceArray(standardOffsetTransitionList.size() + 1);
-            this->standardOffsets.set(0, Unsafe::copyInstance(baseStandardOffset));
+            this->standardOffsets = Array<ZoneOffset>(standardOffsetTransitionList.size() + 1, baseStandardOffset);
             for (gint i = 0; i < standardOffsetTransitionList.size(); i++) {
                 this->standardTransitions[i] = standardOffsetTransitionList.get(i).toEpochSecond();
-                this->standardOffsets.set(i + 1,
-                                          Unsafe::copyInstance(standardOffsetTransitionList.get(i).offsetAfter()));
+                this->standardOffsets.set(i + 1, standardOffsetTransitionList.get(i).offsetAfter());
             }
 
             // convert savings transitions to locals
-            ArrayList<LocalDateTime> localTransitionList = ArrayList<LocalDateTime>();
-            ArrayList<ZoneOffset> localTransitionOffsetList = ArrayList<ZoneOffset>();
+            ArrayList<LocalDateTime> localTransitionList = {};
+            ArrayList<ZoneOffset> localTransitionOffsetList = {};
             localTransitionOffsetList.add(baseWallOffset);
             for (const ZoneOffsetTransition &trans: transitionList) {
                 if (trans.isGap()) {
@@ -114,29 +109,32 @@ namespace core {
 
             // last rules
             if (lastRules.size() > 0) {
-                ReferenceArray const rulesArray = lastRules.toArray();
+                Array<ZoneOffsetTransitionRule> const rulesArray = lastRules.toArray();
                 if (rulesArray.length() > 16) {
-                    ArgumentException("Too many transition rules").throws(__trace("core.time.ZoneRules"));
+                    IllegalArgumentException("Too many transition rules").throws(__trace("core.time.ZoneRules"));
                 }
                 this->lastRules = rulesArray;
-                this->lastRulesCache = HashMap<Integer, ReferenceArray>();
+                this->lastRulesCache = {};
             } else {
-                this->lastRules = ReferenceArray(0);
-                this->lastRulesCache = HashMap<Integer, ReferenceArray>(0);
+                this->lastRules = {};
+                this->lastRulesCache = {};
             }
         }
 
-        ZoneRules::ZoneRules(const LongArray &standardTransitions, const ReferenceArray &standardOffsets,
-                             const LongArray &savingsInstantTransitions, const ReferenceArray &wallOffsets,
-                             const ReferenceArray &lastRules) :
-                lastRules(lastRules), wallOffsets(wallOffsets),
-                savingsInstantTransitions(savingsInstantTransitions), standardOffsets(standardOffsets),
-                standardTransitions(standardTransitions) {
+        ZoneRules::ZoneRules(
+                const LongArray &standardTransitions,
+                const Array<ZoneOffset> &standardOffsets,
+                const LongArray &savingsInstantTransitions,
+                const Array<ZoneOffset> &wallOffsets,
+                const Array<ZoneOffsetTransitionRule> &lastRules
+        ) : lastRules(lastRules), wallOffsets(wallOffsets),
+            savingsInstantTransitions(savingsInstantTransitions), standardOffsets(standardOffsets),
+            standardTransitions(standardTransitions) {
 
-            this->lastRulesCache = HashMap<Integer, ReferenceArray>();
+            this->lastRulesCache = {};
 
             if (savingsInstantTransitions.length() == 0) {
-                this->savingsLocalTransitions = ReferenceArray(0);
+                this->savingsLocalTransitions = {};
             } else {
                 // convert savings transitions to locals
                 ArrayList<LocalDateTime> localTransitionList = ArrayList<LocalDateTime>();
@@ -157,13 +155,9 @@ namespace core {
             }
         }
 
-        ZoneRules::ZoneRules(const ZoneOffset &offset) : standardOffsets(1), wallOffsets(1) {
-            if (&offset == &ZoneOffset::UTC || &offset == &ZoneOffset::MIN || &offset == &ZoneOffset::MAX) {
-                standardOffsets.set(0, (ZoneOffset &) offset);
-            } else {
-                standardOffsets.set(0, Unsafe::copyInstance(offset));
-            }
-            wallOffsets.set(0, standardOffsets[0]);
+        ZoneRules::ZoneRules(const ZoneOffset &offset) {
+            standardOffsets = Array<ZoneOffset>(1, offset);
+            wallOffsets = Array<ZoneOffset>(1, (ZoneOffset &) standardOffsets[0]);
         }
 
         gbool ZoneRules::isFixedOffset() const {
@@ -181,15 +175,15 @@ namespace core {
             if (lastRules.length() > 0 &&
                 epochSecond > savingsInstantTransitions[savingsInstantTransitions.length() - 1]) {
                 gint const year = findYear(epochSecond, (ZoneOffset &) wallOffsets[wallOffsets.length() - 1]);
-                ReferenceArray transArray = transitionArray(year);
+                Array<ZoneOffsetTransition> transArray = transitionArray(year);
                 gint i = 0;
                 for (; i < transArray.length(); i++) {
-                    ZoneOffsetTransition const trans = (ZoneOffsetTransition &) transArray[i];
+                    ZoneOffsetTransition const &trans = transArray[i];
                     if (epochSecond < trans.toEpochSecond()) {
                         return trans.offsetBefore();
                     }
                 }
-                return ((ZoneOffsetTransition &) transArray[i - 1]).offsetAfter();
+                return transArray[i - 1].offsetAfter();
             }
 
             // using historic rules
@@ -211,14 +205,12 @@ namespace core {
             return offset;
         }
 
-        ArrayList<ZoneOffset> ZoneRules::validOffsets(const LocalDateTime &dateTime) const {
+        Array<ZoneOffset> ZoneRules::validOffsets(const LocalDateTime &dateTime) const {
             Object &info = offsetInfo(dateTime);
             if (Class<ZoneOffsetTransition>::hasInstance(info)) {
                 return ((ZoneOffsetTransition &) info).validOffsets();
             }
-            ArrayList<ZoneOffset> offsets(1);
-            offsets.add((ZoneOffset &) info);
-            return offsets;
+            return Array<ZoneOffset>::of((const ZoneOffset &) info);
         }
 
         ZoneOffsetTransition ZoneRules::transition(const LocalDateTime &dateTime) const {
@@ -246,7 +238,7 @@ namespace core {
             if (isFixedOffset()) {
                 return 0;
             }
-            ZoneOffset standardOffset = this->standardOffset(epochSecond);
+            ZoneOffset const standardOffset = this->standardOffset(epochSecond);
             ZoneOffset const actualOffset = offset(epochSecond);
             return actualOffset.totalSeconds() - standardOffset.totalSeconds();
         }
@@ -256,7 +248,11 @@ namespace core {
         }
 
         gbool ZoneRules::isValidOffset(const LocalDateTime &dateTime, const ZoneOffset &offset) const {
-            return validOffsets(dateTime).contains(offset);
+            for (const ZoneOffset &zOffset: validOffsets(dateTime)) {
+                if (zOffset == offset)
+                    return true;
+            }
+            return false;
         }
 
         ZoneOffsetTransition ZoneRules::nextTransition(glong epochSecond) const {
@@ -270,24 +266,24 @@ namespace core {
                 }
                 // search year the instant is in
                 gint const year = findYear(epochSecond, (ZoneOffset &) wallOffsets[wallOffsets.length() - 1]);
-                ReferenceArray transArray = transitionArray(year);
-                for (const Object &trans: transArray) {
-                    if (epochSecond < ((ZoneOffsetTransition &) trans).toEpochSecond()) {
-                        return (ZoneOffsetTransition &) trans;
+                Array<ZoneOffsetTransition> transArray = transitionArray(year);
+                for (const ZoneOffsetTransition &trans: transArray) {
+                    if (epochSecond < trans.toEpochSecond()) {
+                        return trans;
                     }
                 }
                 // use first from following year
                 if (year < 999999999) {
                     transArray = transitionArray(year + 1);
-                    return (ZoneOffsetTransition &) transArray[0];
+                    return transArray[0];
                 }
-                Error("Not such transition").throws(__trace("core.time.dateTime"));
             }
+            Error("Not such transition").throws(__trace("core.time.dateTime"));
         }
 
         ZoneOffsetTransition ZoneRules::previousTransition(glong epochSecond) const {
             if (savingsInstantTransitions.length() == 0) {
-                Error("Not such transition").throws(__trace("core.time.dateTime"));
+                Error("Not such transition").throws(__trace("core.time.DateTime"));
             }
 
             // check if using last rules
@@ -296,7 +292,7 @@ namespace core {
                 // search year the instant is in
                 ZoneOffset const lastHistoricOffset = (ZoneOffset &) wallOffsets[wallOffsets.length() - 1];
                 gint year = findYear(epochSecond, lastHistoricOffset);
-                ReferenceArray transArray = transitionArray(year);
+                Array<ZoneOffsetTransition> transArray = transitionArray(year);
                 for (gint i = transArray.length() - 1; i >= 0; i--) {
                     if (epochSecond > ((ZoneOffsetTransition &) transArray[i]).toEpochSecond()) {
                         return (ZoneOffsetTransition &) transArray[i];
@@ -317,28 +313,30 @@ namespace core {
                 index = -index - 1;
             }
             if (index <= 0) {
-                Error("Not such transition").throws(__trace("core.time.dateTime"));
+                Error("Not such transition").throws(__trace("core.time.DateTime"));
             }
             return ZoneOffsetTransition(savingsInstantTransitions[index - 1],
                                         (ZoneOffset &) wallOffsets[index - 1],
                                         (ZoneOffset &) wallOffsets[index]);
         }
 
-        util::ArrayList<ZoneOffsetTransition> ZoneRules::transitions() const {
+        Array<ZoneOffsetTransition> ZoneRules::transitions() const {
             ArrayList<ZoneOffsetTransition> list = {};
-            for (gint i = 0; i < savingsInstantTransitions.length(); i++) {
-                list.add(ZoneOffsetTransition(savingsInstantTransitions[i], (ZoneOffset &) wallOffsets[i],
-                                              (ZoneOffset &) wallOffsets[i + 1]));
+            gint i = 0;
+            for (glong const sit: savingsInstantTransitions) {
+                ZoneOffsetTransition const trans{
+                        sit,
+                        (const ZoneOffset &) wallOffsets[i],
+                        (const ZoneOffset &) wallOffsets[i + 1]
+                };
+                list.add(trans);
+                i += 1;
             }
-            return list;
+            return list.toArray();
         }
 
-        ArrayList<ZoneOffsetTransitionRule> ZoneRules::transitionRules() const {
-            ArrayList<ZoneOffsetTransitionRule> list = {};
-            for (gint i = 0; i < lastRules.length(); i++) {
-                list.add((ZoneOffsetTransitionRule &) lastRules[i]);
-            }
-            return list;
+        Array<ZoneOffsetTransitionRule> ZoneRules::transitionRules() const {
+            return (Array<ZoneOffsetTransitionRule> const &) lastRules;
         }
 
         gbool ZoneRules::equals(const Object &otherRules) const {
@@ -368,15 +366,15 @@ namespace core {
         }
 
         Object &ZoneRules::clone() const {
-            return Unsafe::createInstance<ZoneRules>(*this);
+            return Unsafe::allocateInstance<ZoneRules>(*this);
         }
 
-        gint ZoneRules::findYear(glong epochSecond, const ZoneOffset &offset) const {
+        gint ZoneRules::findYear(glong epochSecond, const ZoneOffset &offset) {
             glong const localSecond = epochSecond + offset.totalSeconds();
             glong zeroDay = Math::floorDiv(localSecond, 86400) + DAYS_0000_TO_1970;
 
             // find the march-based year
-            zeroDay -= 60;  // adjust to 0000-03-01 so leap day is at end of four year cycle
+            zeroDay -= 60;  // adjust to 0000-03-01 so leap day is at end of four-year cycle
             glong adjust = 0;
             if (zeroDay < 0) {
                 // adjust negative years to positive for calculation
@@ -402,21 +400,20 @@ namespace core {
             return (gint) Math::min(yearEst, 999999999LL);
         }
 
-        ReferenceArray ZoneRules::transitionArray(gint year) const {
+        Array<ZoneOffsetTransition> ZoneRules::transitionArray(gint year) const {
             Integer const yearObj = year;  // should use Year class, but this saves a class load
-            ReferenceArray transArray = lastRulesCache.get(yearObj);
-            if (transArray != null) {
+            Array<ZoneOffsetTransition> transArray = lastRulesCache.get(yearObj);
+            if (!transArray.isEmpty()) {
                 return transArray;
             }
-            ReferenceArray ruleArray = lastRules;
-            transArray = ReferenceArray(ruleArray.length());
-            for (gint i = 0; i < ruleArray.length(); i++) {
-                transArray.set(i,
-                               Unsafe::copyInstance(
-                                       ((ZoneOffsetTransitionRule &) ruleArray[i]).createTransition(year)));
+            Array<ZoneOffsetTransitionRule> ruleArray = (Array<ZoneOffsetTransitionRule> const &) lastRules;
+            gint const length = ruleArray.length();
+            CORE_IGNORE_DEPRECATIONS(transArray = Array<ZoneOffsetTransition>(length);)
+            for (gint i = 0; i < length; i++) {
+                transArray.set(i, ruleArray[i].createTransition(year));
             }
             if (year < LAST_YEAR_CACHE) {
-                ((HashMap<Integer, ReferenceArray> &) lastRulesCache).putIfAbsent(yearObj, transArray);
+                ((HashMap<Integer, Array<ZoneOffsetTransition>> &) lastRulesCache).putIfAbsent(yearObj, transArray);
             }
             return transArray;
         }
@@ -428,11 +425,10 @@ namespace core {
             // check if using last rules
             if (lastRules.length() > 0 &&
                 dt.isAfter((LocalDateTime &) savingsLocalTransitions[savingsLocalTransitions.length() - 1])) {
-                ReferenceArray const transArray = transitionArray(dt.year());
-                for (const Object &trans: transArray) {
+                const Array<ZoneOffsetTransition> transArray = transitionArray(dt.year());
+                for (const ZoneOffsetTransition &trans: transArray) {
                     Object &info = offsetInfo(dt, (ZoneOffsetTransition &) trans);
-                    if ((Class<ZoneOffsetTransition>::hasInstance(info)) ||
-                        info.equals(((ZoneOffsetTransition &) trans).offsetBefore())) {
+                    if ((Class<ZoneOffsetTransition>::hasInstance(info)) || info == trans.offsetBefore()) {
                         return info;
                     }
                 }
@@ -474,7 +470,7 @@ namespace core {
             }
         }
 
-        Object &ZoneRules::offsetInfo(const LocalDateTime &dt, const ZoneOffsetTransition &trans) const {
+        Object &ZoneRules::offsetInfo(const LocalDateTime &dt, const ZoneOffsetTransition &trans) {
             LocalDateTime const localTransition = trans.dateTimeBefore();
             if (trans.isGap()) {
                 if (dt.isBefore(localTransition)) {
@@ -486,7 +482,7 @@ namespace core {
                     return Unsafe::copyInstance(trans.offsetAfter());
                 }
             } else {
-                if (dt.isBefore(localTransition) == false) {
+                if (!dt.isBefore(localTransition)) {
                     return Unsafe::copyInstance(trans.offsetAfter());
                 }
                 if (dt.isBefore(trans.dateTimeAfter())) {

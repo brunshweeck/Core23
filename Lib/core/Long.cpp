@@ -3,20 +3,17 @@
 //
 
 #include "Long.h"
-#include "NumberFormatException.h"
-#include "ArgumentException.h"
-#include "Integer.h"
-#include "CastException.h"
+#include <core/NumberFormatException.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     glong Long::parseLong(const String &str, gint base) {
         if (base < 2 || base > 36)
-            ArgumentException("Unsupported conversion base.").throws(__trace("core.Long"));
-        glong length = str.length();
+            IllegalArgumentException("Unsupported conversion base.").throws(__trace("core.Long"));
+        glong const length = str.length();
         if (length == 0)
             NumberFormatException("Illegal number format, for input \"\".").throws(__trace("core.Long"));
         gint i = 0;
@@ -65,8 +62,8 @@ namespace core {
 
     glong Long::parseUnsignedLong(const String &str, gint base) {
         if (base < 2 || base > 36)
-            ArgumentException("Unsupported conversion base.").throws(__trace("core.Long"));
-        glong length = str.length();
+            IllegalArgumentException("Unsupported conversion base.").throws(__trace("core.Long"));
+        glong const length = str.length();
         if (length == 0)
             NumberFormatException("Illegal number format, for input \"\".").throws(__trace("core.Long"));
         gint i = 0;
@@ -84,7 +81,7 @@ namespace core {
         if (length < 13 || base == 10 && length < 19) {
             // MAX_VALUE in base 36 has 13 digits
             // MAX_VALUE in base 10 has 19 digits
-            glong a = {};
+            glong a = 0;
             try {
                 a = parseLong(str, base);
             } catch (const NumberFormatException &nfe) {
@@ -106,7 +103,7 @@ namespace core {
                 if (digit == -1)
                     NumberFormatException("Illegal number format, for input \"" + str + "\".").throws(
                             __trace("core.Long"));
-                glong t = a * base + digit;
+                glong const t = a * base + digit;
                 if (t < 0)
                     // overflow
                     break;
@@ -130,8 +127,8 @@ namespace core {
                 b = digit;
                 i += 1;
             }
-            glong res = a * base + b;
-            gint guard = base * (gint) (a >> 57);
+            glong const res = a * base + b;
+            gint const guard = base * (gint) (a >> 57);
             if (guard >= 128 || res >= 0 && guard >= 92) {
                 /*
                  * For purposes of exposition, the programmatic statements
@@ -185,7 +182,7 @@ namespace core {
 
     glong Long::parseUnsignedLong(const String &str) {
         try {
-            glong i = parseUnsignedLong(str, 10);
+            glong const i = parseUnsignedLong(str, 10);
             return i;
         } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Long"));
@@ -194,7 +191,7 @@ namespace core {
 
     Long Long::valueOf(const String &str, gint base) {
         try {
-            glong i = parseLong(str, base);
+            glong const i = parseLong(str, base);
             return valueOf(i);
         } catch (const NumberFormatException &nfe) {
             nfe.throws(__trace("core.Long"));
@@ -211,7 +208,7 @@ namespace core {
 
     Long Long::decode(const String &str) {
         glong base = 10; // by default
-        glong length = str.length();
+        glong const length = str.length();
         if (length == 0)
             NumberFormatException("Illegal number format, for input \"\".").throws(__trace("core.Long"));
         gint i = 0;
@@ -285,8 +282,8 @@ namespace core {
         glong a = Math::abs(i);
         gint j = 64;
         do {
-            gint q = (gint) (a % base);
-            glong r = a / base;
+            gint const q = (gint) (a % base);
+            glong const r = a / base;
             a = r;
             digits[j--] = q + (q < 10 ? 48 : 87);
         } while (a > 0);
@@ -327,7 +324,7 @@ namespace core {
     }
 
     Object &Long::clone() const {
-        return U::createInstance<Long>(*this);
+        return Unsafe::allocateInstance<Long>(value);
     }
 
     gint Long::leadingZeros(glong l) {

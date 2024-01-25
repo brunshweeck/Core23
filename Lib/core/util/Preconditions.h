@@ -15,7 +15,6 @@ namespace core {
          */
         class Preconditions CORE_FINAL: public Object {
         private:
-
             CORE_FAST Preconditions() = default;
 
         public:

@@ -1149,11 +1149,12 @@
 #endif
 
 #ifndef CORE_IGNORE_DEPRECATIONS
-#define CORE_IGNORE_DEPRECATIONS(statement) \
-    CORE_WARNING_PUSH \
-    CORE_WARNING_DISABLE_DEPRECATED \
-    statement \
-    CORE_WARNING_POP
+#define CORE_IGNORE_DEPRECATIONS(...) \
+    CORE_WARNING_PUSH                       \
+    CORE_WARNING_DISABLE_DEPRECATED         \
+    __VA_ARGS__                               \
+    CORE_WARNING_POP                        \
+
 #endif
 
 // The body must be a statement:
@@ -1301,7 +1302,7 @@
 #if defined(CORE_NO_WARNINGS)
 #if defined(CORE_COMPILER_MSVC)
 CORE_WARNING_DISABLE_MSVC(4251) /* class 'type' needs to have dll-interface to be used by clients of class 'type2' */
-CORE_WARNING_DISABLE_MSVC(4244) /* conversion from 'type1' to 'type2', possible loss of array */
+CORE_WARNING_DISABLE_MSVC(4244) /* conversion from 'type1' to 'type2', possible loss of root */
 CORE_WARNING_DISABLE_MSVC(4275) /* non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier' */
 CORE_WARNING_DISABLE_MSVC(4514) /* unreferenced inline function has been removed */
 CORE_WARNING_DISABLE_MSVC(4800) /* 'type' : forcing value to bool 'true' or 'false' (performance warning) */

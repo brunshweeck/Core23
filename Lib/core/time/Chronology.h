@@ -31,8 +31,8 @@ namespace core {
          * <pre> @code
          *   LocalDate isoDate = ...
          *   ThaiBuddhistDate thaiDate = ...
-         *   int isoYear = isoDate.get(Temporal::YEAR);
-         *   int thaiYear = thaiDate.get(Temporal::YEAR);
+         *   gint isoYear = isoDate.get(Temporal::YEAR);
+         *   gint thaiYear = thaiDate.get(Temporal::YEAR);
          * @endcode </pre>
          * As shown, although the date objects are in different calendar systems, represented by different
          * <b> Chronology</b>  instances, both can be queried using the same constant on <b> ChronoField</b> .
@@ -42,14 +42,14 @@ namespace core {
          * <p>
          * While a <b> Chronology</b>  object typically uses <b> ChronoField</b>  and is based on
          * an era, year-of-era, m-of-year, day-of-m model of a date, this is not required.
-         * A <b> Chronology</b>  instance may represent a totally different kind of calendar system,
+         * A <b> Chronology</b>  INSTANCE may represent a totally different kind of calendar system,
          * such as the Mayan.
          * <p>
-         * In practical terms, the <b> Chronology</b>  instance also acts as a factory.
-         * The <b style="color:orange;"> of(String)</b>  method allows an instance to be looked up by identifier,
+         * In practical terms, the <b> Chronology</b>  INSTANCE also acts as a factory.
+         * The <b style="color:orange;"> of(String)</b>  method allows an INSTANCE to be looked up by identifier,
          * while the <b style="color:orange;"> ofLocale(Locale)</b>  method allows lookup by locale.
          * <p>
-         * The <b> Chronology</b>  instance provides a set of methods to create <b> ChronoLocalDate</b>  instances.
+         * The <b> Chronology</b>  INSTANCE provides a set of methods to create <b> ChronoLocalDate</b>  instances.
          * The date classes are used to manipulate specific dates.
          * <ul>
          * <li> <b style="color:orange;"> currentDate()</b>
@@ -92,11 +92,11 @@ namespace core {
             CORE_ALIAS(Locale, util::Locale);
 
             /**
-             * Obtains an instance of <b> Chronology</b>  from a temporal object.
+             * Obtains an INSTANCE of <b> Chronology</b>  from a temporal object.
              * <p>
              * This obtains a chronology based on the specified temporal.
              * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> Chronology</b> .
+             * which this factory converts to an INSTANCE of <b> Chronology</b> .
              * <p>
              * The conversion will obtain the chronology using <b style="color:orange;"> Query::CHRONOLOGY </b> .
              * If the specified temporal object does not have a chronology, <b style="color:orange;"> ISOChronology</b>  is returned.
@@ -112,7 +112,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> Chronology</b>  from a locale.
+             * Obtains an INSTANCE of <b> Chronology</b>  from a locale.
              * <p>
              * This returns a <b> Chronology</b>  based on the specified locale,
              * typically returning <b> IsoChronology</b> . Other calendar systems
@@ -136,7 +136,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> Chronology</b>  from a chronology ID or
+             * Obtains an INSTANCE of <b> Chronology</b>  from a chronology ID or
              * calendar system type.
              * <p>
              * This returns a chronology based on either the ID or the type.
@@ -201,7 +201,7 @@ namespace core {
              *
              * @implSpec
              * The default implementation combines the era and year-of-era into a proleptic
-             * year before calling <b style="color:orange;"> date(int, int, int)</b> .
+             * year before calling <b style="color:orange;"> date(gint, gint, gint)</b> .
              *
              * @param era  the era of the correct type for the chronology
              * @param yearOfEra  the chronology year-of-era
@@ -211,7 +211,7 @@ namespace core {
              * @throws DateTimeException if unable to create the date
              * @throws ClassCastException if the <b> era</b>  is not of the correct type for the chronology
              */
-            virtual const ChronoLocalDate &date(const Era &era, int yearOfEra, int month, int dayOfMonth) const = 0;
+            virtual const ChronoLocalDate &date(const Era &era, gint yearOfEra, gint month, gint dayOfMonth) const = 0;
 
             /**
              * Obtains a local date in this chronology from the proleptic-year,
@@ -223,7 +223,7 @@ namespace core {
              * @return the local date in this chronology
              * @throws DateTimeException if unable to create the date
              */
-            virtual const ChronoLocalDate &date(int prolepticYear, int month, int dayOfMonth) const = 0;
+            virtual const ChronoLocalDate &date(gint prolepticYear, gint month, gint dayOfMonth) const = 0;
 
             /**
              * Obtains a local date in this chronology from the era, year-of-era and
@@ -231,7 +231,7 @@ namespace core {
              *
              * @implSpec
              * The default implementation combines the era and year-of-era into a proleptic
-             * year before calling <b style="color:orange;"> date(int, int)</b> .
+             * year before calling <b style="color:orange;"> date(gint, gint)</b> .
              *
              * @param era  the era of the correct type for the chronology
              * @param yearOfEra  the chronology year-of-era
@@ -240,7 +240,7 @@ namespace core {
              * @throws DateTimeException if unable to create the date
              * @throws ClassCastException if the <b> era</b>  is not of the correct type for the chronology
              */
-            virtual const ChronoLocalDate &date(const Era &era, int yearOfEra, int dayOfYear) const = 0;
+            virtual const ChronoLocalDate &date(const Era &era, gint yearOfEra, gint dayOfYear) const = 0;
 
             /**
              * Obtains a local date in this chronology from the proleptic-year and
@@ -251,7 +251,7 @@ namespace core {
              * @return the local date in this chronology
              * @throws DateTimeException if unable to create the date
              */
-            virtual const ChronoLocalDate &date(int prolepticYear, int dayOfYear) const = 0;
+            virtual const ChronoLocalDate &date(gint prolepticYear, gint dayOfYear) const = 0;
 
             /**
              * Obtains a local date in this chronology from the epoch-day.
@@ -263,7 +263,7 @@ namespace core {
              * @return the local date in this chronology
              * @throws DateTimeException if unable to create the date
              */
-            virtual const ChronoLocalDate &date(long epochDay) const = 0;
+            virtual const ChronoLocalDate &date(glong epochDay) const = 0;
 
             //-----------------------------------------------------------------------
             /**
@@ -305,7 +305,7 @@ namespace core {
              * <p>
              * This obtains a date in this chronology based on the specified temporal.
              * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> ChronoLocalDate</b> .
+             * which this factory converts to an INSTANCE of <b> ChronoLocalDate</b> .
              * <p>
              * The conversion typically uses the <b style="color:orange;"> EPOCH_DAY</b>
              * field, which is standardized across calendar systems.
@@ -451,8 +451,8 @@ namespace core {
              * @return the number of seconds relative to 1970-01-01T00:00:00Z, may be negative
              * @throws DateTimeException if any of the values are out of range
              */
-            virtual glong epochSecond(int prolepticYear, int month, int dayOfMonth,
-                                      int hour, int minute, int second, const ZoneOffset &zoneOffset) const = 0;
+            virtual glong epochSecond(gint prolepticYear, gint month, gint dayOfMonth,
+                                      gint hour, gint minute, gint second, const ZoneOffset &zoneOffset) const = 0;
 
             /**
              * Gets the number of seconds from the epoch of 1970-01-01T00:00:00Z.
@@ -472,8 +472,8 @@ namespace core {
              * @throws DateTimeException if any of the values are out of range
              *
              */
-            virtual glong epochSecond(const Era &era, int yearOfEra, int month, int dayOfMonth,
-                                      int hour, int minute, int second, const ZoneOffset &zoneOffset) const = 0;
+            virtual glong epochSecond(const Era &era, gint yearOfEra, gint month, gint dayOfMonth,
+                                      gint hour, gint minute, gint second, const ZoneOffset &zoneOffset) const = 0;
 
             /**
              * Checks if this chronology is ISO based.
@@ -495,7 +495,6 @@ namespace core {
              * @see MinguoChronology
              * @see ThaiBuddhistChronology
              * @see IsoFields
-             * @since 19
              */
              virtual gbool isIsoBased() const = 0;
 

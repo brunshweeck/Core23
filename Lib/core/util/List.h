@@ -8,7 +8,6 @@
 #include <core/util/Collection.h>
 #include <core/util/Preconditions.h>
 #include <core/util/ListIterator.h>
-#include <core/util/function/UnaryOperator.h>
 #include <core/IndexException.h>
 
 namespace core {
@@ -62,7 +61,7 @@ namespace core {
          * <p>Some list implementations have restrictions on the elements that
          * they may contain.  For example, some have restrictions on the types of their elements.
          * Attempting to add an ineligible element throws an unchecked exception, typically
-         * <b> CastException</b>.  Attempting to query the presence of an ineligible element may
+         * <b> ClassCastException</b>.  Attempting to query the presence of an ineligible element may
          * throw an exception, or it may simply return false; some implementations will exhibit the former
          * behavior and some will exhibit the latter.  More generally, attempting an
          * operation on an ineligible element whose completion would not result in
@@ -80,12 +79,12 @@ namespace core {
          * <ul>
          * <li>They are <a href=""><i>unmodifiable</i></a>. Elements cannot
          * be added, removed, or replaced. Calling any mutator method on the List
-         * will always cause <b> UnsupportedMethodException</b> to be thrown.
+         * will always cause <b> UnsupportedOperationException</b> to be thrown.
          * However, if the contained elements are themselves mutable,
          * this may cause the List's contents to appear to change.
          * <li>They are serializable if all elements are serializable.
          * <li>The order of elements in the list is the same as the order of the
-         * provided arguments, or of the elements in the provided array.
+         * provided arguments, or of the elements in the provided root.
          * <li>They are <a href="">value-based</a>.
          * Programmers should treat instances that are <b style="color: green;"> equal</b>
          * as interchangeable and should not use them for synchronization, or
@@ -107,7 +106,16 @@ namespace core {
          * @see Vector
          */
         template<class E>
-        interface List : Collection<E> {
+        class List : public Collection<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E &>);
+            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
+            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
+
+        public:
 
             /**
              * Returns the number of elements in this list.  If this list contains
@@ -126,7 +134,7 @@ namespace core {
              *
              * @param o element whose presence in this list is to be tested
              * @return <b> true</b> if this list contains the specified element
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this list (<a href="">optional</a>)
              */
             using Collection<E>::contains;
@@ -137,18 +145,18 @@ namespace core {
             ListIterator<const E> &iterator() const override { return iterator(0); }
 
             /**
-             * Returns an array containing all of the elements in this list in proper
+             * Returns an root containing all of the elements in this list in proper
              * sequence (from first to last element).
              *
-             * <p>The returned array will be "safe" in that no references to it are
+             * <p>The returned root will be "safe" in that no references to it are
              * maintained by this list.  (In other words, this method must
-             * allocate a new array even if this list is backed by an array).
-             * The caller is thus free to modify the returned array.
+             * allocate a new root even if this list is backed by an root).
+             * The caller is thus free to modify the returned root.
              *
-             * <p>This method acts as bridge between array-based and collection-based
+             * <p>This method acts as bridge between root-based and collection-based
              * APIs.
              *
-             * @return an array containing all of the elements in this list in proper
+             * @return an root containing all of the elements in this list in proper
              *         sequence
              */
             using Collection<E>::toArray;
@@ -166,9 +174,9 @@ namespace core {
              * @return <b> true</b> (as specified by <b style="color: orange;"> Collection.add</b>)
              * @throws UnsupportedMethodException if the <b> add</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
-             * @throws ArgumentException if some property of this element
+             * @throws IllegalArgumentException if some property of this element
              *         prevents it from being added to this list
              */
             gbool add(const E &e) override {
@@ -188,7 +196,7 @@ namespace core {
              *
              * @param o element to be removed from this list, if present
              * @return <b> true</b> if this list contained the specified element
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this list (<a href="">optional</a>)
              * @throws UnsupportedMethodException if the <b> remove</b> operation
              *         is not supported by this list
@@ -222,9 +230,9 @@ namespace core {
              * @return <b> true</b> if this list changed as a result of the call
              * @throws UnsupportedMethodException if the <b> addAll</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of an element of the specified
+             * @throws ClassCastException if the class of an element of the specified
              *         collection prevents it from being added to this list
-             * @throws ArgumentException if some property of an element of the
+             * @throws IllegalArgumentException if some property of an element of the
              *         specified collection prevents it from being added to this list
              * @see List.add(Object)
              */
@@ -247,9 +255,9 @@ namespace core {
              * @return <b> true</b> if this list changed as a result of the call
              * @throws UnsupportedMethodException if the <b> addAll</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of an element of the specified
+             * @throws ClassCastException if the class of an element of the specified
              *         collection prevents it from being added to this list
-             * @throws ArgumentException if some property of an element of the
+             * @throws IllegalArgumentException if some property of an element of the
              *         specified collection prevents it from being added to this list
              * @throws IndexException if the index is out of range (<b> index < 0 || index > size()</b>)
              */
@@ -273,7 +281,7 @@ namespace core {
              * @return <b> true</b> if this list changed as a result of the call
              * @throws UnsupportedMethodException if the <b> removeAll</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of an element of this list
+             * @throws ClassCastException if the class of an element of this list
              *         is incompatible with the specified collection (<a href="">optional</a>)
              * @see List.remove(Object)
              * @see List.contains(Object)
@@ -290,7 +298,7 @@ namespace core {
              * @return <b> true</b> if this list changed as a result of the call
              * @throws UnsupportedMethodException if the <b> retainAll</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of an element of this list
+             * @throws ClassCastException if the class of an element of this list
              *         is incompatible with the specified collection (<a href="">optional</a>)
              * @see List.remove(Object)
              * @see List.contains(Object)
@@ -312,7 +320,7 @@ namespace core {
              * </b></pre>
              *
              * If the list's list-iterator does not support the <b> set</b> operation
-             * then an <b> UnsupportedMethodException</b> will be thrown when
+             * then an <b> UnsupportedOperationException</b> will be thrown when
              * replacing the first element.
              *
              * @param operator the operator to apply to each element
@@ -321,10 +329,12 @@ namespace core {
              *         cannot be replaced or if, in general, modification is not
              *         supported (<a href="">optional</a>)
              */
-            virtual void replaceAll(const UnaryOperator<E> &op) {
+            virtual void replaceAll(const UnaryFunction &op) {
                 ListIterator<E> &it = iterator();
-                while (it.hasNext())
-                    it.set(op.apply(it.next()));
+                CORE_IGNORE(op);
+                while (it.hasNext()) {
+                    it.set(/*op.apply*/(it.next()));
+                }
             }
 
             /**
@@ -351,8 +361,12 @@ namespace core {
              * @return <b> true</b> if the specified object is equal to this list
              */
             gbool equals(const Object &o) const override {
-                if (&o == this) return true;
-                if (!Class<List>::hasInstance(o)) return false;
+                if (&o == this) {
+                    return true;
+                }
+                if (!Class<List>::hasInstance(o)) {
+                    return false;
+                }
 
                 ListIterator<const E> &e1 = iterator();
                 ListIterator<const E> &e2 = ((const List &) o).iterator();
@@ -393,15 +407,15 @@ namespace core {
              * @return the element previously at the specified position
              * @throws UnsupportedMethodException if the <b> set</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
-             * @throws ArgumentException if some property of the specified
+             * @throws IllegalArgumentException if some property of the specified
              *         element prevents it from being added to this list
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index >= size()</b>)
              */
-            virtual const E &set(gint index, const E &element) {
-                UnsupportedMethodException().throws(__trace("core.util.List"));
+            virtual const E &set(gint  /*index*/, const E & /*element*/) {
+                UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
             /**
@@ -414,15 +428,15 @@ namespace core {
              * @param element element to be inserted
              * @throws UnsupportedMethodException if the <b> add</b> operation
              *         is not supported by this list
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
-             * @throws ArgumentException if some property of the specified
+             * @throws IllegalArgumentException if some property of the specified
              *         element prevents it from being added to this list
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index > size()</b>)
              */
-            virtual void add(gint index, const E &element) {
-                UnsupportedMethodException().throws(__trace("core.util.List"));
+            virtual void add(gint  /*index*/, const E & /*element*/) {
+                UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
             /**
@@ -438,8 +452,8 @@ namespace core {
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index >= size()</b>)
              */
-            virtual const E &removeAt(gint index) {
-                UnsupportedMethodException().throws(__trace("core.util.List"));
+            virtual const E &removeAt(gint  /*index*/) {
+                UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
             /**
@@ -452,7 +466,7 @@ namespace core {
              * @param o element to search for
              * @return the index of the first occurrence of the specified element in
              *         this list, or -1 if this list does not contain the element
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this list
              *         (<a href="">optional</a>)
              */
@@ -460,7 +474,8 @@ namespace core {
                 ListIterator<const E> &itr = iterator();
                 gint i = 0;
                 while (itr.hasNext()) {
-                    if (Object::equals(o, itr.next())) return i;
+                    if (Object::equals(o, itr.next()))
+                        return i;
                     i += 1;
                 }
                 return -1;
@@ -476,7 +491,7 @@ namespace core {
              * @param o element to search for
              * @return the index of the last occurrence of the specified element in
              *         this list, or -1 if this list does not contain the element
-             * @throws CastException if the type of the specified element
+             * @throws ClassCastException if the type of the specified element
              *         is incompatible with this list
              *         (<a href="">optional</a>)
              */
@@ -537,7 +552,7 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            virtual void forEach(const Consumer<E &> &action) { iterator().forEach(action); }
+            virtual void forEach(const MutableActionConsumer &action) { iterator().forEach(action); }
 
             /**
              * Returns a list iterator over the elements in this list (in proper
@@ -556,7 +571,7 @@ namespace core {
                 try {
                     CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexForAdding(index, size());
-                    return U::createInstance < ListItr < E >> ((List &) *this, index);
+                    return Unsafe::allocateInstance < ListItr < E >> ((List &) *this, index);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -575,9 +590,8 @@ namespace core {
              */
             virtual ListIterator<const E> &iterator(gint index) const {
                 try {
-                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexForAdding(index, size());
-                    return U::createInstance < ListItr < const E >> ((List &) *this, index);
+                    return Unsafe::allocateInstance<ListItr<const E >>((List &) *this, index);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -616,9 +630,8 @@ namespace core {
              */
             virtual List &subList(gint from, gint to) const {
                 try {
-                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexFromRange(from, to, size());
-                    return U::createInstance<SubList<>>((List &) *this, from, to);
+                    return Unsafe::allocateInstance<SubList<>>((List &) *this, from, to);
                 } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
             }
 
@@ -662,7 +675,7 @@ namespace core {
              */
             gint modNum = {};
 
-            CORE_ALIAS(Itr, typename Collection<E>::template Itr<E>);
+            CORE_ALIAS(LinearIterator, typename Collection<E>::template LinearIterator<E>);
 
         public:
 
@@ -678,7 +691,7 @@ namespace core {
              * to mark the beginning of foreach statement.
              * Unlike collection, all List sub-class support modification during each.
              */
-            inline Itr begin() { return Itr(*this, toArray()); }
+            inline LinearIterator begin() { return LinearIterator(*this, toArray()); }
 
             /**
              * Return The native list iterator (The C iterator) used
@@ -692,7 +705,7 @@ namespace core {
              * to mark the ending of foreach statement.
              * Unlike collection, all List sub-class support modification during each.
              */
-            inline Itr end() { return Itr(*this); }
+            inline LinearIterator end() { return LinearIterator(*this); }
 
         private:
             template<class T>
@@ -739,7 +752,7 @@ namespace core {
                     } catch (const IndexException &ie) {
                         if (modNum != root.modNum)
                             ConcurrentException().throws(__trace("core.util.List.ListItr"));
-                        NoSuchItemException().throws(__trace("core.util.List.ListItr"));
+                        NoSuchElementException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
@@ -756,13 +769,13 @@ namespace core {
                     } catch (const IndexException &ie) {
                         if (modNum != root.modNum)
                             ConcurrentException().throws(__trace("core.util.List.ListItr"));
-                        NoSuchItemException().throws(__trace("core.util.List.ListItr"));
+                        NoSuchElementException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
                 void remove() override {
                     if (last < 0)
-                        StateException().throws(__trace("core.util.List.ListItr"));
+                        IllegalStateException().throws(__trace("core.util.List.ListItr"));
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
@@ -771,12 +784,14 @@ namespace core {
                             cursor -= 1;
                         last = -1;
                         modNum = root.modNum;
-                    } catch (const IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
+                    } catch (const IndexException &ie) {
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    }
                 }
 
                 void set(const T &e) override {
                     if (last < 0)
-                        StateException().throws(__trace("core.util.List.ListItr"));
+                        IllegalStateException().throws(__trace("core.util.List.ListItr"));
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {
@@ -785,7 +800,7 @@ namespace core {
                     } catch (const IndexException &ie) {
                         if (modNum != root.modNum)
                             ConcurrentException().throws(__trace("core.util.List.ListItr"));
-                        NoSuchItemException().throws(__trace("core.util.List.ListItr"));
+                        NoSuchElementException().throws(__trace("core.util.List.ListItr"));
                     }
                 }
 
@@ -798,7 +813,9 @@ namespace core {
                         last = -1;
                         cursor = i + 1;
                         modNum = root.modNum;
-                    } catch (const IndexException &ie) { ConcurrentException().throws(__trace("core.util.List.ListItr")); }
+                    } catch (const IndexException &ie) {
+                        ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    }
                 }
 
                 gbool equals(const Object &o) const override {
@@ -919,7 +936,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::createInstance<_$>((SubList &) *this, index);
+                        return native::Unsafe::allocateInstance<_$>((SubList &) *this, index);
                     } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
 
                 }
@@ -944,7 +961,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexForAdding(index, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::createInstance<_$>((SubList &) *this, index);
+                        return native::Unsafe::allocateInstance<_$>((SubList &) *this, index);
                     } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 
@@ -952,7 +969,7 @@ namespace core {
                     try {
                         Preconditions::checkIndexFromRange(from, to, len);
                         if (modNum != root.modNum) ConcurrentException().throws(__trace("core.util.List.SubList"));
-                        return native::Unsafe::createInstance<SubList>((SubList &) *this, from, to);
+                        return native::Unsafe::allocateInstance<SubList>((SubList &) *this, from, to);
                     } catch (const IndexException &ie) { ie.throws(__trace("core.util.List.SubList")); }
                 }
 

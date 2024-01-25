@@ -2,15 +2,15 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "AssertionError.h"
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     AssertionError::AssertionError(String message) CORE_NOTHROW:
-            Error(U::moveInstance(message)) {}
+            Error(Unsafe::moveInstance(message)) {}
 
     AssertionError::AssertionError(const Object &expression) CORE_NOTHROW:
             Error(Class<Throwable>::hasInstance(expression) ? "" : String::valueOf(expression)) {
@@ -36,9 +36,14 @@ namespace core {
             Error(String::valueOf(expression)) {}
 
     AssertionError::AssertionError(String message, const Throwable &cause) CORE_NOTHROW:
-            Error(U::moveInstance(message), cause) {}
+            Error(Unsafe::moveInstance(message), cause) {}
 
-    void AssertionError::raise() &&{throw *this;}
+    void AssertionError::raise() &&{
+        throw AssertionError(*this);
+    }
 
-    Object &AssertionError::clone() const {return U::createInstance<AssertionError>(*this);}
+    Object &AssertionError::clone() const {
+        return Unsafe::allocateInstance<AssertionError>(*this);
+    }
+
 } // core

@@ -7,12 +7,16 @@
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     MemoryError::MemoryError(String message) CORE_NOTHROW:
-            SystemError(U::moveInstance(message)) {}
+            SystemError(Unsafe::moveInstance(message)) {}
 
-    void MemoryError::raise() &&{ throw *this; }
+    void MemoryError::raise() &&{
+        throw MemoryError(*this);
+    }
 
-    Object &MemoryError::clone() const { return U::createInstance<MemoryError>(*this); }
+    Object &MemoryError::clone() const {
+        return Unsafe::allocateInstance<MemoryError>(*this);
+    }
 } // core

@@ -3,15 +3,12 @@
 //
 
 #include "Short.h"
-#include "Integer.h"
-#include "Long.h"
-#include "NumberFormatException.h"
-#include "CastException.h"
+#include <core/NumberFormatException.h>
 #include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gint Short::hash() const {
         return hash(value);
@@ -88,7 +85,7 @@ namespace core {
     }
 
     Object &Short::clone() const {
-        return U::createInstance<Short>(*this);
+        return Unsafe::allocateInstance<Short>(*this);
     }
 
     Short Short::valueOf(gshort i) {

@@ -7,8 +7,8 @@
 
 #include <core/Comparable.h>
 #include <core/private/Unsafe.h>
-#include <core/CloneNotSupportedException.h>
 #include <core/AssertionError.h>
+#include <core/CloneNotSupportedException.h>
 
 namespace core {
     namespace util {
@@ -17,10 +17,10 @@ namespace core {
          * A comparison function, which imposes a <i>total ordering</i> on
          * some collection of objects.  Comparators can be passed to a sort
          * method (such as <b style="color: orange;"> List.sort </b>) to allow precise control over the sort order.
-         * Comparators can also be used to control the order of certain array
+         * Comparators can also be used to control the order of certain root
          * structures (such as <b style="color: green;"> sorted sets</b> or
          * <b style="color: green;"> sorted maps</b>), or to provide an ordering for
-         * collections of objects that don't have a <b style="color: green;"> Comparable
+         * collections of objects that don't have a <b style="color: green;">
          * natural ordering</b>.<p>
          *
          * The ordering imposed by a comparator <b> c</b> on a set of elements
@@ -49,8 +49,8 @@ namespace core {
          *
          * Note: It is generally a good idea for comparators to also implement
          * <b> Serializable</b>, as they may be used as ordering methods in
-         * serializable array structures (like <b style="color: orange;"> TreeSet</b>, <b style="color: orange;"> TreeMap</b>).  In
-         * order for the array structure to serialize successfully, the comparator (if
+         * serializable root structures (like <b style="color: orange;"> TreeSet</b>, <b style="color: orange;"> TreeMap</b>).  In
+         * order for the root structure to serialize successfully, the comparator (if
          * provided) must implement <b> Serializable</b>.<p>
          *
          * For the mathematically inclined, the <i>relation</i> that defines the
@@ -84,7 +84,8 @@ namespace core {
          * @see Comparable
          */
         template<class T>
-        interface Comparator : public Object {
+        class Comparator : public Object {
+        public:
 
             /**
              * Compares its two arguments for order.  Returns a negative integer,
@@ -117,7 +118,7 @@ namespace core {
              * @return a negative integer, zero, or a positive integer as the
              *         first argument is less than, equal to, or greater than the
              *         second.
-             * @throws CastException if the arguments' types prevent them from
+             * @throws ClassCastException if the arguments' types prevent them from
              *         being compared by this comparator.
              */
             virtual gint compare(const T &o1, const T &o2) const = 0;
@@ -143,14 +144,13 @@ namespace core {
              *          a comparator and it imposes the same ordering as this
              *          comparator.
              */
-            gbool equals(const Object &o) const override = 0;
+            gbool equals(const Object &obj) const override {
+                return Object::equals(obj);
+            }
 
-        private:
-
-            template<class E>
-            CORE_ALIAS(Capture, typename Class<T>::template Iff<Class<E>::template isSuper<T>()>);
-
-            CORE_ALIAS(U, native::Unsafe);
+        protected:
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(Comparable, Comparable<T>);
 
         public:
 
@@ -161,15 +161,58 @@ namespace core {
              * @return a comparator that imposes the reverse ordering of this
              *         comparator.
              */
-            virtual const Comparator<T> &reverse() const {
-                if (Class<NaturalOrderComparator<>>::hasInstance(*this))
+            virtual Comparator<T> &reverse() const {
+
+                /**
+                 * The reversed form of current comparator
+                 */
+                class ReversedOrder CORE_FINAL : public Comparator {
+                private:
+                    Comparator &c;
+                public:
+
+                    CORE_FAST ReversedOrder(Comparator &comparator) : c(comparator) {}
+
+                    gint compare(const T &o2, const T &o1) const override { return c.compare(o1, o2); }
+
+                    gbool equals(const Object &o) const override {
+                        if (this == &o)
+                            return true;
+                        if (!Class<ReversedOrder>::hasInstance(o))
+                            return false;
+                        const ReversedOrder &ro = CORE_DYN_CAST(const ReversedOrder &, o);
+                        return c == ro.c;
+                    }
+
+                    Object &clone() const override {
+                        return c.reverse();
+                    }
+
+                private:
+                    Comparator &base() const override {
+                        return c;
+                    }
+
+                    gbool isReversed() const override {
+                        return true;
+                    }
+                };
+
+                if (equals(naturalOrder()))
                     return reverseOrder();
-                else if (Class<ReverseComparator<>>::hasInstance(*this))
+                else if (equals(reverseOrder()))
                     return naturalOrder();
-                else if (Class<ReverseComparator2<>>::hasInstance(*this))
-                    return (Comparator &) CORE_DYN_CAST(const ReverseComparator2<>&, *this).cmp;
-                else
-                    return U::createInstance<ReverseComparator2<>>(U::copyInstance(*this, true));
+                else if (isReversed()) {
+                    CORE_TRY_ONLY({ return base(); })
+                }
+                try {
+                    Comparator &clone = Unsafe::copyInstance(*this, true);
+                    return Unsafe::allocateInstance<ReversedOrder>(clone);
+                } catch (CloneNotSupportedException const &) {
+                    return Unsafe::allocateInstance<ReversedOrder>((Comparator &) *this);
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.Comparator"));
+                }
             }
 
             /**
@@ -185,37 +228,115 @@ namespace core {
              * @return a lexicographic-order comparator composed of this and then the
              *         other comparator
              */
-            template<class E = T>
-            Comparator<T> &thenComparing(const Comparator<Capture<E>> &other) const {
-                class MultiComparator : public Comparator<T> {
+            template<class X>
+            Comparator &thenComparing(const Comparator<X> &other) const {
+                CORE_STATIC_ASSERT(Class<X>::template isSuper<T>(), "Incompatible comparator");
+                CORE_ALIAS(XComparator, Comparator<X>);
+
+                if (lessOrder() == *this)
+                    return lessOrder();
+
+                if (greatOrder() == *this)
+                    return greatOrder();
+
+                if (naturalOrder() == *this) {
+                    if (XComparator::naturalOrder() == other)
+                        return naturalOrder();
+
+                    if (XComparator::reverseOrder() == other) // (a - b) = 0 -> (b - a) = 0
+                        return naturalOrder();
+                }
+
+                if (reverseOrder() == *this) {
+                    if (XComparator::naturalOrder() == other)
+                        return reverseOrder();
+
+                    if (XComparator::reverseOrder() == other) // (a - b) = 0 -> (b - a) = 0
+                        return reverseOrder();
+                }
+
+                if (isReversed()) {
+                    CORE_TRY_ONLY
+                    ({
+                         if (base() == other)
+                             return base();
+                     })
+                }
+
+                if (other.isReversed()) {
+                    CORE_TRY_ONLY
+                    ({
+                         if (other.base() == other)
+                             return other.base();
+                     })
+                }
+
+                if (XComparator::zeroOrder() == other)
+                    return Unsafe::copyInstance(*this, true);
+
+                if (Class<T>::template isSimilar<X>()) {
+                    if (zeroOrder() == *this)
+                        return (Comparator &) Unsafe::copyInstance(other, true);
+
+                    if (Object::equals(*this, other))
+                        return Unsafe::copyInstance(*this, true);
+                }
+
+                /**
+                 * For unique comparator
+                 */
+                class DoubleComparator : public Comparator {
                 private:
-                    Comparator<T> &root;
-                    Comparator<E> &other;
+                    Comparator &c;
+                    XComparator &x;
+
+                    CORE_FRATERNITY(Comparator);
 
                 public:
-                    CORE_EXPLICIT MultiComparator(Comparator<T> &root, Comparator<E> &other) : root(root),
-                                                                                               other(other) {}
+                    CORE_EXPLICIT DoubleComparator(Comparator<T> &c, XComparator &x) :
+                            c(c), x(x) {}
 
                     Object &clone() const override {
-                        return U::createInstance<MultiComparator>(*this);
+                        return Unsafe::allocateInstance<DoubleComparator>(*this);
                     }
 
                     gint compare(const T &o1, const T &o2) const override {
-                        gint res = root.compare(o1, o2);
-                        return res != 0 ? res :
-                               other.compare(CORE_DYN_CAST(const E&, o1), CORE_DYN_CAST(const E&, o2));
+                        gint res = c.compare(o1, o2);
+                        if (res != 0) {
+                            return res;
+                        } else if (&o1 != &o2) {
+                            X const &x1 = CORE_DYN_CAST(const X&, o1);
+                            X const &x2 = CORE_DYN_CAST(const X&, o2);
+                            return x.compare(x1, x2);
+                        }
                     }
 
                     gbool equals(const Object &o) const override {
-                        if (!Class<MultiComparator>::hasInstance(o))
+                        if (this == &o)
+                            return true;
+                        if (!Class<DoubleComparator>::hasInstance(o))
                             return false;
-                        MultiComparator &cmp = CORE_CAST(MultiComparator &, o);
-                        return root.equals(cmp.root) && other.equals(cmp.other);
+                        DoubleComparator const &mc = CORE_DYN_CAST(DoubleComparator const&, o);
+                        return c == mc.c && x == mc.x;
                     }
                 };
 
-                return U::createInstance<MultiComparator>(U::copyInstance(*this, true),
-                                                          U::copyInstance(other, true));
+                if (Class<DoubleComparator>::hasInstance(*this)) {
+                    DoubleComparator const &dc = CORE_DYN_CAST(DoubleComparator const&, *this);
+                    if (dc.x == other)
+                        return (Comparator &) dc;
+                }
+
+                if (Class<DoubleComparator>::hasInstance(other)) {
+                    DoubleComparator const &dc = CORE_DYN_CAST(DoubleComparator const&, *this);
+                    if (dc.c == *this)
+                        return (Comparator &) dc;
+                }
+
+                Comparator &c = Unsafe::copyInstance(*this, true);
+                XComparator &x = Unsafe::copyInstance(other, true);
+
+                return Unsafe::allocateInstance<DoubleComparator>(c, x);
             }
 
             /**
@@ -230,10 +351,55 @@ namespace core {
              * @see Comparable
              */
             static Comparator &reverseOrder() CORE_NOTHROW {
+
                 /**
-                 * Reverse order use one instance only
+                 * Compares <b style="color:orange;">Comparable</b> objects in reversed natural order.
+                 *
+                 * @see Comparable
                  */
-                static ReverseComparator<> REVERSE_ORDER = {};
+                class ReverseOrder CORE_FINAL : public Comparator {
+                public:
+                    /**
+                     * Construct new Comparator that execute the natural ordering
+                     */
+                    CORE_FAST ReverseOrder() = default;
+
+                    gint compare(const T &o2, const T &o1) const override {
+
+                        CORE_FAST gbool supportLT = Class<T>::supportLT();
+                        CORE_FAST gbool isComparable = Class<Comparable>::template isSuper<T>();
+
+                        if (isComparable) {
+                            // T extends Comparable class
+                            // a.compareTo(b)
+                            static CORE_FAST gint
+                            (*compare)(const T &, const T &) = CmpSupport<T, isComparable>::compare;
+                            return compare(o1, o2);
+
+                        } else if (supportLT) {
+                            // T support relational operator less-than (<)
+                            // (a < b) ? -1: (b < a ? 1: 0)
+                            static CORE_FAST gbool (*isLessThan)(const T &, const T &) = LTSupport<T, supportLT>::isLT;
+                            return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
+                        } else {
+                            CORE_ASSERT_IF(false, "Natural ordering is not supported",
+                                           "core.util.Comparator.$ReverseOrder"_S);
+                        }
+                    }
+
+                    Object &clone() const override { return reverseOrder(); }
+
+                    Comparator &reverse() const override {
+                        return naturalOrder();
+                    }
+
+
+                };
+
+                /**
+                 * Reverse order use one INSTANCE only
+                 */
+                static ReverseOrder REVERSE_ORDER = {};
 
                 return REVERSE_ORDER;
             }
@@ -249,13 +415,152 @@ namespace core {
              *         Comparable</b> objects.
              * @see Comparable
              */
-            static Comparator &naturalOrder() CORE_NOTHROW {
+            static Comparator &naturalOrder() {
+
                 /**
-                 * Natural order use one instance only
+                 * Compares <b style="color:orange;">Comparable</b> objects in natural order.
+                 *
+                 * @see Comparable
                  */
-                static NaturalOrderComparator<> NATURAL_ORDER = {};
+                class NaturalOrder CORE_FINAL : public Comparator {
+                public:
+                    /**
+                     * Construct new Comparator that execute the natural ordering
+                     */
+                    CORE_FAST NaturalOrder() = default;
+
+                    gint compare(const T &o1, const T &o2) const override {
+
+                        CORE_FAST gbool supportLT = Class<T>::supportLT();
+                        CORE_FAST gbool isComparable = Class<Comparable>::template isSuper<T>();
+
+                        if (isComparable) {
+                            // T extends Comparable class
+                            // a.compareTo(b)
+                            CORE_ALIAS(Signature, gint(*)(const T&, const T&));
+                            Signature compare = CmpSupport<T, isComparable>::compare;
+                            return compare(o1, o2);
+                        } else if (supportLT) {
+                            // T support relational operator less-than (<)
+                            // a < b? -1: b < a ? 1 : 0
+                            CORE_ALIAS(Signature, gbool(*)(const T&, const T&));
+                            Signature isLessThan = LTSupport<T, supportLT>::isLT;
+                            return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
+                        }
+                        CORE_ASSERT_IF(isComparable || supportLT,
+                                       "Natural ordering is not supported"_S, "core.util.Comparator.$NaturalOrder")
+                    }
+
+                    Object &clone() const override { return naturalOrder(); }
+
+                    Comparator &reverse() const override {
+                        return reverseOrder();
+                    }
+                };
+
+                static NaturalOrder NATURAL_ORDER = {};
 
                 return NATURAL_ORDER;
+            }
+
+            /**
+             * Returns a comparator that not provide order (always equals).
+             *
+             * <p>The returned comparator is serializable.
+             * @return a comparator that not provide order.
+             * @see Comparable
+             */
+            static Comparator &zeroOrder() {
+
+                // zero comparator (always return zero)
+                class ZeroOrder CORE_FINAL : public Comparator<T> {
+                public:
+                    CORE_FAST ZeroOrder() = default;
+
+                    Object &clone() const override { return (Object &) *this; }
+
+                    gint compare(const T &o1, const T &o2) const override {
+                        CORE_IGNORE(o1);
+                        CORE_IGNORE(o2);
+                        return 0;
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        return this == &o || Class<ZeroOrder>::hasInstance(o);
+                    }
+
+                };
+
+                static ZeroOrder ZERO_ORDER = {};
+
+                return ZERO_ORDER;
+            }
+
+            /**
+             * Returns a comparator that not provide order (always less).
+             *
+             * <p>The returned comparator is serializable.
+             * @return a comparator that not provide order.
+             * @see Comparable
+             */
+            static Comparator &lessOrder() {
+
+
+                // less comparator (always return -1)
+                class LessOrder CORE_FINAL : public Comparator<T> {
+                public:
+                    CORE_FAST LessOrder() = default;
+
+                    Object &clone() const override { return (Object &) *this; }
+
+                    gint compare(const T &o1, const T &o2) const override {
+                        CORE_IGNORE(o1);
+                        CORE_IGNORE(o2);
+                        return -1;
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        return this == &o || Class<LessOrder>::hasInstance(o);
+                    }
+
+                };
+
+                static LessOrder LESS_ORDER = {};
+
+                return LESS_ORDER;
+            }
+
+            /**
+             * Returns a comparator that not provide order (always less).
+             *
+             * <p>The returned comparator is serializable.
+             * @return a comparator that not provide order.
+             * @see Comparable
+             */
+            static Comparator &greatOrder() {
+
+                // great comparator (always return 1)
+                class GreatOrder CORE_FINAL : public Comparator<T> {
+                public:
+                    CORE_FAST GreatOrder() = default;
+
+                    Object &clone() const override { return (Object &) *this; }
+
+                    gint compare(const T &o1, const T &o2) const override {
+                        CORE_IGNORE(o1);
+                        CORE_IGNORE(o2);
+                        return 1;
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        return this == &o || Class<GreatOrder>::hasInstance(o);
+                    }
+
+                };
+
+                static GreatOrder GREAT_ORDER = {};
+
+                return GREAT_ORDER;
             }
 
             /**
@@ -263,157 +568,89 @@ namespace core {
              *
              * @param c the other comparator
              */
-            template<class E = T>
-            static Comparator &copyOf(const Comparator<Capture<E>> &c) {
-                if (Class<T>::template isSimilar<E>())
-                    return U::copyInstance(CORE_DYN_CAST(const Comparator&, c), true);
+            template<class X>
+            static Comparator &of(const Comparator<X> &c) {
+                CORE_STATIC_ASSERT(Class<X>::template isSuper<T>(), "Incompatible Comparator");
+                CORE_ALIAS(XComparator, Comparator<X>);
 
-                if (Class<typename Comparator<E>::NaturalOrderComparator>::hasInstance(c))
+                if (XComparator::naturalOrder() == c)
                     return naturalOrder();
 
-                if (Class<typename Comparator<E>::ReverseComparator>::hasInstance(c))
+                else if (XComparator::reverseOrder() == c)
                     return reverseOrder();
 
-                if (Class<typename Comparator<E>::ReverseComparator2>::hasInstance(c))
-                    return reverseOrder();
+                else if (XComparator::zeroOrder() == c)
+                    return zeroOrder();
 
-                // zero comparator (always return zero)
-                class FalseComparator CORE_FINAL : public Comparator<T> {
-                public:
-                    CORE_FAST FalseComparator() = default;
+                else if (XComparator::lessOrder() == c)
+                    return lessOrder();
 
-                    Object &clone() const override { return (Object &) *this; }
+                else if (XComparator::greatOrder() == c)
+                    return greatOrder();
 
-                    gint compare(const T & /*o1*/, const T & /*o2*/) const override { return 0; }
+                if (Class<T>::template isSimilar<X>())
+                    return Unsafe::copyInstance((const Comparator &) c, true);
 
-                    gbool equals(const Object &o) const override { return Class<FalseComparator>::hasInstance(o); }
+                else {
+                    CORE_TRY_ONLY_EX
+                    ({
+                         if (c.isReversed())
+                             return Comparator::of(c.base()).reverse();
+                     })
 
-                };
+                }
 
-                static FalseComparator INSTANCE = {};
-
-                return INSTANCE.thenComparing(c);
+                return zeroOrder().thenComparing(c);
             }
 
         private:
-
             /**
-             * Compares <b style="color:orange;">Comparable</b> objects in natural order.
+             * Return the comparator used by this comparator in internal.
              *
-             * @see Comparable
+             * @throws UnsupportedMethodException If the value returned by
+             *                                    Comparator.isReversed is false.
              */
-            template<class E = T>
-            class NaturalOrderComparator CORE_FINAL : public Comparator<E> {
-            public:
-                /**
-                 * Construct new Comparator that execute the natural ordering
-                 */
-                CORE_FAST NaturalOrderComparator() = default;
-
-                gint compare(const T &o1, const T &o2) const override {
-                    CORE_FAST gbool supportLT = Class<T>::supportLT();
-                    CORE_FAST gbool isComparable = Class<Comparable<T>>::template isSuper<T>();
-                    if (isComparable) {
-                        // T extends Comparable class
-                        // a.compareTo(b)
-                        static CORE_FAST gint (*compare)(const T &, const T &) = CmpSupport<T, isComparable>::compare;
-                        return compare(o1, o2);
-                    } else if (supportLT) {
-                        // T support relational operator less-than (<)
-                        // a < b ? -1 : b < a ? 1 : 0
-                        static CORE_FAST gbool (*isLessThan)(const T &, const T &) = LTSupport<T, supportLT>::isLT;
-                        return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
-                    } else {
-                        // error
-                        AssertionError(CORE_DYN_CAST(const Object&, o1).classname() + " not support natural ordering")
-                                .throws(__trace("core.util.NaturalOrderComparator"));
-                    }
-                }
-
-                gbool equals(const Object &o) const override { return Class<NaturalOrderComparator>::hasInstance(o); }
-
-                Object &clone() const override { return naturalOrder(); }
-            };
+            virtual Comparator &base() const {
+                UnsupportedOperationException().throws(__trace("core.util.Comparator"));
+            }
 
             /**
-             * //
+             * Return true if this comparator has internal comparator and
+             * is reversed form of this internal comparator.
+             * (if is true, for retrieve internal comparator use <b>Comparator.base</b> method)
              */
-            template<class E = T>
-            class ReverseComparator CORE_FINAL : public Comparator<E> {
-            public:
-                /**
-                 * Construct new Comparator that execute the natural ordering
-                 */
-                CORE_FAST ReverseComparator() = default;
+            virtual gbool isReversed() const { return false; };
 
-                gint compare(const T &o2, const T &o1) const override {
-                    CORE_FAST gbool supportLT = Class<T>::supportLT();
-                    CORE_FAST gbool isComparable = Class<Comparable<T>>::template isSuper<T>();
-                    if (isComparable) {
-                        // T extends Comparable class
-                        // a.compareTo(b)
-                        static CORE_FAST gint (*compare)(const T &, const T &) = CmpSupport<T, isComparable>::compare;
-                        return compare(o1, o2);
-                    } else if (supportLT) {
-                        // T support relational operator less-than (<)
-                        // a < b ? -1 : b < a ? 1 : 0
-                        static CORE_FAST gbool (*isLessThan)(const T &, const T &) = LTSupport<T, supportLT>::isLT;
-                        return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
-                    } else {
-                        // error
-                        AssertionError(CORE_DYN_CAST(const Object&, o1).classname() + " not support natural ordering")
-                                .throws(__trace("core.util.ReverseComparator"));
-                    }
-                }
-
-                gbool equals(const Object &o) const override { return Class<ReverseComparator>::hasInstance(o); }
-
-                Object &clone() const override { return reverseOrder(); }
-
-            };
-
-            /**
-             * //
-             */
-            template<class E = T>
-            class ReverseComparator2 CORE_FINAL : public Comparator<E> {
-            public:
-                Comparator<E> &cmp;
-
-                CORE_FAST ReverseComparator2(const Comparator<E> &cmp) : cmp(U::copyInstance(cmp, true)) {}
-
-                gint compare(const T &o2, const T &o1) const override { return cmp.compare(o2, o1); }
-
-                gbool equals(const Object &o) const override {
-                    return Class<ReverseComparator2>::hasInstance(o) &&
-                           cmp == CORE_DYN_CAST(const ReverseComparator2&, o).cmp;
-                }
-
-                Object &clone() const override { return U::createInstance<ReverseComparator2>(cmp); }
-            };
-
-            template<class C, gbool supportLT>
+            template<class X, gbool supportLT>
             class LTSupport CORE_FINAL {
             public:
-                static CORE_FAST gbool isLT(const C &c1, const C &c2) { return c1 < c2; }
+                static CORE_FAST gbool isLT(const X &x, const X &y) { return x < y; }
             };
 
-            template<class C>
-            class LTSupport<C, false> CORE_FINAL {
+            template<class X>
+            class LTSupport<X, false> CORE_FINAL {
             public:
-                static CORE_FAST gbool isLT(const C & /*c1*/, const C & /*c2*/) { return false; }
+                static gbool isLT(const X &x, const X &y) {
+                    CORE_IGNORE(x);
+                    CORE_IGNORE(y);
+                    return false;
+                }
             };
 
-            template<class C, gbool isComparable>
+            template<class X, gbool isComparable>
             class CmpSupport CORE_FINAL {
             public:
-                static gint compare(const C &c1, const C &c2) { return c1.compareTo(c2); }
+                static gint compare(const X &x, const X &y) { return x.compareTo(y); }
             };
 
-            template<class C>
-            class CmpSupport<C, false> CORE_FINAL {
+            template<class X>
+            class CmpSupport<X, false> CORE_FINAL {
             public:
-                static gint compare(const C &  /*c1*/, const C &  /*c2*/) { return 0; }
+                static gint compare(const X &x, const X &y) {
+                    CORE_IGNORE(x);
+                    CORE_IGNORE(y);
+                    return 0;
+                }
             };
 
         public:

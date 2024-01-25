@@ -5,7 +5,7 @@
 #ifndef CORE23_ENUM_H
 #define CORE23_ENUM_H
 
-#include <core/CastException.h>
+#include <core/ClassCastException.h>
 #include <core/private/Unsafe.h>
 #include <core/util/HashMap.h>
 #include <core/util/StringTokenizer.h>
@@ -15,9 +15,8 @@ namespace core {
     template<class E>
     class Enum : public Object, public Comparable<Enum<E>> {
     private:
-        CORE_STATIC_ASSERT(Class<E>::isEnum(), "This template is not Enumerable type");
+        CORE_STATIC_ASSERT(Class<E>::isEnum(), "Unsupported template");
 
-        CORE_ALIAS(U, native::Unsafe);
         CORE_ALIAS(EnumCache, , util::HashMap<Enum, String>);
         CORE_ALIAS(SystemCache, , util::HashMap<String, Object>);
 
@@ -63,10 +62,10 @@ namespace core {
             static typename Class<EnumCache>::Ptr cache = null;
             if (cache == null) {
                 // initialize cache (one time only)
-                SystemCache &systemCache = (SystemCache &) U::systemCache();
-                EnumCache &enumCache = U::createInstance<EnumCache>();
+                SystemCache &systemCache = (SystemCache &) Unsafe::systemCache();
+                EnumCache &enumCache = Unsafe::allocateInstance<EnumCache>();
                 Enum e = {};
-                String &enumKey = U::createInstance<String>(e.classname());
+                String &enumKey = Unsafe::allocateInstance<String>(e.classname());
                 systemCache.putIfAbsent(enumKey, enumCache);
                 cache = &enumCache;
             }
@@ -81,7 +80,7 @@ namespace core {
          * an ordinal of zero).
          *
          * Most programmers will have no use for this method.  It is
-         * designed for use by sophisticated enum-based array structures.
+         * designed for use by sophisticated enum-based root structures.
          *
          * @return the ordinal of this enumeration constant
          */
@@ -93,7 +92,7 @@ namespace core {
          * an ordinal of zero).
          *
          * Most programmers will have no use for this method.  It is
-         * designed for use by sophisticated enum-based array structures.
+         * designed for use by sophisticated enum-based root structures.
          *
          * @return the ordinal of this enumeration constant
          */
@@ -122,7 +121,7 @@ namespace core {
          * Return shadow copy of this enum constant
          */
         Object &clone() const override {
-            return U::createInstance<Enum>(*this);
+            return Unsafe::allocateInstance<Enum>(value);
         }
 
         /**
@@ -152,7 +151,7 @@ namespace core {
         }
 
         /**
-         * Return new Enum instance corresponding to specified
+         * Return new Enum INSTANCE corresponding to specified
          * enum constant
          *
          * @param e The enum constant
@@ -162,7 +161,7 @@ namespace core {
         }
 
         /**
-         * Return new Enum instance corresponding to specified
+         * Return new Enum INSTANCE corresponding to specified
          * enum constant
          *
          * @param ordinal The ordinal
@@ -184,7 +183,7 @@ namespace core {
          *
          * @param name the name of the constant to return
          *
-         * @throws ArgumentException if the specified enum class has
+         * @throws IllegalArgumentException if the specified enum class has
          *         no constant with the specified name, or the specified
          *         class object does not represent an enum class
          */
@@ -285,7 +284,7 @@ namespace core {
         }
 
         CORE_ENABLE_IMPLICIT_CAST(E, value, const);
-        CORE_ENABLE_IMPLICIT_CAST(E &, value);
+        CORE_ENABLE_IMPLICIT_CAST(E &, value, &);
     };
 
 } // core

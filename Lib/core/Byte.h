@@ -302,13 +302,15 @@ namespace core {
         static CORE_FAST glong toUnsignedLong(gbyte b) { return ((glong) b) & 0xffLL; }
 
         /**
-         * Return sharable copy of this Byte instance
+         * Return sharable copy of this Byte INSTANCE
          */
         Object &clone() const override;
 
+        CORE_FAST static gint BYTES = 1;
+
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gbyte, value, const)
 
-        CORE_ENABLE_IMPLICIT_CAST(gbyte &, value)
+        CORE_ENABLE_IMPLICIT_CAST(gbyte &, value, &)
     };
 
 } // core

@@ -3,9 +3,6 @@
 //
 
 #include <core/private/Unsafe.h>
-#include <core/ArgumentException.h>
-#include <core/Float.h>
-#include <core/Double.h>
 #include <Windows.h>
 
 #ifdef CORE_COMPILER_GNU_ONLY
@@ -38,7 +35,6 @@
 #endif
 
 
-
 #ifdef CORE_COMPILER_MSVC
 #define CORE_BARRIER(expr) \
     CORE_WARNING_PUSH      \
@@ -51,119 +47,139 @@
     expr
 #endif
 
-using namespace core;
-
-namespace {
-    CORE_FAST gbyte b2byte(gbool b) { return b ? 1 : 0; }
-
-    CORE_FAST gbool b2bool(gbyte b) { return b != 0; }
-
-    CORE_FAST gshort c2s(gchar c) { return (gshort) c; }
-
-    CORE_FAST gchar s2c(gshort s) { return (gchar) s; }
-
-    gint f2i(gfloat f) { return Float::toIntBits(f); }
-
-    glong d2l(gdouble d) { return Double::toLongBits(d); }
-
-    gfloat i2f(gint i) { return Float::fromIntBits(i); }
-
-    gdouble l2d(glong l) { return Double::fromLongBits(l); }
-
-    glong o2l(const Object &o) { return o == null ? 0 : (glong) &o; }
-
-    Object &l2o(glong l) { return l == 0 ? (Object &) null : *((Object *) l); }
-}
-
 namespace core {
     namespace native {
 
         namespace {
-
-            gbool is32Bits(glong size) { return (size >> 32) == 0; }
-
-            gbool checkSize(glong size) {
-                if (Unsafe::ADDRESS_SIZE == 4) {
-                    if (!is32Bits(size))
-                        return false;
-                } else if (size < 0)
-                    return false;
-                return true;
-            }
-
-            gbool checkNativeAddress(glong address) {
-                if (Unsafe::ADDRESS_SIZE == 4) {
-                    // Accept both zero and sign extended pointers. A valid
-                    // pointer will, after the +1 below, either have produced
-                    // the value 0x0 or 0x1. Masking off the low bit allows
-                    // for testing against 0.
-                    if ((((address >> 32) + 1) & ~1) != 0) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            gbool checkOffset(const Object & /*o*/, glong offset) {
-                if (Unsafe::ADDRESS_SIZE == 4) {
-                    // Note: this will also check for negative offsets
-                    if (!is32Bits(offset)) {
-                        return false;
-                    }
-                } else if (offset < 0) {
-                    return false;
-                }
-                return true;
-            }
-
-            gbool checkPointer(const Object &o, glong offset) {
-                return null == o ? checkNativeAddress(offset) : checkOffset(o, offset);
-            }
-
-            glong getNativeAddress(const Object &o, glong offset) { return (glong) &o + offset; }
-
-            /**
-             * Round up allocation size to a multiple of HeapWordSize.
-             */
-            glong alignToHeapWordSize(glong bytes) {
-                if (bytes >= 0) {
-                    return (bytes + Unsafe::ADDRESS_SIZE - 1) & ~(Unsafe::ADDRESS_SIZE - 1);
-                } else {
-                    return -1;
-                }
-            }
-        };
+            HANDLE privateHeap[1024] = {};
+        }
 
         glong Unsafe::allocateMemoryImpl(glong sizeInBytes) {
-            try {
-                if (sizeInBytes % 8 == 0)
-                    return (glong) new glong[sizeInBytes >> 3];
-                if (sizeInBytes % 4 == 0)
-                    return (glong) new gint[sizeInBytes >> 2];
-                if (sizeInBytes % 2 == 0)
-                    return (glong) new gshort[sizeInBytes >> 1];
-                return (glong) new gbyte[sizeInBytes >> 0];
-            } catch (...) { return 0L; }
+            if (sizeInBytes == 0)
+                return 0;
+//            HLOCAL handle = LocalAlloc(LMEM_ZEROINIT | LMEM_FIXED, (SIZE_T) sizeInBytes);
+//            if (handle != NULL) {
+//                return (glong) handle;
+//            }
+//            handle = LocalAlloc(LMEM_ZEROINIT | LMEM_MOVEABLE, (SIZE_T) sizeInBytes);
+//            if (handle != NULL) {
+//                glong const address = (glong) LocalLock(handle);
+//                if(address != 0) {
+//                    return address;
+//                }
+//            }
+            HANDLE handle = NULL;
+            if (privateHeap[1] == NULL) {
+                // start with private heap
+                handle = privateHeap[1] = HeapCreate(HEAP_GENERATE_EXCEPTIONS, sizeInBytes, 0);
+                if (handle == NULL) {
+                    handle = privateHeap[1] = HeapCreate(HEAP_GENERATE_EXCEPTIONS, sizeInBytes,
+                                                         sizeInBytes + ADDRESS_SIZE);
+                }
+            }
+            else{
+                handle = privateHeap[1];
+            }
+            if (handle != NULL) {
+                HeapLock(handle);
+                LPVOID ptr = HeapAlloc(handle, HEAP_ZERO_MEMORY, sizeInBytes + 1ULL);
+                if (ptr != NULL) {
+                    HeapUnlock(handle);
+                    return (glong) ptr;
+                }
+                HeapUnlock(handle);
+            }
+            if (privateHeap[0] == NULL) {
+                handle = privateHeap[0] = GetProcessHeap();
+            }
+            if (handle != NULL) {
+                HeapLock(handle);
+                LPVOID ptr = HeapAlloc(handle, HEAP_ZERO_MEMORY, sizeInBytes + 1ULL);
+                if (ptr != NULL) {
+                    HeapUnlock(handle);
+                    return (glong) ptr;
+                }
+                HeapUnlock(handle);
+            }
+            for (HANDLE &heap: privateHeap) {
+                if (heap != NULL) {
+                    handle = heap;
+                    HeapLock(heap);
+                    LPVOID ptr = HeapAlloc(handle, HEAP_ZERO_MEMORY, sizeInBytes + 1ULL);
+                    if (ptr != NULL) {
+                        HeapUnlock(heap);
+                        return (glong) ptr;
+                    }
+                    HeapUnlock(heap);
+                } else {
+                    handle = heap = HeapCreate(0, sizeInBytes, 0);
+                    if (handle == NULL) {
+                        handle = heap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, sizeInBytes, sizeInBytes + ADDRESS_SIZE);
+                    }
+                    if (handle == NULL)
+                        return 0;
+                    HeapLock(heap);
+                    LPVOID ptr = HeapAlloc(handle, HEAP_ZERO_MEMORY, sizeInBytes + 1ULL);
+                    if (ptr != NULL) {
+                        HeapUnlock(heap);
+                        return (glong) ptr;
+                    }
+                    HeapUnlock(heap);
+                    return 0;
+                }
+            }
+            return 0;
         }
 
         glong Unsafe::reallocateMemoryImpl(glong address, glong sizeInBytes) {
-            return (glong) LocalReAlloc((HLOCAL) address, sizeInBytes, 0);
+            for (HANDLE &heap: privateHeap) {
+                if (heap == NULL)
+                    break;
+                HeapLock(heap);
+                LPVOID ptr = HeapReAlloc(heap, HEAP_ZERO_MEMORY, (LPVOID) address, sizeInBytes + 1ULL);
+                if (ptr != NULL) {
+                    HeapUnlock(heap);
+                    return (glong) ptr;
+                }
+                HeapUnlock(heap);
+            }
+            return 0;
         }
 
         void Unsafe::freeMemoryImpl(glong address) {
-            delete[] (gbyte *) address;
+            for(HANDLE &heap: privateHeap) {
+                if (heap == NULL) {
+                    if(heap == privateHeap[0])
+                        continue;
+                    break;
+                }
+                HeapLock(heap);
+                // check if the address is valid for specified heap
+                if(HeapValidate(heap, 0, (LPVOID) address) == 0) {
+                    HeapUnlock(heap);
+                    continue;
+                }
+                if(HeapFree(heap, 0, (LPVOID) address) != 0){
+                    HeapUnlock(heap);
+                    return;
+                }
+                HeapUnlock(heap);
+            }
         }
 
         void Unsafe::setMemoryImpl(glong address, glong sizeInBytes, gbyte value) {
-            FillMemory((void *) address, sizeInBytes, value);
+            if (value == 0)
+                ZeroMemory ((HLOCAL) address, sizeInBytes);
+            else
+                FillMemory ((HLOCAL) address, sizeInBytes, value);
         }
 
         void Unsafe::copyMemoryImpl(glong srcAddress, glong destAddress, glong sizeInBytes) {
-            CopyMemory((void *) destAddress, (void *) srcAddress, sizeInBytes);
+            CopyMemory((HLOCAL) destAddress, (HLOCAL) srcAddress, sizeInBytes);
         }
 
         void Unsafe::copySwapMemoryImpl(glong srcAddress, glong destAddress, glong sizeInBytes, glong  /*elemSize*/) {
-            MoveMemory((void *) destAddress, (void *) srcAddress, sizeInBytes);
+            MoveMemory((HLOCAL) destAddress, (HLOCAL) srcAddress, sizeInBytes);
         }
 
         void Unsafe::loadFence() {

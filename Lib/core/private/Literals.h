@@ -5,8 +5,8 @@
 #ifndef CORE23_LITERALS_H
 #define CORE23_LITERALS_H
 
+#include <core/private/Templates.h>
 #include <stddef.h>
-#include "Templates.h"
 
 namespace core {
 
@@ -51,28 +51,46 @@ namespace core {
     extern String operator ""_S(wchar_t);
 
     extern gbool operator==(const Object &, const Object &);
+    extern gbool operator==(const Object &, const String &);
 
     extern gbool operator!=(const Object &, const Object &);
+    extern gbool operator!=(const Object &, const String &);
 }
 
-extern GENERIC_PTR operator new(size_t, GENERIC_PTR) CORE_NOTHROW;
+extern GENERIC_PTR operator new(size_t sizeInBytes, GENERIC_PTR cAddress) CORE_NOTHROW;
 
-extern GENERIC_PTR operator new[](size_t, GENERIC_PTR) CORE_NOTHROW;
+extern GENERIC_PTR operator new[](size_t sizeInBytes, GENERIC_PTR cAddress) CORE_NOTHROW;
 
-extern void operator delete(GENERIC_PTR, GENERIC_PTR) CORE_NOTHROW;
+extern void operator delete(GENERIC_PTR sizeInBytes, GENERIC_PTR cAddress) CORE_NOTHROW;
 
-extern void operator delete[](GENERIC_PTR, GENERIC_PTR) CORE_NOTHROW;
+extern void operator delete[](GENERIC_PTR sizeInBytes, GENERIC_PTR cAddress) CORE_NOTHROW;
 //
 //// no inline, required by [replacement.functions]/3
-//extern GENERIC_PTR operator new(size_t sz);
+extern GENERIC_PTR operator new(size_t sizeInBytes);
 //
 //// no inline, required by [replacement.functions]/3
-//extern GENERIC_PTR operator new[](size_t sz);
+extern GENERIC_PTR operator new[](size_t sizeInBytes);
 //
-//extern void operator delete(GENERIC_PTR ptr) CORE_NOTHROW;
+extern void operator delete(GENERIC_PTR cAddress) CORE_NOTHROW;
 //
-//extern void operator delete(GENERIC_PTR ptr, size_t size) CORE_NOTHROW;
+extern void operator delete(GENERIC_PTR cAddress, size_t sizeInBytes) CORE_NOTHROW;
 //
-//extern void operator delete[](GENERIC_PTR ptr) CORE_NOTHROW;
+extern void operator delete[](GENERIC_PTR cAddress) CORE_NOTHROW;
+
+extern void operator delete[](GENERIC_PTR cAddress, size_t sizeInBytes) CORE_NOTHROW;
 //
+
+
+#ifdef UNDERFLOW
+#undef UNDERFLOW
+#endif
+#ifdef OVERFLOW
+#undef OVERFLOW
+#endif
+
+#ifdef max // is predefined on MSVC compiler
+#undef max
+#undef min
+#endif
+
 #endif //CORE23_LITERALS_H

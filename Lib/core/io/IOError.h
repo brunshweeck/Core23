@@ -18,9 +18,9 @@ namespace core {
         class IOError : public Error {
         public:
             /**
-             * Constructs a new instance of IOError with the specified cause. The
+             * Constructs a new INSTANCE of IOError with the specified cause. The
              * IOError is created with the detail message of
-             * {@code cause.toString()} (which typically
+             * <b> cause.toString()</b>  (which typically
              * contains the class and detail message of cause).
              *
              * @param  cause

@@ -4,6 +4,7 @@
 
 #include "Temporal.h"
 #include "UnsupportedTemporalException.h"
+#include <core/ArithmeticException.h>
 #include <core/Enum.h>
 #include <core/Long.h>
 #include <core/time/LocalTime.h>
@@ -166,7 +167,7 @@ namespace core {
             FieldRange const r = range(field);
             if ((r.minSmallest <= value || r.minLargest <= value) && (r.maxSmallest >= value || r.maxLargest >= value))
                 return value;
-            ArgumentException(
+            IllegalArgumentException(
                     "value (" + String::valueOf(value) + ") out of range for field \"" + FieldName[field] + "\"")
                     .throws(__trace("core.time.Temporal"));
         }
@@ -185,7 +186,7 @@ namespace core {
                 Object &queryFrom(const Temporal &temporal) const override {
                     if (temporal.supportField(NANO_OF_DAY)) {
                         LocalTime const localTime = LocalTime::ofNanoOfDay(temporal.getLong(NANO_OF_DAY));
-                        return U::createInstance<LocalTime>(localTime);
+                        return Unsafe::allocateInstance<LocalTime>(localTime);
                     }
                     return null;
                 }
@@ -209,7 +210,7 @@ namespace core {
                 Object &queryFrom(const Temporal &temporal) const override {
                     if (temporal.supportField(EPOCH_DAY)) {
 //                        LocalDate const localTime = LocalDate::ofEpochDay(temporal.getLong(EPOCH_DAY));
-//                        return U::createInstance<LocalDate>(localDate);
+//                        return Unsafe::allocateInstance<LocalDate>(localDate);
                     }
                     return null;
                 }
@@ -259,7 +260,7 @@ namespace core {
                 }
 
                 Object &clone() const override {
-                    return (Object & ) * this;
+                    return (Object &) *this;
                 }
 
             };
@@ -279,7 +280,7 @@ namespace core {
                 }
 
                 Object &clone() const override {
-                    return (Object & ) * this;
+                    return (Object &) *this;
                 }
 
             };
@@ -293,7 +294,7 @@ namespace core {
                 Object &queryFrom(const Temporal &temporal) const override {
                     if (temporal.supportField(OFFSET_SECONDS)) {
 //                        ZoneOffset offset = ZoneOffset::ofTotalSeconds(temporal.get(OFFSET_SECONDS));
-//                        return U::createInstance<ZoneOffset>(offset);
+//                        return Unsafe::allocateInstance<ZoneOffset>(offset);
                     }
                     return null;
                 }
@@ -303,7 +304,7 @@ namespace core {
                 }
 
                 Object &clone() const override {
-                    return (Object & ) * this;
+                    return (Object &) *this;
                 }
 
             };
@@ -317,6 +318,24 @@ namespace core {
 
         gbool Temporal::supportUnit(Temporal::Unit unit) const {
             return false;
+        }
+
+        glong Temporal::getLong(Temporal::TemporalField field) const {
+            CORE_IGNORE(field);
+            UnsupportedOperationException().throws(__trace("core.time.Temporal"));
+        }
+
+        gint Temporal::get(Temporal::TemporalField field) const {
+            glong v;
+            try {
+                v = getLong(field);
+            } catch (const Exception &ex) {
+                ex.throws(__trace("core.time.Temporal"));
+            }
+            if (v > Integer::MAX_VALUE || v < Integer::MIN_VALUE) {
+                ArithmeticException("The value " + String::valueOf(v) + " exceed int range.");
+            }
+            return (gint) v;
         }
 
     } // core

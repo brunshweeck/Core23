@@ -6,7 +6,7 @@
 #define CORE23_ZONEOFFSETTRANSITION_H
 
 #include <core/time/ZoneOffset.h>
-#include "LocalDateTime.h"
+#include <core/time/LocalDateTime.h>
 
 namespace core {
     namespace time {
@@ -19,14 +19,14 @@ namespace core {
          * <p>
          * A transition between two offsets is normally the result of a daylight savings cutover.
          * The discontinuity is normally a gap in spring and an overlap in autumn.
-         * {@code ZoneOffsetTransition} models the transition between the two offsets.
+         * <b> ZoneOffsetTransition} models the transition between the two offsets.
          * <p>
          * Gaps occur where there are local date-times that simply do not exist.
-         * An example would be when the offset changes from {@code +03:00} to {@code +04:00}.
+         * An example would be when the offset changes from <b> +03:00} to <b> +04:00}.
          * This might be described as 'the clocks will move forward one hour tonight at 1am'.
          * <p>
          * Overlaps occur where there are local date-times that exist twice.
-         * An example would be when the offset changes from {@code +04:00} to {@code +03:00}.
+         * An example would be when the offset changes from <b> +04:00} to <b> +03:00}.
          * This might be described as 'the clocks will move back one hour tonight at 2am'.
          *
          * @implSpec
@@ -59,18 +59,18 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance defining a transition between two offsets.
+             * Obtains an INSTANCE defining a transition between two offsets.
              * <p>
-             * Applications should normally obtain an instance from {@link ZoneRules}.
-             * This factory is only intended for use when creating {@link ZoneRules}.
+             * Applications should normally obtain an INSTANCE from <b style="color:orange;"> ZoneRules}.
+             * This factory is only intended for use when creating <b style="color:orange;"> ZoneRules}.
              *
              * @param transition  the transition date-time at the transition, which never
-             *  actually occurs, expressed local to the before offset, not null
-             * @param offsetBefore  the offset before the transition, not null
-             * @param offsetAfter  the offset at and after the transition, not null
-             * @return the transition, not null
-             * @throws IllegalArgumentException if {@code offsetBefore} and {@code offsetAfter}
-             *         are equal, or {@code transition.getNano()} returns non-zero value
+             *  actually occurs, expressed local to the before offset
+             * @param offsetBefore  the offset before the transition
+             * @param offsetAfter  the offset at and after the transition
+             * @return the transition
+             * @throws IllegalArgumentException if <b> offsetBefore} and <b> offsetAfter}
+             *         are equal, or <b> transition.getNano()} returns non-zero value
              */
             static ZoneOffsetTransition of(const LocalDateTime &transition,
                                            const ZoneOffset &offsetBefore, const ZoneOffset &offsetAfter);
@@ -78,21 +78,21 @@ namespace core {
         private:
 
             /**
-             * Creates an instance defining a transition between two offsets.
+             * Creates an INSTANCE defining a transition between two offsets.
              *
-             * @param transition  the transition date-time with the offset before the transition, not null
-             * @param offsetBefore  the offset before the transition, not null
-             * @param offsetAfter  the offset at and after the transition, not null
+             * @param transition  the transition date-time with the offset before the transition
+             * @param offsetBefore  the offset before the transition
+             * @param offsetAfter  the offset at and after the transition
              */
              CORE_EXPLICIT ZoneOffsetTransition(const LocalDateTime &transition,
                                                 const ZoneOffset &offsetBefore, const ZoneOffset &offsetAfter);
 
             /**
-             * Creates an instance from epoch-second and offsets.
+             * Creates an INSTANCE from epoch-second and offsets.
              *
              * @param epochSecond  the transition epoch-second
-             * @param offsetBefore  the offset before the transition, not null
-             * @param offsetAfter  the offset at and after the transition, not null
+             * @param offsetBefore  the offset before the transition
+             * @param offsetAfter  the offset at and after the transition
              */
             CORE_EXPLICIT ZoneOffsetTransition(glong epochSecond, const ZoneOffset &offsetBefore, const ZoneOffset &offsetAfter);
 
@@ -119,7 +119,7 @@ namespace core {
              * The combination of the 'before' date-time and offset represents the same instant
              * as the 'after' date-time and offset.
              *
-             * @return the transition date-time expressed with the before offset, not null
+             * @return the transition date-time expressed with the before offset
              */
              LocalDateTime dateTimeBefore() const;
 
@@ -131,7 +131,7 @@ namespace core {
              * The combination of the 'before' date-time and offset represents the same instant
              * as the 'after' date-time and offset.
              *
-             * @return the transition date-time expressed with the after offset, not null
+             * @return the transition date-time expressed with the after offset
              */
              LocalDateTime dateTimeAfter() const;
 
@@ -140,7 +140,7 @@ namespace core {
              * <p>
              * This is the offset in use before the instant of the transition.
              *
-             * @return the offset before the transition, not null
+             * @return the offset before the transition
              */
              ZoneOffset offsetBefore() const;
 
@@ -149,7 +149,7 @@ namespace core {
              * <p>
              * This is the offset in use on and after the instant of the transition.
              *
-             * @return the offset after the transition, not null
+             * @return the offset after the transition
              */
              ZoneOffset offsetAfter() const;
 
@@ -168,7 +168,7 @@ namespace core {
              * Does this transition represent a gap in the local time-line.
              * <p>
              * Gaps occur where there are local date-times that simply do not exist.
-             * An example would be when the offset changes from {@code +01:00} to {@code +02:00}.
+             * An example would be when the offset changes from <b> +01:00} to <b> +02:00}.
              * This might be described as 'the clocks will move forward one hour tonight at 1am'.
              *
              * @return true if this transition is a gap, false if it is an overlap
@@ -179,7 +179,7 @@ namespace core {
              * Does this transition represent an overlap in the local time-line.
              * <p>
              * Overlaps occur where there are local date-times that exist twice.
-             * An example would be when the offset changes from {@code +02:00} to {@code +01:00}.
+             * An example would be when the offset changes from <b> +02:00} to <b> +01:00}.
              * This might be described as 'the clocks will move back one hour tonight at 2am'.
              *
              * @return true if this transition is an overlap, false if it is a gap
@@ -205,7 +205,7 @@ namespace core {
              *
              * @return the list of valid offsets
              */
-             util::ArrayList<ZoneOffset> validOffsets() const;
+             Array<ZoneOffset> validOffsets() const;
 
             //-----------------------------------------------------------------------
             /**
@@ -214,7 +214,7 @@ namespace core {
              * This compares the instants of each transition.
              * The offsets are ignored, making this order inconsistent with equals.
              *
-             * @param transition  the transition to compare to, not null
+             * @param transition  the transition to compare to
              * @return the comparator value, negative if less, positive if greater
              */
             gint compareTo(const ZoneOffsetTransition &transition) const override;
@@ -241,7 +241,7 @@ namespace core {
             /**
              * Returns a string describing this object.
              *
-             * @return a string for debugging, not null
+             * @return a string for debugging
              */
             String toString() const override;
 

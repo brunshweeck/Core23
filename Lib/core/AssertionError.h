@@ -45,7 +45,7 @@ namespace core {
          * Constructs an AssertionError with its detail message derived
          * from the specified object, which is converted to a string.
          *<p>
-         * If the specified object is an instance of Throwable, it
+         * If the specified object is an INSTANCE of Throwable, it
          * becomes the <i>cause</i> of the newly constructed assertion error.
          *
          * @param expression

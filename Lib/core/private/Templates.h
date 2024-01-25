@@ -340,8 +340,19 @@ namespace core {
 
             /////////////////////////////////[Constructible]/////////////////////////////////////
 
+            namespace {
+
+                template<class T, class...P, gint Size = sizeof(T)>
+                static CONSTANT<__is_constructible(T, P...)> SIZE_COMPUTE_TESTER2(gint);
+
+                template<class...>
+                static ALWAYS_FALSE SIZE_COMPUTE_TESTER2(...);
+
+            }
+
+
             template<class T, class...Params>
-            interface TEST<18, T, Params...> : CONSTANT<__is_constructible(T, Params...)> {
+            interface TEST<18, T, Params...> : decltype(SIZE_COMPUTE_TESTER2<T, Params...>(0)) {
             };
 
             /////////////////////////////////[Assignable]/////////////////////////////////////
@@ -355,6 +366,7 @@ namespace core {
             template<class T, class U>
             interface TEST<20, T, U> : CONSTANT<__is_base_of(T, U)> {
             };
+
             template<>
             interface TEST<20, Object, Object> : ALWAYS_TRUE {
             };
@@ -390,6 +402,33 @@ namespace core {
             };
             template<class E>
             interface TEST<20, Object, Enum<E>> : ALWAYS_TRUE {
+            };
+            template<class E>
+            interface TEST<20, Object, util::Array<E>> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::LocalTime> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::LocalDate> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::LocalDateTime> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::ZoneOffset> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::ZoneRegion> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::ZoneRules> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::ZoneOffsetTransition> : ALWAYS_TRUE {
+            };
+            template<>
+            interface TEST<20, Object, time::ZoneOffsetTransitionRule> : ALWAYS_TRUE {
             };
 
 

@@ -2,16 +2,14 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
+#include "Character.h"
 #include <core/private/Unsafe.h>
 #include <core/foreign/UnicodeTable.h>
-#include "Character.h"
-#include "String.h"
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
-
-    using foreign::UnicodeTable;
+    using namespace native;
+    using namespace foreign;
 
     gint Character::hash() const {
         return hash(value);
@@ -233,14 +231,14 @@ namespace core {
     }
 
     Object &Character::clone() const {
-        return U::createInstance<Character>(*this);
+        return Unsafe::allocateInstance<Character>(value);
     }
 
     gchar Character::toLowerCase(gchar ch) {
         return toLowerCase((gint) ch);
     }
 
-    static UnicodeTable &table = UnicodeTable::instance;
+    static UnicodeTable &table = UnicodeTable::INSTANCE;
 
     gint Character::toLowerCase(gint codePoint) {
         if (!isValidCodePoint(codePoint))
@@ -441,7 +439,7 @@ namespace core {
         glong dec = table.query(codePoint, UnicodeTable::Column::DECOMPOSITION);
         if (dec == 0)
             return Decomposition::UNDEFINED;
-        return (Decomposition) U::getChar(dec);
+        return (Decomposition) Unsafe::getChar(dec);
     }
 
     String Character::decompose(gchar ch) {
@@ -461,83 +459,83 @@ namespace core {
         glong dec = table.query(codePoint, UnicodeTable::Column::DECOMPOSITION);
         if (dec == 0)
             return {};
-        gint length = U::getChar(dec);
+        gint length = Unsafe::getChar(dec);
         switch (length) {
             case 0:
                 return {};
             case 1: {
                 gchar ch[1] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE),
                 };
                 return ch;
             }
             case 2: {
                 gchar ch[2] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
                 };
                 return ch;
             }
             case 3: {
                 gchar ch[3] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
                 };
                 return ch;
             }
             case 4: {
                 gchar ch[4] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 4L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 4L),
                 };
                 return ch;
             }
             case 5: {
                 gchar ch[5] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 4L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 5L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 4L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 5L),
                 };
                 return ch;
             }
             case 6: {
                 gchar ch[6] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 4L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 5L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 6L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 4L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 5L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 6L),
                 };
                 return ch;
             }
             case 7: {
                 gchar ch[7] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 4L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 5L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 6L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 7L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 4L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 5L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 6L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 7L),
                 };
                 return ch;
             }
             case 8: {
                 gchar ch[8] = {
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 1L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 2L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 3L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 4L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 5L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 6L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 7L),
-                        U::getChar(dec + U::ARRAY_CHAR_INDEX_SCALE * 8L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 1L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 2L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 3L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 4L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 5L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 6L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 7L),
+                        Unsafe::getChar(dec + Unsafe::ARRAY_CHAR_INDEX_SCALE * 8L),
                 };
                 return ch;
             }

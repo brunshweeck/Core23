@@ -72,7 +72,7 @@ namespace core {
             gbool supportUnit(Unit unit) const override;
 
             /**
-             * Gets the value of the specified field from this era as an <b> int</b> .
+             * Gets the value of the specified field from this era as an <b> gint</b> .
              * <p>
              * This queries this era for the value of the specified field.
              * The returned value will always be within the valid range of values for the field.
@@ -83,12 +83,12 @@ namespace core {
              * The <b> ERA</b>  field returns the value of the era.
              * All other <b> ChronoField</b>  instances will throw an <b> UnsupportedTemporalException</b> .
              *
-             * @param field  the field to get, not null
+             * @param field  the field to get
              * @return the value for the field
              * @throws DateTimeException if a value for the field cannot be obtained or
              *         the value is outside the range of valid values for the field
              * @throws UnsupportedTemporalTypeException if the field is not supported or
-             *         the range of values exceeds an <b> int</b>
+             *         the range of values exceeds an <b> gint</b>
              * @throws ArithmeticException if numeric overflow occurs
              */
             gint get(TemporalField field) const override;
@@ -104,7 +104,7 @@ namespace core {
              * The <b> ERA</b>  field returns the value of the era.
              * All other <b> ChronoField</b>  instances will throw an <b> UnsupportedTemporalException</b> .
              *
-             * @param field  the field to get, not null
+             * @param field  the field to get
              * @return the value for the field
              * @throws DateTimeException if a value for the field cannot be obtained
              * @throws UnsupportedTemporalTypeException if the field is not supported
@@ -122,7 +122,7 @@ namespace core {
              * what the result of this method will be.
              *
              * @param <R> the type of the result
-             * @param query  the query to invoke, not null
+             * @param query  the query to invoke
              * @return the query result, null may be returned (defined by the query)
              * @throws DateTimeException if unable to query (defined by the query)
              * @throws ArithmeticException if numeric overflow occurs (defined by the query)
@@ -141,9 +141,9 @@ namespace core {
              *
              * @apiNote This default implementation is suitable for most implementations.
              *
-             * @param style  the style of the text required, not null
-             * @param locale  the locale to use, not null
-             * @return the text value of the era, not null
+             * @param style  the style of the text required
+             * @param locale  the locale to use
+             * @return the text value of the era
              */
             virtual String displayName(DateTimeFormatter::TextStyle style, const LocalDate &localDate) const = 0;
 
@@ -159,7 +159,7 @@ namespace core {
             class HijrahEra;
 
             /**
-             * The singleton instance for the current era, 'Anno Hegirae',
+             * The singleton INSTANCE for the current era, 'Anno Hegirae',
              * which has the numeric value 1.
              */
             static const HijrahEra AH;
@@ -201,13 +201,13 @@ namespace core {
             class ISOEra;
 
             /**
-             * The singleton instance for the era before the current one, 'Before Current Era',
+             * The singleton INSTANCE for the era before the current one, 'Before Current Era',
              * which has the numeric value 0.
              */
             static const ISOEra BCE;
 
             /**
-             * The singleton instance for the current era, 'Current Era',
+             * The singleton INSTANCE for the current era, 'Current Era',
              * which has the numeric value 1.
              */
             static const ISOEra CE;
@@ -224,8 +224,8 @@ namespace core {
              * <p>
              * The Java SE Platform supports all eras defined by the Japanese government,
              * beginning with the Meiji era. Each era is identified in the Platform by an
-             * integer value and a name. The <b style="color:orange;"> of(int)</b>  and <b style="color:orange;"> valueOf(String)</b>
-             * methods may be used to obtain a singleton instance of <b> JapaneseEra</b>
+             * integer value and a name. The <b style="color:orange;"> of(gint)</b>  and <b style="color:orange;"> valueOf(String)</b>
+             * methods may be used to obtain a singleton INSTANCE of <b> JapaneseEra</b>
              * for each era. The <b style="color:orange;"> values()</b>  method returns the singleton instances
              * of all supported eras.
              * <p>
@@ -239,40 +239,40 @@ namespace core {
              *
              * @apiNote
              * The Japanese government may announce a new era and define its start
-             * date but not its official name. In this scenario, the singleton instance
+             * date but not its official name. In this scenario, the singleton INSTANCE
              * that represents the new era may return a name that is not stable until
              * the official name is defined. Developers should exercise caution when
-             * relying on the name returned by any singleton instance that does not
+             * relying on the name returned by any singleton INSTANCE that does not
              * correspond to a public static final field.
              */
             class JapaneseEra;
 
             /**
-             * The singleton instance for the 'Meiji' era (1868-01-01 - 1912-07-29)
+             * The singleton INSTANCE for the 'Meiji' era (1868-01-01 - 1912-07-29)
              * which has the value -1.
              */
             static const JapaneseEra MEIJI;
 
             /**
-             * The singleton instance for the 'Taisho' era (1912-07-30 - 1926-12-24)
+             * The singleton INSTANCE for the 'Taisho' era (1912-07-30 - 1926-12-24)
              * which has the value 0.
              */
             static const JapaneseEra TAISHO;
 
             /**
-             * The singleton instance for the 'Showa' era (1926-12-25 - 1989-01-07)
+             * The singleton INSTANCE for the 'Showa' era (1926-12-25 - 1989-01-07)
              * which has the value 1.
              */
             static const JapaneseEra SHOWA;
 
             /**
-             * The singleton instance for the 'Heisei' era (1989-01-08 - 2019-04-30)
+             * The singleton INSTANCE for the 'Heisei' era (1989-01-08 - 2019-04-30)
              * which has the value 2.
              */
             static const JapaneseEra HEISEI;
 
             /**
-             * The singleton instance for the 'Reiwa' era (2019-05-01 - )
+             * The singleton INSTANCE for the 'Reiwa' era (2019-05-01 - )
              * which has the value 3. The end date of this era is not specified, unless
              * the Japanese Government defines it.
              */
@@ -317,13 +317,13 @@ namespace core {
             class MinguoEra;
 
             /**
-             * The singleton instance for the era before the current one, 'Before Republic of China Era',
+             * The singleton INSTANCE for the era before the current one, 'Before Republic of China Era',
              * which has the numeric value 0.
              */
             static const MinguoEra BEFORE_ROC;
 
             /**
-             * The singleton instance for the current era, 'Republic of China Era',
+             * The singleton INSTANCE for the current era, 'Republic of China Era',
              * which has the numeric value 1.
              */
             static const MinguoEra ROC;
@@ -344,19 +344,19 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> HijrahEra</b>  from an <b> int</b>  value.
+             * Obtains an INSTANCE of <b> HijrahEra</b>  from an <b> gint</b>  value.
              * <p>
              * The current era, which is the only accepted value, has the value 1
              *
              * @param era  the era to represent, only 1 supported
-             * @return the HijrahEra.AH singleton, not null
+             * @return the HijrahEra.AH singleton
              * @throws DateTimeException if the value is invalid
              */
             static const HijrahEra &of(gint era);
 
             //-----------------------------------------------------------------------
             /**
-             * Gets the numeric era <b> int</b>  value.
+             * Gets the numeric era <b> gint</b>  value.
              * <p>
              * The era AH has the value 1.
              *
@@ -387,20 +387,20 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> IsoEra</b>  from an <b> int</b>  value.
+             * Obtains an INSTANCE of <b> IsoEra</b>  from an <b> gint</b>  value.
              * <p>
              * <b> IsoEra</b>  is an enum representing the ISO eras of BCE/CE.
-             * This factory allows the enum to be obtained from the <b> int</b>  value.
+             * This factory allows the enum to be obtained from the <b> gint</b>  value.
              *
              * @param isoEra  the BCE/CE value to represent, from 0 (BCE) to 1 (CE)
-             * @return the era singleton, not null
+             * @return the era singleton
              * @throws DateTimeException if the value is invalid
              */
             static const ISOEra &of(gint era);
 
             //-----------------------------------------------------------------------
             /**
-             * Gets the numeric era <b> int</b>  value.
+             * Gets the numeric era <b> gint</b>  value.
              * <p>
              * The era BCE has the value 0, while the era CE has the value 1.
              *
@@ -430,7 +430,7 @@ namespace core {
             LocalDate since;
 
             /**
-             * Creates an instance.
+             * Creates an INSTANCE.
              *
              * @param eraValue  the era value, validated
              * @param since  the date representing the first date of the era, validated not null
@@ -445,7 +445,7 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> JapaneseEra</b>  from an <b> int</b>  value.
+             * Obtains an INSTANCE of <b> JapaneseEra</b>  from an <b> gint</b>  value.
              * <ul>
              * <li>The value <b> 1</b>  is associated with the 'Showa' era, because
              * it contains 1970-01-01 (ISO calendar system).</li>
@@ -456,7 +456,7 @@ namespace core {
              * </ul>
              *
              * @param era  the era to represent
-             * @return the <b> JapaneseEra</b>  singleton, not null
+             * @return the <b> JapaneseEra</b>  singleton
              * @throws DateTimeException if the value is invalid
              */
             static const JapaneseEra &of(gint era);
@@ -471,7 +471,7 @@ namespace core {
              *
              * @param japaneseEra  the japaneseEra name; non-null
              * @return the <b> JapaneseEra</b>  singleton, never null
-             * @throws ArgumentException if there is not JapaneseEra with the specified name
+             * @throws IllegalArgumentException if there is not JapaneseEra with the specified name
              */
             static const JapaneseEra &valueOf(const String &era);
 
@@ -479,16 +479,16 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> JapaneseEra</b>  from a date.
+             * Obtains an INSTANCE of <b> JapaneseEra</b>  from a date.
              *
-             * @param date  the date, not null
+             * @param date  the date
              * @return the Era singleton, never null
              */
             static const JapaneseEra &from(const LocalDate &date);
 
             //-----------------------------------------------------------------------
             /**
-             * Gets the numeric era <b> int</b>  value.
+             * Gets the numeric era <b> gint</b>  value.
              * <p>
              * The <b style="color:orange;"> SHOWA</b>  era that contains 1970-01-01 (ISO calendar system) has the value 1.
              * Later eras are numbered from 2 (<b style="color:orange;"> HEISEI</b> ).
@@ -524,20 +524,20 @@ namespace core {
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> MinguoEra</b>  from an <b> int</b>  value.
+             * Obtains an INSTANCE of <b> MinguoEra</b>  from an <b> gint</b>  value.
              * <p>
              * <b> MinguoEra</b>  is an enum representing the Minguo eras of BEFORE_ROC/ROC.
-             * This factory allows the enum to be obtained from the <b> int</b>  value.
+             * This factory allows the enum to be obtained from the <b> gint</b>  value.
              *
              * @param era  the BEFORE_ROC/ROC value to represent, from 0 (BEFORE_ROC) to 1 (ROC)
-             * @return the era singleton, not null
+             * @return the era singleton
              * @throws DateTimeException if the value is invalid
              */
             static const MinguoEra &of(gint era);
 
             //-----------------------------------------------------------------------
             /**
-             * Gets the numeric era <b> int</b>  value.
+             * Gets the numeric era <b> gint</b>  value.
              * <p>
              * The era BEFORE_ROC has the value 0, while the era ROC has the value 1.
              *

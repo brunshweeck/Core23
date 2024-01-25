@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <core/private/Unsafe.h>
-#include <core/ArgumentException.h>
+#include <core/IllegalArgumentException.h>
 
 #ifdef CORE_COMPILER_GNU_ONLY
 // gcc, mingw, clang (unix)

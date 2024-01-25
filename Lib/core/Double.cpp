@@ -2,17 +2,14 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Double.h"
-#include "String.h"
-#include "NumberFormatException.h"
-#include "Math.h"
-#include "Long.h"
-#include "CastException.h"
+#include <core/Math.h>
+#include <core/NumberFormatException.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     gdouble Double::parseDouble(const String &str) {
         if (str.isEmpty())
@@ -588,7 +585,7 @@ namespace core {
         }
         gint begin = 0;
         if (digits[placeholder] == DIGITS[0]) {
-            // the space that has be leaved in begin has not used
+            // the diskSpace that has be leaved in begin has not used
             if (placeholder > 0) {
                 digits[placeholder] = digits[placeholder - 1];
                 begin = placeholder;
@@ -659,7 +656,7 @@ namespace core {
     }
 
     glong Double::toLongBits(gdouble d) {
-        return *((glong *) &d);
+        return *(glong *) &d;
     }
 
     gdouble Double::fromLongBits(glong bits) {
@@ -667,7 +664,7 @@ namespace core {
     }
 
     Object &Double::clone() const {
-        return U::createInstance<Double>(*this);
+        return Unsafe::allocateInstance<Double>(value);
     }
 
     const gdouble Double::NaN = 0.0 / 0.0;

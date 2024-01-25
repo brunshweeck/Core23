@@ -7,10 +7,11 @@ import gdb
 
 
 class Core23Object:
-    def __init__(self, forClass, this):
-        self.this = this
-        self.Type = forClass
-        self.DisplayString = "{...}"
+    def __init__(self, forClass: str, this: gdb.Value):
+        self.this: gdb.Value = this
+        self.Type: str = forClass
+        self.DisplayString: str = "{...}"
+        self.name: str = forClass
 
     def to_string(self):
         return self.DisplayString
@@ -19,8 +20,9 @@ class Core23Object:
         return self.Type
 
 
-class Core23PrettyPrinter:
+class Core23PrettyPrinter(gdb.printing.PrettyPrinter):
     def __init__(self):
+        super().__init__("Core23", None)
         self.printers: list[Core23PrettyPrinter.PrettyPrinter] = []
         self.name = "Core23 (GDB Pretty Printer)"
         self.enable = True
@@ -32,6 +34,12 @@ class Core23PrettyPrinter:
             prettyPrinter = Core23PrettyPrinter.PrettyPrinter(cls, printer)
             self.views[cls] = prettyPrinter
             self.printers.append(prettyPrinter)
+
+        if cls in self.views and self.views[cls] != printer:
+            i = self.printers.index(self.views[cls])
+            self.printers[i] = printer
+            self.views[cls] = print
+        self.subprinters = self.printers
 
     def __call__(self, this: gdb.Value):
         class0 = this.type
@@ -45,7 +53,7 @@ class Core23PrettyPrinter:
             return None
         if this.dynamic_type is not None:
             trueType = this.dynamic_type.name
-            if (trueType != typename):
+            if trueType != typename:
                 # print("Use True type [%s] " % trueType)
                 if trueType in self.views:
                     return self.views[trueType].print(this.dynamic_cast(this.dynamic_type.reference()))
@@ -67,10 +75,13 @@ class Core23PrettyPrinter:
             self.addPrinter(typename, self.views[classname].printer)
             return self.views[typename].print(this)
 
-    class PrettyPrinter:
+    class PrettyPrinter(gdb.printing.SubPrettyPrinter):
         def __init__(self, cls: str, printer: type):
+            super().__init__(cls)
             self.cls = cls
             self.printer = printer
+            self.name = cls
+            self.enable = True
 
         def print(self, this: gdb.Value):
             if this.type.code == gdb.TYPE_CODE_REF:
@@ -106,10 +117,10 @@ def newPrinter(forClass, printer):
 # ================ [ Pretty Printers ] =============================
 
 class Core23ExpendableObject(Core23Object):
-    def __init__(self, forClass, this):
+    def __init__(self, forClass: str, this: gdb.Value):
         super().__init__(forClass, this)
-        self.Size = -1
-        self.ExpandItems = []
+        self.Size: int = -1
+        self.ExpandItems: list[gdb.Value | str] = []
 
     def to_string(self):
         if self.DisplayString != "{...}":
@@ -239,20 +250,23 @@ class Core23ValueFieldArray(Core23ExpendableObject):
 
 
 class Core23RefFieldArray(Core23ExpendableObject):
-    def __init__(self, forClass, this):
+    def __init__(self, forClass, this: gdb.Value):
         super().__init__(forClass, this)
         IndexedItems = []
         self.Size = int(this['len'])
         for i in range(self.Size):
             if forClass.startswith("core::util::Atomic"):
                 Item = this["array"]['value'][i]
+            elif forClass.startswith("core::util::Array"):
+                ElementType = this.type.template_argument(0).pointer()
+                Item = this["data"]['value'][i]
+                Item = Item.cast(ElementType)
             else:
                 Item = this['value'][i]
             if Item != 0:
                 IndexedItems.append(Item[0])
             else:
                 IndexedItems.append("null")
-        self.ExpandItems = IndexedItems
 
 
 class Core23ArrayList(Core23ExpendableObject):
@@ -274,8 +288,7 @@ class Core23ArrayList(Core23ExpendableObject):
                 offset = 0
             except gdb.error:
                 # ArrayList<?>::ListItr
-                self.Size = -1
-                offset = -1
+                newPrinter(this.type, Core23Object)
         finally:
             if self.Size < 0:
                 Core23.views[forClass] = Core23PrettyPrinter.PrettyPrinter(forClass, Core23Object)
@@ -284,6 +297,19 @@ class Core23ArrayList(Core23ExpendableObject):
                 Item = array[i + offset][0]
                 IndexedItems.append(Item)
             self.ExpandItems = IndexedItems
+
+
+class Core23LinkedList(Core23ExpendableObject):
+    def __init__(self, forClass: str, this: gdb.Value):
+        super().__init__(forClass, this)
+        IndexedItems = []
+        try:
+            # LinkedList<?>SubList
+            self.Size = this['len']
+        except gdb.error:
+            ...
+        finally:
+            ...
 
 
 class Core23PriorityQueue(Core23ExpendableObject):
@@ -394,6 +420,16 @@ def registerPrettyPrinters():
     if Core23 is None:
         Core23 = Core23PrettyPrinter()
 
+    newPrinter("void*", Core23Object)
+
+    newPrinter("core::Object", Core23Object)
+    newPrinter("core::util::Collection", Core23Object)
+    newPrinter("core::util::List", Core23Object)
+    newPrinter("core::util::Queue", Core23Object)
+    newPrinter("core::util::Set", Core23Object)
+    newPrinter("core::util::Map", Core23Object)
+    newPrinter("core::private::Unsafe", Core23Object)
+
     newPrinter("core::Boolean", Core23ValueFieldObject)
     newPrinter("core::Byte", Core23ValueFieldObject)
     newPrinter("core::Short", Core23ValueFieldObject)
@@ -412,22 +448,23 @@ def registerPrettyPrinters():
     newPrinter("core::Exception", Core23Throwable)
     newPrinter("core::Complex", Core23Complex)
 
-    newPrinter("core::native::BooleanArray", Core23ValueFieldArray)
-    newPrinter("core::native::ByteArray", Core23ValueFieldArray)
-    newPrinter("core::native::ShortArray", Core23ValueFieldArray)
-    newPrinter("core::native::CharArray", Core23ValueFieldArray)
-    newPrinter("core::native::IntArray", Core23ValueFieldArray)
-    newPrinter("core::native::LongArray", Core23ValueFieldArray)
-    newPrinter("core::native::FloatArray", Core23ValueFieldArray)
-    newPrinter("core::native::DoubleArray", Core23ValueFieldArray)
+    newPrinter("core::private::BooleanArray", Core23ValueFieldArray)
+    newPrinter("core::private::ByteArray", Core23ValueFieldArray)
+    newPrinter("core::private::ShortArray", Core23ValueFieldArray)
+    newPrinter("core::private::CharArray", Core23ValueFieldArray)
+    newPrinter("core::private::IntArray", Core23ValueFieldArray)
+    newPrinter("core::private::LongArray", Core23ValueFieldArray)
+    newPrinter("core::private::FloatArray", Core23ValueFieldArray)
+    newPrinter("core::private::DoubleArray", Core23ValueFieldArray)
     newPrinter("core::util::AtomicIntegerArray", Core23ValueFieldArray)
     newPrinter("core::util::AtomicLongArray", Core23ValueFieldArray)
 
     newPrinter("core::String", Core23String)
     newPrinter("core::StringBuffer", Core23String)
 
-    newPrinter("core::native::ReferenceArray", Core23RefFieldArray)
-    newPrinter("core::native::AtomicReferenceArray", Core23RefFieldArray)
+    newPrinter("core::private::ReferenceArray", Core23RefFieldArray)
+    newPrinter("core::private::AtomicReferenceArray", Core23RefFieldArray)
+    newPrinter("core::util::Array", Core23RefFieldArray)
 
     newPrinter("core::util::ArrayList", Core23ArrayList)
 
@@ -438,23 +475,6 @@ def registerPrettyPrinters():
     newPrinter("core::time::LocalTime", Core23LocalTime)
     newPrinter("core::time::LocalDateTime", Core23LocalDateTime)
 
-    i = 0
-    for printer in Core23.printers:
-        i += 1
-        print(f"{i}) {printer}")
-
-
-print("List of all available printers")
-print("==============================")
-print("\n")
-print("==============================")
 
 registerPrettyPrinters()
-
-print("==============================")
-print("\n")
-
-print("Core23 (GDB Pretty Printer)")
-print("===========================")
-
 registerPrinters()

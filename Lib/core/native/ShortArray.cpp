@@ -2,134 +2,313 @@
 // Created by T.N.Brunshweeck on 16/11/2023.
 //
 
-#include <core/private/Unsafe.h>
-#include <core/ArgumentException.h>
-#include <core/util/Preconditions.h>
-#include <core/IndexException.h>
 #include "ShortArray.h"
+#include <core/private/Unsafe.h>
+#include <core/IllegalArgumentException.h>
+#include <core/util/Preconditions.h>
 
 namespace core {
     namespace native {
+        using namespace util;
 
-        CORE_ALIAS(U, native::Unsafe);
-        using util::Preconditions;
+        ShortArray::ShortArray() : len(0), value(null) {}
 
-        namespace {
-            template<class T, class K>
-            void permute(T &t, K &k) {
-                T t2 = t;
-                t = k;
-                k = t2;
+        ShortArray::ShortArray(gint length) : ShortArray(length, (gshort)0) {}
+
+        ShortArray::ShortArray(gint length, ShortArray::Value initialValue) : ShortArray() {
+            if (length < 0)
+                IllegalArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
+            if (length > 0) {
+                try {
+                    value = (VALUE) Unsafe::allocateMemory((glong) (length * sizeof(Value)));
+                    len = length;
+                    if (initialValue != 0) {
+                        for (int i = 0; i < length; i += 1) {
+                            value[i] = initialValue;
+                        }
+                    }
+                } catch (const MemoryError &error) {
+                    error.throws();
+                }
             }
-
-            CORE_FAST glong L(gint size) { return 1LL * size * U::ARRAY_SHORT_INDEX_SCALE; }
         }
 
-        ShortArray::ShortArray(gint length) : ShortArray(length, 0) {}
-
-        ShortArray::ShortArray(gint length, gshort initialValue)  {
-            if (length < 0)
-                ArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
-            value = (STORAGE) U::allocateMemory(L(length));
-            len = length;
-            for (gint i = 0; i < length; ++i)
-                value[i] = initialValue;
-        }
-
-        ShortArray::ShortArray(const ShortArray &array)  {
-            gint const length = array.length();
-            if (length < 0)
-                ArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
-            value = (STORAGE) U::allocateMemory(L(length));
-            len = length;
-            for (gint i = 0; i < length; ++i)
+        ShortArray::ShortArray(const ShortArray &array) : ShortArray(array.len) {
+            // assert len == array.len
+            gint const n = array.len;
+            for (int i = 0; i < n; i += 1) {
                 value[i] = array.value[i];
+            }
         }
 
-        ShortArray::ShortArray(ShortArray &&array) CORE_NOTHROW {
-            permute(value, array.value);
-            permute(len, array.len);
-            permute(isLocal, array.isLocal);
+        ShortArray::ShortArray(ShortArray &&array) CORE_NOTHROW: ShortArray() {
+            Unsafe::swapValues(value, array.value);
+            Unsafe::swapValues(len, array.len);
         }
 
         ShortArray &ShortArray::operator=(const ShortArray &array) {
             if (this != &array) {
-                gint const length = array.len;
-                if (array.isLocal) {
-                    if (!isLocal) {
-                        U::freeMemory((glong) value);
-                    }
-                    value = array.value;
-                    len = array.len;
-                    isLocal = true;
-                } else {
-                    if (len != length) {
-                        STORAGE newValue = (STORAGE) U::allocateMemory(L(length));
-                        if (!isLocal) {
-                            U::freeMemory((glong) value);
-                            value = newValue;
-                        }
-                        len = length;
-                    }
-                    U::copySwapMemory((glong) array.value, (glong)value, L(length), 1);
-                }
+                ShortArray copy{array};
+                Unsafe::swapValues(value, copy.value);
+                Unsafe::swapValues(len, copy.len);
             }
             return *this;
         }
 
         ShortArray &ShortArray::operator=(ShortArray &&array) CORE_NOTHROW {
             if (this != &array) {
-                permute(value, array.value);
-                permute(len, array.len);
-                permute(isLocal, array.isLocal);
+                Unsafe::swapValues(value, array.value);
+                Unsafe::swapValues(len, array.len);
             }
             return *this;
         }
 
-        gshort &ShortArray::get(gint index) {
-            try {
-                Preconditions::checkIndex(index, len);
-                return value[index];
-            } catch (const IndexException &ie) {
-                ie.throws(__trace("core.native.ShortArray"));
+        gint ShortArray::length() const {
+            return Math::max(len, 0);
+        }
+
+        gbool ShortArray::isEmpty() const {
+            return len <= 0 || value == null;
+        }
+
+        ShortArray::Value &ShortArray::get(gint index) {
+            try{
+                gint const n = length();
+                gint const i = Preconditions::checkIndex(index, n);
+                return value[i];
+            } catch (const Exception &ex) {
+                ex.throws(__trace("core.native.ShortArray"));
             }
         }
 
-        gshort ShortArray::get(gint index) const {
-            try {
-                Preconditions::checkIndex(index, len);
-                return value[index];
-            } catch (const IndexException &ie) {
-                ie.throws(__trace("core.native.ShortArray"));
+        const ShortArray::Value &ShortArray::get(gint index) const {
+            try{
+                gint const n = length();
+                gint const i = Preconditions::checkIndex(index, n);
+                return value[i];
+            } catch (const Exception &ex) {
+                ex.throws(__trace("core.native.ShortArray"));
+            }
+        }
+
+        void ShortArray::set(gint index, const ShortArray::Value &newValue) {
+            try{
+                gint const n = length();
+                gint const i = Preconditions::checkIndex(index, n);
+                value[i] = newValue;
+            } catch (const Exception &ex) {
+                ex.throws(__trace("core.native.ShortArray"));
             }
         }
 
         Object &ShortArray::clone() const {
-            return U::createInstance<ShortArray>(*this);
+            return Unsafe::allocateInstance<ShortArray>(*this);
         }
 
         ShortArray::~ShortArray() {
             len = 0;
-            if (!isLocal)
-                U::freeMemory((glong) value);
+            Unsafe::freeMemory((glong) value);
             value = null;
         }
 
-        ShortArray ShortArray::fromAddress(glong addr, gint length) {
-            if (length < 0)
-                ArgumentException("Negative array length").throws(__trace("core.native.ShortArray"));
-            if (addr == 0)
-                ArgumentException("Null address").throws(__trace("core.native.ShortArray"));
-            ShortArray ba = {};
-            ba.value = (STORAGE) addr;
-            ba.len = length;
-            ba.isLocal = true;
-            return ba;
+        gbool ShortArray::equals(const Object &o) const {
+            if (this == &o) {
+                return true;
+            }
+            if (!Class<PrimitiveArray<Short>>::hasInstance(o)) {
+                return false;
+            }
+            PrimitiveArray<Short> const& array = (PrimitiveArray<Short> const&) o;
+            gint const n = length();
+            if(n != array.length()){
+                return false;
+            }
+            try{
+                for (int i = 0; i < n; i += 1) {
+                    if (value[i] != array[i]) {
+                        return false;
+                    }
+                }
+            } catch (const Throwable &th) {
+                return false;
+            }
+            return true;
         }
 
-        gint ShortArray::length() const {
-            return len;
+        ShortArray ShortArray::of() {
+            return {};
         }
+
+        ShortArray ShortArray::of(ShortArray::Value v0) {
+            try{
+                ShortArray array{1};
+                array.value[0] = v0;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray ShortArray::of(ShortArray::Value v0, ShortArray::Value v1) {
+            try{
+                ShortArray array{2};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2) {
+            try{
+                ShortArray array{3};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2,
+                                      ShortArray::Value v3) {
+            try{
+                ShortArray array{4};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4) {
+            try{
+                ShortArray array{5};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4, ShortArray::Value v5) {
+            try{
+                ShortArray array{6};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                array.value[5] = v5;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4, ShortArray::Value v5, ShortArray::Value v6) {
+            try{
+                ShortArray array{7};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                array.value[5] = v5;
+                array.value[6] = v6;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4, ShortArray::Value v5, ShortArray::Value v6,
+                         ShortArray::Value v7) {
+            try{
+                ShortArray array{8};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                array.value[5] = v5;
+                array.value[6] = v6;
+                array.value[7] = v7;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4, ShortArray::Value v5, ShortArray::Value v6, ShortArray::Value v7,
+                         ShortArray::Value v8) {
+            try{
+                ShortArray array{9};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                array.value[5] = v5;
+                array.value[6] = v6;
+                array.value[7] = v7;
+                array.value[8] = v8;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
+        ShortArray
+        ShortArray::of(ShortArray::Value v0, ShortArray::Value v1, ShortArray::Value v2, ShortArray::Value v3,
+                         ShortArray::Value v4, ShortArray::Value v5, ShortArray::Value v6, ShortArray::Value v7,
+                         ShortArray::Value v8, ShortArray::Value v9) {
+            try{
+                ShortArray array{10};
+                array.value[0] = v0;
+                array.value[1] = v1;
+                array.value[2] = v2;
+                array.value[3] = v3;
+                array.value[4] = v4;
+                array.value[5] = v5;
+                array.value[6] = v6;
+                array.value[7] = v7;
+                array.value[8] = v8;
+                array.value[9] = v9;
+                return (ShortArray &&) array;
+            } catch (const MemoryError &error) {
+                error.throws();
+            }
+            return {};
+        }
+
     } // core
 } // native
-

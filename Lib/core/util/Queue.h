@@ -6,7 +6,7 @@
 #define CORE23_QUEUE_H
 
 #include "Collection.h"
-#include <core/NoSuchItemException.h>
+#include <core/NoSuchElementException.h>
 
 namespace core {
     namespace util {
@@ -62,27 +62,35 @@ namespace core {
          * @param E the type of elements held in this queue
          */
         template<class E>
-        interface Queue : public Collection<E> {
+        class Queue : public Collection<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
+            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
+
+        public:
 
             /**
              * Inserts the specified element into this queue if it is possible to do so
              * immediately without violating capacity restrictions, returning
-             * <b>true</b> upon success and throwing an <b>StateException</b>
-             * if no space is currently available.
+             * <b>true</b> upon success and throwing an <b>IllegalStateException</b>
+             * if no diskSpace is currently available.
              *
              * @param e the element to add
              * @return <b>true</b> (as specified by <b style="color:green;">Collection.add</b>)
-             * @throws StateException if the element cannot be added at this
+             * @throws IllegalStateException if the element cannot be added at this
              *         time due to capacity restrictions
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this queue
-             * @throws ArgumentException if some property of this element
+             * @throws IllegalArgumentException if some property of this element
              *         prevents it from being added to this queue
              */
             gbool add(const E &e) override {
                 if (push(e))
                     return true;
-                StateException("Queue is full").throws(__trace("core.util.Queue"));
+                IllegalStateException("Queue is full").throws(__trace("core.util.Queue"));
             }
 
             /**
@@ -95,9 +103,9 @@ namespace core {
              * @param e the element to add
              * @return <b>true</b> if the element was added to this queue, else
              *         <b>false</b>
-             * @throws CastException if the class of the specified element
+             * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this queue
-             * @throws ArgumentException if some property of this element
+             * @throws IllegalArgumentException if some property of this element
              *         prevents it from being added to this queue
              */
             virtual gbool push(const E &e) = 0;
@@ -111,7 +119,7 @@ namespace core {
             virtual const E &remove() {
                 if (this->size() > 0)
                     return pop();
-                NoSuchItemException().throws(__trace("core.util.Queue"));
+                NoSuchElementException().throws(__trace("core.util.Queue"));
             }
 
             /**
@@ -167,18 +175,18 @@ namespace core {
              *
              * @param c collection containing elements to be added to this queue
              * @return <b>true</b> if this queue changed as a result of the call
-             * @throws CastException if the class of an element of the specified
+             * @throws ClassCastException if the class of an element of the specified
              *         collection prevents it from being added to this queue
-             * @throws ArgumentException if some property of an element of the
+             * @throws IllegalArgumentException if some property of an element of the
              *         specified collection prevents it from being added to this
              *         queue, or if the specified collection is this queue
-             * @throws StateException if not all the elements can be added at
+             * @throws IllegalStateException if not all the elements can be added at
              *         this time due to insertion restrictions
              * @see add(Object)
              */
             gbool addAll(const Collection<E> &c) override {
                 if (this == &c)
-                    ArgumentException().throws(__trace("core.util.Queue"));
+                    IllegalArgumentException().throws(__trace("core.util.Queue"));
                 gbool modified = {};
                 for (const E &e: c)
                     if (add(e))

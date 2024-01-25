@@ -60,7 +60,7 @@ namespace core {
 
     private:
         /**
-         * Thrown this instance of Exception
+         * Thrown this INSTANCE of Exception
          */
         void raise() && override;
     };

@@ -9,6 +9,7 @@
 #include <core/Integer.h>
 #include <core/StringBuffer.h>
 #include <core/private/Unsafe.h>
+#include <core/private/Null.h>
 
 namespace core {
     namespace time {
@@ -334,9 +335,9 @@ namespace core {
                     case ALIGNED_DAY_OF_WEEK_IN_YEAR :
                         return afterDays(newValue - getLong(ALIGNED_DAY_OF_WEEK_IN_YEAR));
                     case DAY_OF_MONTH :
-                        return withDayOfMonth((int) newValue);
+                        return withDayOfMonth((gint) newValue);
                     case DAY_OF_YEAR :
-                        return withDayOfYear((int) newValue);
+                        return withDayOfYear((gint) newValue);
                     case EPOCH_DAY :
                         return LocalDate::ofEpochDay(newValue);
                     case ALIGNED_WEEK_OF_MONTH :
@@ -344,13 +345,13 @@ namespace core {
                     case ALIGNED_WEEK_OF_YEAR :
                         return afterWeeks(newValue - getLong(ALIGNED_WEEK_OF_YEAR));
                     case MONTH_OF_YEAR :
-                        return withMonth((int) newValue);
+                        return withMonth((gint) newValue);
                     case PROLEPTIC_MONTH :
                         return afterMonths(newValue - getLong(PROLEPTIC_MONTH));
                     case YEAR_OF_ERA :
-                        return withYear((int) (year() >= 1 ? newValue : 1 - newValue));
+                        return withYear((gint) (year() >= 1 ? newValue : 1 - newValue));
                     case YEAR :
-                        return withYear((int) newValue);
+                        return withYear((gint) newValue);
                     case ERA :
                         return (getLong(ERA) == newValue ? *this : withYear(1 - year()));
                     default :
@@ -449,16 +450,16 @@ namespace core {
                 glong const dom = dayOfMonth() + daysToAdd;
                 if (dom > 0) {
                     if (dom <= 28) {
-                        return LocalDate(year(), month(), (int) dom);
+                        return LocalDate(year(), month(), (gint) dom);
                     } else if (dom <= 59) { // 59th Jan is 28th Feb, 59th Feb is 31st Mar
                         glong const monthLen = daysPerMonth();
                         if (dom <= monthLen) {
-                            return LocalDate(year(), month(), (int) dom);
+                            return LocalDate(year(), month(), (gint) dom);
                         } else if (month() < 12) {
-                            return LocalDate(year(), month() + 1, (int) (dom - monthLen));
+                            return LocalDate(year(), month() + 1, (gint) (dom - monthLen));
                         } else {
                             checkValue(YEAR, year() + 1);
-                            return LocalDate(year() + 1, 1, (int) (dom - monthLen));
+                            return LocalDate(year() + 1, 1, (gint) (dom - monthLen));
                         }
                     }
                 }
@@ -507,7 +508,7 @@ namespace core {
             if (query == ZONE_ID || query == OFFSET)
                 return null;
             if (query == LOCAL_DATE)
-                return U::copyInstance(*this, true);
+                return Unsafe::copyInstance(*this, true);
             return query.queryFrom(*this);
         }
 
@@ -571,7 +572,7 @@ namespace core {
         }
 
         gint LocalDate::compareTo(const LocalDate &other) const {
-            int cmp = (year() - other.year());
+            gint cmp = (year() - other.year());
             if (cmp == 0) {
                 cmp = (month() - other.month());
                 if (cmp == 0) {
@@ -600,10 +601,10 @@ namespace core {
         }
 
         String LocalDate::toString() const {
-            int yearValue = year();
-            int const monthValue = month();
-            int const dayValue = dayOfMonth();
-            int absYear = Math::abs(yearValue);
+            gint yearValue = year();
+            gint const monthValue = month();
+            gint const dayValue = dayOfMonth();
+            gint absYear = Math::abs(yearValue);
             StringBuffer buf = StringBuffer(10);
             if (absYear < 1000) {
                 if (yearValue < 0) {

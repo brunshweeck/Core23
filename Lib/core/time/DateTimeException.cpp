@@ -7,19 +7,20 @@
 
 namespace core {
     namespace time {
-        CORE_ALIAS(U, native::Unsafe);
 
         DateTimeException::DateTimeException(String message) :
-                RuntimeException(U::moveInstance(message)) {}
+                RuntimeException(Unsafe::moveInstance(message)) {}
 
         DateTimeException::DateTimeException(String message, const Throwable &cause) :
-                RuntimeException(U::moveInstance(message), cause) {}
+                RuntimeException(Unsafe::moveInstance(message), cause) {}
 
         Object &DateTimeException::clone() const {
-            return U::createInstance<DateTimeException>(*this);
+            return Unsafe::allocateInstance<DateTimeException>(*this);
         }
 
-        void DateTimeException::raise() &&{ throw *this; }
+        void DateTimeException::raise() &&{
+            throw DateTimeException(*this);
+        }
 
     } // time
 } // core

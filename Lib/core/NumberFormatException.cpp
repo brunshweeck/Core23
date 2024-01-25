@@ -2,19 +2,21 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "NumberFormatException.h"
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     NumberFormatException::NumberFormatException(String message) CORE_NOTHROW:
-            ArgumentException(U::moveInstance(message)) {}
+            IllegalArgumentException(Unsafe::moveInstance(message)) {}
 
-    void NumberFormatException::raise() &&{ throw *this; }
+    void NumberFormatException::raise() &&{
+        throw NumberFormatException(*this);
+    }
 
     Object &NumberFormatException::clone() const {
-        return U::createInstance<NumberFormatException>(*this);
+        return Unsafe::allocateInstance<NumberFormatException>(*this);
     }
 } // core

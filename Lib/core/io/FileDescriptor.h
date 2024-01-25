@@ -17,7 +17,7 @@ namespace core {
          * to the underlying machine-specific structure representing an open
          * file, an open socket, or another source or sink of bytes.
          * The main practical use for a file descriptor is to create a
-         * {@link FileInputStream} or {@link FileOutputStream} to contain it.
+         * <b style="color:orange;"> FileInputStream</b>  or <b style="color:orange;"> FileOutputStream</b>  to contain it.
          * <p>
          * Applications should not create their own file descriptors.
          *
@@ -47,7 +47,7 @@ namespace core {
              * Constructs an (invalid) FileDescriptor object.
              * The fd or handle is set later.
              */
-            CORE_FAST FileDescriptor() = default;
+            FileDescriptor() = default;
 
         private:
 
@@ -82,9 +82,9 @@ namespace core {
             /**
              * Tests if this file descriptor object is valid.
              *
-             * @return  {@code true} if the file descriptor object represents a
+             * @return  <b> true</b>  if the file descriptor object represents a
              *          valid, open file, socket, or other active I/O connection;
-             *          {@code false} otherwise.
+             *          <b> false</b>  otherwise.
              */
             gbool isValid() const;
 
@@ -114,7 +114,6 @@ namespace core {
              *        Thrown when the buffers cannot be flushed,
              *        or because the system cannot guarantee that all the
              *        buffers have been synchronized with physical media.
-             * @since     1.1
              */
             static void synchronize();
 
@@ -135,7 +134,7 @@ namespace core {
              * Set the fd.
              * Used on Unix and for sockets on Windows and Unix.
              * If setting to -1, clear the cleaner.
-             * The {@link #registerCleanup} method should be called for new fds.
+             * The <b style="color:orange;"> #registerCleanup</b>  method should be called for new fds.
              * @param fd the raw fd or -1 to indicate closed
              */
             void set(gint fd);
@@ -144,7 +143,7 @@ namespace core {
              * Set the handle.
              * Used on Windows for regular files.
              * If setting to -1, clear the cleaner.
-             * The {@link #registerCleanup} method should be called for new handles.
+             * The <b style="color:orange;"> #registerCleanup</b>  method should be called for new handles.
              * @param handle the handle or -1 to indicate closed
              */
             void setHandle(glong handle);

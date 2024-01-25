@@ -6,10 +6,7 @@
 #define CORE23_STRING_H
 
 #include <core/Comparable.h>
-#include <core/native/ByteArray.h>
-#include <core/native/CharArray.h>
-#include <core/native/IntArray.h>
-#include <core/private/Null.h>
+#include <core/CharSequence.h>
 
 namespace core {
     
@@ -26,8 +23,8 @@ namespace core {
      * </pre></blockquote><p>
      * is equivalent to:
      * <blockquote><pre>
-     *     char array[] = {'a', 'b', 'c'} ;
-     *     String str = {array};
+     *     char root[] = {'a', 'b', 'c'} ;
+     *     String str = {root};
      * </pre></blockquote><p>
      * Here are some more examples of how strings can be used:
      * <blockquote><pre>
@@ -71,10 +68,10 @@ namespace core {
      * @see     core.StringBuffer
      * @see     core.io.Charset
      */
-    class String CORE_FINAL : public Object, public Comparable<String> {
+    class String CORE_FINAL : public Object, public Comparable<String>, public CharSequence {
     private:
         /**
-         * Storage represent a primitive byte array used to store string value
+         * Storage represent a primitive byte root used to store string value
          */
         CORE_ALIAS(STORAGE, typename Class<gbyte>::Ptr);
 
@@ -142,9 +139,9 @@ namespace core {
 
         /**
          * Allocates a new String so that it represents the sequence of
-         * characters currently contained in the character array argument. The
-         * contents of the character array are copied; subsequent modification of
-         * the character array does not affect the newly created string.
+         * characters currently contained in the character root argument. The
+         * contents of the character root are copied; subsequent modification of
+         * the character root does not affect the newly created string.
          *
          * <p>
          * Example:
@@ -160,10 +157,10 @@ namespace core {
 
         /**
          * Allocates a new String that contains characters from a subarray
-         * of the character array argument. The offset argument is the index
+         * of the character root argument. The offset argument is the index
          * of the first character of the subarray and the count argument specifies
          * the length of the subarray. The contents of the subarray are copied;
-         * subsequent modification of the character array does not affect the newly
+         * subsequent modification of the character root does not affect the newly
          * created string.
          *
          * @param  chars
@@ -183,9 +180,9 @@ namespace core {
 
         /**
          * Allocates a new String so that it represents the sequence of
-         * unicode code points currently contained in the character array argument. The
-         * contents of the code point array are copied; subsequent modification of
-         * the character array does not affect the newly created string.
+         * unicode code points currently contained in the character root argument. The
+         * contents of the code point root are copied; subsequent modification of
+         * the character root does not affect the newly created string.
          *
          * <p>
          * Example:
@@ -201,10 +198,10 @@ namespace core {
 
         /**
          * Allocates a new String that contains characters from a subarray
-         * of the unicode code points array argument. The offset argument is the index
+         * of the unicode code points root argument. The offset argument is the index
          * of the first code point of the subarray and the count argument specifies
          * the length of the subarray. The contents of the subarray are copied;
-         * subsequent modification of the character array does not affect the newly
+         * subsequent modification of the character root does not affect the newly
          * created string.
          *
          * @param  codePoints
@@ -224,9 +221,9 @@ namespace core {
 
         /**
          * Allocates a new String so that it represents the sequence of
-         * characters currently contained in the character array argument. The
-         * contents of the character array are copied; subsequent modification of
-         * the character array does not affect the newly created string.
+         * characters currently contained in the character root argument. The
+         * contents of the character root are copied; subsequent modification of
+         * the character root does not affect the newly created string.
          *
          * <p>
          * Note: The last trailing Null character ('\\u0000') are ignored.
@@ -244,32 +241,32 @@ namespace core {
          *
          * @param  value
          *         The initial value of the string
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *          If the specified value is null
          */
         template<class Str, Class<gbool>::OnlyIf<Class<Str>::isString()> = true>
         CORE_IMPLICIT String(Str &&value) {
             gint bpc = {}; // used to determine char type (support values 1, 2, 4)
-            glong nbChars = {}; // number of chars in given array (-1 if array is pointer)
-            glong address = {}; // memory address of given array
+            glong nbChars = {}; // number of chars in given root (-1 if root is pointer)
+            glong address = {}; // memory address of given root
             if((address = (glong) value) == 0) {
                 // the null pointer is used as empty String
                 return;
             }
             if (Class<Str>::isArray()) {
-                // native and static char array
+                // private and static char root
                 CORE_ALIAS(CharT, typename Class<Str>::NoArray);
                 if((nbChars = sizeof(Str)/(bpc = sizeof(CharT))) > 0 && value[nbChars - 1] == 0) {
                     // remove last NULL char
                     nbChars -= 1;
                 }
                 if(nbChars == 0) {
-                    // empty array
+                    // empty root
                     return;
                 }
             } else {
                 CORE_ALIAS(CharT, typename Class<Str>::NoPointer);
-                // native and unsizable (dynamic) chars array
+                // private and unsizable (dynamic) chars root
                 // The start of this string is char at index <offset>
                 // The end of this string is char at index <offset + count>
                 bpc = sizeof(CharT);
@@ -280,10 +277,10 @@ namespace core {
 
         /**
          * Allocates a new String that contains characters from a subarray
-         * of the character array argument. The offset argument is the index
+         * of the character root argument. The offset argument is the index
          * of the first character of the subarray and the count argument specifies
          * the length of the subarray. The contents of the subarray are copied;
-         * subsequent modification of the character array does not affect the newly
+         * subsequent modification of the character root does not affect the newly
          * created string.
          *
          * @param  value
@@ -302,26 +299,26 @@ namespace core {
         template<class Str, Class<gbool>::OnlyIf<Class<Str>::isString()> = true>
         CORE_IMPLICIT String(Str &&value, gint offset, gint count) {
             gint bpc = {}; // used to determine char type (support values 1, 2, 4)
-            glong nbChars = {}; // number of chars in given array (-1 if array is pointer)
-            glong address = {}; // memory address of given array
+            glong nbChars = {}; // number of chars in given root (-1 if root is pointer)
+            glong address = {}; // memory address of given root
             if((address = (glong) value) == 0) {
                 // the null pointer is used as empty String
                 return;
             }
             if (Class<Str>::isArray()) {
-                // native and static char array
+                // private and static char root
                 CORE_ALIAS(CharT, typename Class<Str>::NoArray);
                 if((nbChars = sizeof(Str)/(bpc = sizeof(CharT))) > 0 && value[nbChars - 1] == 0) {
                     // remove last NULL char (1 char = bpc)
                     nbChars -= 1;
                 }
                 if(nbChars == 0) {
-                    // empty array
+                    // empty root
                     return;
                 }
             } else {
                 CORE_ALIAS(CharT, typename Class<Str>::NoPointer);
-                // native and unsizable (dynamic) chars array
+                // private and unsizable (dynamic) chars root
                 // The start of this string is char at index <offset>
                 // The end of this string is char at index <offset + count>
                 bpc = sizeof(CharT);
@@ -350,19 +347,17 @@ namespace core {
          * Returns the length of this string.
          * The length is equal to the number of Unicode code units in the string.
          */
-        gint length() const;
+        gint length() const override;
 
         /**
          * Returns true if, and only if, length() is 0.
          */
-        gbool isEmpty() const {
-            return length() == 0;
-        }
+        gbool isEmpty() const override;
 
         /**
          * Returns the char value at the specified index. An index ranges from 0 to length() - 1.
          * The first char value of the sequence is at index 0, the next at index 1,
-         * and so on, as for array indexing.
+         * and so on, as for root indexing.
          *
          * <p>
          * If the char value specified by the index is a surrogate, the surrogate value is returned.
@@ -640,7 +635,7 @@ namespace core {
          *
          * @param   str   the substring to search for.
          */
-        gint indexOf(const String &str);
+        gint indexOf(const String &str) const;
 
         /**
          * Returns the index within this string of the first occurrence of the
@@ -656,7 +651,7 @@ namespace core {
          * @param   str         the substring to search for.
          * @param   fromIndex   the index from which to start the search.
          */
-        gint indexOf(const String &str, gint startIndex);
+        gint indexOf(const String &str, gint startIndex) const;
 
         /**
          * Returns the index within this string of the last occurrence of the
@@ -673,7 +668,7 @@ namespace core {
          * @param   str
          *            The substring to search for.
          */
-        gint lastIndexOf(const String &str);
+        gint lastIndexOf(const String &str) const;
 
         /**
          * Returns the index within this string of the last occurrence of the
@@ -689,7 +684,7 @@ namespace core {
          * @param   str         the substring to search for.
          * @param   fromIndex   the index to start the search from.
          */
-        gint lastIndexOf(const String &str, gint startIndex);
+        gint lastIndexOf(const String &str, gint startIndex) const;
 
         /**
          * Returns a string that is a substring of this string. The
@@ -734,6 +729,34 @@ namespace core {
          *             endIndex.
          */
         String subString(gint startIndex, gint endIndex) const;
+
+        /**
+         * Returns a character sequence that is a subsequence of this sequence.
+         *
+         * <p> An invocation of this method of the form
+         *
+         * <blockquote><pre>
+         * str.subSequence(begin,&nbsp;end)</pre></blockquote>
+         *
+         * behaves in exactly the same way as the invocation
+         *
+         * <blockquote><pre>
+         * str.substring(begin,&nbsp;end)</pre></blockquote>
+         *
+         * @apiNote
+         * This method is defined so that the <b> String</b>  class can implement
+         * the <b style="color:orange;"> CharSequence</b>  interface.
+         *
+         * @param   beginIndex   the begin index, inclusive.
+         * @param   endIndex     the end index, exclusive.
+         * @return  the specified subsequence.
+         *
+         * @throws  IndexException
+         *          if <b> beginIndex</b>  or <b> endIndex</b>  is negative,
+         *          if <b> endIndex</b>  is greater than <b> length()</b> ,
+         *          or if <b> beginIndex</b>  is greater than <b> endIndex</b>
+         */
+        CharSequence &subSequence(gint start, gint end) const override;
 
         /**
          * Concatenates the specified string to the end of this string.
@@ -784,7 +807,7 @@ namespace core {
          * @param   newChar   the new character.
          *
          */
-        String replace(gchar oldChar, gchar newChar);
+        String replace(gchar oldChar, gchar newChar) const;
 
         /**
          * Replaces each substring of this string that matches the given <a
@@ -817,7 +840,7 @@ namespace core {
          * @param   replacement
          *          the string to be substituted for each match
          */
-        String replace(const String &str, const String &replacement);
+        String replace(const String &str, const String &replacement) const;
 
         /**
          * Converts all of the characters in this String to lower
@@ -829,7 +852,7 @@ namespace core {
          * independently.
          * Examples are programming language identifiers, protocol keys, and HTML
          * tags.
-         * For instance, "TITLE".toLowerCase() in a Turkish locale
+         * For INSTANCE, "TITLE".toLowerCase() in a Turkish locale
          * returns "t\\u0131tle", where '\\u0131' is the
          * LATIN SMALL LETTER DOTLESS I character.
          * To obtain correct results for locale insensitive strings, use
@@ -847,7 +870,7 @@ namespace core {
          * independently.
          * Examples are programming language identifiers, protocol keys, and HTML
          * tags.
-         * For instance, "title".toUpperCase() in a Turkish locale
+         * For INSTANCE, "title".toUpperCase() in a Turkish locale
          * returns "T\\u0130TLE", where '\\u0130' is the
          * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
          * To obtain correct results for locale insensitive strings, use
@@ -865,66 +888,66 @@ namespace core {
 
         /**
          * Returns a string whose value is this string, with all leading
-         * and trailing plain Character#isWhitespace(gint) white space
+         * and trailing plain Character#isWhitespace(gint) white diskSpace
          * removed.
          * <p>
          * If this String object represents an empty string,
          * or if all code points in this string are
-         * plain Character#isWhitespace(gint) white space, then an empty string
+         * plain Character#isWhitespace(gint) white diskSpace, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
-         * code point that is not a plain Character#isWhitespace(gint) white space
+         * code point that is not a plain Character#isWhitespace(gint) white diskSpace
          * up to and including the last code point that is not a
-         * plain Character#isWhitespace(gint) white space.
+         * plain Character#isWhitespace(gint) white diskSpace.
          * <p>
          * This method may be used to strip
-         * plain Character#isWhitespace(gint) white space from
+         * plain Character#isWhitespace(gint) white diskSpace from
          * the beginning and end of a string.
          */
         String strip() const;
 
         /**
          * Returns a string whose value is this string, with all leading
-         * plain Character#isWhitespace(gint) white space removed.
+         * plain Character#isWhitespace(gint) white diskSpace removed.
          * <p>
          * If this String object represents an empty string,
          * or if all code points in this string are
-         * plain Character#isWhitespace(gint) white space, then an empty string
+         * plain Character#isWhitespace(gint) white diskSpace, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
-         * code point that is not a plain Character#isWhitespace(gint) white space
+         * code point that is not a plain Character#isWhitespace(gint) white diskSpace
          * up to and including the last code point of this string.
          * <p>
          * This method may be used to trim
-         * plain Character#isWhitespace(gint) white space from
+         * plain Character#isWhitespace(gint) white diskSpace from
          * the beginning of a string.
          */
         String stripLeading() const;
 
         /**
          * Returns a string whose value is this string, with all trailing
-         * plain Character#isWhitespace(gint) white space removed.
+         * plain Character#isWhitespace(gint) white diskSpace removed.
          * <p>
          * If this String object represents an empty string,
          * or if all characters in this string are
-         * plain Character#isWhitespace(gint) white space, then an empty string
+         * plain Character#isWhitespace(gint) white diskSpace, then an empty string
          * is returned.
          * <p>
          * Otherwise, returns a substring of this string beginning with the first
          * code point of this string up to and including the last code point
-         * that is not a plain Character#isWhitespace(gint) white space.
+         * that is not a plain Character#isWhitespace(gint) white diskSpace.
          * <p>
          * This method may be used to trim
-         * plain Character#isWhitespace(gint) white space from
+         * plain Character#isWhitespace(gint) white diskSpace from
          * the end of a string.
          */
         String stripTrailing() const;
 
         /**
          * Returns true if the string is empty or contains only
-         * plain Character#isWhitespace(gint) white space codepoints,
+         * plain Character#isWhitespace(gint) white diskSpace codepoints,
          * otherwise false.
          */
         gbool isBlank() const;
@@ -971,7 +994,7 @@ namespace core {
          *   </tr>
          *   <tr>
          *     <th scope="row">\\s</th>
-         *     <td>space</td>
+         *     <td>diskSpace</td>
          *     <td>U+0020</td>
          *   </tr>
          *   <tr>
@@ -1005,7 +1028,7 @@ namespace core {
          * @implNote
          * This method does <em>not</em> translate Unicode escapes such as "\\u2022".
          *
-         * @throws ArgumentException when an escape sequence is malformed.
+         * @throws IllegalArgumentException when an escape sequence is malformed.
          */
         String translateEscape() const;
 
@@ -1023,7 +1046,7 @@ namespace core {
          *
          * @param   count number of times to repeat
          *
-         * @throws ArgumentException if the count is
+         * @throws IllegalArgumentException if the count is
          *          negative.
          */
         String repeat(gint count) const;
@@ -1077,7 +1100,7 @@ namespace core {
 
         /**
          * Copies characters from this string into the destination character
-         * array.
+         * root.
          * <p>
          * The first character to be copied is at index srcBegin;
          * the last character to be copied is at index srcEnd-1
@@ -1090,8 +1113,8 @@ namespace core {
          *                        to copy.
          * @param  srcEnd     index after the last character in the string
          *                        to copy.
-         * @param  dst        the destination array.
-         * @param  dstBegin   the start offset in the destination array.
+         * @param  dst        the destination root.
+         * @param  dstBegin   the start offset in the destination root.
          * @throws IndexException If any of the following is true:
          *                         <ul>
          *                          <li>srcBegin is negative.
@@ -1104,13 +1127,13 @@ namespace core {
         void chars(gint srcBegin, gint srcEnd, CharArray &dst, gint dstBegin) const;
 
         /**
-         * Return in a new array, list of all character of this String
+         * Return in a new root, list of all character of this String
          */
         CharArray chars() const;
 
         /**
          * Copies code points from this string into the destination gint
-         * array.
+         * root.
          * <p>
          * The first code point to be copied is at index srcBegin;
          * the last character to be copied is at index srcEnd-1
@@ -1123,8 +1146,8 @@ namespace core {
          *                        to copy.
          * @param  srcEnd     index after the last character in the string
          *                        to copy.
-         * @param  dst        the destination array.
-         * @param  dstBegin   the start offset in the destination array.
+         * @param  dst        the destination root.
+         * @param  dstBegin   the start offset in the destination root.
          * @throws IndexException If any of the following is true:
          *                         <ul>
          *                          <li>srcBegin is negative.
@@ -1137,12 +1160,12 @@ namespace core {
         void codePoints(gint srcBegin, gint srcEnd, IntArray &dst, gint dstBegin) const;
 
         /**
-         * Return in a new array, list of all code points of this String
+         * Return in a new root, list of all code points of this String
          */
         IntArray codePoints() const;
 
         /**
-         * Copies characters from this string into the destination byte array. Each
+         * Copies characters from this string into the destination byte root. Each
          * byte receives the 8 low-order bits of the corresponding character. The
          * eight high-order bits of each character are not copied and do not
          * participate in the transfer in any way.
@@ -1165,10 +1188,10 @@ namespace core {
          *         Index after the last character in the string to copy
          *
          * @param  dst
-         *         The destination array
+         *         The destination root
          *
          * @param  dstBegin
-         *         The start offset in the destination array
+         *         The start offset in the destination root
          *
          * @throws  IndexException
          *          If any of the following is true:
@@ -1184,7 +1207,7 @@ namespace core {
 
         /**
          * Encodes this String into a sequence of bytes using the default charset, storing the result
-         * into a new byte array.
+         * into a new byte root.
          *
          * <p> The behavior of this method when this string cannot be encoded in
          * the default charset is unspecified.  The Charset class should be used when more control
@@ -1272,7 +1295,7 @@ namespace core {
 
         String &operator+=(const String &str);
 
-        ~String();
+        ~String() override;
     };
 
 } // core

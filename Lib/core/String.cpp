@@ -2,28 +2,23 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
-#include <core/util/Preconditions.h>
 #include "String.h"
-#include "Character.h"
-#include "Integer.h"
-#include "Long.h"
-#include "Float.h"
-#include "Double.h"
-#include "Short.h"
-#include "Byte.h"
-#include "ArgumentException.h"
-#include "AssertionError.h"
-#include "IndexException.h"
+#include <core/private/Unsafe.h>
+#include <core/private/Null.h>
+#include <core/util/Preconditions.h>
+#include <core/IndexException.h>
+#include <core/Character.h>
+#include <core/Integer.h>
+#include <core/Long.h>
+#include <core/Float.h>
+#include <core/Double.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
-    using util::Preconditions;
+    using namespace util;
+    using namespace native;
 
     namespace {
-
-        CORE_ALIAS(U, native::Unsafe);
 
         CORE_ALIAS(PBYTE, typename Class<gbyte>::Ptr);
         CORE_ALIAS(PCBYTE, typename Class<const gbyte>::Ptr);
@@ -31,36 +26,42 @@ namespace core {
         CORE_ALIAS(PCBYTE4, typename Class<const gint>::Ptr);
 
         CORE_FAST glong alignToHeapWordSize(glong bytes) {
-            return bytes >= 0 ? (bytes + U::ADDRESS_SIZE - 1) & ~(U::ADDRESS_SIZE - 1) : -1;
+            return bytes >= 0 ? (bytes + Unsafe::ADDRESS_SIZE - 1) & ~(Unsafe::ADDRESS_SIZE - 1) : -1;
         }
 
-        void putChar(PBYTE dst, glong idx, gint ch) {
+        void putChar(PBYTE dst, glong idx, gchar ch) {
+            glong const index = idx * 2LL;
+            gbyte const hb = Character::highByte(ch);
+            gbyte const lb = Character::lowByte(ch);
+            if (Unsafe::BIG_ENDIAN) {
+                dst[index] = hb;
+                dst[index + 1LL] = lb;
+            } else {
+                dst[index] = lb;
+                dst[index + 1LL] = hb;
+            }
+        }
+
+        void putChar(PBYTE dst, glong idx, gint cp) {
             if ((dst == null) || idx < 0)
                 return;
-            glong index = idx * 2LL;
-            if (!Character::isValidCodePoint(ch)) {
-                putChar(dst, idx, '?');
-            } else if (Character::isSupplementary(ch)) {
-                putChar(dst, idx, Character::highSurrogate(ch));
-                putChar(dst, idx + 1LL, Character::lowSurrogate(ch));
+            if (cp < 0 || cp > Character::MAX_CODEPOINT) {
+                putChar(dst, idx, u'?');
+            } else if (cp > Character::MAX_VALUE) {
+                const gchar high = Character::highSurrogate(cp);
+                const gchar low = Character::lowSurrogate(cp);
+                putChar(dst, idx, high);
+                putChar(dst, idx + 1LL, low);
             } else {
-                gbyte hb = Character::highByte(ch);
-                gbyte lb = Character::lowByte(ch);
-                if (U::BIG_ENDIAN) {
-                    dst[index] = hb;
-                    dst[index + 1LL] = lb;
-                } else {
-                    dst[index] = lb;
-                    dst[index + 1LL] = hb;
-                }
+                putChar(dst, idx, (gchar) cp);
             }
         }
 
         gchar nextChar(PCBYTE src, glong idx) {
             if ((src == null) || idx < 0)
                 return Character::MIN_VALUE;
-            glong index = idx * 2LL;
-            if (U::BIG_ENDIAN)
+            glong const index = idx * 2LL;
+            if (Unsafe::BIG_ENDIAN)
                 return Character::joinBytes(src[index], src[index + 1]);
             else
                 return Character::joinBytes(src[index + 1], src[index]);
@@ -68,9 +69,9 @@ namespace core {
 
         PBYTE generate(gint count) {
             if (count <= 0) return null;
-            glong sizeInBytes = (count + 1LL) << 1;
+            glong const sizeInBytes = (count + 1LL) << 1;
             const glong heapSize = alignToHeapWordSize(sizeInBytes);
-            PBYTE address = (PBYTE) U::allocateMemory(sizeInBytes);
+            PBYTE address = (PBYTE) Unsafe::allocateMemory(sizeInBytes);
             if (address != null)
                 for (glong i = sizeInBytes - 2; i < heapSize; ++i)
                     address[i] = 0;
@@ -81,7 +82,7 @@ namespace core {
             glong i = 0;
             glong j = 0;
             for (i = 0; i < limit;) {
-                gbyte b1 = in[i];
+                gbyte const b1 = in[i];
                 if (b1 >= 0) {
                     putChar(out, j, b1);
                     i += 1;
@@ -90,24 +91,24 @@ namespace core {
                     if ((b1 & 0x1e) == 0) {
                         putChar(out, j, '?');
                     } else {
-                        gbyte b2 = in[i + 1];
+                        gbyte const b2 = in[i + 1];
                         if ((b2 & 0xc0) != 0x80) {
                             putChar(out, j, '?');
                         } else {
-                            gchar ch = (gchar) ((b1 << 6) ^ b2) ^ (((gbyte) 0xC0 << 6) ^ ((gbyte) 0x80 << 0));
+                            gchar const ch = (gchar) ((b1 << 6) ^ b2) ^ (((gbyte) 0xC0 << 6) ^ ((gbyte) 0x80 << 0));
                             putChar(out, j, ch);
                         }
                     }
                     i += 2;
                     j += 1;
                 } else if (b1 >> 4 == -2) {
-                    gbyte b2 = in[i + 1];
-                    gbyte b3 = in[i + 2];
+                    gbyte const b2 = in[i + 1];
+                    gbyte const b3 = in[i + 2];
                     if ((b1 == (gbyte) 0xe0 && (b2 & 0xe0) == 0x80) || (b2 & 0xc0) != 0x80 || (b3 & 0xc0) != 0x80) {
                         putChar(out, j, '?');
                     } else {
-                        gchar ch = (gchar) (b1 << 12) ^ (b2 << 6) ^
-                                   (b3 ^ (((gbyte) 0xE0 << 12) ^ ((gbyte) 0x80 << 6) ^ ((gbyte) 0x80 << 0)));
+                        gchar const ch = (gchar) (b1 << 12) ^ (b2 << 6) ^
+                                         (b3 ^ (((gbyte) 0xE0 << 12) ^ ((gbyte) 0x80 << 6) ^ ((gbyte) 0x80 << 0)));
                         if (Character::isSurrogate(ch)) {
                             putChar(out, j, '?');
                         } else {
@@ -117,10 +118,10 @@ namespace core {
                     i += 3;
                     j += 1;
                 } else if (b1 >> 3 == -2) {
-                    gbyte b2 = in[i + 1];
-                    gbyte b3 = in[i + 2];
-                    gbyte b4 = in[i + 3];
-                    gint ch = (b1 << 18 ^ (b2 << 12) ^ (b3 << 6) ^ (b4 ^ (
+                    gbyte const b2 = in[i + 1];
+                    gbyte const b3 = in[i + 2];
+                    gbyte const b4 = in[i + 3];
+                    gint const ch = (b1 << 18 ^ (b2 << 12) ^ (b3 << 6) ^ (b4 ^ (
                             ((gbyte) 0xF0 << 18) ^ ((gbyte) 0x80 << 12) ^ ((gbyte) 0x80 << 6) ^ ((gbyte) 0x80 << 0))));
                     if ((b2 & 0xc0) != 0x80 || (b3 & 0xc0) != 0x80 || (b4 & 0xc0) != 0x80 || ch <= 0xFFFF) {
                         putChar(out, j, '?');
@@ -146,9 +147,9 @@ namespace core {
             if ((src == null) || (dst == null) || count == 0 || offset1 < 0 || offset2 < 0) {
                 return;
             }
-            glong maxCount = count * 2LL;
-            glong maxOffset1 = offset1 * 2LL;
-            glong maxOffset2 = offset2 * 2LL;
+            glong const maxCount = count * 2LL;
+            glong const maxOffset1 = offset1 * 2LL;
+            glong const maxOffset2 = offset2 * 2LL;
             if (count > 0)
                 for (glong i = maxCount - 1; i >= 0; i -= 1) {
                     dst[i + maxOffset2] = src[i + maxOffset1];
@@ -158,13 +159,6 @@ namespace core {
                     dst[-i + maxOffset2] = src[-i + maxOffset1];
                 }
         }
-
-        template<class T, class U>
-        void exchange(T &t, U &u) {
-            T t2 = t;
-            t = (T) u;
-            u = (U) t2;
-        }
     }
 
     void String::wrap(glong addr, gint bpc, glong count) {
@@ -173,9 +167,8 @@ namespace core {
         hashcode = 0;
         isHashed = false;
         if (addr == 0)
-            ArgumentException("Null pointer").throws(__trace("core.String"));
-        if ((bpc != 1) && (bpc != 2) && (bpc != 4))
-            AssertionError("Unsupported character type").throws(__trace("core.String"));
+            IllegalArgumentException("Null pointer").throws(__trace("core.String"));
+        // assert ((bpc == 1) || (bpc == 2) || (bpc == 4))
         if (count == 0) return;
         gint length = 0;
         if (count < 0) {
@@ -276,14 +269,14 @@ namespace core {
         hashcode = 0;
         isHashed = false;
         if (addr == 0)
-            ArgumentException("Null pointer").throws(__trace("core.String"));
+            IllegalArgumentException("Null pointer").throws(__trace("core.String"));
         if (limit < 0)
-            ArgumentException("Negative length").throws(__trace("core.String"));
+            IllegalArgumentException("Negative length").throws(__trace("core.String"));
         if (offset < 0)
-            ArgumentException("Negative offset").throws(__trace("core.String"));
-        if ((bpc != 1) && (bpc != 2) && (bpc != 4))
-            AssertionError("Unsupported character type").throws(__trace("core.String"));
-        if (count == 0) return;
+            IllegalArgumentException("Negative offset").throws(__trace("core.String"));
+        // assert ((bpc == 1) && (bpc == 2) && (bpc == 4))
+        if (count == 0)
+            return;
         gint length = 0;
         if (count < 0) {
             count = Math::min(Integer::MAX_VALUE, limit);
@@ -306,7 +299,7 @@ namespace core {
                 value = generate(length);
                 len = length;
                 for (gint i = 0; i < length; ++i) {
-                    gchar ch = b[i];
+                    gchar const ch = b[i];
                     putChar(value, i, ch);
                 }
                 break;
@@ -333,19 +326,16 @@ namespace core {
         }
     }
 
-    String::String(const String &original) :
-            value(generate(original.len)),
-            len(original.length()),
-            isHashed(original.isHashed),
-            hashcode(original.hashcode) {
+    String::String(const String &original) : value(generate(original.len)), len(original.len),
+                                             isHashed(original.isHashed), hashcode(original.hashcode) {
         arraycopy(original.value, 0, value, 0, len);
     }
 
-    String::String(String &&original) CORE_NOTHROW:
-            value(original.value), len(original.len), hashcode(original.hashcode), isHashed(original.isHashed) {
-        original.len = original.hashcode = 0;
-        original.isHashed = false;
-        original.value = null;
+    String::String(String &&original) CORE_NOTHROW {
+        Unsafe::swapValues(value, original.value);
+        Unsafe::swapValues(len, original.len);
+        Unsafe::swapValues(hashcode, original.hashcode);
+        Unsafe::swapValues(isHashed, original.isHashed);
     }
 
     String &String::operator=(const String &str) {
@@ -354,7 +344,7 @@ namespace core {
             if (len != str.len) {
                 newValue = generate(str.len);
                 len = 0;
-                U::freeMemory((glong) value);
+                Unsafe::freeMemory((glong) value);
             } else
                 newValue = value;
             arraycopy(str.value, 0, value = newValue, 0, len = str.len);
@@ -366,10 +356,10 @@ namespace core {
 
     String &String::operator=(String &&str) CORE_NOTHROW {
         if (this != &str) {
-            exchange(value, str.value);
-            exchange(len, str.len);
-            exchange(hashcode, str.hashcode);
-            exchange(isHashed, str.isHashed);
+            Unsafe::swapValues(value, str.value);
+            Unsafe::swapValues(len, str.len);
+            Unsafe::swapValues(hashcode, str.hashcode);
+            Unsafe::swapValues(isHashed, str.isHashed);
         }
         return *this;
     }
@@ -384,9 +374,9 @@ namespace core {
     gint String::codePointAt(gint index) const {
         try {
             Preconditions::checkIndex(index, len);
-            gchar ch = nextChar(value, index);
+            gchar const ch = nextChar(value, index);
             if (Character::isSurrogate(ch)) return ch;
-            gchar ch2 = nextChar(value, index + 1);
+            gchar const ch2 = nextChar(value, index + 1);
             return Character::isSurrogatePair(ch, ch2) ? Character::joinSurrogates(ch, ch2) : ch;
         } catch (const IndexException &ie) { ie.throws(__trace("core.String")); }
     }
@@ -405,10 +395,10 @@ namespace core {
 
     gint String::compareTo(const String &other) const {
         if (this == &other) return 0;
-        gint length = Math::min(len, other.len);
+        gint const length = Math::min(len, other.len);
         for (gint i = 0; i < length; ++i) {
-            gchar ch1 = nextChar(value, i);
-            gchar ch2 = nextChar(other.value, i);
+            gchar const ch1 = nextChar(value, i);
+            gchar const ch2 = nextChar(other.value, i);
             if (ch1 != ch2) return ch1 - ch2;
         }
         return len == other.len ? 0 :
@@ -418,7 +408,7 @@ namespace core {
 
     gint String::compareToIgnoreCase(const String &other) const {
         if (this == &other) return 0;
-        gint length = Math::min(len, other.len);
+        gint const length = Math::min(len, other.len);
         for (gint i = 0; i < length; ++i) {
             gchar ch1 = nextChar(value, i);
             gchar ch2 = nextChar(other.value, i);
@@ -438,8 +428,8 @@ namespace core {
             gbool isFound = true;
             for (gint i = offset; i < len; ++i) {
                 for (gint j = 0; j < str.len; ++j) {
-                    gchar ch1 = nextChar(value, i + j);
-                    gchar ch2 = nextChar(str.value, j);
+                    gchar const ch1 = nextChar(value, i + j);
+                    gchar const ch2 = nextChar(str.value, j);
                     if (ch1 != ch2) {
                         isFound = false;
                         break;
@@ -465,7 +455,7 @@ namespace core {
             gint &hash = (gint &) hashcode;
             hash = 0;
             for (gint i = 0; i < len; ++i) {
-                gchar ch = nextChar(value, i);
+                gchar const ch = nextChar(value, i);
                 hash += ch * 31 ^ (len - (i + 1));
             }
         }
@@ -479,7 +469,7 @@ namespace core {
     gint String::indexOf(gint ch, gint startIndex) const {
         if (startIndex >= 0)
             for (gint i = startIndex; i < len; ++i) {
-                gchar ch2 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i);
                 if (ch2 == ch)
                     return i;
             }
@@ -495,25 +485,25 @@ namespace core {
             startIndex = len - 1;
         if (startIndex >= 0)
             for (gint i = startIndex; i >= 0; --i) {
-                gchar ch2 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i);
                 if (ch2 == ch)
                     return i;
             }
         return -1;
     }
 
-    gint String::indexOf(const String &str) {
+    gint String::indexOf(const String &str) const {
         return indexOf(str, 0);
     }
 
-    gint String::indexOf(const String &str, gint startIndex) {
+    gint String::indexOf(const String &str, gint startIndex) const {
         if (startIndex < 0 || startIndex + str.len > len || str.isEmpty())
             return -1;
         for (gint i = startIndex; i < len; ++i) {
             gbool isFound = true;
             for (gint j = 0; j < str.len; ++j) {
-                gchar ch1 = nextChar(value, i + j);
-                gchar ch2 = nextChar(str.value, j);
+                gchar const ch1 = nextChar(value, i + j);
+                gchar const ch2 = nextChar(str.value, j);
                 if (ch1 != ch2) {
                     isFound = false;
                     break;
@@ -526,11 +516,11 @@ namespace core {
         return -1;
     }
 
-    gint String::lastIndexOf(const String &str) {
+    gint String::lastIndexOf(const String &str) const {
         return lastIndexOf(str, len - 1);
     }
 
-    gint String::lastIndexOf(const String &str, gint startIndex) {
+    gint String::lastIndexOf(const String &str, gint startIndex) const {
         if (startIndex >= len)
             startIndex = len - 1;
         if (startIndex < 0 || startIndex + 1 < str.len || str.isEmpty())
@@ -538,8 +528,8 @@ namespace core {
         for (gint i = startIndex; i >= 0; --i) {
             gbool isFound = true;
             for (gint j = 0; j < str.len; ++j) {
-                gchar ch1 = nextChar(value, i - j);
-                gchar ch2 = nextChar(str.value, str.len - 1 - j);
+                gchar const ch1 = nextChar(value, i - j);
+                gchar const ch2 = nextChar(str.value, str.len - 1 - j);
                 if (ch1 != ch2) {
                     isFound = false;
                     break;
@@ -586,17 +576,17 @@ namespace core {
         return str2;
     }
 
-    String String::replace(gchar oldChar, gchar newChar) {
+    String String::replace(gchar oldChar, gchar newChar) const {
         String str;
         str.value = generate(len);
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             putChar(str.value, i, (ch == oldChar) ? newChar : ch);
         }
         return str;
     }
 
-    String String::replace(const String &str, const String &replacement) {
+    String String::replace(const String &str, const String &replacement) const {
         gint cnt = count(str);
         if (cnt == 0 || isEmpty() || str.len == 0)
             return *this;
@@ -611,8 +601,8 @@ namespace core {
             if (cnt > 0) {
                 isFound = true;
                 for (gint j = 0; j < str.len; ++j) {
-                    gchar ch1 = nextChar(value, i + j);
-                    gchar ch2 = nextChar(str.value, j);
+                    gchar const ch1 = nextChar(value, i + j);
+                    gchar const ch2 = nextChar(str.value, j);
                     if (ch1 != ch2) {
                         isFound = false;
                         break;
@@ -625,7 +615,7 @@ namespace core {
                 k += replacement.len;
                 i += str.len - 1;
             } else {
-                gchar ch = nextChar(value, i);
+                gchar const ch = nextChar(value, i);
                 putChar(str2.value, k, ch);
                 k += 1;
             }
@@ -638,18 +628,18 @@ namespace core {
         str.len = len;
         str.value = generate(len);
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
-                    gint lowerCase = Character::toLowerCase(codePoint);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const lowerCase = Character::toLowerCase(codePoint);
                     putChar(str.value, i, lowerCase);
                     if (Character::isSupplementary(lowerCase))
                         i += 1;
                 }
             } else {
-                gchar lowerCase = Character::toLowerCase(ch);
+                gchar const lowerCase = Character::toLowerCase(ch);
                 putChar(str.value, i, lowerCase);
             }
         }
@@ -661,18 +651,18 @@ namespace core {
         str.len = len;
         str.value = generate(str.len);
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
-                    gint upperCase = Character::toUpperCase(codePoint);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const upperCase = Character::toUpperCase(codePoint);
                     putChar(str.value, i, upperCase);
                     if (Character::isSupplementary(upperCase))
                         i += 1;
                 }
             } else {
-                gchar upperCase = Character::toUpperCase(ch);
+                gchar const upperCase = Character::toUpperCase(ch);
                 putChar(str.value, i, upperCase);
             }
         }
@@ -684,18 +674,18 @@ namespace core {
         str.len = len;
         str.value = generate(len);
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
-                    gint titleCase = Character::toTitleCase(codePoint);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const titleCase = Character::toTitleCase(codePoint);
                     putChar(str.value, i, titleCase);
                     if (Character::isSupplementary(titleCase))
                         i += 1;
                 }
             } else {
-                gchar titleCase = Character::toTitleCase(ch);
+                gchar const titleCase = Character::toTitleCase(ch);
                 putChar(str.value, i, titleCase);
             }
         }
@@ -707,11 +697,11 @@ namespace core {
         str.len = len;
         str.value = generate(len);
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
                     gint reversedCase = 0;
                     if (Character::isLowerCase(codePoint))
                         reversedCase = Character::toUpperCase(codePoint);
@@ -744,13 +734,13 @@ namespace core {
     String String::strip() const {
         gint startIndex = 0;
         for (startIndex = 0; startIndex < len; ++startIndex) {
-            gchar ch = nextChar(value, startIndex);
+            gchar const ch = nextChar(value, startIndex);
             if (!Character::isSpace(ch))
                 break;
         }
         gint endIndex = 0;
         for (endIndex = len; endIndex > startIndex; --endIndex) {
-            gchar ch = nextChar(value, endIndex - 1);
+            gchar const ch = nextChar(value, endIndex - 1);
             if (!Character::isSpace(ch))
                 break;
         }
@@ -764,11 +754,11 @@ namespace core {
     String String::stripLeading() const {
         gint startIndex = 0;
         for (startIndex = 0; startIndex < len; ++startIndex) {
-            gchar ch = nextChar(value, startIndex);
+            gchar const ch = nextChar(value, startIndex);
             if (!Character::isSpace(ch))
                 break;
         }
-        gint endIndex = len;
+        gint const endIndex = len;
         String str;
         str.len = endIndex - startIndex;
         str.value = generate(str.len);
@@ -777,10 +767,10 @@ namespace core {
     }
 
     String String::stripTrailing() const {
-        gint startIndex = 0;
+        gint const startIndex = 0;
         gint endIndex = 0;
         for (endIndex = len; endIndex > startIndex; --endIndex) {
-            gchar ch = nextChar(value, endIndex - 1);
+            gchar const ch = nextChar(value, endIndex - 1);
             if (!Character::isSpace(ch))
                 break;
         }
@@ -793,7 +783,7 @@ namespace core {
 
     gbool String::isBlank() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (!Character::isSpace(ch))
                 return false;
         }
@@ -852,7 +842,7 @@ namespace core {
                     case '6':
                     case '7': {
                         // octal escape
-                        gint lim = Integer::min(i + (ch <= '3' ? 2 : 1), len);
+                        gint const lim = Integer::min(i + (ch <= '3' ? 2 : 1), len);
                         gint octalCode = ch - '0';
                         while (i < lim) {
                             i += 1;
@@ -866,10 +856,11 @@ namespace core {
                     }
                     case 'u': {
                         // unicode 16 escape.
-                        gint lim = i + 4;
+                        gint const lim = i + 4;
                         gint escape = 0;
                         if (lim >= len) {
-                            ArgumentException("Invalid unicode escape on input \"\\" + subString(i) + "\"").throws(
+                            IllegalArgumentException(
+                                    "Invalid unicode escape on input \"\\" + subString(i) + "\"").throws(
                                     __trace("core.String"));
                         }
                         while (++i < lim) {
@@ -884,17 +875,19 @@ namespace core {
                                 break;
                         }
                         if (i < lim || escape > 0xFFFF)
-                            ArgumentException("Invalid unicode escape on input \"\\u" + Integer::toHexString(escape) +
-                                              "\"").throws(__trace("core.String"));
+                            IllegalArgumentException(
+                                    "Invalid unicode escape on input \"\\u" + Integer::toHexString(escape) +
+                                    "\"").throws(__trace("core.String"));
                         putChar(value, j++, escape);
                         break;
                     }
                     case 'U': {
                         // unicode 32 escape.
-                        gint lim = i + 8;
+                        gint const lim = i + 8;
                         gint escape = 0;
                         if (lim >= len) {
-                            ArgumentException("Invalid unicode escape on input \"\\" + subString(i) + "\"").throws(
+                            IllegalArgumentException(
+                                    "Invalid unicode escape on input \"\\" + subString(i) + "\"").throws(
                                     __trace("core.String"));
                         }
                         while (++i < lim) {
@@ -909,8 +902,9 @@ namespace core {
                                 break;
                         }
                         if (i < lim || escape > 0x10FFFF || escape < 0)
-                            ArgumentException("Invalid unicode escape on input \"\\U" + Integer::toHexString(escape) +
-                                              "\"").throws(__trace("core.String"));
+                            IllegalArgumentException(
+                                    "Invalid unicode escape on input \"\\U" + Integer::toHexString(escape) +
+                                    "\"").throws(__trace("core.String"));
                         putChar(value, j++, escape);
                         j += 1;
                         break;
@@ -920,9 +914,9 @@ namespace core {
                         // hex escape
                         glong escape = 0;
                         if (i + 2 >= len)
-                            ArgumentException("Invalid hex escape on input \"\\x" + subString(i) + "\"").throws(
+                            IllegalArgumentException("Invalid hex escape on input \"\\x" + subString(i) + "\"").throws(
                                     __trace("core.String"));
-                        gint startIndex = i;
+                        gint const startIndex = i;
                         while (++i < len && escape <= 0x10FFFF) {
                             ch = nextChar(value, i);
                             if (ch >= '0' && ch <= '9')
@@ -936,18 +930,17 @@ namespace core {
                             i += 1;
                         }
                         if (i - startIndex < 2 || i - startIndex > 8 || escape > 0x10FFFF)
-                            ArgumentException("Invalid hex escape on input \"\\x"
-                                              + subString(startIndex, i)
-                                              + "\"").throws(
-                                    __trace("core.String"));
+                            IllegalArgumentException(
+                                    "Invalid hex escape on input \"\\x" + subString(startIndex, i) + "\"")
+                                    .throws(__trace("core.String"));
                         putChar(value, j++, (gint) escape);
                         if (escape > Character::MAX_VALUE)
                             j += 1;
                         break;
                     }
                     default:
-                        ArgumentException("Invalid escape character \\" + String::valueOf(ch)).throws(
-                                __trace("core.String"));
+                        IllegalArgumentException("Invalid escape character \\" + String::valueOf(ch))
+                                .throws(__trace("core.String"));
                 }
             }
         }
@@ -962,7 +955,7 @@ namespace core {
 
     String String::repeat(gint count) const {
         if (count < 0)
-            ArgumentException("Negative count").throws(__trace("core.String"));
+            IllegalArgumentException("Negative count").throws(__trace("core.String"));
         if (count == 0 || len == 0)
             return "";
         if (Integer::MAX_VALUE / count < len)
@@ -977,7 +970,7 @@ namespace core {
 
     gbool String::isASCII() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (ch >= 0x80)
                 return false;
         }
@@ -986,7 +979,7 @@ namespace core {
 
     gbool String::isLatin1() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (ch >= 0x100)
                 return false;
         }
@@ -995,11 +988,11 @@ namespace core {
 
     gbool String::isLowerCase() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint cp = Character::joinSurrogates(ch, ch2);
+                    gint const cp = Character::joinSurrogates(ch, ch2);
                     if (Character::isLetter(cp) && !Character::isLowerCase(cp))
                         return false;
                     i += 1;
@@ -1014,11 +1007,11 @@ namespace core {
 
     gbool String::isUpperCase() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint cp = Character::joinSurrogates(ch, ch2);
+                    gint const cp = Character::joinSurrogates(ch, ch2);
                     if (Character::isLetter(cp) && !Character::isUpperCase(cp))
                         return false;
                     i += 1;
@@ -1033,11 +1026,11 @@ namespace core {
 
     gbool String::isTitleCase() const {
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint cp = Character::joinSurrogates(ch, ch2);
+                    gint const cp = Character::joinSurrogates(ch, ch2);
                     if (Character::isLetter(cp) && !Character::isTitleCase(cp))
                         return false;
                     i += 1;
@@ -1057,8 +1050,8 @@ namespace core {
         for (gint i = 0; i < len; ++i) {
             gbool isFound = true;
             for (gint j = 0; j < str.len; ++j) {
-                gchar ch1 = nextChar(value, i + j);
-                gchar ch2 = nextChar(str.value, j);
+                gchar const ch1 = nextChar(value, i + j);
+                gchar const ch2 = nextChar(str.value, j);
                 if (ch1 != ch2) {
                     isFound = false;
                     break;
@@ -1072,7 +1065,7 @@ namespace core {
     }
 
     Object &String::clone() const {
-        return U::createInstance<String>(*this);
+        return Unsafe::allocateInstance<String>(*this);
     }
 
     String operator+(const String &x, const String &y) {
@@ -1085,11 +1078,11 @@ namespace core {
         str.value = generate(str.len);
         gbool start = true;
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
                     gint pascalCase = 0;
                     if (Character::isSpace(codePoint)) {
                         pascalCase = codePoint;
@@ -1128,11 +1121,11 @@ namespace core {
         gbool start = false;
         gbool start0 = true;
         for (gint i = 0; i < len; ++i) {
-            gchar ch = nextChar(value, i);
+            gchar const ch = nextChar(value, i);
             if (Character::isHighSurrogate(ch)) {
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isLowSurrogate(ch2)) {
-                    gint codePoint = Character::joinSurrogates(ch, ch2);
+                    gint const codePoint = Character::joinSurrogates(ch, ch2);
                     gint camelCase = 0;
                     if (Character::isSpace(codePoint)) {
                         camelCase = codePoint;
@@ -1176,7 +1169,7 @@ namespace core {
             Preconditions::checkIndex(dstBegin, dst.length());
             Preconditions::checkIndexFromSize(dstBegin, srcEnd - srcBegin, dst.length());
             for (gint i = srcBegin; i < srcEnd; ++i) {
-                dst[i - srcBegin] = nextChar(value, i);
+                dst[i - srcBegin + dstBegin] = nextChar(value, i);
             }
         } catch (const IndexException &ie) {
             ie.throws(__trace("core.String"));
@@ -1195,22 +1188,24 @@ namespace core {
             Preconditions::checkIndex(dstBegin, dst.length());
             gint count = 0;
             for (gint i = srcBegin; i < srcEnd;) {
-                gchar ch1 = nextChar(value, i);
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch1 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i + 1);
                 i += Character::isSurrogatePair(ch1, ch2) ? 2 : 1;
                 count += 1;
             }
             Preconditions::checkIndexFromSize(dstBegin, count, dst.length());
             gint j = 0;
             for (gint i = srcBegin; i < srcEnd; ++i) {
-                gchar ch1 = nextChar(value, i);
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch1 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isSurrogatePair(ch1, ch2)) {
-                    dst[j++] = Character::joinSurrogates(ch1, ch2);
+                    dst[dstBegin - srcBegin + j] = Character::joinSurrogates(ch1, ch2);
                     i += 2;
+                    j += 1;
                 } else {
-                    dst[j++] = ch1;
+                    dst[dstBegin - srcBegin + j] = ch1;
                     i += 1;
+                    j += 1;
                 }
             }
         } catch (const IndexException &ie) {
@@ -1223,16 +1218,16 @@ namespace core {
         try {
             gint count = 0;
             for (gint i = 0; i < len;) {
-                gchar ch1 = nextChar(value, i);
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch1 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i + 1);
                 i += Character::isSurrogatePair(ch1, ch2) ? 2 : 1;
                 count += 1;
             }
             array = IntArray(count);
             gint j = 0;
             for (gint i = 0; i < len; ++i) {
-                gchar ch1 = nextChar(value, i);
-                gchar ch2 = nextChar(value, i + 1);
+                gchar const ch1 = nextChar(value, i);
+                gchar const ch2 = nextChar(value, i + 1);
                 if (Character::isSurrogatePair(ch1, ch2)) {
                     array[j++] = Character::joinSurrogates(ch1, ch2);
                     i += 2;
@@ -1253,7 +1248,7 @@ namespace core {
             Preconditions::checkIndex(dstBegin, dst.length());
             Preconditions::checkIndexFromSize(dstBegin, srcEnd - srcBegin, dst.length());
             for (gint i = srcBegin; i < srcEnd; ++i) {
-                dst[i - srcBegin] = (gbyte) (nextChar(value, i) & 0xFF);
+                dst[i - srcBegin + dstBegin] = (gbyte) (nextChar(value, i) & 0xFF);
             }
         } catch (const IndexException &ie) {
             ie.throws(__trace("core.String"));
@@ -1331,8 +1326,8 @@ namespace core {
     String::String(const CharArray &chars, gint offset, gint count) {
         try {
             Preconditions::checkIndexFromSize(offset, count, chars.length());
-            value = generate(chars.length());
-            len = chars.length();
+            value = generate(count);
+            len = count;
             for (gint i = 0; i < count; ++i) {
                 putChar(value, i, chars[i + offset]);
             }
@@ -1348,14 +1343,14 @@ namespace core {
             Preconditions::checkIndexFromSize(offset, count, codePoints.length());
             gint size = 0;
             for (gint i = 0; i < count; ++i) {
-                gint ch = codePoints[i + offset];
+                gint const ch = codePoints[i + offset];
                 size += Character::isValidCodePoint(ch) && Character::isSupplementary(ch) ? 2 : 1;
             }
             value = generate(size);
             len = size;
             gint j = 0;
             for (gint i = 0; i < count; ++i) {
-                gint ch = codePoints[i + offset];
+                gint const ch = codePoints[i + offset];
                 putChar(value, j, ch);
                 j += Character::isValidCodePoint(ch) && Character::isSupplementary(ch) ? 2 : 1;
             }
@@ -1367,7 +1362,7 @@ namespace core {
     String::~String() {
         if (len > 0) {
             len = 0;
-            U::freeMemory((glong) value);
+            Unsafe::freeMemory((glong) value);
         }
         value = null;
         isHashed = false;
@@ -1376,6 +1371,17 @@ namespace core {
 
     gint String::length() const {
         return (value != null) && (len > 0) ? len : 0;
+    }
+
+    CharSequence &String::subSequence(gint start, gint end) const {
+        try {
+            Preconditions::checkIndexFromRange(start, end, len);
+            return Unsafe::allocateInstance<String>(subString(start, end));
+        } catch (IndexException const &iex) { iex.throws(__trace("core.String")); }
+    }
+
+    gbool String::isEmpty() const {
+        return len <= 0 || value == null;
     }
 
 } // core

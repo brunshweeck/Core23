@@ -5,7 +5,7 @@
 #ifndef CORE23_NUMBERFORMATEXCEPTION_H
 #define CORE23_NUMBERFORMATEXCEPTION_H
 
-#include <core/ArgumentException.h>
+#include <core/IllegalArgumentException.h>
 
 namespace core {
 
@@ -16,7 +16,7 @@ namespace core {
      *
      * @see     Integer.parseInt(String)
      */
-    class NumberFormatException: public ArgumentException {
+    class NumberFormatException: public IllegalArgumentException {
     public:
 
         /**

@@ -7,14 +7,15 @@
 
 namespace core {
     namespace io {
-        IOError::IOError(const Throwable &cause) : Error(cause.toString(), cause) {}
+        IOError::IOError(const Throwable &cause) :
+                Error(cause.toString(), cause) {}
 
         Object &IOError::clone() const {
-            return native::Unsafe::createInstance<IOError>(*this);
+            return Unsafe::allocateInstance<IOError>(*this);
         }
 
         void IOError::raise() &&{
-            throw *this;
+            throw IOError(*this);
         }
     }
 } // core

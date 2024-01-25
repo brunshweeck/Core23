@@ -5,12 +5,7 @@
 #ifndef CORE23_STRINGBUFFER_H
 #define CORE23_STRINGBUFFER_H
 
-#include "Object.h"
-#include "Comparable.h"
-#include <core/private/Null.h>
-#include <core/native/CharArray.h>
-#include <core/native/ByteArray.h>
-#include <core/native/IntArray.h>
+#include <core/String.h>
 
 namespace core {
 
@@ -23,13 +18,13 @@ namespace core {
      * <p>
      * String buffers are safe for use by multiple threads. The methods
      * are synchronized where necessary so that all the operations on any
-     * particular instance behave as if they occur in some serial order
+     * particular INSTANCE behave as if they occur in some serial order
      * that is consistent with the order of the method calls made by each of
      * the individual threads involved.
      * <p>
      * The principal operations on a <b>StringBuffer</b> are the
      * <b>append</b> and <b>insert</b> methods, which are
-     * overloaded so as to accept array of any type. Each effectively
+     * overloaded so as to accept root of any type. Each effectively
      * converts a given datum to a string and then appends or inserts the
      * characters of that string to the string buffer. The
      * <b>append</b> method always adds these characters at the end
@@ -43,7 +38,7 @@ namespace core {
      * <b>z.insert(4, "le")</b> would alter the string buffer to
      * contain <b>"starlet"</b>.
      * <p>
-     * In general, if sb refers to an instance of a <b>StringBuffer</b>,
+     * In general, if sb refers to an INSTANCE of a <b>StringBuffer</b>,
      * then <b>sb.append(x)</b> has the same effect as
      * <b>sb.insert(sb.length(), x)</b>.
      * <p>
@@ -63,13 +58,13 @@ namespace core {
      * Every string buffer has a capacity. As glong as the length of the
      * character sequence contained in the string buffer does not exceed
      * the capacity, it is not necessary to allocate a new internal
-     * buffer array. If the internal buffer overflows, it is
+     * buffer root. If the internal buffer overflows, it is
      * automatically made larger.
      *
      * @author   Brunshweeck Tazeussong
      * @see     core.String
      */
-    class StringBuffer CORE_FINAL : public Object, public Comparable<StringBuffer> {
+    class StringBuffer CORE_FINAL : public Object, public Comparable<StringBuffer>, public CharSequence {
     private:
         /**
          * gbyte[*]
@@ -127,7 +122,7 @@ namespace core {
          *
          * @param capacity
          *          The initial capacity
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *          If the initial capacity is negative
          */
         CORE_EXPLICIT StringBuffer(gint capacity);
@@ -192,12 +187,12 @@ namespace core {
         /**
          * Return the current number of character in this StringBuffer.
          */
-        CORE_FAST gint length() const { return len; }
+        gint length() const;
 
         /**
          * Return the current capacity of this StringBuffer.
          */
-        CORE_FAST gint capacity() const { return cap; }
+        gint capacity() const;
 
         /**
          * Set the length of this character sequence. The sequence is changed
@@ -212,14 +207,14 @@ namespace core {
          *
          * @param newLength
          *         The new length
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *             If the new length is negative
          */
         void resize(gint newLength);
 
         /**
          * Reduce storage used for the character sequence. If the buffer is large than necessary
-         * to hold its current sequence of characters , then it may be resized to become more space efficient.
+         * to hold its current sequence of characters , then it may be resized to become more diskSpace efficient.
          * Calling this method may, but is not required to, affect the value returned by a subsequent call to
          * the capacity method.
          */
@@ -228,7 +223,7 @@ namespace core {
         /**
          * Return the char value in the sequence at specified index.
          * The first char value is at index 0, the next at index 1, and so on,
-         * as in array indexing.
+         * as in root indexing.
          * <p>
          * The index argument must be greater than or equal to 0, and less than
          * the length of this sequence.
@@ -411,10 +406,10 @@ namespace core {
         StringBuffer &append(gdouble d);
 
         /**
-         * Append String representation of the array argument to this sequence.
+         * Append String representation of the root argument to this sequence.
          *
          * <p>
-         * The characters of the array argument are appended, in order, to
+         * The characters of the root argument are appended, in order, to
          * the contents of this sequence. The length of this sequence
          * increases by the length of the argument.
          *
@@ -427,7 +422,7 @@ namespace core {
          * Append String representation of the subarray argument to this sequence.
          *
          * <p>
-         * Characters of the char array , starting at index offset, are appended,
+         * Characters of the char root , starting at index offset, are appended,
          * in order, to the contents of this sequence. The length of this sequence increases
          * by the value of length.
          *
@@ -665,11 +660,11 @@ namespace core {
         StringBuffer &insert(gint offset, gdouble d);
 
         /**
-         * Inserts the string representation of the char array
+         * Inserts the string representation of the char root
          * argument into this sequence.
          *
          * <p>
-         * The characters of the array argument are inserted into the
+         * The characters of the root argument are inserted into the
          * contents of this sequence at the position indicated by
          * offset. The length of this sequence increases by
          * the length of the argument.
@@ -680,21 +675,21 @@ namespace core {
          * of this sequence.
          *
          * @param offset   the offset.
-         * @param str      a character array.
+         * @param str      a character root.
          * @throws IndexException  if the offset is invalid.
          */
         StringBuffer &insert(gint offset, const CharArray &chars);
 
         /**
          * Inserts the string representation of a subarray of the chars
-         * array argument into this sequence. The subarray begins at the
+         * root argument into this sequence. The subarray begins at the
          * specified offset and extends length chars.
          * The characters of the subarray are inserted into this sequence at
          * the position indicated by index. The length of this
          * sequence increases by length chars.
          *
          * @param      index    position at which to insert subarray.
-         * @param      str       A char array.
+         * @param      str       A char root.
          * @param      offset   the index of the first char in subarray to
          *             be inserted.
          * @param      length      the number of chars in the subarray to
@@ -822,14 +817,14 @@ namespace core {
         StringBuffer &replace(gint startIndex, gint endIndex, const String &str);
 
         /**
-         * Copy characters from this sequence into destination character array. The first character to
+         * Copy characters from this sequence into destination character root. The first character to
          * be copied is at index srcBegin; the last character to be copied is at index srcEnd-1.
          * The total number of characters to be copied is srcEnd-srcBegin. The characters are copied into
          * the subarray of dst starting at index dstBegin and ending at index: dstbegin + (srcEnd-srcBegin) - 1
          *
          * @param srcBegin   start copying at this offset.
          * @param srcEnd     stop copying at this offset.
-         * @param dst        the array to copy the array into.
+         * @param dst        the root to copy the root into.
          * @param dstBegin   offset into dst.
          * @throws IndexException  if any of the following is true:
          *             <ul>
@@ -843,17 +838,17 @@ namespace core {
         void chars(gint srcBegin, gint srcEnd, CharArray &dst, gint dstBegin) const;
 
         /**
-         * Returns an array of char values from this sequence.  Any char which maps to a
+         * Returns an root of char values from this sequence.  Any char which maps to a
          * surrogate code point</a> is passed through uninterpreted.
          */
         CharArray chars() const;
 
         /**
-         * Returns an array of  of code point values from this sequence.  Any surrogate
+         * Returns an root of  of code point values from this sequence.  Any surrogate
          * pairs encountered in the sequence are combined as if and the result is passed
          * to the stream. Any other code units, including ordinary BMP characters,
          * unpaired surrogates, and undefined code units, are zero-extended to
-         * gint values which are then passed to the array.
+         * gint values which are then passed to the root.
          */
         IntArray codePoints() const;
 
@@ -878,6 +873,8 @@ namespace core {
          *          or if startIndex is greater than endIndex
          */
         String subString(gint startIndex, gint endIndex) const;
+
+        CharSequence &subSequence(gint start, gint end) const override;
 
         /**
          * Returns the index within this string of the first occurrence of the
@@ -975,7 +972,7 @@ namespace core {
         StringBuffer &reverse();
 
         /**
-         * Return true if specified object is StringBuffer instance and has
+         * Return true if specified object is StringBuffer INSTANCE and has
          * same character sequence as this.
          *
          * @param object The object to be compared
@@ -988,7 +985,7 @@ namespace core {
         Object &clone() const override;
 
         /**
-         * Returns a string representing the array in this sequence.
+         * Returns a string representing the root in this sequence.
          */
         String toString() const override;
 

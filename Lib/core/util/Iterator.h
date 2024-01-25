@@ -6,8 +6,8 @@
 #define CORE23_ITERATOR_H
 
 #include <core/Object.h>
-#include <core/UnsupportedMethodException.h>
-#include <core/util/function/Consumer.h>
+#include <core/UnsupportedOperationException.h>
+#include <core/function/Consumer.h>
 
 namespace core {
     namespace util {
@@ -30,7 +30,14 @@ namespace core {
          * @see Collection
          */
         template<class E>
-        interface Iterator : public Object {
+        class Iterator : public Object {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E&>);
+
+        public:
 
             /**
              * Returns <b>true</b> if the iteration has more elements.
@@ -60,18 +67,18 @@ namespace core {
              * after a call to the <b style="color:orange;">Iterator.forEach</b> method.
              *
              * @implSpec
-             * The default implementation throws an instance of
-             * <b style="color:orange;">UnsupportedMethodException</b> and performs no other action.
+             * The default implementation throws an INSTANCE of
+             * <b style="color:orange;">UnsupportedOperationException</b> and performs no other action.
              *
              * @throws UnsupportedMethodException if the <b>remove</b>
              *         operation is not supported by this iterator
              *
-             * @throws StateException if the <b>next</b> method has not
+             * @throws IllegalStateException if the <b>next</b> method has not
              *         yet been called, or the <b>remove</b> method has already
              *         been called after the last call to the <b>next</b>
              *         method
              */
-            virtual void remove() { UnsupportedMethodException().throws(__trace("core.util.Iterator")); }
+            virtual void remove() { UnsupportedOperationException().throws(__trace("core.util.Iterator")); }
 
             /**
              * Performs the given action for each remaining element until all elements
@@ -97,7 +104,10 @@ namespace core {
              *
              * @param action The action to be performed for each element
              */
-            inline void forEach(const Consumer<E &> &action) { while (hasNext()) action.accept(next()); }
+            virtual void forEach(const ActionConsumer &action) {
+                while (hasNext())
+                    action.accept(next());
+            }
         };
 
     }

@@ -5,16 +5,18 @@
 #ifndef CORE23_FILEARRAY_H
 #define CORE23_FILEARRAY_H
 
-#include <core/native/Array.h>
+#include <core/native/PrimitiveArray.h>
 #include <core/io/File.h>
 
 namespace core {
     namespace io {
 
-        class FileArray CORE_FINAL : public native::Array<File> {
+        using namespace native;
+
+        class FileArray CORE_FINAL : public PrimitiveArray<File> {
         private:
             /**
-             * Number of file in this array
+             * Number of file in this root
              */
             gint len = {};
 
@@ -24,12 +26,12 @@ namespace core {
 
         public:
             /**
-             * Create new Empty array
+             * Create new Empty root
              */
             CORE_FAST FileArray() = default;
 
             /**
-             * Create new File array with the given number of place
+             * Create new File root with the given number of place
              */
             CORE_EXPLICIT FileArray(gint length);
 
@@ -47,15 +49,17 @@ namespace core {
 
             const File &get(gint index) const override;
 
-            gbool equals(const Object &o) const override;
-
             Object &clone() const override;
 
             String toString() const override;
 
             gint hash() const override;
 
-            ~FileArray() override = default;
+            void set(gint index, const File &file) override;
+
+            ~FileArray() override;
+
+            gbool equals(const Object &o) const override;
         };
 
     } // io

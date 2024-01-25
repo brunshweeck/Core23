@@ -47,7 +47,7 @@ namespace core {
 
     public:
         /**
-         * Construct newly instance of execution point instance.
+         * Construct newly INSTANCE of execution point INSTANCE.
          *
          * <p>
          * Note:
@@ -71,7 +71,7 @@ namespace core {
          * @param lineNumber
          *          The line of execution point (0 if is builtin)
          *
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *              If any other trace information is invalid
          */
         CORE_EXPLICIT Trace(const String &moduleName,
@@ -81,7 +81,7 @@ namespace core {
                             const String &fileName,
                             gint lineNumber);
         /**
-         * Construct newly instance of execution point instance.
+         * Construct newly INSTANCE of execution point INSTANCE.
          *
          * <p>
          * Note:
@@ -99,7 +99,7 @@ namespace core {
          * @param lineNumber
          *          The line of execution point (0 if is builtin)
          *
-         * @throws ArgumentException
+         * @throws IllegalArgumentException
          *              If any trace information is invalid
          */
         CORE_EXPLICIT Trace(const String &className, const String &methodName, const String &fileName, gint lineNumber);
@@ -134,7 +134,7 @@ namespace core {
          * Returns the name of the method containing the execution point
          * represented by this stack trace element. Generally, this corresponds
          * to the CORE_FUNCTION macro.  If the execution point is
-         * contained in an instance or class initializer, this method will return
+         * contained in an INSTANCE or class initializer, this method will return
          * the appropriate <i>special method name</i>, such as &lt;init&gt; for
          * constructor or &lt;class&gt; for call operator.
          */
@@ -168,8 +168,8 @@ namespace core {
         String toString() const override;
 
         /**
-         * Return true if specified object is Trace instance that
-         * representing same execution point as this instance.
+         * Return true if specified object is Trace INSTANCE that
+         * representing same execution point as this INSTANCE.
          *
          * @param object
          *          The object to be compared

@@ -5,11 +5,11 @@
 #ifndef CORE23_MAP_H
 #define CORE23_MAP_H
 
-#include <core/KeyNotFoundException.h>
-#include <core/util/Set.h>
+#include <core/NoSuchKeyException.h>
+#include <core/function/BiConsumer.h>
+#include <core/function/BiFunction.h>
 #include <core/util/ConcurrentException.h>
-#include <core/util/function/BiConsumer.h>
-#include <core/util/function/BiFunction.h>
+#include <core/util/Set.h>
 
 namespace core {
     namespace util {
@@ -49,9 +49,9 @@ namespace core {
          *
          * <p>The "destructive" methods contained in this interface, that is, the
          * methods that modify the map on which they operate, are specified to throw
-         * <b> UnsupportedMethodException</b> if this map does not support the
+         * <b> UnsupportedOperationException</b> if this map does not support the
          * operation.  If this is the case, these methods may, but are not required
-         * to, throw an <b> UnsupportedMethodException</b> if the invocation would
+         * to, throw an <b> UnsupportedOperationException</b> if the invocation would
          * have no effect on the map.  For example, invoking the <b style="color: orange;"> addAll(Map)</b>
          * method on an unmodifiable map may, but is not required to, throw the
          * exception if the map whose mappings are to be "superimposed" is empty.
@@ -59,7 +59,7 @@ namespace core {
          * <p>Some map implementations have restrictions on the keys and values they
          * may contain.  Attempting
          * to insert an ineligible key or value throws an unchecked exception,
-         * typically <b> CastException</b>.
+         * typically <b> ClassCastException</b>.
          * Attempting to query the presence of an ineligible key or value may throw an
          * exception, or it may simply return false; some implementations will exhibit
          * the former behavior and some will exhibit the latter.  More generally,
@@ -102,10 +102,10 @@ namespace core {
          * <ul>
          * <li>They are <a href=""><i>unmodifiable</i></a>. Keys and values
          * cannot be added, removed, or updated. Calling any mutator method on the Map
-         * will always cause <b> UnsupportedMethodException</b> to be thrown.
+         * will always cause <b> UnsupportedOperationException</b> to be thrown.
          * <li>They are serializable if all keys and values are serializable.
          * <li>They reject duplicate keys at creation time. Duplicate keys
-         * passed to a static factory method result in <b> ArgumentException</b>.
+         * passed to a static factory method result in <b> IllegalArgumentException</b>.
          * <li>The iteration order of mappings is unspecified and is subject to change.
          * <li>They are <a href="">value-based</a>.
          * Programmers should treat instances that are <b style="color: green;"> equal</b>
@@ -129,7 +129,20 @@ namespace core {
          * @see Set
          */
         template<class K, class V>
-        interface Map : public Object {
+        class Map : public Object {
+        protected:
+            CORE_ALIAS(Unsafe, native::Unsafe);
+
+            template<class E>
+            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
+
+            template<class T, class U>
+            CORE_ALIAS(BinaryActionConsumer, , function::BiConsumer<T, U>);
+
+            template<class T, class U>
+            CORE_ALIAS(BinaryFunction, , function::BiFunction<T, U, V>);
+
+        public:
 
             class Entry;
 
@@ -155,7 +168,7 @@ namespace core {
              * @param key key whose presence in this map is to be tested
              * @return <b>true</b> if this map contains a mapping for the specified
              *         key
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              *         this map (<a href="">optional</a>)
              */
             virtual gbool containsKey(const K &key) const {
@@ -179,7 +192,7 @@ namespace core {
              * @param value value whose presence in this map is to be tested
              * @return <b>true</b> if this map maps one or more keys to the
              *         specified value
-             * @throws CastException if the value is of an inappropriate type for
+             * @throws ClassCastException if the value is of an inappropriate type for
              *         this map (<a href="">optional</a>)
              */
             virtual gbool containsValue(const V &value) const {
@@ -211,7 +224,7 @@ namespace core {
              * @param key the key whose associated value is to be returned
              * @return the value to which the specified key is mapped, or
              *         <b>null</b> if this map contains no mapping for the key
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              *         this map (<a href="">optional</a>)
              */
             virtual V &get(const K &key) {
@@ -221,7 +234,7 @@ namespace core {
                     if (Object::equals(key, e.key()))
                         return (V &) e.value();
                 }
-                KeyNotFoundException($(key)).throws(__trace("core.util.Map"));
+                NoSuchKeyException($(key)).throws(__trace("core.util.Map"));
             }
 
             /**
@@ -243,7 +256,7 @@ namespace core {
              * @param key the key whose associated value is to be returned
              * @return the value to which the specified key is mapped, or
              *         <b>null</b> if this map contains no mapping for the key
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              *         this map (<a href="">optional</a>)
              */
             virtual const V &get(const K &key) const {
@@ -253,7 +266,7 @@ namespace core {
                     if (Object::equals(key, e.key()))
                         return e.value();
                 }
-                KeyNotFoundException($(key)).throws(__trace("core.util.Map"));
+                NoSuchKeyException($(key)).throws(__trace("core.util.Map"));
             }
 
             /**
@@ -273,13 +286,15 @@ namespace core {
              *         if the implementation supports <b>null</b> values.)
              * @throws UnsupportedMethodException if the <b>put</b> operation
              *         is not supported by this map
-             * @throws CastException if the class of the specified key or value
+             * @throws ClassCastException if the class of the specified key or value
              *         prevents it from being stored in this map
-             * @throws ArgumentException if some property of the specified key
+             * @throws IllegalArgumentException if some property of the specified key
              *         or value prevents it from being stored in this map
              */
             virtual const V &put(const K &key, const V &value) {
-                UnsupportedMethodException().throws(__trace("core.util.Map"));
+                CORE_IGNORE(key);
+                CORE_IGNORE(value);
+                UnsupportedOperationException().throws(__trace("core.util.Map"));
             }
 
             /**
@@ -312,9 +327,9 @@ namespace core {
              *         if the implementation supports null values.)
              * @throws UnsupportedMethodException if the <b> put</b> operation
              *         is not supported by this map (<a href="">optional</a>)
-             * @throws CastException if the key or value is of an inappropriate
+             * @throws ClassCastException if the key or value is of an inappropriate
              *         type for this map (<a href="">optional</a>)
-             * @throws ArgumentException if some property of the specified key
+             * @throws IllegalArgumentException if some property of the specified key
              *         or value prevents it from being stored in this map (<a href="">optional</a>)
              */
             virtual const V &putIfAbsent(const K &key, const V &value) {
@@ -346,7 +361,7 @@ namespace core {
              *         <b>null</b> if there was no mapping for <b>key</b>.
              * @throws UnsupportedMethodException if the <b>remove</b> operation
              *         is not supported by this map
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              *         this map (<a href="">optional</a>)
              */
             virtual const V &remove(const K &key) {
@@ -358,7 +373,7 @@ namespace core {
                         return e.value();
                     }
                 }
-                KeyNotFoundException($(key)).throws(__trace("core.util.Map"));
+                NoSuchKeyException($(key)).throws(__trace("core.util.Map"));
             }
 
             /**
@@ -372,9 +387,9 @@ namespace core {
              * @param m mappings to be stored in this map
              * @throws UnsupportedMethodException if the <b>putAll</b> operation
              *         is not supported by this map
-             * @throws CastException if the class of a key or value in the
+             * @throws ClassCastException if the class of a key or value in the
              *         specified map prevents it from being stored in this map
-             * @throws ArgumentException if some property of a key or value in
+             * @throws IllegalArgumentException if some property of a key or value in
              *         the specified map prevents it from being stored in this map
              */
             virtual void putAll(const Map<K, V> &m) {
@@ -397,15 +412,16 @@ namespace core {
              * Convert any value to string, using String::valueOf(o)
              */
             template<class T>
-            static String $(T &&o) CORE_NOTHROW { return String::valueOf(U::forwardInstance<T>(o)); }
+            static String $(const T &o) CORE_NOTHROW {
+                return String::valueOf(o);
+            }
 
-            CORE_ALIAS(U, , native::Unsafe);
             CORE_ALIAS(ENTRIES, , typename Class<Set<Entry>>::Ptr);
             CORE_ALIAS(VALUES, typename Class<Collection<V>>::Ptr);
             CORE_ALIAS(KEYSET, typename Class<Set<K>>::Ptr);
 
             /**
-             * Each of these fields are initialized to contain an instance of the
+             * Each of these fields are initialized to contain an INSTANCE of the
              * appropriate view the first time this view is requested.  The views are
              * stateless, so there's no reason to create more than one of each.
              *
@@ -473,7 +489,7 @@ namespace core {
                             void remove() override { itr.remove(); }
                         };
 
-                        return U::createInstance<KeyItr>(root.entrySet().iterator());
+                        return Unsafe::allocateInstance<KeyItr>(root.entrySet().iterator());
                     }
 
                     gint size() const override { return root.size(); }
@@ -484,7 +500,7 @@ namespace core {
                 };
 
                 if (kSet == null)
-                    (KEYSET &) kSet = &U::createInstance<KeySet>((Map<K, V> &) *this);
+                    (KEYSET &) kSet = &Unsafe::allocateInstance<KeySet>((Map<K, V> &) *this);
                 return kSet[0];
             }
 
@@ -506,12 +522,14 @@ namespace core {
             virtual Collection<V> &values() const {
                 class Values CORE_FINAL : public Collection<V> {
                     Map<K, V> &root;
+
                 public:
                     CORE_EXPLICIT Values(Map<K, V> &root) : root(root) {}
 
                     Iterator<const V> &iterator() const override {
                         class ValueItr CORE_FINAL : public Iterator<const V> {
                             Iterator<const Entry> &itr;
+
                         public:
                             CORE_EXPLICIT ValueItr(Iterator<const Entry> &itr) : itr(itr) {}
 
@@ -522,7 +540,7 @@ namespace core {
                             void remove() override { itr.remove(); }
                         };
 
-                        return U::createInstance<ValueItr>(root.entrySet().iterator());
+                        return Unsafe::allocateInstance<ValueItr>(root.entrySet().iterator());
                     }
 
                     gint size() const override { return root.size(); }
@@ -533,7 +551,7 @@ namespace core {
                 };
 
                 if (vCollection == null)
-                    (VALUES &) vCollection = &U::createInstance<Values>((Map<K, V> &) *this);
+                    (VALUES &) vCollection = &Unsafe::allocateInstance<Values>((Map<K, V> &) *this);
                 return vCollection[0];
             }
 
@@ -568,7 +586,7 @@ namespace core {
              * During iteration of the entry-set view, if supported by the backing map,
              * a change to a <b>Map.Entry</b>'s value via the
              * <b style="color:orange;">setValue</b> method will be visible in the backing map.
-             * The behavior of such a <b>Map.Entry</b> instance is undefined outside of
+             * The behavior of such a <b>Map.Entry</b> INSTANCE is undefined outside of
              * iteration of the map's entry-set view. It is also undefined if the backing
              * map has been modified after the <b>Map.Entry</b> was returned by the
              * iterator, except through the <b>Map.Entry.setValue</b> method. In particular,
@@ -580,7 +598,7 @@ namespace core {
                  * Returns the key corresponding to this entry.
                  *
                  * @return the key corresponding to this entry
-                 * @throws StateException implementations may, but are not
+                 * @throws IllegalStateException implementations may, but are not
                  *         required to, throw this exception if the entry has been
                  *         removed from the backing map.
                  */
@@ -592,7 +610,7 @@ namespace core {
                  * <b>remove</b> operation), the results of this call are undefined.
                  *
                  * @return the value corresponding to this entry
-                 * @throws StateException implementations may, but are not
+                 * @throws IllegalStateException implementations may, but are not
                  *         required to, throw this exception if the entry has been
                  *         removed from the backing map.
                  */
@@ -604,7 +622,7 @@ namespace core {
                  * <b>remove</b> operation), the results of this call are undefined.
                  *
                  * @return the value corresponding to this entry
-                 * @throws StateException implementations may, but are not
+                 * @throws IllegalStateException implementations may, but are not
                  *         required to, throw this exception if the entry has been
                  *         removed from the backing map.
                  */
@@ -620,11 +638,11 @@ namespace core {
                  * @return old value corresponding to the entry
                  * @throws UnsupportedMethodException if the <b>put</b> operation
                  *         is not supported by the backing map
-                 * @throws CastException if the class of the specified value
+                 * @throws ClassCastException if the class of the specified value
                  *         prevents it from being stored in the backing map
-                 * @throws ArgumentException if some property of this value
+                 * @throws IllegalArgumentException if some property of this value
                  *         prevents it from being stored in the backing map
-                 * @throws StateException implementations may, but are not
+                 * @throws IllegalStateException implementations may, but are not
                  *         required to, throw this exception if the entry has been
                  *         removed from the backing map.
                  */
@@ -661,17 +679,17 @@ namespace core {
                 const Map<K, V> &m = (Map<K, V> &) o;
                 if (size() != m.size())
                     return false;
-                try {
-                    for (const Entry &e: entrySet()) {
-                        const K &key = e.key();
-                        const V &value = e.value();
-                        if (!Object::equals(m.get(key)))
-                            return false;
-                    }
-                } catch (const KeyNotFoundException &knfe) {
-                    return false;
-                }
-                return true;
+                CORE_TRY_ONLY
+                ({
+                     for (const Entry &e: entrySet()) {
+                         const K &key = e.key();
+                         const V &value = e.value();
+                         if (!Object::equals(value, m.get(key)))
+                             return false;
+                     }
+                     return true;
+                 })
+                return false;
             }
 
             /**
@@ -679,7 +697,7 @@ namespace core {
              * consists of a list of key-value mappings in the order returned by the
              * map's <b> entrySet</b> view's iterator, enclosed in braces
              * (<b> "{}"</b>).  Adjacent mappings are separated by the characters
-             * <b> ", "</b> (comma and space).  Each key-value mapping is rendered as
+             * <b> ", "</b> (comma and diskSpace).  Each key-value mapping is rendered as
              * the key followed by an equals sign (<b> "="</b>) followed by the
              * associated value.  Keys and values are converted to strings as by
              * <b style="color:orange;"> String#valueOf(Object)</b>.
@@ -728,12 +746,12 @@ namespace core {
              * @param defaultValue the mapping of the key
              * @return the value to which the specified key is mapped, or
              * <b>defaultValue</b> if this map contains no mapping for the key
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              * this map (<a href="">optional</a>)
              */
             virtual V &getOrDefault(const K &key, const V &defaultValue) {
-                try { return get(key); }
-                catch (const KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
+                CORE_TRY_ONLY({ return get(key); })
+                return Unsafe::copyInstance(defaultValue, true);
             }
 
             /**
@@ -750,13 +768,12 @@ namespace core {
              * @param defaultValue the mapping of the key
              * @return the value to which the specified key is mapped, or
              * <b>defaultValue</b> if this map contains no mapping for the key
-             * @throws CastException if the key is of an inappropriate type for
+             * @throws ClassCastException if the key is of an inappropriate type for
              * this map (<a href="">optional</a>)
              */
             virtual const V &getOrDefault(const K &key, const V &defaultValue) const {
-                try {
-                    return get(key);
-                } catch (const KeyNotFoundException &/*knfe*/) { return native::Unsafe::copyInstance(defaultValue, true); }
+                CORE_TRY_ONLY({ return get(key); })
+                return Unsafe::copyInstance(defaultValue, true);
             };
 
             /**
@@ -768,10 +785,10 @@ namespace core {
              *
              * @implSpec
              * The implementation is equivalent to, for this <b>map</b>:
-             * <pre> <b>
+             * <pre> <b> @code
              * for (Map.Entry<K, V> entry : map.entries())
              *     action.accept(entry.key(), entry.value());
-             * </b></pre>
+             * @endcode </b></pre>
              *
              * The implementation makes no guarantees about synchronization
              * or atomicity properties of this method. Any implementation providing
@@ -782,7 +799,7 @@ namespace core {
              * @throws ConcurrentException if an entry is found to be
              * removed during iteration
              */
-            virtual void forEach(BiConsumer<K, V> action) {};
+            virtual void forEach(const BinaryActionConsumer<K, V> &action) {};
 
             /**
              * Replaces each entry's value with the result of invoking the given
@@ -798,16 +815,16 @@ namespace core {
              * @param function the function to apply to each entry
              * @throws UnsupportedMethodException if the <b>set</b> operation
              *         is not supported by this map's entry set iterator.
-             * @throws CastException if the class of a replacement value
+             * @throws ClassCastException if the class of a replacement value
              *         prevents it from being stored in this map
              *         (<a href="">optional</a>)
-             * @throws ArgumentException if some property of a replacement value
+             * @throws IllegalArgumentException if some property of a replacement value
              *         prevents it from being stored in this map
              *         (<a href="">optional</a>)
              * @throws ConcurrentException if an entry is found to be
              *         removed during iteration
              */
-            virtual void replaceAll(BiFunction<K, V &, V> function) {};
+            virtual void replaceAll(const BinaryFunction<K, V> &function) {};
 
             /**
              * Removes the entry for the specified key only if it is currently
@@ -816,13 +833,13 @@ namespace core {
              * @implSpec
              * The implementation is equivalent to, for this <b>map</b>:
              *
-             * <pre> <b>
+             * <pre> <b> @code
              * if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
              *     map.remove(key);
              *     return true;
-             * </b> else
+             * } else
              *     return false;
-             * </b></pre>
+             * @endcode </b></pre>
              *
              * <p>The implementation makes no guarantees about synchronization
              * or atomicity properties of this method. Any implementation providing
@@ -833,21 +850,20 @@ namespace core {
              * @param value value expected to be associated with the specified key
              * @return <b>true</b> if the value was removed
              * @throws UnsupportedMethodException if the <b>remove</b> operation
-             *         is not supported by this map
-             *         (<a href="">optional</a>)
-             * @throws CastException if the key or value is of an inappropriate
-             *         type for this map
-             *         (<a href="">optional</a>)
+             *         is not supported by this map (<a href="">optional</a>)
+             * @throws ClassCastException if the key or value is of an inappropriate
+             *         type for this map (<a href="">optional</a>)
              */
             virtual gbool remove(const K &key, const V &value) {
-                try {
-                    V &v = get(key);
-                    if (Object::equals(v, value)) {
-                        remove(key);
-                        return true;
-                    }
-                    return false;
-                } catch (const KeyNotFoundException &) { return false; }
+                CORE_TRY_ONLY
+                ({
+                     V &v = get(key);
+                     if (Object::equals(v, value)) {
+                         remove(key);
+                         return true;
+                     }
+                 })
+                return false;
             }
 
             /**
@@ -857,13 +873,14 @@ namespace core {
              * @implSpec
              * The implementation is equivalent to, for this <b>map</b>:
              *
-             * <pre> <b>
-             * if (map.containsKey(key) && Objects.equals(map.get(key), oldValue)) {
+             * <pre> <b> @code
+             * if (map.containsKey(key) &&
+             *      Objects.equals(map.get(key), oldValue)) {
              *     map.put(key, newValue);
              *     return true;
-             * </b> else
+             * } else
              *     return false;
-             * </b></pre>
+             * @endcode </b></pre>
              *
              * <p>The implementation makes no guarantees about synchronization
              * or atomicity properties of this method. Any implementation providing
@@ -877,20 +894,21 @@ namespace core {
              * @throws UnsupportedMethodException if the <b>put</b> operation
              *         is not supported by this map
              *         (<a href="">optional</a>)
-             * @throws CastException if the class of a specified key or value
+             * @throws ClassCastException if the class of a specified key or value
              *         prevents it from being stored in this map
-             * @throws ArgumentException if some property of a specified key
+             * @throws IllegalArgumentException if some property of a specified key
              *         or value prevents it from being stored in this map
              */
             virtual gbool replace(const K &key, const V &oldValue, const V &newValue) {
-                try {
-                    V &v = get(key);
-                    if (!Object::equals(v, oldValue)) {
-                        put(key, newValue);
-                        return true;
-                    }
-                    return false;
-                } catch (const KeyNotFoundException &) { return false; }
+                CORE_TRY_ONLY
+                ({
+                     V &v = get(key);
+                     if (!Object::equals(v, oldValue)) {
+                         put(key, newValue);
+                         return true;
+                     }
+                 })
+                return false;
             }
 
             /**
@@ -900,10 +918,10 @@ namespace core {
              * @implSpec
              * The implementation is equivalent to, for this <b>map</b>:
              *
-             * <pre> <b>
+             * <pre> <b> @code
              * if (map.containsKey(key)) {
              *     return map.put(key, value);
-             * </b></pre>
+             * } @endcode </b></pre>
              *
              * <p>The implementation makes no guarantees about synchronization
              * or atomicity properties of this method. Any implementation providing
@@ -916,17 +934,142 @@ namespace core {
              * @throws UnsupportedMethodException if the <b>put</b> operation
              *         is not supported by this map
              *         (<a href="">optional</a>)
-             * @throws CastException if the class of the specified key or value
+             * @throws ClassCastException if the class of the specified key or value
              *         prevents it from being stored in this map
              *         (<a href="">optional</a>)
-             * @throws ArgumentException if some property of the specified key
+             * @throws IllegalArgumentException if some property of the specified key
              *         or value prevents it from being stored in this map
              */
             virtual const V &replace(const K &key, const V &value) {
-                V &v = get(key);
-                if (!Object::equals(v, value)) return put(key, value);
-                return v;
+                CORE_TRY_ONLY
+                ({
+                     V &v = get(key);
+                     if (Object::equals(v, value))
+                         return v;
+                 })
+                return put(key, value);
             };
+
+        private:
+            CORE_ALIAS(KEY, typename Class<const K>::Ptr);
+            CORE_ALIAS(VALUE, typename Class<V>::Ptr);
+
+            class SimpleEntry CORE_FINAL : public Entry {
+            private:
+                KEY k;
+                VALUE v;
+            public:
+                CORE_EXPLICIT SimpleEntry(const K &key, V &value) : k(&key), v(&value) {}
+
+                const K &key() const override {
+                    return *k;
+                }
+
+                V &value() override {
+                    return *v;
+                }
+
+                const V &value() const override {
+                    return *v;
+                }
+
+                const V &set(const V &value) override {
+                    if (Object::equals(*v, value))
+                        return *v;
+                    v = Unsafe::copyInstance(value, true);
+                }
+            };
+
+            template<class T= K, class U= V>
+            class ImmutableMap CORE_FINAL : public Map<T, U> {
+            private:
+                Array<Entry> array;
+                ENTRIES entries = {};
+
+            public:
+                CORE_EXPLICIT ImmutableMap(const Array<Entry> &array) : array(Unsafe::moveInstance(array)) {}
+
+                gint size() const override {
+                    return array.length();
+                }
+
+                class EntrySet CORE_FINAL : public Set<Entry> {
+                private:
+                    ImmutableMap &root;
+
+                public:
+                    CORE_EXPLICIT EntrySet(ImmutableMap &root) : root(root) {}
+
+                    gint size() const override {
+                        return root.size();
+                    }
+
+                    gbool contains(const Entry &o) const override {
+                        for (const Entry &entry: root.array) {
+                            if (Object::equals(entry, o))
+                                return true;
+                        }
+                        return false;
+                    }
+
+                    class EntryItr CORE_FINAL : public Iterator<Entry> {
+                    private:
+                        EntrySet &set;
+                        gint i = 0;
+
+                    public:
+                        CORE_EXPLICIT EntryItr(EntrySet &set) : set(set) {}
+
+                        gbool hasNext() const override {
+                            return i < set.size();
+                        }
+
+                        Entry &next() override {
+                            if (!hasNext())
+                                NoSuchElementException().throws(__trace(classname()));
+                            return set.root.array[i++];
+                        }
+
+                        gbool equals(const Object &o) const override {
+                            if (this == &o)
+                                return true;
+                            if (!Class<EntryItr>::hasInstance(o))
+                                return false;
+                            EntryItr const &it = CORE_DYN_CAST(EntryItr const&, o);
+                            return i == it.i && &set == &it.set;
+                        }
+
+                        Object &clone() const override {
+                            return Unsafe::allocateInstance<EntryItr>(*this);
+                        }
+                    };
+
+                    Iterator<const Entry> &iterator() const override {
+                        return Unsafe::allocateInstance<EntryItr>((EntrySet &) *this);
+                    }
+
+                    void clear() override {
+                        UnsupportedOperationException().throws(__trace(classname()));
+                    }
+                };
+
+                Set<Entry> &entrySet() const override {
+                    if (entries == null) {
+                        (ENTRIES &) entries = &Unsafe::allocateInstance<EntrySet>((ImmutableMap &) *this);
+                    }
+                    return *entries;
+                }
+            };
+
+        public:
+            static Entry &entry(const K &key, const V &value) {
+                CORE_TRY_RETHROW_EXCEPTION
+                ({
+                     K &newKey = Unsafe::copyInstance(key, true);
+                     V &newValue = Unsafe::copyInstance(value, true);
+                     return Unsafe::allocateInstance<SimpleEntry>(newKey, newValue);
+                 }, , __trace("core.util.Map"))
+            }
         };
 
 #if CORE_TEMPLATE_TYPE_DEDUCTION

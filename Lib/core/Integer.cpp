@@ -2,21 +2,20 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Integer.h"
-#include "ArgumentException.h"
-#include "NumberFormatException.h"
-#include "Long.h"
-#include "Math.h"
-#include "CastException.h"
+#include <core/NumberFormatException.h>
+#include <core/private/Unsafe.h>
+#include <core/util/Preconditions.h>
 
 namespace core {
-    CORE_ALIAS(U, native::Unsafe);
+
+    using namespace native;
+    using namespace util;
 
     gint Integer::parseInt(const String &str, gint base) {
         if (base < 2 || base > 36)
-            ArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
-        gint length = str.length();
+            IllegalArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
+        gint const length = str.length();
         if (length == 0)
             NumberFormatException("Illegal number format, for input \"\".")
                     .throws(__trace("core.Integer"));
@@ -66,7 +65,7 @@ namespace core {
 
     gint Integer::parseUnsignedInt(const String &str, gint base) {
         if (base < 2 || base > 36)
-            ArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
+            IllegalArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
         gint length = str.length();
         if (length == 0)
             NumberFormatException("Illegal number format, for input \"\".").throws(__trace("core.Integer"));
@@ -200,7 +199,7 @@ namespace core {
     String Integer::toString(gint i, gint base) {
         if (base < 2 || base > 36)
             base = 10;
-        gchar digits[32 + 1]; // 32 chars max + 1 sign char
+        gchar digits[32 + 1]; // 32 chars max + 1 sign gchar
         glong a = Math::abs((glong) i);
         gint j = 32;
         do {
@@ -305,7 +304,9 @@ namespace core {
         return reverseBytes(i);
     }
 
-    Object &Integer::clone() const { return U::createInstance<Integer>(*this); }
+    Object &Integer::clone() const {
+        return Unsafe::allocateInstance<Integer>(*this);
+    }
 
     gbool Integer::equals(const Object &object) const {
         return (this == &object) || Class<Integer>::hasInstance(object) && value == ((Integer &) object).value;
@@ -314,4 +315,71 @@ namespace core {
     gint Integer::compareTo(const Integer &other) const { return compare(value, other.value); }
 
     Integer Integer::valueOf(gint i) { return {i}; }
+
+
+    gint Integer::parseInt(const CharSequence &s, gint beginIndex, gint endIndex, gint base) {
+        try{
+            Preconditions::checkIndexFromRange(beginIndex, endIndex, s.length());
+        } catch (const Exception &ex) {
+            ex.throws(__trace("core.Integer"));
+        }
+        if (base < 2 || base > 36)
+            IllegalArgumentException("Unsupported conversion base.").throws(__trace("core.Integer"));
+        gbool negative = false;
+        gint i = beginIndex;
+        gint limit = -Integer::MAX_VALUE;
+
+        if (i < endIndex) {
+            gchar const firstChar = s.charAt(i);
+            if (firstChar < '0') { // Possible leading "+" or "-"
+                if (firstChar == '-') {
+                    negative = true;
+                    limit = Integer::MIN_VALUE;
+                } else if (firstChar != '+') {
+                    NumberFormatException("Error at index "_S
+                                          + String::valueOf(i - beginIndex) + " in: \""
+                                          + s.subSequence(beginIndex, endIndex).toString() + "\"")
+                            .throws(__trace("core.Integer"));
+                }
+                i++;
+                if (i == endIndex) { // Cannot have lone "+" or "-"
+                    NumberFormatException("Error at index "_S
+                                          + String::valueOf(i - beginIndex) + " in: \""
+                                          + s.subSequence(beginIndex, endIndex).toString() + "\"")
+                            .throws(__trace("core.Integer"));
+                }
+            }
+            gint const multmin = limit / base;
+            gint result = 0;
+            while (i < endIndex) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                gchar const ch = s.charAt(i);
+                gint digit = '0' <= ch && ch <= '9' ? ch - '0' :
+                        'a' <= ch && ch <= 'z' ? ch - 'a':
+                        'A' <= ch && ch <= 'Z' ? ch - 'A': -1;
+                if(digit >= base)
+                    digit = -1;
+                if (digit < 0 || result < multmin) {
+                    NumberFormatException("Error at index "_S
+                                          + String::valueOf(i - beginIndex) + " in: \""
+                                          + s.subSequence(beginIndex, endIndex).toString() + "\"")
+                                          .throws(__trace("core.Integer"));
+                }
+                result *= base;
+                if (result < limit + digit) {
+                    NumberFormatException("Error at index "_S
+                                          + String::valueOf(i - beginIndex) + " in: \""
+                                          + s.subSequence(beginIndex, endIndex).toString() + "\"")
+                            .throws(__trace("core.Integer"));
+                }
+                i++;
+                result -= digit;
+            }
+            return negative ? result : -result;
+        } else {
+            NumberFormatException("For input string: \"" + s.toString() + "\"" +
+                                  (base == 10 ? "" : " under radix " + String::valueOf(base)))
+                                  .throws(__trace("core.Integer"));
+        }
+    }
 } // core

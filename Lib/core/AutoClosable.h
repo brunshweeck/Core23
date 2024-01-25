@@ -23,7 +23,7 @@ namespace core {
      * implement AutoCloseable even though not all of its subclasses or
      * instances will hold releasable resources.  For code that must operate
      * in complete generality, or when it is known that the <b> AutoCloseable</b>
-     * instance requires resource release, it is recommended to use <b> 
+     * INSTANCE requires resource release, it is recommended to use <b>
      * try</b>-with-resources constructions. However, when using facilities such as
      * <b style="color: orange;"> core.io.Stream</b> that support both I/O-based and
      * non-I/O-based forms, <b> try</b>-with-resources blocks are in

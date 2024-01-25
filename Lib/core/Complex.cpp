@@ -2,14 +2,14 @@
 // Created by Brunshweeck on 12/09/2023.
 //
 
-#include <core/private/Unsafe.h>
 #include "Complex.h"
-#include "ArithmeticException.h"
-#include "Math.h"
+#include <core/Math.h>
+#include <core/ArithmeticException.h>
+#include <core/private/Unsafe.h>
 
 namespace core {
 
-    CORE_ALIAS(U, native::Unsafe);
+    using namespace native;
 
     CORE_WARNING_PUSH
     CORE_WARNING_DISABLE_DEPRECATED
@@ -65,7 +65,7 @@ namespace core {
     }
 
     Object &Complex::clone() const {
-        return U::createInstance<Complex>(*this);
+        return Unsafe::allocateInstance<Complex>(rvalue, ivalue);
     }
 
     String Complex::toString() const {
@@ -200,6 +200,9 @@ namespace core {
 
     Complex operator-(const Complex &z) { return z.negate(); }
 
+    CORE_WARNING_POP
+
+    CORE_WARNING_PUSH
     CORE_WARNING_DISABLE_UDL
 
     Complex operator "" J(unsigned long long int imag) { return Complex(0, (gdouble) imag); }

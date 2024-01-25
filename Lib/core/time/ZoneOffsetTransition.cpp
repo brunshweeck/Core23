@@ -12,10 +12,10 @@ namespace core {
         ZoneOffsetTransition ZoneOffsetTransition::of(const LocalDateTime &transition, const ZoneOffset &offsetBefore,
                                                       const ZoneOffset &offsetAfter) {
             if (offsetBefore.equals(offsetAfter)) {
-                ArgumentException("Offsets must not be equal").throws(__trace("core.time.ZoneOffsetTransition"));
+                IllegalArgumentException("Offsets must not be equal").throws(__trace("core.time.ZoneOffsetTransition"));
             }
             if (transition.nano() != 0) {
-                ArgumentException("Nano-of-second must be zero").throws(__trace("core.time.ZoneOffsetTransition"));
+                IllegalArgumentException("Nano-of-second must be zero").throws(__trace("core.time.ZoneOffsetTransition"));
             }
             return ZoneOffsetTransition(transition, offsetBefore, offsetAfter);
         }
@@ -64,17 +64,14 @@ namespace core {
                    (before.equals(offset) || after.equals(offset));
         }
 
-        util::ArrayList<ZoneOffset> ZoneOffsetTransition::validOffsets() const {
+        Array<ZoneOffset> ZoneOffsetTransition::validOffsets() const {
             if (isGap())
                 return {};
-            util::ArrayList<ZoneOffset> arrayList(2);
-            arrayList.add(before);
-            arrayList.add(after);
-            return arrayList;
+            return Array<ZoneOffset>::of(before, after);
         }
 
-        gint ZoneOffsetTransition::compareTo(const ZoneOffsetTransition &transition) const {
-            return Long::compare(epochSecond, transition.epochSecond);
+        gint ZoneOffsetTransition::compareTo(const ZoneOffsetTransition &trans) const {
+            return Long::compare(epochSecond, trans.epochSecond);
         }
 
         gbool ZoneOffsetTransition::equals(const Object &other) const {
@@ -107,7 +104,7 @@ namespace core {
         }
 
         Object &ZoneOffsetTransition::clone() const {
-            return native::Unsafe::createInstance<ZoneOffsetTransition>(*this);
+            return native::Unsafe::allocateInstance<ZoneOffsetTransition>(*this);
         }
 
         ZoneOffsetTransition::ZoneOffsetTransition(glong epochSecond, const ZoneOffset &offsetBefore,

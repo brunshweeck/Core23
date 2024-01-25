@@ -11,17 +11,9 @@
 #include <core/time/Temporal.h>
 #include <core/time/DateTimeFormatter.h>
 
-namespace core::time {
-    class ZoneRules;
-}
 
 namespace core {
     namespace time {
-        class ZoneID;
-
-        class ZoneOffset;
-
-        class ZoneRegion;
 
         /**
          * A time-zone ID, such as <b> Europe/Paris</b> .
@@ -159,7 +151,13 @@ namespace core {
              */
             static const util::Map<String, String> &ZIDs;
 
-            static util::HashMap<String, ZoneID> ID_CACHE;
+            /**
+             * The map containing informations of all available time-zone
+             */
+            static const util::HashMap<String, ZoneRules> tzInfos;
+
+            CORE_FRATERNITY(ZoneRegion);
+            CORE_FRATERNITY(ZoneOffset);
 
         public:
             //-----------------------------------------------------------------------
@@ -170,7 +168,7 @@ namespace core {
              * and converts it to a <b> ZoneId</b> . If the system default time-zone is changed,
              * then the result of this method will also change.
              *
-             * @return the zone ID, not null
+             * @return the zone ID
              * @throws DateTimeException if the converted zone ID has an invalid format
              * @throws ZoneRulesException if the converted zone region ID cannot be found
              */
@@ -186,13 +184,13 @@ namespace core {
              * The set of zone IDs can increase over time, although in a typical application
              * the set of IDs is fixed. Each call to this method is thread-safe.
              *
-             * @return a modifiable copy of the set of zone IDs, not null
+             * @return a modifiable copy of the set of zone IDs
              */
             static const util::Set<String> &availableZones();
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> ZoneID</b>  using its ID using a map
+             * Obtains an INSTANCE of <b> ZoneID</b>  using its ID using a map
              * of aliases to supplement the standard zone IDs.
              * <p>
              * Many users of time-zones use short abbreviations, such as PST for
@@ -201,16 +199,16 @@ namespace core {
              * This method allows a map of string to time-zone to be setup and reused
              * within an application.
              *
-             * @param id  the time-zone ID, not null
-             * @param aliasMap  a map of alias zone IDs (typically abbreviations) to real zone IDs, not null
-             * @return the zone ID, not null
+             * @param id  the time-zone ID
+             * @param aliasMap  a map of alias zone IDs (typically abbreviations) to real zone IDs
+             * @return the zone ID
              * @throws DateTimeException if the zone ID has an invalid format
              * @throws ZoneRulesException if the zone ID is a region ID that cannot be found
              */
             static const ZoneID &of(const String &id, const util::Map<String, String> &aliasMap);
 
             /**
-             * Obtains an instance of <b> ZoneId</b>  from an ID ensuring that the
+             * Obtains an INSTANCE of <b> ZoneId</b>  from an ID ensuring that the
              * ID is valid and available for use.
              * <p>
              * This method parses the ID producing a <b> ZoneId</b>  or <b> ZoneOffset</b> .
@@ -244,38 +242,38 @@ namespace core {
              *  This is compatible with most IDs from <b style="color:orange;"> java.util.TimeZone</b> .
              * </ul>
              *
-             * @param ID  the time-zone ID, not null
-             * @return the zone ID, not null
+             * @param ID  the time-zone ID
+             * @return the zone ID
              * @throws DateTimeException if the zone ID has an invalid format
              * @throws ZoneRulesException if the zone ID is a region ID that cannot be found
              */
-            static const ZoneID &of(const String &ID);
+            static ZoneID &of(const String &ID);
 
             /**
-             * Obtains an instance of <b> ZoneId</b>  wrapping an offset.
+             * Obtains an INSTANCE of <b> ZoneId</b>  wrapping an offset.
              * <p>
              * If the prefix is "GMT", "UTC", or "UT" a <b> ZoneId</b> 
              * with the prefix and the non-zero offset is returned.
              * If the prefix is empty <b> ""</b>  the <b> ZoneOffset</b>  is returned.
              *
-             * @param prefix  the time-zone ID, not null
-             * @param offset  the offset, not null
-             * @return the zone ID, not null
-             * @throws ArgumentException if the prefix is not one of
+             * @param prefix  the time-zone ID
+             * @param offset  the offset
+             * @return the zone ID
+             * @throws IllegalArgumentException if the prefix is not one of
              *     "GMT", "UTC", or "UT", or ""
              */
-            static const ZoneID &of(const String &prefix, const ZoneOffset &offset);
+            static ZoneID &of(const String &prefix, const ZoneOffset &offset);
 
             //-----------------------------------------------------------------------
             /**
-             * Obtains an instance of <b> ZoneId</b>  from a temporal object.
+             * Obtains an INSTANCE of <b> ZoneId</b>  from a temporal object.
              * <p>
              * This obtains a zone based on the specified temporal.
              * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
-             * which this factory converts to an instance of <b> ZoneId</b> .
+             * which this factory converts to an INSTANCE of <b> ZoneId</b> .
              * <p>
              * A <b> TemporalAccessor</b>  represents some form of date and time information.
-             * This factory converts the arbitrary temporal object to an instance of <b> ZoneId</b> .
+             * This factory converts the arbitrary temporal object to an INSTANCE of <b> ZoneId</b> .
              * <p>
              * The conversion will try to obtain the zone in a way that favours region-based
              * zones over offset-based zones using <b style="color:orange;"> TemporalQueries#zone()</b> .
@@ -283,8 +281,8 @@ namespace core {
              * This method matches the signature of the functional interface <b style="color:orange;"> TemporalQuery</b> 
              * allowing it to be used as a query via method reference, <b> ZoneId::from</b> .
              *
-             * @param temporal  the temporal object to convert, not null
-             * @return the zone ID, not null
+             * @param temporal  the temporal object to convert
+             * @return the zone ID
              * @throws DateTimeException if unable to convert to a <b> ZoneId</b> 
              */
             static const ZoneID &from(const Temporal &temporal);
@@ -304,7 +302,7 @@ namespace core {
              * This ID uniquely defines this object.
              * The format of an offset based ID is defined by <b style="color:orange;"> ZoneOffset#getId()</b> .
              *
-             * @return the time-zone unique ID, not null
+             * @return the time-zone unique ID
              */
             virtual String id() const = 0;
 
@@ -317,16 +315,16 @@ namespace core {
              * <p>
              * A time-zone can be invalid if it is deserialized in a Java Runtime which
              * does not have the same rules loaded as the Java Runtime that stored it.
-             * In this case, calling this method will throw a {@code ZoneRulesException}.
+             * In this case, calling this method will throw a <b> ZoneRulesException}.
              * <p>
-             * The rules are supplied by {@link ZoneRulesProvider}. An advanced provider may
+             * The rules are supplied by <b style="color:orange;"> ZoneRulesProvider}. An advanced provider may
              * support dynamic updates to the rules without restarting the Java Runtime.
              * If so, then the result of this method may change over time.
              * Each individual call will be still remain thread-safe.
              * <p>
-             * {@link ZoneOffset} will always return a set of rules where the offset never changes.
+             * <b style="color:orange;"> ZoneOffset} will always return a set of rules where the offset never changes.
              *
-             * @return the rules, not null
+             * @return the rules
              * @throws ZoneRulesException if no rules are available for this ID
              */
             virtual ZoneRules rules() const = 0;
@@ -355,9 +353,9 @@ namespace core {
             gint hash() const override;
 
             /**
-             * Outputs this zone as a {@code String}, using the ID.
+             * Outputs this zone as a <b> String}, using the ID.
              *
-             * @return a string representation of this time-zone ID, not null
+             * @return a string representation of this time-zone ID
              */
             String toString() const override;
 
@@ -372,9 +370,9 @@ namespace core {
              * <p>
              * If no textual mapping is found then the <b style="color:orange;"> #getId() full ID</b>  is returned.
              *
-             * @param style  the length of the text required, not null
-             * @param locale  the locale to use, not null
-             * @return the text value of the zone, not null
+             * @param style  the length of the text required
+             * @param locale  the locale to use
+             * @return the text value of the zone
              */
             virtual String displayName(DateTimeFormatter::TextStyle style, const util::Locale &locale) const;
 

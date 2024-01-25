@@ -64,7 +64,7 @@ namespace core {
              */
             glong query(gint ch, Column c);
 
-            static UnicodeTable instance;
+            static UnicodeTable INSTANCE;
 
             Object &clone() const override;
         };

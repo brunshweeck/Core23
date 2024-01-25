@@ -2,7 +2,7 @@
 // Created by T.N.Brunshweeck on 20/11/2023.
 //
 
-#include <core/ArgumentException.h>
+#include <core/IllegalArgumentException.h>
 #include <core/Integer.h>
 #include "UnicodeTable.h"
 

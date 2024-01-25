@@ -11,10 +11,8 @@
 
 namespace core {
     namespace time {
-        using util::Map;
-        using util::HashMap;
-
-        CORE_ALIAS(U, native::Unsafe);
+        using namespace util;
+        using namespace native;
 
         namespace {
             struct entry CORE_FINAL {
@@ -27,12 +25,11 @@ namespace core {
 
             template<class... Entries>
             Map<String, String> &ofEntries(Entries &&... entries) {
-                HashMap<String, String> &ids = U::createInstance<HashMap<String, String> >();
+                HashMap<String, String> &ids = Unsafe::allocateInstance<HashMap<String, String> >();
                 entry const fbe = entry({}, {});
                 gint eSize = sizeof...(entries);
-                for (int i = 0; i < eSize; ++i) {
-                    Class<int>::isConvertible<int>();
-                    entry const e = Class<entry>::valueExactAt(i + 1, fbe, U::moveInstance(entries)...);
+                for (gint i = 0; i < eSize; ++i) {
+                    entry const e = Class<entry>::valueExactAt(i + 1, fbe, Unsafe::moveInstance(entries)...);
                     ids.put(e.key, e.value);
                 }
                 return ids;
@@ -70,8 +67,6 @@ namespace core {
             entry("HST", "-10:00")
         );
 
-        HashMap<String, ZoneID> ZoneID::ID_CACHE = HashMap<String, ZoneID>(16, 0.75);
-
         gbool ZoneID::equals(const Object &obj) const {
             if (this == &obj) {
                 return true;
@@ -93,15 +88,15 @@ namespace core {
         }
 
         glong ZoneID::until(const Temporal & /*endExclusive*/, Temporal::TemporalUnit /*unit*/) const {
-            UnsupportedMethodException().throws(__trace("core.time.ZoneID"));
+            UnsupportedOperationException().throws(__trace("core.time.ZoneID"));
         }
 
         gint ZoneID::get(TemporalField /*field*/) const {
-            UnsupportedMethodException().throws(__trace("core.time.ZoneID"));
+            UnsupportedOperationException().throws(__trace("core.time.ZoneID"));
         }
 
         glong ZoneID::getLong(TemporalField /*field*/) const {
-            UnsupportedMethodException().throws(__trace("core.time.ZoneID"));
+            UnsupportedOperationException().throws(__trace("core.time.ZoneID"));
         }
 
         const util::Set<String> &ZoneID::availableZones() {
@@ -120,11 +115,11 @@ namespace core {
             } catch (const Exception &ex) { ex.throws(__trace("core.time.ZoneID")); }
         }
 
-        const ZoneID &ZoneID::of(const String &zoneId) {
+        ZoneID &ZoneID::of(const String &zoneId) {
             try {
                 if (zoneId.length() <= 1 || zoneId.startsWith("+") || zoneId.startsWith("-")) {
                     ZoneOffset const offset = ZoneOffset::of(zoneId);
-                    return ID_CACHE.putIfAbsent(offset.id(), offset);
+                    return Unsafe::copyInstance(offset);
                 } else {
                     gbool const checkAvailable = true;
                     gint prefixLength = 0;
@@ -159,19 +154,19 @@ namespace core {
             }
         }
 
-        const ZoneID &ZoneID::of(const String &prefix, const ZoneOffset &offset) {
+        ZoneID &ZoneID::of(const String &prefix, const ZoneOffset &offset) {
             if (prefix.isEmpty()) {
-                return ID_CACHE.putIfAbsent(offset.id(), offset);
+                return Unsafe::copyInstance(offset);
             }
             if (!prefix.equals("GMT") && !prefix.equals("UTC") && !prefix.equals("UT")) {
-                ArgumentException("prefix should be GMT, UTC or UT, is: " + prefix)
+                IllegalArgumentException("prefix should be GMT, UTC or UT, is: " + prefix)
                         .throws(__trace("core.time.ZoneID"));
             }
 
-            ZoneRegion region = offset.totalSeconds() != 0
+            ZoneRegion const region = offset.totalSeconds() != 0
                                     ? ZoneRegion(prefix + offset.id(), offset.rules())
                                     : ZoneRegion(prefix, offset.rules());
-            return ID_CACHE.putIfAbsent(region.id(), region);
+            return Unsafe::copyInstance(region);
         }
 
         const ZoneID &ZoneID::from(const Temporal &temporal) {

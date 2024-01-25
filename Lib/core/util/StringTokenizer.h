@@ -23,7 +23,7 @@ namespace core {
          * The set of delimiters (the characters that separate tokens) may
          * be specified either at creation time or on a per-token basis.
          * <p>
-         * An instance of <b> StringTokenizer</b>  behaves in one of two
+         * An INSTANCE of <b> StringTokenizer</b>  behaves in one of two
          * ways, depending on whether it was created with the
          * <b> returnDelims</b>  flag having the value <b> true</b> 
          * or <b> false</b> :
@@ -166,7 +166,7 @@ namespace core {
             /**
              * Constructs a string tokenizer for the specified string. The
              * tokenizer uses the default delimiter set, which is
-             * <code>"&nbsp;&#92;t&#92;n&#92;r&#92;f"</code>: the space character,
+             * <code>"&nbsp;&#92;t&#92;n&#92;r&#92;f"</code>: the diskSpace character,
              * the tab character, the newline character, the carriage-return character,
              * and the form-feed character. Delimiter characters themselves will
              * not be treated as tokens.
@@ -190,6 +190,12 @@ namespace core {
              */
             gint scanToken(gint startPos) const;
 
+            /**
+             * Skips ahead from startPos and returns the index of the last delimiter
+             * character encountered, or maxPosition if no such delimiter is found.
+             */
+            gint scanLastToken(gint endPos) const;
+
             gbool isDelimiter(gint ch) const;
 
         public:
@@ -209,7 +215,7 @@ namespace core {
              * Returns the next token from this string tokenizer.
              *
              * @return     the next token from this string tokenizer.
-             * @throws     NoSuchItemException  if there are no more tokens in this
+             * @throws     NoSuchElementException  if there are no more tokens in this
              *               tokenizer's string.
              */
             virtual String nextToken();
@@ -225,7 +231,7 @@ namespace core {
              *
              * @param      delim   the new delimiters.
              * @return     the next token, after switching to the new delimiter set.
-             * @throws     NoSuchItemException  if there are no more tokens in this
+             * @throws     NoSuchElementException  if there are no more tokens in this
              *               tokenizer's string.
              */
             virtual String nextToken(const String &delim);
@@ -240,6 +246,20 @@ namespace core {
              * @see     StringTokenizer.nextToken()
              */
              virtual gint countTokens() const;
+
+            /**
+             * Returns the last token returned by nextToken method from this string tokenizer.
+             *
+             * @return     the last token from this string tokenizer.
+             * @throws     NoSuchElementException  if nextToken method has not called
+             * @see nextToken
+             */
+             virtual String lastToken() const;
+
+             /**
+              * Return the current index of cursor from this string tokenizer
+              */
+             virtual gint lastIndex() const;
         };
 
     } // util

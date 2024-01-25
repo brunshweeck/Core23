@@ -19,49 +19,49 @@ namespace core {
         class IOException : public Exception {
         public:
             /**
-             * Constructs an {@code IOException} with {@code null}
+             * Constructs an <b> IOException</b>  with <b> null</b>
              * as its error detail message.
              */
             IOException() = default;
 
             /**
-             * Constructs an {@code IOException} with the specified detail message.
+             * Constructs an <b> IOException</b>  with the specified detail message.
              *
              * @param message
              *        The detail message (which is saved for later retrieval
-             *        by the {@link #getMessage()} method)
+             *        by the <b style="color:orange;"> #getMessage()</b>  method)
              */
             CORE_EXPLICIT IOException(String message);
 
             /**
-             * Constructs an {@code IOException} with the specified detail message
+             * Constructs an <b> IOException</b>  with the specified detail message
              * and cause.
              *
-             * <p> Note that the detail message associated with {@code cause} is
+             * <p> Note that the detail message associated with <b> cause</b>  is
              * <i>not</i> automatically incorporated into this exception's detail
              * message.
              *
              * @param message
              *        The detail message (which is saved for later retrieval
-             *        by the {@link #getMessage()} method)
+             *        by the <b style="color:orange;"> #getMessage()</b>  method)
              *
              * @param cause
              *        The cause (which is saved for later retrieval by the
-             *        {@link #getCause()} method).  (A null value is permitted,
+             *        <b style="color:orange;"> #getCause()</b>  method).  (A null value is permitted,
              *        and indicates that the cause is nonexistent or unknown.)
              */
             CORE_EXPLICIT IOException(String message, const Throwable &cause);
 
             /**
-             * Constructs an {@code IOException} with the specified cause and a
-             * detail message of {@code (cause==null ? null : cause.toString())}
-             * (which typically contains the class and detail message of {@code cause}).
+             * Constructs an <b> IOException</b>  with the specified cause and a
+             * detail message of <b> (cause==null ? null : cause.toString())</b>
+             * (which typically contains the class and detail message of <b> cause</b> ).
              * This constructor is useful for IO exceptions that are little more
              * than wrappers for other throwables.
              *
              * @param cause
              *        The cause (which is saved for later retrieval by the
-             *        {@link #getCause()} method).  (A null value is permitted,
+             *        <b style="color:orange;"> #getCause()</b>  method).  (A null value is permitted,
              *        and indicates that the cause is nonexistent or unknown.)
              */
             CORE_EXPLICIT IOException(const Throwable &cause);

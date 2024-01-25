@@ -5,17 +5,17 @@
 #ifndef CORE23_INDEXEXCEPTION_H
 #define CORE23_INDEXEXCEPTION_H
 
-#include <core/ArgumentException.h>
+#include <core/IllegalArgumentException.h>
 
 namespace core {
 
     /**
-     * Thrown to indicate that an index of some sort (such as to an array, to a
+     * Thrown to indicate that an index of some sort (such as to an root, to a
      * string, or to a list) is out of range.
      * <p>
      * Applications can subclass this class to indicate similar exceptions.
      */
-    class IndexException : public ArgumentException {
+    class IndexException : public IllegalArgumentException {
     public:
 
         /**

@@ -23,10 +23,12 @@ namespace core {
 
         glong FileDescriptor::createHandle(gint fd) const {
             // windows/unix op
+            return fd;
         }
 
         gbool FileDescriptor::checkAppendStatus(gint fd) const {
             // windows/unix op
+            return fd == 1 || fd == 2;
         }
 
         void FileDescriptor::set(gint fd) {

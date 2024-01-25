@@ -48,7 +48,7 @@ namespace core {
     namespace native {
         Object &Unsafe::systemCache() {
             if (SharedSecrets == 0) {
-                SharedSecrets = &createInstance<HashMap<String, Object>>(500, 0.75);
+                SharedSecrets = &allocateInstance<HashMap<String, Object>>(500, 0.75);
             } else {
                 // characters enums
                 {
@@ -84,7 +84,7 @@ namespace core {
                             "MODIFIER_SYMBOL",
                             "OTHER_SYMBOL",
                     };
-                    for (int i = 0; i < 30; ++i) {
+                    for (gint i = 0; i < 30; ++i) {
                         EnumCAT(String(str[i] + 0), i);
                     }
                 };
@@ -115,7 +115,7 @@ namespace core {
                             "FIRST_STRONG_ISOLATE",
                             "POP_DIRECTIONAL_ISOLATE",
                     };
-                    for (int i = 0; i < 24; ++i) {
+                    for (gint i = 0; i < 24; ++i) {
                         EnumDIR(String(str[i] + 0), i);
                     }
                 };
@@ -286,7 +286,7 @@ namespace core {
                             "NAG_MUNDARI",
                             "UNKNOWN",
                     };
-                    for (int i = 0; i < 164; ++i) {
+                    for (gint i = 0; i < 164; ++i) {
                         EnumUNS(String(str[i] + 0), i);
                     }
                 };
@@ -622,7 +622,7 @@ namespace core {
                             "CJK_UNIFIED_IDEOGRAPHS_EXTENSION_H",
                             "UNASSIGNED",
                     };
-                    for (int i = 0; i < 329; ++i) {
+                    for (gint i = 0; i < 329; ++i) {
                         EnumUNB(String(str[i] + 0), i);
                     }
                 };
@@ -647,7 +647,7 @@ namespace core {
                             "COMPAT",
                             "FRACTION",
                     };
-                    for (int i = 0; i < 18; ++i) {
+                    for (gint i = 0; i < 18; ++i) {
                         EnumDEC(String(str[i] + 0), i);
                     }
                 };

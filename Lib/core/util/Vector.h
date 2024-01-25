@@ -11,8 +11,8 @@ namespace core {
     namespace util {
         
         /**
-         * The <b>Vector</b> class implements a growable array of
-         * objects. Like an array, it contains components that can be
+         * The <b>Vector</b> class implements a growable root of
+         * objects. Like an root, it contains components that can be
          * accessed using an integer index. However, the size of a
          * <b>Vector</b> can grow or shrink as needed to accommodate
          * adding and removing items after the <b>Vector</b> has been created.
@@ -58,6 +58,15 @@ namespace core {
          */
         template<class E>
         class Vector : public List<E> {
+        protected:
+
+            CORE_ALIAS(Unsafe, native::Unsafe);
+            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
+            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E &>);
+            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
+            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
+
+        public:
 
         };
 

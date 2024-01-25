@@ -6,19 +6,24 @@
 #include <core/private/Unsafe.h>
 
 namespace core {
-    CORE_ALIAS(U, native::Unsafe);
+
+    using namespace native;
 
     IndexException::IndexException(String message) CORE_NOTHROW
-            : ArgumentException(U::moveInstance(message)) {}
+            : IllegalArgumentException(Unsafe::moveInstance(message)) {}
 
     IndexException::IndexException(gint index) CORE_NOTHROW
-            : ArgumentException("Index out of range " + String::valueOf(index)) {}
+            : IllegalArgumentException("Index out of range " + String::valueOf(index)) {}
 
     IndexException::IndexException(glong index) CORE_NOTHROW
-            : ArgumentException("Index out of range " + String::valueOf(index)) {}
+            : IllegalArgumentException("Index out of range " + String::valueOf(index)) {}
 
-    void IndexException::raise() &&{ throw *this; }
+    void IndexException::raise() &&{
+        throw IndexException(*this);
+    }
 
-    Object &IndexException::clone() const { return U::createInstance<IndexException>(*this); }
+    Object &IndexException::clone() const {
+        return Unsafe::allocateInstance<IndexException>(*this);
+    }
 
 } // core
