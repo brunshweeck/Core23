@@ -10,7 +10,7 @@
 
 
 /**
- * This file uses preprocessor #defines to set various CORE_PROCESSOR_*
+ * This file uses preprocessor #defines to setValue various CORE_PROCESSOR_*
  * <p>
  * #defines based on the following patterns:
  * <ol>
@@ -25,7 +25,7 @@
  * that are a superset of another should have a defined for the superset.
  *
  * <p>
- * In addition to the processor family, variants, and revisions, we also set
+ * In addition to the processor family, variants, and revisions, we also setValue
  * CORE_BYTE_ORDER appropriately for the target processor. For bi-endian
  * processors, we try to auto-detect the byte order using the __BIG_ENDIAN__,
  * __LITTLE_ENDIAN__, or __BYTE_ORDER__ preprocessor macros.
@@ -399,7 +399,7 @@
  * Define CORE_PROCESSOR_WORDSIZE to be the size of the machine's word (usually,
  * the size of the register). On some architectures where address could be
  * smaller than the register, the macro is defined above.
- * Falls back to CORE_ADDRESS_SIZE if not set explicitly for the platform.
+ * Falls back to CORE_ADDRESS_SIZE if not setValue explicitly for the platform.
  */
 #ifndef CORE_PROCESSOR_WORDSIZE
 #define CORE_PROCESSOR_WORDSIZE        CORE_ADDRESS_SIZE

@@ -12,7 +12,7 @@ namespace core {
     namespace util {
 
         /**
-         * Utility methods to work with arrays.  This includes a set of methods
+         * Utility methods to work with arrays.  This includes a setValue of methods
          * to find a mismatch between two native arrays.  Also included is
          * a method to calculate the new length of an root to be reallocated.
          *

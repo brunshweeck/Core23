@@ -207,7 +207,7 @@ namespace core {
          * An additional case occurs with instances of <b style="color: orange;">sorted Set</b> and
          * <b style="color: orange;">sorted Map</b>. These collections can be created with a
          * <b style="color: orange;">Comparator</b> that imposes an ordering on
-         * the set elements or map keys. Such a collection is serializable only if the provided
+         * the setValue elements or map keys. Such a collection is serializable only if the provided
          * <b>Comparator</b> is also serializable.
          *
          * <p>
@@ -232,10 +232,6 @@ namespace core {
          */
         template<class E>
         class Collection : public Object {
-        protected:
-            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
-            CORE_ALIAS(ElementFilter, function::Predicate<E>);
-
         public:
 
             /**
@@ -248,7 +244,9 @@ namespace core {
             /**
              * Returns <b>true</b> if this collection contains no elements.
              */
-            inline gbool isEmpty() const { return size() == 0; }
+            inline gbool isEmpty() const {
+                return size() == 0;
+            }
 
             /**
              * Returns <b>true</b> if this collection contains the specified element.
@@ -263,17 +261,29 @@ namespace core {
              */
             virtual gbool contains(const E &o) const {
                 Iterator<const E> &it = iterator();
-                while (it.hasNext()) if (o.equals(it.next())) return true;
+                while (it.hasNext()) {
+                    if (Object::equals(o, it.next())) {
+                        return true;
+                    }
+                }
                 return false;
             }
 
             /**
              * Returns an iterator over the elements in this collection.  There are no
              * guarantees concerning the order in which the elements are returned
-             * (unless this collection is an INSTANCE of some class that provides a
+             * (unless this collection is an instance of some class that provides a
              * guarantee).
              */
             virtual Iterator<const E> &iterator() const = 0;
+
+            /**
+             * Returns an iterator over the elements in this collection.  There are no
+             * guarantees concerning the order in which the elements are returned
+             * (unless this collection is an instance of some class that provides a
+             * guarantee).
+             */
+            virtual Iterator<E> &iterator() = 0;
 
             /**
              * Performs the given action for each element of the <b>Iterable</b>
@@ -288,17 +298,49 @@ namespace core {
              *
              * @implSpec
              * <p>The default implementation behaves as if:
-             * <pre><b>
+             * <pre><b> @code
              *     for (T t : this)
              *         action.accept(t);
-             * </b></pre>
+             * @endcode </b></pre>
              *
              * @param action The action to be performed for each element
              */
-            virtual void forEach(const ActionConsumer &action) const {
+            virtual void forEach(const Consumer<E> &action) const {
                 Iterator<const E> &it = iterator();
-                while (it.hasNext())
+                while (it.hasNext()) {
                     action.accept(it.next());
+                }
+            }
+
+            /**
+             * Performs the given action for each element of the <b>Iterable</b>
+             * until all elements have been processed or the action throws an
+             * exception.  Actions are performed in the order of iteration, if that
+             * order is specified.  Exceptions thrown by the action are relayed to the
+             * caller.
+             * <p>
+             * The behavior of this method is unspecified if the action performs
+             * side-effects that modify the underlying source of elements, unless an
+             * overriding class has specified a concurrent modification policy.
+             *
+             * @implSpec
+             * <p>The default implementation behaves as if:
+             * <pre><b> @code
+             *     for (T t : this)
+             *         action.accept(t);
+             * @endcode </b></pre>
+             *
+             * @param action The action to be performed for each element
+             */
+            virtual void forEach(const Consumer<E &> &action) {
+                if (isEmpty()) {
+                    return;
+                }
+                Iterator<E> &it = iterator();
+                while (it.hasNext()) {
+                    action.accept(it.next());
+                }
+                Unsafe::destroyInstance(it);
             }
 
             /**
@@ -321,17 +363,18 @@ namespace core {
              *          is <b> Object</b>, containing all of the elements in this collection
              */
             virtual Array<E> toArray() const {
-                if(isEmpty())
+                if (isEmpty())
                     return {};
                 // Estimate the size of root; be prepared to see more or fewer elements
                 Iterator<const E> &it = iterator();
-                CORE_IGNORE_DEPRECATIONS(Array<E> r = Array<E>(size());)
+                Array<E> r = Array<E>(size());
                 for (gint i = 0; i < r.length(); i++) {
                     if (!it.hasNext()) {
                         // fewer elements than expected
-                        CORE_IGNORE_DEPRECATIONS(Array<E> copy = Array<E>(i);)
-                        for (gint j = 0; j < i; ++j)
+                        Array<E> copy = Array<E>(i);
+                        for (gint j = 0; j < i; ++j) {
                             copy.set(j, r[j]);
+                        }
                         return copy;
                     }
                     r.set(i, it.next());
@@ -372,7 +415,10 @@ namespace core {
              * @throws IllegalStateException if the element cannot be added at this
              *         time due to insertion restrictions
              */
-            virtual gbool add(const E & /*e*/) { UnsupportedOperationException().throws(__trace("core.util.Collection")); }
+            virtual gbool add(const E &e) {
+                CORE_IGNORE(e);
+                UnsupportedOperationException().throws(__trace("core.util.Collection"));
+            }
 
             /**
              * Removes a single INSTANCE of the specified element from this
@@ -390,7 +436,7 @@ namespace core {
              *         is not supported by this collection
              */
             virtual gbool remove(const E &o) {
-                Iterator<const E> &it = iterator();
+                Iterator<E> &it = iterator();
                 while (it.hasNext()) {
                     if (o.equals(it.next())) {
                         it.remove();
@@ -411,13 +457,17 @@ namespace core {
              * @see    contains(Object)
              */
             virtual gbool containsAll(const Collection &c) const {
-                if (c.size() == 0)
+                if (c.size() == 0) {
                     return false;
-                if (this == &c)
+                }
+                if (this == &c) {
                     return true;
-                for (const E &e: c)
-                    if (!contains((const E &) e))
+                }
+                for (const E &e: c) {
+                    if (!contains(e)) {
                         return false;
+                    }
+                }
                 return true;
             }
 
@@ -444,9 +494,11 @@ namespace core {
              */
             virtual gbool addAll(const Collection &c) {
                 gbool modified = false;
-                for (const E &e: c)
-                    if (add((const E &) e))
+                for (const E &e: c) {
+                    if (add(e)) {
                         modified = true;
+                    }
+                }
                 return modified;
             }
 
@@ -469,7 +521,7 @@ namespace core {
              */
             virtual gbool removeAll(const Collection &c) {
                 gbool modified = false;
-                Iterator<const E> &it = iterator();
+                Iterator<E> &it = iterator();
                 while (it.hasNext()) {
                     if (c.contains(it.next())) {
                         it.remove();
@@ -499,9 +551,9 @@ namespace core {
              *         matching element cannot be removed or if, in general, removal is not
              *         supported.
              */
-            virtual gbool removeIf(const ElementFilter &filter) {
+            virtual gbool removeIf(const Predicate<E> &filter) {
                 gbool modified = false;
-                Iterator<const E> &it = iterator();
+                Iterator<E> &it = iterator();
                 while (it.hasNext()) {
                     if (filter.test(it.next())) {
                         it.remove();
@@ -529,9 +581,9 @@ namespace core {
              */
             virtual gbool retainAll(const Collection &c) {
                 gbool modified = false;
-                Iterator<const E> &it = iterator();
+                Iterator<E> &it = iterator();
                 while (it.hasNext()) {
-                    if (!c.contains((const E &) it.next())) {
+                    if (!c.contains(it.next())) {
                         it.remove();
                         modified = true;
                     }
@@ -547,7 +599,7 @@ namespace core {
              *         is not supported by this collection
              */
             virtual void clear() {
-                Iterator<const E> &it = iterator();
+                Iterator<E> &it = iterator();
                 while (it.hasNext()) {
                     it.next();
                     it.remove();
@@ -575,7 +627,7 @@ namespace core {
              * and sets to other sets.  Thus, a custom <b>equals</b> method for a
              * collection class that implements neither the <b>List</b> nor
              * <b>Set</b> interface must return <b>false</b> when this collection
-             * is compared to any list or set.  (By the same logic, it is not possible
+             * is compared to any list or setValue.  (By the same logic, it is not possible
              * to write a class that correctly implements both the <b>Set</b> and
              * <b>List</b> interfaces.)
              *
@@ -587,7 +639,7 @@ namespace core {
              * @see Set.equals(Object)
              * @see List.equals(Object)
              */
-            gbool equals(const Object &o) const override { return Object::equals(o); }
+            gbool equals(const Object &o) const override = 0;
 
             /**
              * Returns a string representation of this collection.  The string
@@ -606,48 +658,53 @@ namespace core {
                 sb.append('[');
                 for (;;) {
                     const E &e = it.next();
-                    if (Object::equals(e)) sb.append("?"); else sb.append(e);
-                    if (!it.hasNext()) return sb.append(']').toString();
+                    if (Object::equals(e)) {
+                        sb.append(u"?"_S);
+                    } else {
+                        sb.append(e);
+                    }
+                    if (!it.hasNext())
+                        return sb.append(']').toString();
                     sb.append(',').append(' ');
                 }
             }
 
-        protected:
+        private:
             // Native iteration
             // for(auto& o: c) {
             //    ...
             // }
             //
-            template<class T = E>
+            template<class T>
             class LinearIterator CORE_FINAL : public Object {
             private:
-                const Collection &root;
+                Collection &root;
 
-                Array<E> array = {};
+                Array<E> array;
 
-                gint cursor = {};
-
-                CORE_FRATERNITY(Collection);
-
-                CORE_FRATERNITY_T1(List);
+                gint cursor;
 
             public:
                 /**
                  * Create new Native Iterator INSTANCE to mark begin of iterations
                  */
-                LinearIterator(const Collection &root, const Array<E> &a) : root(root), array(a) {}
+                CORE_EXPLICIT LinearIterator(Collection &root, Array<E> a) :
+                        root(root), array(Unsafe::moveInstance(a)), cursor(0) {}
 
                 /**
                  * Create new Native Iterator INSTANCE to mark the end of iterations
                  */
-                LinearIterator(const Collection &root) : root(root), cursor(root.size()) {}
+                CORE_EXPLICIT LinearIterator(Collection &root) :
+                        root(root), array(), cursor(root.size()) {}
 
                 gbool equals(const Object &o) const override {
-                    if (this == &o)
+                    if (this == &o) {
                         return true;
-                    if (!Class<LinearIterator>::hasInstance(o))
+                    }
+                    if (!Class<LinearIterator>::hasInstance(o)) {
                         return false;
-                    const LinearIterator &it = (LinearIterator &) o;
+                    }
+                    const LinearIterator &it = (LinearIterator const &) o;
                     return it.cursor == cursor && &it.root == &root;
                 }
 
@@ -660,7 +717,9 @@ namespace core {
                     return (T &) array[cursor++];
                 }
 
-                inline LinearIterator &operator++() { return *this; }
+                inline LinearIterator &operator++() {
+                    return *this;
+                }
             };
 
         public:
@@ -669,14 +728,36 @@ namespace core {
              * to mark the beginning of foreach statement.
              * by default collection not support modification during each
              */
-            inline LinearIterator<const E> begin() const { return LinearIterator<const E>(*this, toArray()); }
+            inline LinearIterator<const E> begin() const {
+                return LinearIterator<const E>((Collection &) *this, toArray());
+            }
 
             /**
              * Return The native iterator (The C iterator) used
              * to mark the ending of foreach statement.
              * by default collection not support modification during each
              */
-            inline LinearIterator<const E> end() const { return LinearIterator<const E>(*this); }
+            inline LinearIterator<const E> end() const {
+                return LinearIterator<const E>((Collection &) *this);
+            }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the beginning of foreach statement.
+             * by default collection not support modification during each
+             */
+            inline LinearIterator<E> begin() {
+                return LinearIterator<E>(*this, toArray());
+            }
+
+            /**
+             * Return The native iterator (The C iterator) used
+             * to mark the ending of foreach statement.
+             * by default collection not support modification during each
+             */
+            inline LinearIterator<E> end() {
+                return LinearIterator<E>(*this);
+            }
 
             CORE_STATIC_ASSERT(Class<Object>::template isSuper<E>(),
                                "The valid parameters type must be a class deriving from core.Object");

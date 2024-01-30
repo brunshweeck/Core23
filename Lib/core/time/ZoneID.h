@@ -24,7 +24,7 @@ namespace core {
          * <ul>
          * <li>Fixed offsets - a fully resolved offset from UTC/Greenwich, that uses
          *  the same offset for all local date-times
-         * <li>Geographical regions - an area where a specific set of rules for finding
+         * <li>Geographical regions - an area where a specific setValue of rules for finding
          *  the offset from UTC/Greenwich apply
          * </ul>
          * Most fixed offsets are represented by <b style="color:orange;"> ZoneOffset</b> .
@@ -37,9 +37,9 @@ namespace core {
          * frequently, whereas the ID is stable.
          * <p>
          * The distinction has other effects. Serializing the <b> ZoneId</b>  will only send
-         * the ID, whereas serializing the rules sends the entire data set.
+         * the ID, whereas serializing the rules sends the entire data setValue.
          * Similarly, a comparison of two IDs only examines the ID, whereas
-         * a comparison of two rules examines the entire data set.
+         * a comparison of two rules examines the entire data setValue.
          *
          * <h2>Time-zone IDs</h2>
          * The ID is unique within the system.
@@ -175,16 +175,16 @@ namespace core {
             static const ZoneID &systemDefault();
 
             /**
-             * Gets the set of available zone IDs.
+             * Gets the setValue of available zone IDs.
              * <p>
-             * This set includes the string form of all available region-based IDs.
-             * Offset-based zone IDs are not included in the returned set.
+             * This setValue includes the string form of all available region-based IDs.
+             * Offset-based zone IDs are not included in the returned setValue.
              * The ID can be passed to <b style="color:orange;"> of(String)</b>  to create a <b> ZoneId</b> .
              * <p>
-             * The set of zone IDs can increase over time, although in a typical application
-             * the set of IDs is fixed. Each call to this method is thread-safe.
+             * The setValue of zone IDs can increase over time, although in a typical application
+             * the setValue of IDs is fixed. Each call to this method is thread-safe.
              *
-             * @return a modifiable copy of the set of zone IDs
+             * @return a modifiable copy of the setValue of zone IDs
              */
             static const util::Set<String> &availableZones();
 
@@ -235,9 +235,9 @@ namespace core {
              * <li>All other IDs are parsed as region-based zone IDs. Region IDs must
              *  match the regular expression <b> [A-Za-z][A-Za-z0-9~/._+-]+</b> 
              *  otherwise a <b> DateTimeException</b>  is thrown. If the zone ID is not
-             *  in the configured set of IDs, <b> ZoneRulesException</b>  is thrown.
+             *  in the configured setValue of IDs, <b> ZoneRulesException</b>  is thrown.
              *  The detailed format of the region ID depends on the group supplying the data.
-             *  The default set of data is supplied by the IANA Time ZoneID Database (TZDB).
+             *  The default setValue of data is supplied by the IANA Time ZoneID Database (TZDB).
              *  This has region IDs of the form '{area</b> /{city</b> ', such as 'Europe/Paris' or 'America/New_York'.
              *  This is compatible with most IDs from <b style="color:orange;"> java.util.TimeZone</b> .
              * </ul>
@@ -269,7 +269,7 @@ namespace core {
              * Obtains an INSTANCE of <b> ZoneId</b>  from a temporal object.
              * <p>
              * This obtains a zone based on the specified temporal.
-             * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
+             * A <b> TemporalAccessor</b>  represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> ZoneId</b> .
              * <p>
              * A <b> TemporalAccessor</b>  represents some form of date and time information.
@@ -322,7 +322,7 @@ namespace core {
              * If so, then the result of this method may change over time.
              * Each individual call will be still remain thread-safe.
              * <p>
-             * <b style="color:orange;"> ZoneOffset} will always return a set of rules where the offset never changes.
+             * <b style="color:orange;"> ZoneOffset} will always return a setValue of rules where the offset never changes.
              *
              * @return the rules
              * @throws ZoneRulesException if no rules are available for this ID

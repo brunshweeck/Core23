@@ -231,6 +231,18 @@ namespace core {
              */
             virtual gbool setReadOnly(const File &f) const = 0;
 
+            /**
+             * Return the name of current owner of specified file in
+             * format: domainName\\accountName
+             */
+            virtual String ownerName(const File &f) const = 0;
+
+            /**
+             * Set the name of current owner of specified file in
+             * format: domainName\\accountName or accountName
+             */
+            virtual gbool setOwnerName(const File &f, const String &newOwner) const = 0;
+
 
             /* -- Filesystem interface -- */
 

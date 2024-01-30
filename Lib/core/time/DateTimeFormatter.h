@@ -351,19 +351,19 @@ namespace core {
          * only performs the first phase, leaving the result unresolved.
          * As such, it is essentially a low-level operation.
          * <p>
-         * The resolve phase is controlled by two parameters, set on this class.
+         * The resolve phase is controlled by two parameters, setValue on this class.
          * <p>
          * The <b style="color:orange;"> ResolverStyle</b>  is an enum that offers three different approaches,
          * strict, smart and lenient. The smart option is the default.
-         * It can be set using <b style="color:orange;"> withResolverStyle(ResolverStyle)</b> .
+         * It can be setValue using <b style="color:orange;"> withResolverStyle(ResolverStyle)</b> .
          * <p>
          * The <b style="color:orange;"> withResolverFields(TemporalField...)</b>  parameter allows the
-         * set of fields that will be resolved to be filtered before resolving starts.
+         * setValue of fields that will be resolved to be filtered before resolving starts.
          * For example, if the formatter has parsed a year, m, day-of-m
          * and day-of-year, then there are two approaches to resolve a date:
          * (year + m + day-of-m) and (year + day-of-year).
          * The resolver fields allows one of the two approaches to be selected.
-         * If no resolver fields are set then both approaches must result in the same date.
+         * If no resolver fields are setValue then both approaches must result in the same date.
          * <p>
          * Resolving separate fields to form a complete date and time is a complex
          * process with behaviour distributed across a number of classes.
@@ -371,7 +371,7 @@ namespace core {
          * <ol>
          * <li>The chronology is determined.
          * The chronology of the result is either the chronology that was parsed,
-         * or if no chronology was parsed, it is the chronology set on this class,
+         * or if no chronology was parsed, it is the chronology setValue on this class,
          * or if that is null, it is <b> IsoChronology</b> .
          * <li>The <b> ChronoField</b>  date fields are resolved.
          * This is achieved using <b style="color:orange;"> Chronology#resolveDate(Map, ResolverStyle)</b> .
@@ -393,7 +393,7 @@ namespace core {
          * <li> If a second-based field is present, but <b> LocalTime</b>  was not parsed,
          * then the resolver ensures that milli, micro and nano second values are
          * available to meet the contract of <b style="color:orange;"> ChronoField</b> .
-         * These will be set to zero if missing.
+         * These will be setValue to zero if missing.
          * <li>If both date and time were parsed and either an offset or zone is present,
          * the field <b style="color:orange;"> ChronoField#INSTANT_SECONDS</b>  is created.
          * If an offset was parsed then the offset will be combined with the

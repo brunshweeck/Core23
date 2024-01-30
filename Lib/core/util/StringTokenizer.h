@@ -20,7 +20,7 @@ namespace core {
          * identifiers, numbers, and quoted strings, nor do they recognize
          * and skip comments.
          * <p>
-         * The set of delimiters (the characters that separate tokens) may
+         * The setValue of delimiters (the characters that separate tokens) may
          * be specified either at creation time or on a per-token basis.
          * <p>
          * An INSTANCE of <b> StringTokenizer</b>  behaves in one of two
@@ -126,7 +126,7 @@ namespace core {
             IntArray delims;
 
             /**
-             * Set maxDelim to the highest char in the delimiter set.
+             * Set maxDelim to the highest char in the delimiter setValue.
              */
             void setMaxDelimiter();
 
@@ -165,7 +165,7 @@ namespace core {
 
             /**
              * Constructs a string tokenizer for the specified string. The
-             * tokenizer uses the default delimiter set, which is
+             * tokenizer uses the default delimiter setValue, which is
              * <code>"&nbsp;&#92;t&#92;n&#92;r&#92;f"</code>: the diskSpace character,
              * the tab character, the newline character, the carriage-return character,
              * and the form-feed character. Delimiter characters themselves will
@@ -222,15 +222,15 @@ namespace core {
 
             /**
              * Returns the next token in this string tokenizer's string. First,
-             * the set of characters considered to be delimiters by this
+             * the setValue of characters considered to be delimiters by this
              * <b> StringTokenizer</b>  object is changed to be the characters in
              * the string <b> delim</b> . Then the next token in the string
              * after the current position is returned. The current position is
-             * advanced beyond the recognized token.  The new delimiter set
+             * advanced beyond the recognized token.  The new delimiter setValue
              * remains the default after this call.
              *
              * @param      delim   the new delimiters.
-             * @return     the next token, after switching to the new delimiter set.
+             * @return     the next token, after switching to the new delimiter setValue.
              * @throws     NoSuchElementException  if there are no more tokens in this
              *               tokenizer's string.
              */
@@ -242,7 +242,7 @@ namespace core {
              * exception. The current position is not advanced.
              *
              * @return  the number of tokens remaining in the string using the current
-             *          delimiter set.
+             *          delimiter setValue.
              * @see     StringTokenizer.nextToken()
              */
              virtual gint countTokens() const;

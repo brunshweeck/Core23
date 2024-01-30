@@ -195,7 +195,7 @@ namespace core {
              * Obtains an INSTANCE of <b> ZoneOffset</b>  from a temporal object.
              * <p>
              * This obtains an offset based on the specified temporal.
-             * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
+             * A <b> TemporalAccessor</b>  represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> ZoneOffset</b> .
              * <p>
              * A <b> TemporalAccessor</b>  represents some form of date and time information.

@@ -51,6 +51,15 @@
 #include <core/charset/private/UTF32LE.h>
 #include <core/charset/private/UTF32LE_BOM.h>
 #include <core/charset/private/UTF8.h>
+#include <core/charset/private/Windows1250.h>
+#include <core/charset/private/Windows1251.h>
+#include <core/charset/private/Windows1252.h>
+#include <core/charset/private/Windows1253.h>
+#include <core/charset/private/Windows1254.h>
+#include <core/charset/private/Windows1255.h>
+#include <core/charset/private/Windows1256.h>
+#include <core/charset/private/Windows1257.h>
+#include <core/charset/private/Windows1258.h>
 
 namespace core {
     namespace charset {
@@ -59,7 +68,7 @@ namespace core {
         using namespace util;
         using namespace native;
 
-        Set<Charset> &Charset::available = Unsafe::allocateInstance<TreeSet<Charset>>();
+        Set<Charset> &Charset::available = Unsafe::allocateInstance<HashSet<Charset>>();
 
         void Charset::checkName(const String &s) {
             gint const n = s.length();
@@ -104,18 +113,19 @@ namespace core {
         }
 
         io::ByteBuffer &Charset::encode(const String &str) const {
-            CORE_TRY_RETHROW_EXCEPTION
-            ({
-                 return encode(CharBuffer::wrap(str));
-             }, , __trace("core.charset.Charset"))
+            try {
+                return encode(CharBuffer::wrap(str));
+            } catch (const Exception &ex) {
+                ex.throws(__trace(u"core.charset.Charset"_S));
+            }
         }
 
         gbool Charset::isSupported(const String &charsetName) {
             for (const Charset &cs: available) {
                 if (cs.name().equalsIgnoreCase(charsetName))
                     return true;
-                for (String const& name: cs.aliases()){
-                    if(name.equalsIgnoreCase(charsetName))
+                for (String const &name: cs.aliases()) {
+                    if (name.equalsIgnoreCase(charsetName))
                         return true;
                 }
             }
@@ -124,7 +134,8 @@ namespace core {
 
         const Charset &Charset::forName(const String &charsetName) {
             CORE_TRY_RETHROW_EXCEPTION(checkName(charsetName);, , __trace("core.charset.Charset"))
-            if(available.size() < 35) {
+            util::Set<Charset> &available = Charset::available;
+            if (available.size() < 45) {
                 available.add(CESU8::INSTANCE);
                 available.add(GB18030::INSTANCE);
                 available.add(GBK::INSTANCE);
@@ -154,6 +165,7 @@ namespace core {
                 available.add(KOI8_U::INSTANCE);
                 available.add(SJIS::INSTANCE);
                 available.add(US_ASCII::INSTANCE);
+                available.add(UTF8::INSTANCE);
                 available.add(UTF16::INSTANCE);
                 available.add(UTF16BE::INSTANCE);
                 available.add(UTF16LE::INSTANCE);
@@ -163,12 +175,21 @@ namespace core {
                 available.add(UTF32BE_BOM::INSTANCE);
                 available.add(UTF32LE::INSTANCE);
                 available.add(UTF32LE_BOM::INSTANCE);
+                available.add(Windows1250::INSTANCE);
+                available.add(Windows1251::INSTANCE);
+                available.add(Windows1252::INSTANCE);
+                available.add(Windows1253::INSTANCE);
+                available.add(Windows1254::INSTANCE);
+                available.add(Windows1255::INSTANCE);
+                available.add(Windows1256::INSTANCE);
+                available.add(Windows1257::INSTANCE);
+                available.add(Windows1258::INSTANCE);
             }
             for (const Charset &cs: available) {
                 if (cs.name().equalsIgnoreCase(charsetName))
                     return cs;
-                for (String const& name: cs.aliases()){
-                    if(name.equalsIgnoreCase(charsetName))
+                for (String const &name: cs.aliases()) {
+                    if (name.equalsIgnoreCase(charsetName))
                         return cs;
                 }
             }
@@ -177,7 +198,8 @@ namespace core {
 
         const Charset &Charset::forName(const String &charsetName, const Charset &fallback) {
             CORE_TRY_RETHROW_EXCEPTION(checkName(charsetName);, return fallback;, __trace("core.charset.Charset"))
-            if(available.size() < 35) {
+            util::Set<Charset> &available = Charset::available;
+            if (available.size() < 45) {
                 available.add(CESU8::INSTANCE);
                 available.add(GB18030::INSTANCE);
                 available.add(GBK::INSTANCE);
@@ -207,6 +229,7 @@ namespace core {
                 available.add(KOI8_U::INSTANCE);
                 available.add(SJIS::INSTANCE);
                 available.add(US_ASCII::INSTANCE);
+                available.add(UTF8::INSTANCE);
                 available.add(UTF16::INSTANCE);
                 available.add(UTF16BE::INSTANCE);
                 available.add(UTF16LE::INSTANCE);
@@ -216,13 +239,23 @@ namespace core {
                 available.add(UTF32BE_BOM::INSTANCE);
                 available.add(UTF32LE::INSTANCE);
                 available.add(UTF32LE_BOM::INSTANCE);
+                available.add(Windows1250::INSTANCE);
+                available.add(Windows1251::INSTANCE);
+                available.add(Windows1252::INSTANCE);
+                available.add(Windows1253::INSTANCE);
+                available.add(Windows1254::INSTANCE);
+                available.add(Windows1255::INSTANCE);
+                available.add(Windows1256::INSTANCE);
+                available.add(Windows1257::INSTANCE);
+                available.add(Windows1258::INSTANCE);
             }
             for (const Charset &cs: available) {
                 if (cs.name().equalsIgnoreCase(charsetName))
                     return cs;
-                for (String const& name: cs.aliases()){
-                    if(name.equalsIgnoreCase(charsetName))
+                for (String const &name: cs.aliases()) {
+                    if (name.equalsIgnoreCase(charsetName)) {
                         return cs;
+                    }
                 }
             }
             return fallback;
@@ -248,7 +281,7 @@ namespace core {
 
         Set<String> &Charset::aliases() const {
             if (csAliasSet == null) {
-                (CacheSet<String> &) aliasSet = &Set<String>::of(aliasSet);
+                (CacheSet<String> &) csAliasSet = &Set<String>::of(aliasSet);
             }
             return *csAliasSet;
         }
@@ -286,18 +319,16 @@ namespace core {
         }
 
         io::ByteBuffer &Charset::encode(CharBuffer &cb) const {
-            CORE_TRY_RETHROW_EXCEPTION
-            ({
-                 return encoder()
-                         .onMalformedInput(REPLACE)
-                         .onUnmappableCharacter(REPLACE)
-                         .encode(cb);
-             },
-             {
-                 if (Class<CharacterCodingException>::hasInstance(ex)) {
-                     Error(ex).throws(__trace("core.util.Charset"));
-                 }
-             }, __trace("core.charset.Charset"));
+            try {
+                return encoder()
+                        .onMalformedInput(REPLACE)
+                        .onUnmappableCharacter(REPLACE)
+                        .encode(cb);
+            } catch (const CharacterCodingException &ex) {
+                Error(ex).throws(__trace("core.charset.Charset"));
+            } catch (const Exception &ex) {
+                ex.throws(__trace("core.charset.Charset"));
+            }
         }
 
         Charset &Charset::defaultCharset() {

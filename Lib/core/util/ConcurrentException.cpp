@@ -21,5 +21,7 @@ namespace core {
 
         ConcurrentException::ConcurrentException(String message, const Throwable &cause) CORE_NOTHROW:
                 RuntimeException(Unsafe::moveInstance(message), cause) {}
+
+        ConcurrentException::ConcurrentException(const Throwable &cause) : RuntimeException(cause) {}
     } // core
 } // util

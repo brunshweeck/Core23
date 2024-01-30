@@ -45,7 +45,7 @@ namespace core {
          *    decoding.
          *
          * (4)DoubleByte ONLY
-         *    A "pure" doublebyte only character set. From implementation
+         *    A "pure" doublebyte only character setValue. From implementation
          *    point of view, this is the type (1) with "decodeSingle" always
          *    returns unmappable.
          *

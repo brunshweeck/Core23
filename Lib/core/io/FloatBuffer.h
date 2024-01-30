@@ -143,13 +143,13 @@ namespace core {
              * @param  offset
              *         The offset of the subarray to be used; must be non-negative and
              *         no larger than <b> array.length</b> .  The new buffer's position
-             *         will be set to this value.
+             *         will be setValue to this value.
              *
              * @param  length
              *         The length of the subarray to be used;
              *         must be non-negative and no larger than
              *         <b> array.length - offset</b> .
-             *         The new buffer's limit will be set to <b> offset + length</b> .
+             *         The new buffer's limit will be setValue to <b> offset + length</b> .
              *
              * @return  The new gfloat buffer
              *
@@ -854,10 +854,10 @@ namespace core {
              * to index one, and so forth until the gfloat at index
              * <b> limit()</b> &nbsp;-&nbsp;1 is copied to index
              * <i>n</i>&nbsp;=&nbsp;<b> limit()</b> &nbsp;-&nbsp;<b> 1</b> &nbsp;-&nbsp;<i>p</i>.
-             * The buffer's position is then set to <i>n+1</i> and its limit is set to
+             * The buffer's position is then set to <i>n+1</i> and its limit is setValue to
              * its capacity.  The mark, if defined, is discarded.
              *
-             * <p> The buffer's position is set to the number of floats copied,
+             * <p> The buffer's position is setValue to the number of floats copied,
              * rather than to zero, so that an invocation of this method can be
              * followed immediately by an invocation of another relative <i>put</i>
              * method. </p>

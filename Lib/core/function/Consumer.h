@@ -25,163 +25,20 @@ namespace core {
         template<class T>
         class Consumer : public Functional {
         private:
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Illegal template type");
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<T>(), "Illegal parameter type");
+            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(), "Argument type must have core.Object as base class.");
+            CORE_STATIC_ASSERT(!(Class<T>::isConstant()), "Argument type mustn't have <const> as qualifier");
+            CORE_STATIC_ASSERT(!(Class<T>::isVolatile()), "Argument type mustn't have <volatile> as qualifier");
 
-            CORE_ALIAS(Param, Params<T>);
-
-            CORE_ALIAS(Unsafe, native::Unsafe);
-
-            /**
-             * Capture<E> represent all type E that are base of T.
-             * in other word E is base of T (Class<E>::isSuper<T>() is true).
-             */
-            template<class E>
-            CORE_ALIAS(Capture, typename Class<E>::template Iff<Class<E>::template isSuper<T>()>);
-
-            interface Launcher : Object {
-                virtual void launch(Param) const = 0;
-
-                template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
-                static Launcher &of(Fn &&fn) {
-
-                    class _$ : public Launcher {
-                    private:
-                        Fn fn;
-
-                    public:
-                        CORE_EXPLICIT _$(Fn &&fn) : fn(fn) {}
-
-                        gbool equals(const Object &o) const {
-                            return Class<_$>::hasInstance(o) && CORE_CAST(_$ &, o).fn == fn;
-                        }
-
-                        Object &clone() const { return Unsafe::allocateInstance<_$>(*this); }
-
-                        void launch(Param p) const { CORE_IGNORE(fn(p)); }
-                    };
-
-                    return Unsafe::allocateInstance<_$>(Unsafe::forwardInstance<Fn>(fn));
-                }
-
-                template<class Callable, Class<gbool>::Iff<
-                        !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
-                static Launcher &of(Callable &&c) {
-
-                    CORE_ALIAS(_Fn, UnarySign<Callable,, T, void >);
-                    CORE_ALIAS(Fn, UnarySign<Callable,, Param, void >);
-
-                    if (!Class<Fn>::template isSimilar<Callable>()) {
-                        // simple lambda functions
-                        return of(CORE_CAST(Fn, Unsafe::forwardInstance<Callable>(c)));
-                    }
-
-                    class _$ : public Launcher {
-                    private:
-                        Callable c;
-
-                    public:
-                        CORE_EXPLICIT _$(Callable &&c) : c(Unsafe::forwardInstance<Callable>(c)) {}
-
-                        gbool equals(const Object &o) const {
-                            return Class<_$>::hasInstance(o) && &CORE_CAST(_$ &, o).c == &c;
-                        }
-
-                        Object &clone() const { return Unsafe::allocateInstance<_$>(*this); }
-
-                        void launch(Param p) const { CORE_IGNORE(c(p)); }
-                    };
-
-                    return Unsafe::allocateInstance<_$>(Unsafe::forwardInstance<Callable>(c));
-                }
-            };
-
-            CORE_ALIAS(Action, typename Class<Launcher>::Ptr);
-
-            /**
-             * The consumer action
-             */
-            Action act;
+            CORE_ALIAS(X, Functional::Params< T >);
 
         public:
-            /**
-             * Construct new consumer with callable object (class instances or lambda functions)
-             *
-             * @param c The callable object
-             */
-            template<class Callable, Class<gbool>::Iff<Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
-            CORE_IMPLICIT Consumer(Callable &&c) CORE_NOTHROW : act(0) {
-                CORE_STATIC_ASSERT(Class<Callable>::template isCallable<Param>(), "Invalid callable object");
-                act = &Launcher::of(Unsafe::forwardInstance<Callable>(c));
-            }
-
-            /**
-             * Construct new consumer with another
-             *
-             * @param c The other consumer
-             */
-            Consumer(const Consumer<T> &c) : act(0) { act = &Unsafe::copyInstance(*c.act); }
-
-            /**
-             * Construct new consumer with another
-             *
-             * @param c The other consumer
-             */
-            Consumer(Consumer<T> &&c) CORE_NOTHROW: act(c.act) {
-                c.act = null;
-            }
-
-            /**
-             * Set consumer action  with another consumer action
-             *
-             * @param c The consumer that it action will be copied to set this consumer action
-             */
-            Consumer<T> &operator=(const Consumer<T> &c) {
-                if (this != &c) {
-                    Action act0 = &Unsafe::copyInstance(*c.act);
-                    Unsafe::destroyInstance(*act);
-                    act = act0;
-                }
-                return *this;
-            }
-
-            /**
-             * Swap consumer action  with another consumer action
-             *
-             * @param c The consumer that it action will be swapped to set this consumer action
-             */
-            Consumer<T> &operator=(Consumer<T> &&c) CORE_NOTHROW {
-                Action act0 = act;
-                act = c.act;
-                c.act = act0;
-                return *this;
-            }
 
             /**
              * Performs this operation on the given argument.
              *
              * @param p the input argument
              */
-            inline void accept(Param p) const { (*act).launch(p); }
-
-            /**
-             * Test if this consumer has same action with the specified
-             * consumer.
-             *
-             * @param o The other consumer
-             */
-            gbool equals(const Object &o) const override {
-                if (!Class<Consumer>::hasInstance(o))
-                    return false;
-                return (*act).equals(*CORE_CAST(const Consumer<T> &, o).act);
-            }
-
-            /**
-             * Return shadow copy of this consumer
-             */
-            Object &clone() const override {
-                return Unsafe::allocateInstance<Consumer<T>>(*this);
-            }
+            virtual void accept(X p) const = 0;
 
             /**
              * Returns a composed <b>Consumer</b> that performs, in sequence, this
@@ -192,28 +49,128 @@ namespace core {
              *
              * @param after the operation to perform after this operation
              */
-            Consumer<T> andThen(const Consumer<T> &after) {
-                Consumer copyThis = *this;
-                return [after, copyThis](Param p) {
-                    copyThis.accept(p);
-                    after.accept(p);
-                };
+            template<class $1>
+            Consumer &andThen(const Consumer<$1> &after) const {
+                CORE_STATIC_ASSERT(Class<$1>::template isSuper<T>(), "Could not resolve given predicate");
+                return from([&](X t) -> void { accept(t), after.accept(t); });
             }
 
             /**
-             * Destroy this consumer
-             */
-            ~Consumer() override {
-                Unsafe::destroyInstance(*act);
-                act = null;
-            }
-
-            /**
-             * Implicit call operator.
+             * Obtain new consumer from given class function member and specified compatible class instance
              *
-             * @param p The parameter value
+             * @param instance The object used to invoke specified function member
+             * @param method The internal function member used by returned consumer
+             *
+             * @tparam I The type of object callable with given method
+             * @tparam M The type of method handle
              */
-            virtual void operator()(Param p) { return accept(p); }
+            template<class I, class M>
+            static Consumer &from(I &&instance, M &&method) {
+                // check if given method is valid
+                try {
+                    Functional::CheckFunction<M, I, X>();
+                    Functional::FunctionUtils<M>::validate(method);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.Consumer"_S));
+                }
+
+                class MethodConsumer : public Consumer {
+                private:
+                    I &&inst;
+                    M &&meth;
+
+                public:
+                    CORE_EXPLICIT MethodConsumer(I &&instance, M &&method) :
+                            inst((I &&) instance), meth(Unsafe::forwardInstance<M>(method)) {}
+
+                    /**
+                     * Invoke the method of this consumer
+                     */
+                    void invoke(X t) const {
+                        return CORE_IGNORE((inst.*meth)(t));
+                    }
+
+                    void accept(X t) const override {
+                        invoke(t);
+                    }
+
+                    /**
+                     * two instances are equals iff have same methods
+                     * and same instances.
+                     */
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<MethodConsumer>::hasInstance(o)) {
+                            return false;
+                        }
+                        MethodConsumer const &p = (MethodConsumer const &) o;
+                        return Functional::FunctionUtils<I>::isEquals(inst, p.inst) &&
+                               Functional::FunctionUtils<M>::isEquals(meth, p.meth);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<MethodConsumer>(Unsafe::forwardInstance<I>(inst),
+                                                                        Unsafe::forwardInstance<M>(meth));
+                    }
+                };
+
+                return Unsafe::allocateInstance<MethodConsumer>(Unsafe::forwardInstance<I>(instance),
+                                                                Unsafe::forwardInstance<M>(method));
+            }
+
+            /**
+             * Obtain new consumer from given function (classic function/ lambda function)
+             *
+             * @param function the internal function used by returned consumer
+             *
+             * @tparam F The type of function supporting consumer arguments.
+             */
+            template<class F>
+            static Consumer &from(F &&function) {
+                // check if given function is valid
+                try {
+                    Functional::CheckFunction<F, X>();
+                    Functional::FunctionUtils<F>::validate(function);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.Consumer"_S));
+                }
+
+                class FunctionConsumer CORE_FINAL : public Consumer {
+                private:
+                    F &&func;
+
+                public:
+                    CORE_EXPLICIT FunctionConsumer(F &&func) : func(Unsafe::forwardInstance<F>(func)) {}
+
+                    void invoke(X t) const {
+                        return CORE_IGNORE(func(t));
+                    }
+
+                    void accept(X t) const override {
+                        invoke(t);
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<FunctionConsumer>::hasInstance(o)) {
+                            return false;
+                        }
+                        FunctionConsumer const &p = (FunctionConsumer const &) o;
+                        return Functional::FunctionUtils<F>::isEquals(func, p.func);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<FunctionConsumer>(Unsafe::forwardInstance<F>(func));
+                    }
+                };
+
+                return Unsafe::allocateInstance<FunctionConsumer>(Unsafe::forwardInstance<F>(function));
+
+            }
 
         };
 

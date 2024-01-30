@@ -40,6 +40,8 @@ namespace core {
         using namespace util;
         using namespace time;
 
+        util::ArrayList<File> NTFS::ExitHook{512};
+
         namespace {
             enum class PathType : gbyte {
                 PT_ABSOLUTE,                   //  C:\foo
@@ -49,7 +51,6 @@ namespace core {
                 PT_DRIVE_RELATIVE,             //  C:foo
                 PT_INVALID
             };
-
 
             CORE_FAST gbool isSlash(gchar ch) {
                 return (ch == '\\') || (ch == '/');
@@ -263,6 +264,8 @@ namespace core {
 #ifndef FSCTL_GET_REPARSE_POINT
 #define FSCTL_GET_REPARSE_POINT  CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 42, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #endif
+
+            core::io::NTFS FILESYSTEM = {};
         }
 
 
@@ -1380,10 +1383,16 @@ namespace core {
             CharArray chars = f.path().chars();
             if (chars.length() == 0)
                 chars = userPath().chars();
-            if (DeleteFileW((LPCWSTR) &chars[0]) == 0) {
-                gint const error = (gint) GetLastError();
+            BOOL r = FALSE;
+            if (f.isDirectory()) {
+                r = RemoveDirectoryW((LPCWSTR) &chars[0]);
+            } else {
+                r = DeleteFileW((LPCWSTR) &chars[0]);
+            }
+            if (r == FALSE) {
+                DWORD const error = (gint) GetLastError();
                 if (error != ERROR_FILE_NOT_FOUND && error != ERROR_NOT_FOUND) {
-                    WindowsException(error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
+                    WindowsException((gint) error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
                 }
                 return false;
             }
@@ -1395,8 +1404,9 @@ namespace core {
             if (src.length() == 0)
                 src = userPath().chars();
             CharArray dest = f2.path().chars();
-            if (dest.length() == 0)
-                dest = userPath().chars();
+            if (dest.length() == 0 || src.length() == 0) {
+                return false;
+            }
             if (MoveFileExW((LPCWSTR) &src[0], (LPCWSTR) &dest[0], MOVEFILE_WRITE_THROUGH) == 0) {
                 gint const error = (gint) GetLastError();
                 if (error != ERROR_FILE_EXISTS && error != ERROR_NOT_FOUND) {
@@ -1628,12 +1638,9 @@ namespace core {
         NTFS::~NTFS() {
             // delete all files marked by File.deleteOnExit
             gint const size = ExitHook.size();
-            for (int i = size - 1; i >= 0; ++i) {
+            for (int i = size - 1; i >= 0; --i) {
                 File &f = ExitHook.get(i);
-                CharArray chars = f.path().chars();
-                if (chars.length() == 0)
-                    chars = userPath().chars();
-                DeleteFileW((LPCWSTR) &chars[0]);
+                f.deleteFile();
                 ExitHook.removeAt(i);
                 Unsafe::destroyInstance(f);
             }
@@ -1899,6 +1906,7 @@ namespace core {
                 case SHORTCUT_LINK: {
                     HRESULT hr = NULL;
                     IShellLinkW *shl = NULL;
+                    hr = CoInitialize(NULL);
                     // Get a pointer to the IShellLink interface. It is assumed that CoInitialize
                     // has already been called.
                     hr = CoCreateInstance(
@@ -1917,7 +1925,7 @@ namespace core {
 
                         // Query IShellLink for the IPersistFile interface, used for saving the
                         // shortcut in persistent storage.
-                        hr = shl->QueryInterface(IID_IPersistFile, (LPVOID *) pf);
+                        hr = shl->QueryInterface(IID_IPersistFile, (LPVOID *) &pf);
 
                         if (SUCCEEDED(hr)) {
 
@@ -1926,14 +1934,14 @@ namespace core {
                         }
                         shl->Release();
                     }
-                    retVal = hr;
+                    retVal = SUCCEEDED(hr);
                 }
                     break;
                 default:
                     retVal = FALSE;
                     break;
             }
-            return retVal == TRUE;
+            return retVal != FALSE;
         }
 
         gbool NTFS::recycleFile(const File &f) {
@@ -1997,18 +2005,168 @@ namespace core {
             return SetCurrentDirectoryW((LPWSTR) &chars[0]) != 0;
         }
 
+        String NTFS::ownerName(const File &f) const {
+            CharArray chars = f.path().chars();
+            if (chars.length() == 0)
+                chars = userPath().chars();
+
+            HANDLE h = CreateFileW(
+                    (LPCWSTR) &chars[0],
+                    GENERIC_READ,
+                    FILE_SHARE_READ,
+                    NULL,
+                    OPEN_EXISTING,
+                    FILE_ATTRIBUTE_NORMAL,
+                    NULL
+            );
+            if(h == INVALID_HANDLE_VALUE) {
+                h = CreateFileW(
+                        (LPCWSTR) &chars[0],
+                        GENERIC_READ,
+                        FILE_SHARE_READ,
+                        NULL,
+                        OPEN_EXISTING,
+                        FILE_ATTRIBUTE_DIRECTORY,
+                        NULL
+                );
+            }
+            if (h == INVALID_HANDLE_VALUE) {
+                DWORD const error = GetLastError();
+                WindowsException((gint) error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
+                return ""_S;
+            }
+            PSID owner = NULL;
+            PSID group = NULL;
+            PSID other = NULL;
+            PSECURITY_DESCRIPTOR descriptor;
+            DWORD const retVal = GetSecurityInfo(
+                    h,
+                    SE_FILE_OBJECT,
+                    OWNER_SECURITY_INFORMATION,
+                    &owner,
+                    &group,
+                    NULL,
+                    NULL,
+                    &descriptor
+            );
+            if (retVal != ERROR_SUCCESS) {
+                CloseHandle(h);
+                DWORD const error = GetLastError();
+                WindowsException((gint) error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
+                return ""_S;
+            }
+            DWORD size1 = 0;
+            DWORD size2 = 0;
+            SID_NAME_USE use = SidTypeUnknown;
+            // get number of chars sufficient to store accountName and domainName
+            BOOL ret = LookupAccountSidW(
+                    NULL,
+                    owner,
+                    NULL,
+                    &size1,
+                    NULL,
+                    &size2,
+                    &use
+            );
+            NativeBuffer const acctName = NativeBuffer((gint) size1 * 2);
+            NativeBuffer const domainName = NativeBuffer((gint) size2 * 2);
+            ret = LookupAccountSidW(
+                    NULL,
+                    owner,
+                    (LPWSTR) acctName.address(),
+                    &size1,
+                    (LPWSTR) domainName.address(),
+                    &size2,
+                    &use
+            );
+            if (ret == FALSE) {
+                CloseHandle(h);
+                DWORD const error = GetLastError();
+                if (error == ERROR_NONE_MAPPED) {
+                    WindowsException((gint) error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
+                }
+                return ""_S;
+            }
+            CloseHandle(h);
+            return String((LPCWSTR) domainName.address(), 0, (gint) size2) + LR"(\)"_S
+                   + String((LPCWSTR) acctName.address(), 0, (gint) size1);
+        }
+
+        gbool NTFS::setOwnerName(const File &f, const String &newOwner) const {
+            if (newOwner.isEmpty()) {
+                return false;
+            }
+            CharArray chars = f.path().chars();
+            if (chars.length() == 0) {
+                chars = userPath().chars();
+            }
+            CharArray name = newOwner.chars();
+            if (name.length() == 0) {
+                name = CharArray::of(0);
+            }
+            HANDLE h = CreateFileW(
+                    (LPCWSTR) &chars[0],
+                    GENERIC_READ,
+                    FILE_SHARE_READ,
+                    NULL,
+                    OPEN_EXISTING,
+                    FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_DIRECTORY,
+                    NULL
+            );
+            if (h == INVALID_HANDLE_VALUE) {
+                DWORD const error = GetLastError();
+                WindowsException((gint) error).throwAsIOException(f.path(), __trace("core.io.NTFS"));
+                return false;
+            }
+            SID newOwnerSID = {};
+            DWORD cbSID = {};
+            // separate domainName to acctName
+            StringTokenizer st = StringTokenizer(newOwner, LR"(\)"_S);
+            String acctName;
+            String domainName;
+            if (st.hasMore()) {
+                domainName = st.nextToken();
+            }
+            if (st.hasMore()) {
+                acctName = st.nextToken();
+            } else {
+                acctName = (String &&) domainName;
+            }
+            CharArray acct = acctName.isEmpty() ? CharArray::of(0) : acctName.chars();
+            CharArray domain = domainName.isEmpty() ? CharArray::of(0) : domainName.chars();
+
+            BOOL ret = LookupAccountNameW(
+                    NULL,
+                    (LPCWSTR) &acct[0],
+                    &newOwnerSID,
+                    &cbSID,
+                    NULL, 0,
+                    NULL
+            );
+
+            if (ret == FALSE) {
+                return false;
+            }
+
+            DWORD const retVal = SetSecurityInfo(
+                    h,
+                    SE_FILE_OBJECT,
+                    OWNER_SECURITY_INFORMATION,
+                    &newOwnerSID,
+                    NULL,
+                    NULL,
+                    NULL
+            );
+            return retVal == ERROR_SUCCESS;
+        }
+
         FileSystem &FileSystem::defaultFileSystem() {
-            static NTFS *NTFS[2] = {NULL, NULL};
-            if(NTFS[1] == NULL){
-                NTFS[0] = &Unsafe::allocateInstance<core::io::NTFS>(); // only used by core.io.File
+            static core::io::NTFS *NTFS[2] = {NULL, NULL};
+            if (NTFS[1] == null) {
                 NTFS[1] = &Unsafe::allocateInstance<core::io::NTFS>();
+                return *NTFS[1];
             }
-            if(NTFS[0] != NULL){
-                FileSystem &fs = *NTFS[0];
-                NTFS[0] = NULL;
-                return fs;
-            }
-            return *NTFS[1];
+            return FILESYSTEM;
         };
 
 

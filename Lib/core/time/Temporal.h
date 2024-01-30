@@ -55,17 +55,17 @@ namespace core {
          * A class should implement this interface if it meets three criteria:
          * <ul>
          * <li>it provides access to date/time/offset information.
-         * <li>the set of fields are contiguous from the largest to the smallest
-         * <li>the set of fields are complete, such that no other field is needed to define the
+         * <li>the setValue of fields are contiguous from the largest to the smallest
+         * <li>the setValue of fields are complete, such that no other field is needed to define the
          *  valid range of values for the fields that are represented
          * </ul>
          * <p>
          * Four examples make this clear:
          * <ul>
-         * <li><b> LocalDate</b>  implements this interface as it represents a set of fields
+         * <li><b> LocalDate</b>  implements this interface as it represents a setValue of fields
          *  that are contiguous from days to forever and require no external information to determine
          *  the validity of each date. It is therefore able to implement plus/minus correctly.
-         * <li><b> LocalTime</b>  implements this interface as it represents a set of fields
+         * <li><b> LocalTime</b>  implements this interface as it represents a setValue of fields
          *  that are contiguous from nanos to within days and require no external information to determine
          *  validity. It is able to implement plus/minus correctly, by wrapping around the day.
          * </ul>
@@ -80,10 +80,10 @@ namespace core {
         interface Temporal : public Object {
 
             /**
-             * A standard set of fields.
+             * A standard setValue of fields.
              * <p>
-             * This set of fields provide field-based access to manipulate a date, time or date-time.
-             * The standard set of fields have been extended by others temporal fields.
+             * This setValue of fields provide field-based access to manipulate a date, time or date-time.
+             * The standard setValue of fields have been extended by others temporal fields.
              * <p>
              * These fields are intended to be applicable in multiple calendar systems.
              * For example, most non-ISO calendar systems define dates as a year, m and day,
@@ -107,7 +107,7 @@ namespace core {
                  * they can return a value for <b style="color:orange;"> SECOND_OF_MINUTE</b> , <b style="color:orange;"> SECOND_OF_DAY</b>  or
                  * <b style="color:orange;"> INSTANT_SECONDS</b>  filling unknown precision with zero.
                  * <p>
-                 * When this field is used for setting a value, it should set as much precision as the
+                 * When this field is used for setting a value, it should setValue as much precision as the
                  * object stores, using integer division to remove excess precision.
                  * For example, if the <b> Temporal</b>  stores time to millisecond precision,
                  * then the nano-of-second must be divided by 1,000,000 before replacing the milli-of-second.
@@ -642,10 +642,10 @@ namespace core {
             CORE_ALIAS(TemporalField, Field);
 
             /**
-             * A standard set of date periods units.
+             * A standard setValue of date periods units.
              * <p>
-             * This set of units provide unit-based access to manipulate a date, time or date-time.
-             * The standard set of units have been extended by others temporal units.
+             * This setValue of units provide unit-based access to manipulate a date, time or date-time.
+             * The standard setValue of units have been extended by others temporal units.
              * <p>
              * These units are intended to be applicable in multiple calendar systems.
              * For example, most non-ISO calendar systems define units of years, months and days,

@@ -39,7 +39,7 @@ namespace core {
      * of its implementation, assuming the lower layer's exception was a checked exception.  Throwing a "wrapped exception"
      * (i.e., an exception containing a cause) allows the upper layer to communicate the details of the failure to its
      * caller without incurring either of these shortcomings.  It preserves the flexibility to change the implementation
-     * of the upper layer without changing its API (in particular, the set of exceptions thrown by its methods).
+     * of the upper layer without changing its API (in particular, the setValue of exceptions thrown by its methods).
      *
      * <p>
      * A second reason that a throwable may have a cause is that the method that throws it must conform to a general-purpose
@@ -183,10 +183,10 @@ class Throwable: public Object, public native::GENERIC_THROWABLE {
          *
          * <p>
          * This implementation returns the cause that was supplied via one of
-         * the constructors requiring a Throwable, or that was set after
+         * the constructors requiring a Throwable, or that was setValue after
          * creation with the setCause(Throwable) method.  While it is
          * typically unnecessary to override this method, a subclass can override
-         * it to return a cause set by some other means.  This is appropriate for
+         * it to return a cause setValue by some other means.  This is appropriate for
          * a "legacy chained throwable" that predates the addition of chained
          * exceptions to Throwable.  Note that it is <i>not</i> necessary to override
          * any of the what() methods, all of which invoke the cause() method to determine the

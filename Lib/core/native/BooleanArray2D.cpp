@@ -215,7 +215,7 @@ namespace core {
             if (this == &o) {
                 return true;
             }
-            if (!Class<PrimitiveArray<BooleanArray>>::hasInstance(o)) {
+            if (Class<PrimitiveArray<BooleanArray>>::hasInstance(o)) {
                 PrimitiveArray<BooleanArray> const &matrix = (PrimitiveArray<BooleanArray> const &) o;
                 gint const n = length();
                 if (n != matrix.length())
@@ -232,6 +232,7 @@ namespace core {
                 }
                 return true;
             }
+            return false;
         }
 
         Object &BooleanArray2D::clone() const {

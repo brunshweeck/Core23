@@ -195,7 +195,7 @@ namespace core {
              *
              * <p>If the current thread:
              * <ul>
-             * <li>has its interrupted status set on entry to this method; or
+             * <li>has its interrupted status setValue on entry to this method; or
              * <li>is <b style="color: green;">interrupted</b> while acquiring
              * the lock, and interruption of lock acquisition is supported,
              * </ul>

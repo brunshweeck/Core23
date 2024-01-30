@@ -49,7 +49,7 @@ namespace core {
          * The <b style="color:orange;"> of(String)</b>  method allows an INSTANCE to be looked up by identifier,
          * while the <b style="color:orange;"> ofLocale(Locale)</b>  method allows lookup by locale.
          * <p>
-         * The <b> Chronology</b>  INSTANCE provides a set of methods to create <b> ChronoLocalDate</b>  instances.
+         * The <b> Chronology</b>  INSTANCE provides a setValue of methods to create <b> ChronoLocalDate</b>  instances.
          * The date classes are used to manipulate specific dates.
          * <ul>
          * <li> <b style="color:orange;"> currentDate()</b>
@@ -63,7 +63,7 @@ namespace core {
          * </ul>
          *
          * <h2 id="addcalendars">Adding New Calendars</h2>
-         * The set of available chronologies can be extended by applications.
+         * The setValue of available chronologies can be extended by applications.
          * Adding a new calendar system requires the writing of an implementation of
          * <b> Chronology</b> , <b> ChronoLocalDate</b>  and <b> Era</b> .
          * The majority of the logic specific to the calendar system will be in the
@@ -87,15 +87,15 @@ namespace core {
          * Subclasses should be Serializable wherever possible.
          *
          */
-        interface Chronology : public Object, public Comparable<Chronology> {
-
+        class Chronology : public Object, public Comparable<Chronology> {
+        public:
             CORE_ALIAS(Locale, util::Locale);
 
             /**
              * Obtains an INSTANCE of <b> Chronology</b>  from a temporal object.
              * <p>
              * This obtains a chronology based on the specified temporal.
-             * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
+             * A <b> TemporalAccessor</b>  represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> Chronology</b> .
              * <p>
              * The conversion will obtain the chronology using <b style="color:orange;"> Query::CHRONOLOGY </b> .
@@ -161,11 +161,11 @@ namespace core {
              * Returns the available chronologies.
              * <p>
              * Each returned <b> Chronology</b>  is available for use in the system.
-             * The set of chronologies includes the system chronologies and
+             * The setValue of chronologies includes the system chronologies and
              * any chronologies provided by the application via ServiceLoader
              * configuration.
              *
-             * @return the independent, modifiable set of the available chronology IDs
+             * @return the independent, modifiable setValue of the available chronology IDs
              */
             static const util::Set<Chronology> &availableChronologies();
 
@@ -304,7 +304,7 @@ namespace core {
              * Obtains a local date in this chronology from another temporal object.
              * <p>
              * This obtains a date in this chronology based on the specified temporal.
-             * A <b> TemporalAccessor</b>  represents an arbitrary set of date and time information,
+             * A <b> TemporalAccessor</b>  represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> ChronoLocalDate</b> .
              * <p>
              * The conversion typically uses the <b style="color:orange;"> EPOCH_DAY</b>

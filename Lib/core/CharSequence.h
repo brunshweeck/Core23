@@ -23,13 +23,13 @@ namespace core {
      * Each object may be implemented by a different class, and there
      * is no guarantee that each class will be capable of testing its instances
      * for equality with those of the other.  It is therefore inappropriate to use
-     * arbitrary <b> CharSequence</b>  instances as elements in a set or as keys in
+     * arbitrary <b> CharSequence</b>  instances as elements in a setValue or as keys in
      * a map. </p>
      *
      * @author Brunshweeck Tazeussong
      */
-    interface CharSequence {
-
+    class CharSequence {
+    public:
         /**
          * Returns the length of this character sequence.  The length is the number
          * of 16-bit <b> char</b> s in the sequence.

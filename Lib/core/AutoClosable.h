@@ -31,7 +31,7 @@ namespace core {
      *
      * @author Brunshweeck Tazeussong
      */
-    interface AutoClosable {
+    class AutoClosable /* @property */ {
     public:
         /**
          * Closes this resource, relinquishing any underlying resources.

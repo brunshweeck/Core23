@@ -338,7 +338,7 @@
 /* The `using' keyword was introduced to avoid KAI C++ warnings
    but iterator's now causing KAI C++ errors instead. The standard is
    unclear about the use of this keyword, and in practice every
-   compiler is using its own set of rules. Forget iterator. */
+   compiler is using its own setValue of rules. Forget iterator. */
 #elif defined(__KCC)
 #define CORE_COMPILER_KAI
 
@@ -912,7 +912,7 @@
 #if !defined(__GLIBCXX__) && !defined(_LIBCPP_VERSION)
 
 // Older versions of libcpp (QNX 650) do not support C++11 features
-// _HAS_* macros are set to 1 by toolchains that actually include
+// _HAS_* macros are setValue to 1 by toolchains that actually include
 // Dinkum C++11 libcpp.
 
 #if !defined(_HAS_CPP0X) || !_HAS_CPP0X

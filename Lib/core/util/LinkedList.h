@@ -58,14 +58,6 @@ namespace core {
          */
         template<class E>
         class LinkedList : public List<E> {
-        protected:
-
-            CORE_ALIAS(Unsafe, native::Unsafe);
-            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
-            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E &>);
-            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
-            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
-
         private:
 
             /**

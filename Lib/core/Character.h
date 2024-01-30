@@ -45,7 +45,7 @@ namespace core {
      * definition</i></a> of the U+<i>n</i> notation in the Unicode
      * Standard.)
      *
-     * <p><a id="BMP">The set of characters from U+0000 to U+FFFF</a> is
+     * <p><a id="BMP">The setValue of characters from U+0000 to U+FFFF</a> is
      * sometimes referred to as the <em>Basic Multilingual Plane (BMP)</em>.
      * <a id="supplementary">Characters</a> whose code points are greater
      * than U+FFFF are called <em>supplementary character</em>s.  The

@@ -5,7 +5,7 @@
 #ifndef CORE23_BUFFER_H
 #define CORE23_BUFFER_H
 
-#include <core/Object.h>
+#include <core/util/Preconditions.h>
 
 namespace core {
     namespace io {
@@ -161,7 +161,6 @@ namespace core {
          */
         class Buffer : public Object {
         private:
-
             // Invariants: mark <= position <= limit <= capacity
             gint markPos = -1;
             gint pos = 0;
@@ -228,7 +227,7 @@ namespace core {
 
             /**
              * Sets this buffer's limit.  If the position is larger than the new limit
-             * then it is set to the new limit.  If the mark is defined and larger than
+             * then it is setValue to the new limit.  If the mark is defined and larger than
              * the new limit then it is discarded.
              *
              * @param  newLimit
@@ -258,12 +257,12 @@ namespace core {
              * @return  This buffer
              *
              * @throws  InvalidMarkException
-             *          If the mark has not been set
+             *          If the mark has not been setValue
              */
              virtual Buffer &reset();
 
             /**
-             * Clears this buffer.  The position is set to zero, the limit is set to
+             * Clears this buffer.  The position is set to zero, the limit is setValue to
              * the capacity, and the mark is discarded.
              *
              * <p> Invoke this method before using a sequence of channel-read or
@@ -282,8 +281,8 @@ namespace core {
              virtual Buffer &clear();
 
             /**
-             * Flips this buffer.  The limit is set to the current position and then
-             * the position is set to zero.  If the mark is defined then it is
+             * Flips this buffer.  The limit is setValue to the current position and then
+             * the position is setValue to zero.  If the mark is defined then it is
              * discarded.
              *
              * <p> After a sequence of channel-read or <i>put</i> operations, invoke
@@ -305,11 +304,11 @@ namespace core {
              virtual Buffer &flip();
 
             /**
-             * Rewinds this buffer.  The position is set to zero and the mark is
+             * Rewinds this buffer.  The position is setValue to zero and the mark is
              * discarded.
              *
              * <p> Invoke this method before a sequence of channel-write or <i>get</i>
-             * operations, assuming that the limit has already been set
+             * operations, assuming that the limit has already been setValue
              * appropriately.  For example:
              *
              * <blockquote><pre>

@@ -17,6 +17,9 @@ IF (MINGW)
 ELSEIF (WIN32)
     #    The Operating System is Windows (Vista, MS-DOS, MS-Windows, ...)
     SET(SYSTEM_LIBDIR WinLib)
+    IF (MSVC)
+        ADD_COMPILE_OPTIONS(/constexpr:depth64)
+    ENDIF (MSVC)
 ELSE ()
     #    The Operating System is Unix (Unix, Linux, Apple, Android, ...)
     SET(SYSTEM_LIBDIR UnixLib)
@@ -160,46 +163,7 @@ FILE(GLOB Core23
         ${SYSTEM_LIBDIR}/core/regex/private/*.c??
 )
 
-ADD_LIBRARY(Core23 STATIC ${Core23}
-        Lib/core/native/PrimitiveArray2D.h
-        Lib/core/native/BooleanArray2D.cpp
-        Lib/core/native/BooleanArray2D.h
-        Lib/core/native/ByteArray2D.cpp
-        Lib/core/native/ByteArray2D.h
-        Lib/core/native/CharArray2D.cpp
-        Lib/core/native/CharArray2D.h
-        Lib/core/native/ShortArray2D.cpp
-        Lib/core/native/ShortArray2D.h
-        Lib/core/native/IntArray2D.cpp
-        Lib/core/native/IntArray2D.h
-        Lib/core/native/LongArray2D.cpp
-        Lib/core/native/LongArray2D.h
-        Lib/core/native/FloatArray2D.cpp
-        Lib/core/native/FloatArray2D.h
-        Lib/core/native/DoubleArray2D.cpp
-        Lib/core/native/DoubleArray2D.h
-        Lib/core/native/StringArray2D.cpp
-        Lib/core/native/StringArray2D.h
-        Lib/core/native/ObjectArray.cpp
-        Lib/core/native/ObjectArray.h
-        Lib/core/native/Array.h
-        Lib/core/time/Duration.cpp
-        Lib/core/time/Duration.h
-        Lib/core/util/private/LanguageTag.cpp
-        Lib/core/util/private/LanguageTag.h
-        Lib/core/util/private/ParseStatus.cpp
-        Lib/core/util/private/ParseStatus.h
-        Lib/core/util/private/LocaleUtils.cpp
-        Lib/core/util/private/LocaleUtils.h
-        Lib/core/util/private/LocaleISOData.cpp
-        Lib/core/util/private/LocaleISOData.h
-        Lib/core/util/private/LocaleBuilder.cpp
-        Lib/core/util/private/LocaleBuilder.h
-        Lib/core/util/private/LocaleSyntaxException.cpp
-        Lib/core/util/private/LocaleSyntaxException.h
-        Lib/core/util/MissingResourceException.cpp
-        Lib/core/util/MissingResourceException.h
-        WinLib/core/util/Locale.cpp)
+ADD_LIBRARY(Core23 STATIC ${Core23})
 
 INCLUDE_DIRECTORIES("${PROJECT_LIBDIR}")
 INCLUDE_DIRECTORIES("${SYSTEM_LIBDIR}")

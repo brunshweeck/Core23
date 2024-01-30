@@ -514,42 +514,26 @@ namespace core {
         /**
          * Return result of multiple boolean tests using logical AND as operator.
          * In other word return true if all of given values is true.
+         * Note: The number of value for valid evaluation must be less or equal to 512.
          */
-        static CORE_FAST gbool allIsTrue() { return true; }
-
-        static CORE_FAST gbool allIsTrue(gbool b) { return b; }
+        template<gbool...Values>
+        static CORE_FAST gbool allIsTrue() {
+            CORE_ALIAS(ALWAYS_TRUE, native::Templates::ALWAYS_TRUE);
+            CORE_ALIAS(CONSTANT_RESULT, , native::Templates::LOGICAL_AND<T, Values...>);
+            return Class<ALWAYS_TRUE>::IfElse<sizeof...(Values) >= 512, CONSTANT_RESULT>::Value;
+        }
 
         /**
          * Return result of multiple boolean tests using logical OR as operator.
          * In other word return true if any of given values is true.
+         * Note: The number of value for valid evaluation must be less or equal to 512.
          */
-        static CORE_FAST gbool oneIsTrue() { return false; }
-
-        static CORE_FAST gbool oneIsTrue(gbool b) { return b; }
-
-        /**
-         * Return result of multiple boolean tests using logical AND as operator.
-         * In other word return true if all of given values is true.
-         *
-         * @param b
-         *        The first operand
-         * @param v
-         *        The others operands
-         */
-        template<class ...U>
-        static CORE_FAST gbool allIsTrue(gbool b, U ...u) { return b && allIsTrue(u...); }
-
-        /**
-         * Return result of multiple boolean tests using logical OR as operator.
-         * In other word return true if any of given values is true.
-         *
-         * @param b
-         *        The first operand
-         * @param v
-         *        The others operands
-         */
-        template<class ...V>
-        static CORE_FAST gbool oneIsTrue(gbool b, V &&...v) { return b || oneIsTrue((V &&) v...); }
+        template<gbool...Values>
+        static CORE_FAST gbool oneIsTrue() {
+            CORE_ALIAS(ALWAYS_TRUE, native::Templates::ALWAYS_TRUE);
+            CORE_ALIAS(CONSTANT_RESULT, , native::Templates::LOGICAL_OR<T, Values...>);
+            return Class<ALWAYS_TRUE>::IfElse<sizeof...(Values) >= 512, CONSTANT_RESULT>::Value;
+        }
 
     private:
         template<class Value, class V>
@@ -581,7 +565,34 @@ namespace core {
             }
         };
 
-        CORE_ALIAS(Valuable,, IfElse<!isArray(), Object>);
+        template<class Value>
+        class ValuableType {
+        public:
+            using Type = IfElse<
+                    !Class<Value>::isArray() && (
+                            !Class<Value>::isFunction() ||
+                            (Class<Value>::isPointer() || Class<Value>::isClass())), Object>;
+        };
+
+        template<class R, class...P>
+        class ValuableType<R(P...)> {
+        public:
+            using Type = R(*)(P...);
+        };
+
+        template<class R, class...P>
+        class ValuableType<R(*)(P...)> {
+        public:
+            using Type = R(*)(P...);
+        };
+
+        template<class X, size_t N>
+        class ValuableType<X[N]> {
+        public:
+            using Type = typename Class<X>::Pointer;
+        };
+
+        using Valuable = typename ValuableType<T>::Type;
 
     public:
 
@@ -717,7 +728,8 @@ namespace core {
          * @param v6 The sixth value. is returned if given index is 6
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6>
-        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6) {
+        static CORE_FAST Valuable
+        valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 6) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -745,7 +757,7 @@ namespace core {
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6, class V7>
         static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
-                                        V6 &&v6, V7 &&v7) {
+                                               V6 &&v6, V7 &&v7) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 7) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -775,7 +787,7 @@ namespace core {
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8>
         static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
-                                        V6 &&v6, V7 &&v7, V8 &&v8) {
+                                               V6 &&v6, V7 &&v7, V8 &&v8) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 8) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -806,8 +818,9 @@ namespace core {
          * @param v9 The ninth value. is returned if given index is 9
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9>
-        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
-                                        V7 &&v7, V8 &&v8, V9 &&v9) {
+        static CORE_FAST Valuable
+        valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
+                     V7 &&v7, V8 &&v8, V9 &&v9) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 9) ? ValueOrVoid<T, T>::cast((Value) defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -841,7 +854,7 @@ namespace core {
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class V10>
         static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5,
-                                        V6 &&v6, V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10) {
+                                               V6 &&v6, V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 10) ? ValueOrVoid<T, T>::cast(defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -876,8 +889,9 @@ namespace core {
          * @param v The other values. is returned if given index is 10+n (n > 0 && n <= sizeof...(v))
          */
         template<class V1, class V2, class V3, class V4, class V5, class V6, class V7, class V8, class V9, class V10, class... V>
-        static CORE_FAST Valuable valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
-                                        V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10, V &&...v) {
+        static CORE_FAST Valuable
+        valueExactAt(gint i, T defaultValue, V1 &&v1, V2 &&v2, V3 &&v3, V4 &&v4, V5 &&v5, V6 &&v6,
+                     V7 &&v7, V8 &&v8, V9 &&v9, V10 &&v10, V &&...v) {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return (i < 1 || i > 10 + sizeof...(v)) ? ValueOrVoid<T, T>::cast(defaultValue) :
                    (i == 1) ? ValueOrVoid<T, V1>::cast((V1 &&) v1) :
@@ -899,16 +913,16 @@ namespace core {
             CORE_ALIAS(Value, , IfElse<isReference() || isPrimitive(), T &&>);
             return i < 11 || sizeof...(Values) < 11 ?
                    valueExactAt(i - 0x0000, (Value) defaultValue, (Values &&) values...) :
-                   i == 11 ? valueExactAt(1, (Value) defaultValue, (Values &&) values...):
-                   i == 12 ? valueExactAt(2, (Value) defaultValue, (Values &&) values...):
-                   i == 13 ? valueExactAt(3, (Value) defaultValue, (Values &&) values...):
-                   i == 14 ? valueExactAt(4, (Value) defaultValue, (Values &&) values...):
-                   i == 15 ? valueExactAt(5, (Value) defaultValue, (Values &&) values...):
-                   i == 16 ? valueExactAt(6, (Value) defaultValue, (Values &&) values...):
-                   i == 17 ? valueExactAt(7, (Value) defaultValue, (Values &&) values...):
-                   i == 18 ? valueExactAt(8, (Value) defaultValue, (Values &&) values...):
-                   i == 19 ? valueExactAt(9, (Value) defaultValue, (Values &&) values...):
-                   i == 20 ? valueExactAt(10, (Value) defaultValue, (Values &&) values...):
+                   i == 11 ? valueExactAt(1, (Value) defaultValue, (Values &&) values...) :
+                   i == 12 ? valueExactAt(2, (Value) defaultValue, (Values &&) values...) :
+                   i == 13 ? valueExactAt(3, (Value) defaultValue, (Values &&) values...) :
+                   i == 14 ? valueExactAt(4, (Value) defaultValue, (Values &&) values...) :
+                   i == 15 ? valueExactAt(5, (Value) defaultValue, (Values &&) values...) :
+                   i == 16 ? valueExactAt(6, (Value) defaultValue, (Values &&) values...) :
+                   i == 17 ? valueExactAt(7, (Value) defaultValue, (Values &&) values...) :
+                   i == 18 ? valueExactAt(8, (Value) defaultValue, (Values &&) values...) :
+                   i == 19 ? valueExactAt(9, (Value) defaultValue, (Values &&) values...) :
+                   i == 20 ? valueExactAt(10, (Value) defaultValue, (Values &&) values...) :
                    valueExactAt(i - 0x000A, (Value) defaultValue, (Values &&) values...);
         }
 

@@ -5,183 +5,184 @@
 #ifndef CORE23_BICONSUMER_H
 #define CORE23_BICONSUMER_H
 
-#include <core/function/Functional.h>
 #include <core/private/Unsafe.h>
+#include <core/function/Functional.h>
 
 namespace core {
     namespace function {
 
+        /**
+         * Represents an operation that accepts two input arguments and returns no
+         * result.  This is the two-arity specialization of <b style="color: orange;"> Consumer</b>.
+         * Unlike most other functional interfaces, <b> BiConsumer</b> is expected
+         * to operate via side-effects.
+         *
+         * <p>This is a <a href="package-summary.html">functional interface</a>
+         * whose functional method is <b style="color: orange;"> BiConsumer.accept(Object, Object)</b>.
+         *
+         * @param T the type of the first argument to the operation
+         * @param U the type of the second argument to the operation
+         *
+         * @see Consumer
+         */
         template<class T, class U>
         class BiConsumer : public Functional {
         private:
+            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>() && Class<Object>::isSuper<U>(),
+                               "First and second argument type must have core.Object as base class.");
+            CORE_STATIC_ASSERT(!(Class<T>::isConstant() || Class<U>::isConstant()),
+                               "First and second argument type mustn't have <const> as qualifier");
+            CORE_STATIC_ASSERT(!(Class<T>::isVolatile() || Class<U>::isVolatile()),
+                               "First and second argument type mustn't have <volatile> as qualifier");
 
-            CORE_ALIAS(X, Params < T >);
-            CORE_ALIAS(Y, Params < U >);
-            CORE_ALIAS(Unsafe, native::Unsafe);
-
-            class MethodHandle : public Object {
-            public:
-                /**
-                 * Used to invoke function
-                 */
-                virtual void invoke(X x, Y y) const = 0;
-
-                gbool equals(const Object &o) const override = 0;
-
-                Object &clone() const override = 0;
-
-            private:
-
-                /**
-                 * load function by address
-                 */
-                template<class Callable,
-                        Class<gbool>::OnlyIf<Class<Callable>::isFunction() && !Class<Callable>::isClass()> = true>
-                static MethodHandle &load(Callable f) {
-                    CORE_ALIAS(Signature, , Callable);
-
-                    // class used to load simple function
-                    class FunctionHandle CORE_FINAL : public MethodHandle {
-                    private:
-                        glong handle;
-
-                    public:
-                        CORE_EXPLICIT FunctionHandle(glong handle) : handle(handle) {}
-
-                        gbool equals(const Object &o) const {
-                            if (this == &o)
-                                return true;
-                            if (Class<FunctionHandle>::hasInstance(o))
-                                return false;
-                            return handle == ((FunctionHandle const &) o).handle;
-                        }
-
-                        Object &clone() const {
-                            return Unsafe::allocateInstance<FunctionHandle>(handle);
-                        }
-
-                        void invoke(X x, Y y) const override {
-                            CORE_IGNORE(CORE_CAST(Signature, handle)(x, y));
-                        }
-
-                        String toString() const {
-                            return "Function@" + Long::toHexString(handle).toUpperCase();
-                        }
-
-                        gint hash() const {
-                            return Long::hash(handle);
-                        }
-                    };
-
-                    glong const handle = CORE_CAST(glong, f);
-                    if (handle == 0)
-                        IllegalArgumentException("Illegal function address")
-                                .throws(__trace("core.function.BiConsumer.MethodHandle.load$FunctionHandle"));
-
-                    return Unsafe::allocateInstance<FunctionHandle>(handle);
-                }
-
-                /**
-                 * load function by reference (lambdas functions and callables object)
-                 */
-                template<class Callable,
-                        Class<gbool>::OnlyIf<Class<Callable>::isClass()> = true>
-                static MethodHandle &load(Callable &&obj) {
-                    if (Class<Callable>::isFunction()) {
-                        // lambda function without capturing
-                        CORE_ALIAS(LambdaSignature, , typename Class<Callable>::NRef);
-                        // try convert lambda reference to function address
-                        CORE_ALIAS(LambdaAsFunction, , BinarySign < Callable, T, U, void >);
-                        CORE_ALIAS(FunctionSignature, , BinarySign < LambdaAsFunction, X, Y, void >);
-                        if (!Class<FunctionSignature>::template isSimilar<LambdaSignature>()) {
-                            return load(CORE_CAST(FunctionSignature, obj));
-                        }
-                    }
-
-                    CORE_ALIAS(Signature, typename Class<Callable>::NRef);
-                    CORE_ALIAS(Signature2, typename Class<Signature>::Ptr);
-                    // lambda function or callable object
-                    class CallableHandle CORE_FINAL : public MethodHandle {
-                    private:
-                        glong handle;
-
-                    public:
-                        CORE_EXPLICIT CallableHandle(glong handle) : handle(handle) {}
-
-                        void invoke(X x, Y y) const override {
-                            CORE_IGNORE((*CORE_CAST(Signature2, handle))(x, y));
-                        }
-
-                        gbool equals(const Object &o) const {
-                            if (this == &o)
-                                return true;
-                            if (Class<CallableHandle>::hasInstance(o))
-                                return false;
-                            return handle == ((CallableHandle const &) o).handle;
-                        }
-
-                        Object &clone() const {
-                            return Unsafe::allocateInstance<CallableHandle>(handle);
-                        }
-
-                        String toString() const {
-                            return "Callable@" + Long::toHexString(handle).toUpperCase();
-                        }
-
-                        gint hash() const {
-                            return Long::hash(handle);
-                        }
-                    };
-
-                    glong const handle = CORE_CAST(glong, &obj);
-
-                    return Unsafe::allocateInstance<CallableHandle>(handle);
-                }
-
-                /**
-                 * load class function member
-                 */
-                template<class MethodMember, class This,
-                        Class<gbool>::OnlyIf<Class<MethodMember>::isFunctionMember()> = true>
-                static MethodHandle &load(MethodMember member, This& obj) {
-
-                    class MethodMemberHandle: public MethodHandle {
-                    private:
-                        glong $this;
-                        MethodMember method;
-
-                    public:
-                        MethodMemberHandle(glong $this, MethodMember method) : $this($this), method(method) {}
-
-                        void invoke(X x, Y y) const override {
-                            CORE_IGNORE((CORE_CAST(typename Class<This>::NCRef*, $this)->*method)(x, y));
-                        }
-
-                        gbool equals(const Object &o) const {
-                            if(this == &o)
-                                return true;
-                            if(!Class<MethodMemberHandle>::hasInstance(o))
-                                return false;
-                            MethodMemberHandle const& m = (MethodMemberHandle const&) o;
-                            return $this == m.$this && method == m.method;
-                        }
-
-                        Object &clone() const {
-                            return Unsafe::allocateInstance<MethodMemberHandle>($this, method);
-                        }
-                    };
-
-                    glong $this = CORE_CAST(glong, &obj);
-
-                    return Unsafe::allocateInstance<MethodMemberHandle>($this, member);
-                };
-            };
-
-            CORE_ALIAS(Handle, typename Class<MethodHandle>::Pointer);
-
-            Handle handle;
+            CORE_ALIAS(X, Functional::Params< T >);
+            CORE_ALIAS(Y, Functional::Params< U >);
 
         public:
+
+            /**
+             * Performs this operation on the given arguments.
+             *
+             * @param t the first input argument
+             * @param u the second input argument
+             */
+            virtual void accept(X t, Y u) const = 0;
+
+            /**
+             * Returns a composed <b> BiConsumer</b> that performs, in sequence, this
+             * operation followed by the <b> after</b> operation. If performing either
+             * operation throws an exception, it is relayed to the caller of the
+             * composed operation.  If performing this operation throws an exception,
+             * the <b> after</b> operation will not be performed.
+             *
+             * @param after the operation to perform after this operation
+             * @return a composed <b> BiConsumer</b> that performs in sequence this
+             * operation followed by the <b> after</b> operation
+             */
+            template<class $1, class $2>
+            BiConsumer &andThen(const BiConsumer<$1, $2> &after) const {
+                CORE_STATIC_ASSERT(Class<$1>::template isSuper<T>() && Class<$2>::template isSuper<U>(),
+                                   "Could not resolve given consumer");
+                return from([&](X t, Y u) -> void { accept(t, u), after.accept(t, u); });
+            }
+
+            /**
+             * Obtain new consumer from given class function member and specified compatible class instance
+             *
+             * @param instance The object used to invoke specified function member
+             * @param method The internal function member used by returned consumer
+             *
+             * @tparam I The type of object callable with given method
+             * @tparam M The type of method handle
+             */
+            template<class I, class M>
+            static BiConsumer &from(I &&instance, M &&method) {
+                // check if given method is valid
+                try {
+                    Functional::CheckFunction<M, I, X, Y>();
+                    Functional::FunctionUtils<M>::validate(method);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.BiConsumer"_S));
+                }
+
+                class MethodConsumer : public BiConsumer {
+                private:
+                    I &&inst;
+                    M &&meth;
+
+                public:
+                    CORE_EXPLICIT MethodConsumer(I &&instance, M &&method) :
+                            inst((I &&) instance), meth(Unsafe::forwardInstance<M>(method)) {}
+
+                    /**
+                     * Invoke the method of this consumer
+                     */
+                    void invoke(X t, Y u) const {
+                        return CORE_IGNORE((inst.*meth)(t, u));
+                    }
+
+                    void accept(X t, Y u) const override {
+                        invoke(t, u);
+                    }
+
+                    /**
+                     * two instances are equals iff have same methods
+                     * and same instances.
+                     */
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<MethodConsumer>::hasInstance(o)) {
+                            return false;
+                        }
+                        MethodConsumer const &p = (MethodConsumer const &) o;
+                        return Functional::FunctionUtils<I>::isEquals(inst, p.inst) &&
+                               Functional::FunctionUtils<M>::isEquals(meth, p.meth);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<MethodConsumer>(Unsafe::forwardInstance<I>(inst),
+                                                                        Unsafe::forwardInstance<M>(meth));
+                    }
+                };
+
+                return Unsafe::allocateInstance<MethodConsumer>(Unsafe::forwardInstance<I>(instance),
+                                                                Unsafe::forwardInstance<M>(method));
+            }
+
+            /**
+             * Obtain new consumer from given function (classic function/ lambda function)
+             *
+             * @param function the internal function used by returned consumer
+             *
+             * @tparam F The type of function supporting consumer arguments.
+             */
+            template<class F>
+            static BiConsumer &from(F &&function) {
+                // check if given function is valid
+                try {
+                    Functional::CheckFunction<F, X, Y>();
+                    Functional::FunctionUtils<F>::validate(function);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.BiConsumer"_S));
+                }
+
+                class FunctionConsumer CORE_FINAL : public BiConsumer {
+                private:
+                    F &&func;
+
+                public:
+                    CORE_EXPLICIT FunctionConsumer(F &&func) : func(Unsafe::forwardInstance<F>(func)) {}
+
+                    void invoke(X t, Y u) const {
+                        return CORE_IGNORE(func(t, u));
+                    }
+
+                    void accept(X t, Y u) const override {
+                        invoke(t, u);
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<FunctionConsumer>::hasInstance(o)) {
+                            return false;
+                        }
+                        FunctionConsumer const &p = (FunctionConsumer const &) o;
+                        return Functional::FunctionUtils<F>::isEquals(func, p.func);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<FunctionConsumer>(Unsafe::forwardInstance<F>(func));
+                    }
+                };
+
+                return Unsafe::allocateInstance<FunctionConsumer>(Unsafe::forwardInstance<F>(function));
+
+            }
+
         };
 
     } // core

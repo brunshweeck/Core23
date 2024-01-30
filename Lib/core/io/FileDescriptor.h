@@ -45,7 +45,7 @@ namespace core {
 
             /**
              * Constructs an (invalid) FileDescriptor object.
-             * The fd or handle is set later.
+             * The fd or handle is setValue later.
              */
             FileDescriptor() = default;
 

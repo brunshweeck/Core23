@@ -23,27 +23,27 @@ namespace core {
          * collections of objects that don't have a <b style="color: green;">
          * natural ordering</b>.<p>
          *
-         * The ordering imposed by a comparator <b> c</b> on a set of elements
+         * The ordering imposed by a comparator <b> c</b> on a setValue of elements
          * <b> S</b> is said to be <i>consistent with equals</i> if and only if
          * <b> c.compare(e1, e2)==0</b> has the same boolean value as
          * <b> e1.equals(e2)</b> for every <b> e1</b> and <b> e2</b> in
          * <b> S</b>.<p>
          *
          * Caution should be exercised when using a comparator capable of imposing an
-         * ordering inconsistent with equals to order a sorted set (or sorted map).
-         * Suppose a sorted set (or sorted map) with an explicit comparator <b> c</b>
-         * is used with elements (or keys) drawn from a set <b> S</b>.  If the
+         * ordering inconsistent with equals to order a sorted setValue (or sorted map).
+         * Suppose a sorted setValue (or sorted map) with an explicit comparator <b> c</b>
+         * is used with elements (or keys) drawn from a setValue <b> S</b>.  If the
          * ordering imposed by <b> c</b> on <b> S</b> is inconsistent with equals,
-         * the sorted set (or sorted map) will behave "strangely."  In particular the
-         * sorted set (or sorted map) will violate the general contract for set (or
+         * the sorted setValue (or sorted map) will behave "strangely."  In particular the
+         * sorted set (or sorted map) will violate the general contract for setValue (or
          * map), which is defined in terms of <b> equals</b>.<p>
          *
          * For example, suppose one adds two elements <b> a</b> and <b> b</b> such that
          * <b> (a.equals(b) && c.compare(a, b) != 0)</b>
          * to an empty <b> TreeSet</b> with comparator <b> c</b>.
          * The second <b> add</b> operation will return
-         * true (and the size of the tree set will increase) because <b> a</b> and
-         * <b> b</b> are not equivalent from the tree set's perspective, even though
+         * true (and the size of the tree setValue will increase) because <b> a</b> and
+         * <b> b</b> are not equivalent from the tree setValue's perspective, even though
          * this is contrary to the specification of the
          * <b style="color: orange;"> Set.add</b> method.<p>
          *
@@ -55,7 +55,7 @@ namespace core {
          *
          * For the mathematically inclined, the <i>relation</i> that defines the
          * <i>imposed ordering</i> that a given comparator <b> c</b> imposes on a
-         * given set of objects <b> S</b> is:<pre>
+         * given setValue of objects <b> S</b> is:<pre>
          *       <b>(x, y) such that c.compare(x, y) &lt;= 0</b>.
          * </pre> The <i>quotient</i> for this total order is:<pre>
          *       <b>(x, y) such that c.compare(x, y) == 0</b>.

@@ -99,13 +99,6 @@ namespace core {
                     dst[-i + maxOffset2] = src[-i + maxOffset1];
                 }
         }
-
-        template<class T, class U>
-        void exchange(T &t, U &u) {
-            T t2 = t;
-            t = (T) u;
-            u = (U) t2;
-        }
     }
 
     StringBuffer::StringBuffer(gint capacity) {
@@ -125,32 +118,35 @@ namespace core {
     }
 
     void StringBuffer::shift(gint offset, gint count) {
-        return arraycopy(value, offset, value, offset + count, len - offset);
+        return arraycopy(value, offset, value, offset + count, len - count);
     }
 
-    StringBuffer::StringBuffer(const String &str)
-            : StringBuffer(Math::max(str.length() + DEFAULT_CAPACITY, Integer::MAX_VALUE)) {
-        append(str);
-    }
+    StringBuffer::StringBuffer(const String &str) :
+            StringBuffer(Math::max(str.length() + DEFAULT_CAPACITY, Integer::MAX_VALUE)) { append(str); }
 
-    StringBuffer::StringBuffer(const StringBuffer &sb) : StringBuffer(Math::max(sb.length(), DEFAULT_CAPACITY)) {
+    StringBuffer::StringBuffer(const StringBuffer &sb) :
+            StringBuffer(Math::max(sb.length(), DEFAULT_CAPACITY)) {
         append(sb);
     }
 
     StringBuffer::StringBuffer(StringBuffer &&sb) CORE_NOTHROW {
-        exchange(cap, sb.cap);
-        exchange(value, sb.value);
-        exchange(len, sb.len);
+        Unsafe::swapValues(cap, sb.cap);
+        Unsafe::swapValues(value, sb.value);
+        Unsafe::swapValues(len, sb.len);
     }
 
     StringBuffer &StringBuffer::operator=(const StringBuffer &sb) {
         if (this != &sb) {
             gint const sbSize = sb.length();
             if (cap >= sbSize) {
-                // set all trailing characters to null (U+0000)
-                for (gint i = sbSize; i < len; ++i) putChar(value, i, 0);
+                // setValue all trailing characters to null (U+0000)
+                for (gint i = sbSize, limit = len; i < limit; ++i) {
+                    putChar(value, i, 0);
+                }
                 len = sbSize;
-            } else resize(sbSize);
+            } else {
+                resize(sbSize);
+            }
             arraycopy(sb.value, 0, value, 0, sbSize);
         }
         return *this;
@@ -158,16 +154,17 @@ namespace core {
 
     StringBuffer &StringBuffer::operator=(StringBuffer &&sb) CORE_NOTHROW {
         if (this != &sb) {
-            exchange(cap, sb.cap);
-            exchange(value, sb.value);
-            exchange(len, sb.len);
+            Unsafe::swapValues(cap, sb.cap);
+            Unsafe::swapValues(value, sb.value);
+            Unsafe::swapValues(len, sb.len);
         }
         return *this;
     }
 
     void StringBuffer::resize(gint newLength) {
         if (newLength < 0)
-            IllegalArgumentException().throws(__trace("core.StringBuffer"));
+            IllegalArgumentException("Could not resize buffer with negative length")
+                    .throws(__trace("core.StringBuffer"));
         else if (newLength > cap) {
             try {
                 gint const newCapacity = StringBuffer::newCapacity(newLength);
@@ -176,7 +173,14 @@ namespace core {
                 Unsafe::freeMemory((glong) value);
                 cap = newLength;
                 value = newValue;
-            } catch (const MemoryError &me) { me.throws(__trace("core.StringBuffer")); }
+            } catch (const MemoryError &me) {
+                me.throws(__trace("core.StringBuffer"));
+                return;
+            }
+        } else if (newLength < len) {
+            for (int i = newLength, limit = len; i < limit; i += 1) {
+                putChar(value, i, 0);
+            }
         }
         len = newLength;
     }
@@ -754,8 +758,8 @@ namespace core {
 
     StringBuffer &StringBuffer::reverse() {
         for (gint i = 0; i <= (len >> 1); ++i) {
-            exchange(value[i + 0], value[(len - 1) - (i + 0)]);
-            exchange(value[i + 1], value[(len - 1) - (i + 1)]);
+            Unsafe::swapValues(value[i + 0], value[(len - 1) - (i + 0)]);
+            Unsafe::swapValues(value[i + 1], value[(len - 1) - (i + 1)]);
         }
         return *this;
     }
@@ -800,8 +804,15 @@ namespace core {
     StringBuffer &StringBuffer::removeAt(gint index) {
         try {
             Preconditions::checkIndex(index, len);
-            shift(index + 1, -1);
+            gint const limit = len - 1;
+            gint const n = 1;
             len -= 1;
+            // shift all character
+            for (int i = index; i < limit; i += 1) {
+                putChar(value, i, nextChar(value, i + n));
+            }
+            // fill last character
+            putChar(value, limit + n, 0);
             return *this;
         } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }
@@ -811,16 +822,19 @@ namespace core {
             endIndex = len;
         try {
             Preconditions::checkIndexFromRange(startIndex, endIndex, len);
-            shift(endIndex, startIndex - endIndex);
-            if (endIndex == len) {
-                // zero fill
-                for (int i = startIndex; i < endIndex; ++i) {
-                    Unsafe::setMemory((glong) value + startIndex * 2LL, (endIndex - startIndex) * 2LL, 0);
-                }
-                len = startIndex;
+            gint const n = endIndex - startIndex;
+            gint const limit = len - n;
+            len -= n;
+            if (n == 0)
                 return *this;
+            // shift all character
+            for (int i = startIndex; i < limit; i += 1) {
+                putChar(value, i, nextChar(value, i + n));
             }
-            len -= endIndex - startIndex;
+            // fill zero
+            for (int i = 0; i < n; i += 1) {
+                putChar(value, limit + i, 0);
+            }
             return *this;
         } catch (const IndexException &ie) { ie.throws(__trace("core.StringBuffer")); }
     }

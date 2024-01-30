@@ -133,7 +133,7 @@ namespace core {
              * Set The row at specified position
              *
              * @param index The index of desired row
-             * @param newRow The array used to set desired row
+             * @param newRow The array used to setValue desired row
              * @throws IndexException If specified index out of bounds
              */
             void set(gint index, const DoubleArray &newRow) override;
@@ -178,12 +178,12 @@ namespace core {
              * Set The value at specified position.
              * This call is equivalent at:
              * @code
-             *   get(row).set(col, newValue)
+             *   get(row).setValue(col, newValue)
              * @endcode
              *
              * @param row The index of desired row
              * @param col The index of desired column
-             * @param newValue The array used to set desired row
+             * @param newValue The array used to setValue desired row
              * @throws IndexException If specified index out of bounds
              */
             void set(gint row, gint col, const Value &newValue) override;
@@ -347,7 +347,7 @@ namespace core {
             static DoubleArray2D of(DoubleArray v0, DoubleArray v1, DoubleArray v2, DoubleArray v3,
                                    DoubleArray v4, DoubleArray v5, DoubleArray v6, DoubleArray v7,
                                    DoubleArray v8, DoubleArray v9, DoubleArrays &&...others) {
-                CORE_STATIC_ASSERT(Class<DoubleArray2D>::allIsTrue(Class<DoubleArray>::isSimilar<DoubleArrays>()...),
+                CORE_STATIC_ASSERT(Class<DoubleArray2D>::template allIsTrue<Class<DoubleArray>::isSimilar<DoubleArrays>()...>(),
                                    "Could not create matrix with given arguments");
                 try{
                     CORE_FAST gint n = sizeof...(DoubleArrays);

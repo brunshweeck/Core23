@@ -30,6 +30,8 @@ namespace core {
         }
 
         void putChar(PBYTE dst, glong idx, gchar ch) {
+            if(dst == null || idx < 0)
+                return;
             glong const index = idx * 2LL;
             gbyte const hb = Character::highByte(ch);
             gbyte const lb = Character::lowByte(ch);

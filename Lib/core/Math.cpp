@@ -14,6 +14,7 @@
 #define StrictMath(op) __builtin_ ## op ## l
 #else
 #include <math.h>
+#include <stdlib.h>
 #define StrictMath(op) op ## l
 #endif
 
@@ -221,8 +222,7 @@ namespace core {
     }
 
     gdouble Math::random() {
-        srand(Long::hash((glong) __TIMESTAMP__));
-        return Float::fromIntBits(::rand());
+        return 0;
     }
 
     gint Math::addExact(gint x, gint y) {

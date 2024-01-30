@@ -60,13 +60,6 @@ namespace core {
          */
         template<class E>
         class PriorityQueue : public Queue<E> {
-        protected:
-
-            CORE_ALIAS(Unsafe, native::Unsafe);
-            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
-            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
-            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
-
         private:
 
             /**
@@ -300,7 +293,9 @@ namespace core {
              *         compared with elements currently in this priority queue
              *         according to the priority queue's ordering
              */
-            gbool add(const E &e) override { return push(e); }
+            gbool add(const E &e) override {
+                return push(e);
+            }
 
             /**
              * Inserts the specified element into this priority queue.
@@ -409,8 +404,9 @@ namespace core {
              *
              * @return an iterator over the elements in this queue
              */
-            Iterator<E> &iterator() {
-                return Unsafe::allocateInstance<Itr<const E>>((PriorityQueue &) *this);
+            Iterator<E> &iterator() override {
+                return Unsafe::allocateInstance<Itr < E>>
+                ((PriorityQueue &) *this);
             }
 
         private:
@@ -492,7 +488,9 @@ namespace core {
             };
 
         public:
-            gint size() const override { return len; }
+            gint size() const override {
+                return len;
+            }
 
             /**
              * Removes all of the elements from this priority queue.
@@ -505,15 +503,19 @@ namespace core {
                 for (gint i = 0; i < oldSize; ++i) queue[i] = null;
             }
 
-            const E &pop() override {
+            Optional<E> pop() override {
+                if(len == 0) {
+                    return Optional<E>::empty();
+                }
                 modNum += 1;
                 ARRAY es = queue;
                 E &head = elementAt(es, 0);
                 es[0] = null;
                 len -= 1;
-                if (len > 0)
+                if (len > 0) {
                     shiftDown(0, elementAt(es, len));
-                return head;
+                }
+                return Optional<E>::of(head);
             }
 
         private:
@@ -631,8 +633,6 @@ namespace core {
              */
             static CORE_FAST glong L(gint capacity) { return 1LL * capacity * Unsafe::ARRAY_REFERENCE_INDEX_SCALE; }
 
-            \
-
         public:
 
             /**
@@ -648,7 +648,7 @@ namespace core {
 
             const E &remove() override { return pop(); }
 
-            gbool removeIf(const ElementFilter &filter) override {
+            gbool removeIf(const Predicate<E> &filter) override {
                 ARRAY es = queue;
                 gint last = -1;
                 gbool modified = false;
@@ -737,12 +737,28 @@ namespace core {
                 return modified;
             }
 
-            void forEach(const ActionConsumer &action) const override {
+            void forEach(const Consumer<E> &action) const override {
                 gint oldModNum = modNum;
                 ARRAY es = queue;
                 gint qSize = len;
-                for (gint i = 0; i <= qSize; i++) action.accept(elementAt(es, i));
-                if (oldModNum != modNum) ConcurrentException().throws(__trace("core.util.PriorityQueue"));
+                for (gint i = 0; i <= qSize; i++) {
+                    action.accept(elementAt(es, i));
+                }
+                if (oldModNum != modNum) {
+                    ConcurrentException().throws(__trace("core.util.PriorityQueue"));
+                }
+            }
+
+            void forEach(const Consumer<E &> &action) override {
+                gint oldModNum = modNum;
+                ARRAY es = queue;
+                gint qSize = len;
+                for (gint i = 0; i <= qSize; i++) {
+                    action.accept(elementAt(es, i));
+                }
+                if (oldModNum != modNum) {
+                    ConcurrentException().throws(__trace("core.util.PriorityQueue"));
+                }
             }
 
             ~PriorityQueue() {
@@ -878,9 +894,9 @@ namespace core {
             template<class ...T>
             static PriorityQueue of(const E &v1, const E &v2, const E &v3, const E &v4, const E &v5,
                                     const E &v6, const E &v7, const E &v8, const E &v9, T &&...others) {
-                CORE_STATIC_ASSERT
-                (Class<E>::allIsTrue((Class<E>::template isSuper<T>() || Class<E>::template isConstructible<T>())...),
-                 "Illegal value");
+                CORE_STATIC_ASSERT(Class<E>::template allIsTrue<(Class<E>::template isSuper<T>() ||
+                                                                 Class<E>::template isConstructible<T>())...>(),
+                                   "Illegal value");
                 try {
                     PriorityQueue pq{1};
                     pq.push(v1);

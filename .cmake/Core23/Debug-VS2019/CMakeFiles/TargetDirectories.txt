@@ -1,0 +1,4 @@
+C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019/CMakeFiles/Core23.dir
+C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019/CMakeFiles/Main23.dir
+C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019/CMakeFiles/edit_cache.dir
+C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019/CMakeFiles/rebuild_cache.dir

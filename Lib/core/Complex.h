@@ -25,7 +25,7 @@ namespace core {
     public:
         /**
          * Initialize newly Complex object with specified real part.
-         * The imaginary part is set to zero
+         * The imaginary part is setValue to zero
          *
          * @param real
          *          The real part of Complex

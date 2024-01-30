@@ -1724,19 +1724,11 @@ namespace core {
              */
             template<class T, class...Params>
             static Reference<T> allocateInstance(Params &&...params) {
-                CORE_STATIC_ASSERT(!Class<WithoutReference<T>>::isAbstract(),
-                                   "Couldn't call constructor of abstract type");
-                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(),
-                                   "Couldn't create instance of non referencable type");
+                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(), "Couldn't create instance of non referencable type");
                 CORE_STATIC_ASSERT(Class<WithoutReference<T>>::isClass(), "This method require class type");
-                CORE_STATIC_ASSERT(Class<Object>::isSuper<WithoutReference<T>>(), "Unsupported type");
-                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::template isConstructible<Params...>(),
-                                   "Incompatible parameters");
                 glong address = allocateMemory(sizeof(WithoutReference<T>));
                 try {
-                    Reference<T> refT = initializeInstance<WithoutReference<T>>(address,
-                                                                                Unsafe::forwardInstance<Params>(
-                                                                                        params)...);
+                    Reference<T> refT = initializeInstance<WithoutReference<T>>(address, Unsafe::forwardInstance<Params>(params)...);
                     storeInstance(address);
                     return refT;
                 } catch (const Exception &ex) {
@@ -1782,19 +1774,14 @@ namespace core {
              */
             template<class T, class...Params>
             static Reference<T> initializeInstance(glong address, Params &&...params) {
-                CORE_STATIC_ASSERT(!Class<WithoutReference<T>>::isAbstract(),
-                                   "Couldn't call constructor of abstract type");
-                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(),
-                                   "Couldn't create instance of non referencable type");
+//                CORE_STATIC_ASSERT(!Class<WithoutReference<T>>::isAbstract(), "Couldn't call constructor of abstract type");
+                CORE_STATIC_ASSERT(Class<Reference<T>>::isReference(), "Couldn't create instance of non referencable type");
                 CORE_STATIC_ASSERT(Class<WithoutReference<T>>::isClass(), "This method require class type");
                 CORE_STATIC_ASSERT(Class<Object>::isSuper<WithoutReference<T>>(), "Unsupported type");
-                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::template isConstructible<Params...>(),
-                                   "Incompatible parameters");
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::template isConstructible<Params...>(), "Incompatible parameters");
                 if (address == 0)
-                    IllegalArgumentException("Couldn't construct object at null address")
-                            .throws(__trace("core.private.Unsafe"));
-                Reference<T> refT = *(new((GENERIC_PTR) address) WithoutReference<T>(
-                        forwardInstance<Params>(params)...));
+                    IllegalArgumentException("Couldn't construct object at null address").throws(__trace("core.private.Unsafe"));
+                Reference<T> refT = *(new((GENERIC_PTR) address) WithoutReference<T>(forwardInstance<Params>(params)...));
                 return refT;
             }
 
@@ -1811,20 +1798,13 @@ namespace core {
              */
             template<class T>
             static T &copyInstance(const T &o, gbool oldCopy) {
-                if ((getNativeAddress((const Object &) o, 0) == 0) || (oldCopy) && loadInstance((glong) &o))
+                CORE_STATIC_ASSERT(Class<WithoutReference<T>>::isClass(), "This method require class type");
+                CORE_STATIC_ASSERT(Class<Object>::isSuper<WithoutReference<T>>(), "Unsupported type");
+                if (null == o || (oldCopy) && loadInstance((glong) &o))
                     // it has been previously created dynamically
                     return (T &) o;
                 else {
                     T &copy = CopyImpl<T>::copy(o);
-//                    static glong lastAddr = 0;
-//                    // for singleton &copyInstance(o) == &o
-//                    // for cloneable class &copyInstance(o) != &o and copyInstance(o) == o
-//                    if(&copy != &o && copy != o && lastAddr == 0){
-//                        lastAddr = (glong) &o;
-//                        destroyInstance(copy);
-//                        return copyInstance(o);
-//                    }
-//                    lastAddr = 0;
                     return copy;
                 }
 
@@ -1847,8 +1827,8 @@ namespace core {
              */
             template<class From, class To = From>
             static void swapValues(From &from, To &to) {
-                CORE_STATIC_ASSERT(Class<To>::template isAssignable<From>() && Class<To>::template isAssignable<From>(),
-                                   "Incompatibles types");
+                CORE_STATIC_ASSERT(!Class<From>::isConstant() && !Class<To>::isConstant(), "Could not assign value to constant type.");
+                CORE_STATIC_ASSERT(Class<To>::template isAssignable<From>() && Class<To>::template isAssignable<From>(), "Source type is not assignable to Destination type and vice-versa.");
                 From f = from;
                 from = to;
                 to = f;

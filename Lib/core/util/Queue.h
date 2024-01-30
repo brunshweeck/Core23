@@ -7,6 +7,7 @@
 
 #include "Collection.h"
 #include <core/NoSuchElementException.h>
+#include <core/util/Optional.h>
 
 namespace core {
     namespace util {
@@ -46,7 +47,7 @@ namespace core {
          * implementation to implementation. The <b>remove()</b> and
          * <b>pop()</b> methods differ only in their behavior when the
          * queue is empty: the <b>remove()</b> method throws an exception,
-         * while the <b>pop()</b> method returns <b>null</b>.
+         * while the <b>pop()</b> method returns <b>empty optional value</b>.
          *
          * <p>The <b style="color:green;">get()</b> method return, but do
          * not remove, the head of the queue.
@@ -63,13 +64,6 @@ namespace core {
          */
         template<class E>
         class Queue : public Collection<E> {
-        protected:
-
-            CORE_ALIAS(Unsafe, native::Unsafe);
-            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
-            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
-            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
-
         public:
 
             /**
@@ -125,10 +119,9 @@ namespace core {
             /**
              * Retrieves and removes the head of this queue.
              *
-             * @return the head of this queue
-             * @throws NoSuchElementException if this queue is empty
+             * @return the head of this queue or empty optional value if is empty
              */
-            virtual const E &pop() = 0;
+            virtual Optional<E> pop() = 0;
 
             /**
              * Retrieves, but does not remove, the head of this queue.
@@ -154,8 +147,9 @@ namespace core {
              * returns <b>null</b>.
              */
             void clear() override {
-                while (this->size() > 0)
+                while (this->size() > 0) {
                     pop();
+                }
             }
 
             /**
@@ -188,9 +182,11 @@ namespace core {
                 if (this == &c)
                     IllegalArgumentException().throws(__trace("core.util.Queue"));
                 gbool modified = {};
-                for (const E &e: c)
-                    if (add(e))
+                for (const E &e: c) {
+                    if (add(e)) {
                         modified = true;
+                    }
+                }
                 return true;
             }
         };

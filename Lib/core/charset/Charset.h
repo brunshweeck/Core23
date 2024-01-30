@@ -6,7 +6,7 @@
 #define CORE23_CHARSET_H
 
 #include <core/String.h>
-#include <core/util/HashMap.h>
+#include <core/util/HashSet.h>
 #include <core/native/StringArray.h>
 #include <core/native/CharArray2D.h>
 
@@ -113,7 +113,7 @@ namespace core {
          * <tbody>
          * <tr><th scope="row" style="vertical-align:top"><b> US-ASCII</b></th>
          *     <td>Seven-bit ASCII, a.k.a. <b> ISO646-US</b>,
-         *         a.k.a. the Basic Latin block of the Unicode character set</td></tr>
+         *         a.k.a. the Basic Latin block of the Unicode character setValue</td></tr>
          * <tr><th scope="row" style="vertical-align:top"><code>ISO-8859-1&nbsp;&nbsp;</code></th>
          *     <td>ISO Latin Alphabet No. 1, a.k.a. <b> ISO-LATIN-1</b></td></tr>
          * <tr><th scope="row" style="vertical-align:top"><b> UTF-8</b></th>
@@ -183,34 +183,34 @@ namespace core {
          * In that document a <i>charset</i> is defined as the combination of
          * one or more coded character sets and a character-encoding scheme.
          * (This definition is confusing; some other software systems define
-         * <i>charset</i> as a synonym for <i>coded character set</i>.)
+         * <i>charset</i> as a synonym for <i>coded character setValue</i>.)
          *
-         * <p> A <i>coded character set</i> is a mapping between a set of abstract
-         * characters and a set of integers.  US-ASCII, ISO&nbsp;8859-1,
+         * <p> A <i>coded character set</i> is a mapping between a setValue of abstract
+         * characters and a setValue of integers.  US-ASCII, ISO&nbsp;8859-1,
          * JIS&nbsp;X&nbsp;0201, and Unicode are examples of coded character sets.
          *
-         * <p> Some standards have defined a <i>character set</i> to be simply a
-         * set of abstract characters without an associated assigned numbering.
-         * An alphabet is an example of such a character set.  However, the subtle
-         * distinction between <i>character set</i> and <i>coded character set</i>
+         * <p> Some standards have defined a <i>character setValue</i> to be simply a
+         * setValue of abstract characters without an associated assigned numbering.
+         * An alphabet is an example of such a character setValue.  However, the subtle
+         * distinction between <i>character setValue</i> and <i>coded character set</i>
          * is rarely used in practice; the former has become a short form for the
          * latter, including in the API specification.
          *
          * <p> A <i>character-encoding scheme</i> is a mapping between one or more
-         * coded character sets and a set of octet (eight-bit byte) sequences.
+         * coded character sets and a setValue of octet (eight-bit byte) sequences.
          * UTF-8, UTF-16, ISO&nbsp;2022, and EUC are examples of
          * character-encoding schemes.  Encoding schemes are often associated with
-         * a particular coded character set; UTF-8, for example, is used only to
+         * a particular coded character setValue; UTF-8, for example, is used only to
          * encode Unicode.  Some schemes, however, are associated with multiple
          * coded character sets; EUC, for example, can be used to encode
          * characters in a variety of Asian coded character sets.
          *
-         * <p> When a coded character set is used exclusively with a single
+         * <p> When a coded character setValue is used exclusively with a single
          * character-encoding scheme then the corresponding charset is usually
-         * named for the coded character set; otherwise a charset is usually named
+         * named for the coded character setValue; otherwise a charset is usually named
          * for the encoding scheme and, possibly, the locale of the coded
          * character sets that it supports.  Hence <b> US-ASCII</b> is both the
-         * name of a coded character set and of the charset that encodes it, while
+         * name of a coded character setValue and of the charset that encodes it, while
          * <b> EUC-JP</b> is the name of the charset that encodes the
          * JIS&nbsp;X&nbsp;0201, JIS&nbsp;X&nbsp;0208, and JIS&nbsp;X&nbsp;0212
          * coded character sets for the Japanese language.
@@ -242,7 +242,7 @@ namespace core {
              static void checkName(const String& s);
 
              /**
-              * The set of available charsets
+              * The setValue of available charsets
               */
              static util::Set<Charset> &available;
 
@@ -341,7 +341,7 @@ namespace core {
         protected:
             /**
              * Initializes a new charset with the given canonical name and alias
-             * set.
+             * setValue.
              *
              * @param  canonicalName
              *         The canonical name of this charset
@@ -363,9 +363,9 @@ namespace core {
              virtual String name() const;
 
             /**
-             * Returns a set containing this charset's aliases.
+             * Returns a setValue containing this charset's aliases.
              *
-             * @return  An immutable set of this charset's aliases
+             * @return  An immutable setValue of this charset's aliases
              */
              virtual util::Set<String> &aliases() const;
 

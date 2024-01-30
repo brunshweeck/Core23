@@ -108,13 +108,13 @@ namespace core {
             }
         }
 
-        Duration::Duration(glong seconds, gint nanos) : secs(seconds), ns(nanos) {}
+        Duration::Duration(glong seconds, gint nanos) : Seconds(seconds), Nanos(nanos) {}
 
         glong Duration::get(Temporal::ChronoUnit unit) const {
             if (unit == SECONDS) {
-                return secs;
+                return Seconds;
             } else if (unit == NANOS) {
-                return ns;
+                return Nanos;
             } else {
                 UnsupportedTemporalException("Unsupported unit: " + String::valueOf(unit))
                         .throws(__trace("core.time.Duration"));
@@ -122,32 +122,32 @@ namespace core {
         }
 
         gbool Duration::isPositive() const {
-            return (secs | ns) >= 0;
+            return (Seconds | Nanos) >= 0;
         }
 
         gbool Duration::isZero() const {
-            return (secs | ns) == 0;
+            return (Seconds | Nanos) == 0;
         }
 
         gbool Duration::isNegative() const {
-            return secs < 0;
+            return Seconds < 0;
         }
 
         glong Duration::seconds() const {
-            return secs;
+            return Seconds;
         }
 
         gint Duration::nanos() const {
-            return ns;
+            return Nanos;
         }
 
         Duration Duration::withSeconds(glong seconds) const {
-            return Duration(seconds, ns);
+            return Duration(seconds, Nanos);
         }
 
         Duration Duration::withNanos(gint nanos) const {
             try {
-                return Duration(secs, (gint) checkValue(NANO_OF_SECOND, nanos));
+                return Duration(Seconds, (gint) checkValue(NANO_OF_SECOND, nanos));
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
             }
@@ -184,7 +184,7 @@ namespace core {
                     case SECONDS:
                         return plusSeconds(amountToAdd);
                     default:
-                        return plusSeconds(Math::multiplyExact(ofUnit(unit).secs, amountToAdd));
+                        return plusSeconds(Math::multiplyExact(ofUnit(unit).Seconds, amountToAdd));
                 };
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
@@ -245,10 +245,10 @@ namespace core {
                 if ((secondsToAdd | nanosToAdd) == 0) {
                     return *this;
                 }
-                glong epochSec = Math::addExact(secs, secondsToAdd);
+                glong epochSec = Math::addExact(Seconds, secondsToAdd);
                 epochSec = Math::addExact(epochSec, nanosToAdd / LocalTime::NANOS_PER_SECOND);
                 nanosToAdd = nanosToAdd % LocalTime::NANOS_PER_SECOND;
-                glong const nanoAdjustment = ns + nanosToAdd;  // safe int+NANOS_PER_SECOND
+                glong const nanoAdjustment = Nanos + nanosToAdd;  // safe int+NANOS_PER_SECOND
                 return ofSeconds(epochSec, nanoAdjustment);
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
@@ -337,8 +337,8 @@ namespace core {
                     return ZERO;
                 if (multiplicand == 1)
                     return *this;
-                glong const seconds = Math::multiplyExact(multiplicand, secs);
-                glong const nanos = Math::multiplyExact(multiplicand, ns);
+                glong const seconds = Math::multiplyExact(multiplicand, Seconds);
+                glong const nanos = Math::multiplyExact(multiplicand, Nanos);
                 return ofSeconds(seconds).plusNanos(nanos);
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
@@ -354,8 +354,8 @@ namespace core {
                 ArithmeticException("Cannot divide by zero").throws(__trace("core.time.Duration"));
             }
             try {
-                glong const seconds = Math::floorDiv(secs, divisor);
-                glong nanos = Math::floorMod(secs, divisor);
+                glong const seconds = Math::floorDiv(Seconds, divisor);
+                glong nanos = Math::floorMod(Seconds, divisor);
                 try {
                     nanos = Math::multiplyExact(nanos, LocalTime::NANOS_PER_SECOND);
                     nanos = Math::floorDiv(nanos, divisor);
@@ -363,7 +363,7 @@ namespace core {
                     gdouble const d = (gdouble) nanos / (gdouble) divisor;
                     nanos = (gint) (d * LocalTime::NANOS_PER_SECOND);
                 }
-                nanos = Math::addExact(nanos, Math::floorDiv((glong) ns, divisor));
+                nanos = Math::addExact(nanos, Math::floorDiv((glong) Nanos, divisor));
                 return Duration(seconds, (gint) nanos);
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
@@ -381,13 +381,13 @@ namespace core {
             if (isZero())
                 return 0;
             try {
-                if (divisor.ns == 0)
+                if (divisor.Nanos == 0)
                     return dividedBy(divisor.seconds()).seconds();
-                else if (divisor.secs == 0) {
+                else if (divisor.Seconds == 0) {
                     return multipliedBy(LocalTime::NANOS_PER_SECOND).dividedBy(divisor.nanos()).seconds();
                 } else {
-                    gdouble const d1 = (gdouble) secs + (gdouble) ns / 1.0E9;
-                    gdouble const d2 = (gdouble) divisor.secs + (gdouble) divisor.ns / 1.0E9;
+                    gdouble const d1 = (gdouble) Seconds + (gdouble) Nanos / 1.0E9;
+                    gdouble const d2 = (gdouble) divisor.Seconds + (gdouble) divisor.Nanos / 1.0E9;
                     return (glong) Math::floor(d1 / d2);
                 }
             } catch (const Exception &ex) {
@@ -401,7 +401,7 @@ namespace core {
 
         Duration Duration::negated() const {
             try {
-                return Duration(Math::multiplyExact(secs, -1), Math::multiplyExact(ns, -1));
+                return Duration(Math::multiplyExact(Seconds, -1), Math::multiplyExact(Nanos, -1));
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
             }
@@ -413,32 +413,32 @@ namespace core {
 
         Duration Duration::abs() const {
             try {
-                return Duration(Math::abs(secs), Math::abs(ns));
+                return Duration(Math::abs(Seconds), Math::abs(Nanos));
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
             }
         }
 
         glong Duration::toDays() const {
-            return Math::floorDiv(secs, LocalTime::SECONDS_PER_DAY);
+            return Math::floorDiv(Seconds, LocalTime::SECONDS_PER_DAY);
         }
 
         glong Duration::toHours() const {
-            return Math::floorDiv(secs, LocalTime::SECONDS_PER_HOUR);
+            return Math::floorDiv(Seconds, LocalTime::SECONDS_PER_HOUR);
         }
 
         glong Duration::toMinutes() const {
-            return Math::floorDiv(secs, LocalTime::SECONDS_PER_MINUTE);
+            return Math::floorDiv(Seconds, LocalTime::SECONDS_PER_MINUTE);
         }
 
         glong Duration::toSeconds() const {
-            return secs;
+            return Seconds;
         }
 
         glong Duration::toMillis() const {
             try {
-                return Math::addExact(Math::multiplyExact(secs, LocalTime::MILLIS_PER_SECOND),
-                                      (glong) Math::floorDiv(ns, 1000000));
+                return Math::addExact(Math::multiplyExact(Seconds, LocalTime::MILLIS_PER_SECOND),
+                                      (glong) Math::floorDiv(Nanos, 1000000));
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
             }
@@ -446,7 +446,7 @@ namespace core {
 
         glong Duration::toNanos() const {
             try {
-                return Math::addExact(Math::multiplyExact(secs, LocalTime::NANOS_PER_SECOND), (glong) ns);
+                return Math::addExact(Math::multiplyExact(Seconds, LocalTime::NANOS_PER_SECOND), (glong) Nanos);
             } catch (const Exception &ex) {
                 ex.throws(__trace("core.time.Duration"));
             }
@@ -465,15 +465,15 @@ namespace core {
         }
 
         gint Duration::toSecondsPart() const {
-            return (gint) (secs % LocalTime::SECONDS_PER_MINUTE);
+            return (gint) (Seconds % LocalTime::SECONDS_PER_MINUTE);
         }
 
         gint Duration::toMillisPart() const {
-            return ns / 1000000;
+            return Nanos / 1000000;
         }
 
         gint Duration::toNanosPart() const {
-            return ns;
+            return Nanos;
         }
 
         Duration Duration::truncateTo(Temporal::TemporalUnit unit) const {
@@ -481,19 +481,19 @@ namespace core {
                 case NANOS:
                     return *this;
                 case MICROS:
-                    return ofSeconds(secs).plusNanos(ns * 1000LL);
+                    return ofSeconds(Seconds).plusNanos(Nanos * 1000LL);
                 case MILLIS:
-                    return ofSeconds(secs).plusNanos(ns * LocalTime::NANOS_PER_MILLI);
+                    return ofSeconds(Seconds).plusNanos(Nanos * LocalTime::NANOS_PER_MILLI);
                 case SECONDS:
-                    return ofSeconds(secs);
+                    return ofSeconds(Seconds);
                 case MINUTES:
-                    return ofMinutes(secs / LocalTime::SECONDS_PER_MINUTE);
+                    return ofMinutes(Seconds / LocalTime::SECONDS_PER_MINUTE);
                 case HOURS:
-                    return ofHours(secs / LocalTime::SECONDS_PER_HOUR);
+                    return ofHours(Seconds / LocalTime::SECONDS_PER_HOUR);
                 case HALF_DAYS:
-                    return ofHours(secs / (LocalTime::SECONDS_PER_DAY / 2));
+                    return ofHours(Seconds / (LocalTime::SECONDS_PER_DAY / 2));
                 case DAYS:
-                    return ofDays(secs / LocalTime::SECONDS_PER_DAY);
+                    return ofDays(Seconds / LocalTime::SECONDS_PER_DAY);
                 default:
                     UnsupportedTemporalException("Unit is too large to be used for truncation")
                             .throws(__trace("core.time.duration"));
@@ -502,10 +502,10 @@ namespace core {
         }
 
         gint Duration::compareTo(const Duration &other) const {
-            gint const r = Long::compare(secs, other.secs);
+            gint const r = Long::compare(Seconds, other.Seconds);
             if (r != 0)
                 return r;
-            return Integer::compare(ns, other.ns);
+            return Integer::compare(Nanos, other.Nanos);
         }
 
         gbool Duration::equals(const Object &o) const {
@@ -514,19 +514,19 @@ namespace core {
             if (!Class<Duration>::hasInstance(o))
                 return false;
             Duration const &other = (const Duration &) o;
-            return secs == other.secs && ns == other.ns;
+            return Seconds == other.Seconds && Nanos == other.Nanos;
         }
 
         gint Duration::hash() const {
-            return Long::hash(secs) + Integer::hash(ns);
+            return Long::hash(Seconds) + Integer::hash(Nanos);
         }
 
         String Duration::toString() const {
             if (*this == ZERO) {
                 return "PT0S";
             }
-            glong effectiveTotalSecs = secs;
-            if (secs < 0 && ns > 0) {
+            glong effectiveTotalSecs = Seconds;
+            if (Seconds < 0 && Nanos > 0) {
                 effectiveTotalSecs++;
             }
             glong const hours = effectiveTotalSecs / LocalTime::SECONDS_PER_HOUR;
@@ -540,10 +540,10 @@ namespace core {
             if (minutes != 0) {
                 buf.append(minutes).append('M');
             }
-            if (secs == 0 && ns == 0 && buf.length() > 2) {
+            if (secs == 0 && Nanos == 0 && buf.length() > 2) {
                 return buf.toString();
             }
-            if (secs <= 0 && ns > 0) {
+            if (Seconds < 0 && Nanos > 0) {
                 if (secs == 0) {
                     buf.append("-0");
                 } else {
@@ -552,12 +552,12 @@ namespace core {
             } else {
                 buf.append(secs);
             }
-            if (ns > 0) {
+            if (Nanos > 0) {
                 gint const pos = buf.length();
-                if (seconds() < 0) {
-                    buf.append(2 * LocalTime::NANOS_PER_SECOND - ns);
+                if (Seconds < 0) {
+                    buf.append(2 * LocalTime::NANOS_PER_SECOND - Nanos);
                 } else {
-                    buf.append(ns + LocalTime::NANOS_PER_SECOND);
+                    buf.append(Nanos + LocalTime::NANOS_PER_SECOND);
                 }
                 while (buf.charAt(buf.length() - 1) == '0') {
                     buf.resize(buf.length() - 1);
@@ -634,6 +634,7 @@ namespace core {
                 case FOREVER:
                     return ofDays(Long::MAX_VALUE);
             }
+            return ZERO;
         }
 
         Duration Duration::operator+(const Duration &duration) const {

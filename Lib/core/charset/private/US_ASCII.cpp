@@ -37,12 +37,12 @@ namespace core {
         US_ASCII::Decoder::Decoder(const Charset &cs) : CharsetDecoder(cs, 1.0f, 1.0f) {}
 
         CoderResult US_ASCII::Decoder::decodeArrayLoop(ByteBuffer &src, CharBuffer &dst) {
-            ByteArray sa = src.array();
+            ByteArray const &sa = src.array();
             gint soff = src.arrayOffset();
             gint sp = soff + src.position();
             gint sl = soff + src.limit();
 
-            CharArray da = dst.array();
+            CharArray &da = dst.array();
             gint doff = dst.arrayOffset();
             gint dp = doff + dst.position();
             gint dl = doff + dst.limit();

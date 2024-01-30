@@ -15,7 +15,7 @@ namespace core {
 
         /**
          * The <b> Calendar} class is an abstract class that provides methods
-         * for converting between a specific instant in time and a set of <b style="color:orange;">
+         * for converting between a specific instant in time and a setValue of <b style="color:orange;">
          * #fields calendar fields} such as <b> YEAR}, <b> MONTH},
          * <b> DAY_OF_MONTH}, <b> HOUR}, and so on, and for
          * manipulating the calendar fields, such as getting the date of the next
@@ -51,8 +51,8 @@ namespace core {
          *
          * <h2>Getting and Setting Calendar Field Values</h2>
          *
-         * <p>The calendar field values can be set by calling the <b> set}
-         * methods. Any field values set in a <b> Calendar} will not be
+         * <p>The calendar field values can be set by calling the <b> setValue}
+         * methods. Any field values setValue in a <b> Calendar} will not be
          * interpreted until it needs to calculate its time value (milliseconds from
          * the Epoch) or values of the calendar fields. Calling the
          * <b> get}, <b> getTimeInMillis}, <b> getTime},
@@ -75,7 +75,7 @@ namespace core {
          * <b> DAY_OF_MONTH} values between 1 and the length of the m. A
          * non-lenient <b> GregorianCalendar} throws an exception upon
          * calculating its time or calendar field values if any out-of-range field
-         * value has been set.
+         * value has been setValue.
          *
          * <h3><a id="first_week">First Week</a></h3>
          *
@@ -113,10 +113,10 @@ namespace core {
          * following way.
          *
          * <p><a id="resolution">If there is any conflict in calendar field values,
-         * <b> Calendar} gives priorities to calendar fields that have been set
+         * <b> Calendar} gives priorities to calendar fields that have been setValue
          * more recently.</a> The following are the default combinations of the
          * calendar fields. The most recent combination, as determined by the
-         * most recently set single field, will be used.
+         * most recently setValue single field, will be used.
          *
          * <p><a id="date_resolution">For the date fields</a>:
          * <blockquote>
@@ -135,7 +135,7 @@ namespace core {
          * AM_PM + HOUR
          * </pre></blockquote>
          *
-         * <p>If there are any calendar fields whose values haven't been set in the selected
+         * <p>If there are any calendar fields whose values haven't been setValue in the selected
          * field combination, <b> Calendar} uses their default values. The default
          * value of each field may vary by concrete calendar systems. For example, in
          * <b> GregorianCalendar}, the default of a field is the same as that
@@ -165,35 +165,35 @@ namespace core {
          * <h3>Field Manipulation</h3>
          *
          * The calendar fields can be changed using three methods:
-         * <b> set()}, <b> add()}, and <b> roll()}.
+         * <b> setValue()}, <b> add()}, and <b> roll()}.
          *
-         * <p><strong><b> set(f, value)}</strong> changes calendar field
+         * <p><strong><b> setValue(f, value)}</strong> changes calendar field
          * <b> f} to <b> value}.  In addition, it sets an
          * internal member variable to indicate that calendar field <b> f} has
          * been changed. Although calendar field <b> f} is changed immediately,
          * the calendar's time value in milliseconds is not recomputed until the next call to
          * <b> get()}, <b> getTime()}, <b> getTimeInMillis()},
          * <b> add()}, or <b> roll()} is made. Thus, multiple calls to
-         * <b> set()} do not trigger multiple, unnecessary
+         * <b> setValue()} do not trigger multiple, unnecessary
          * computations. As a result of changing a calendar field using
-         * <b> set()}, other calendar fields may also change, depending on the
+         * <b> setValue()}, other calendar fields may also change, depending on the
          * calendar field, the calendar field value, and the calendar system. In addition,
-         * <b> get(f)} will not necessarily return <b> value} set by
-         * the call to the <b> set} method
+         * <b> get(f)} will not necessarily return <b> value} setValue by
+         * the call to the <b> setValue} method
          * after the calendar fields have been recomputed. The specifics are determined by
          * the concrete calendar class.</p>
          *
          * <p><em>Example</em>: Consider a <b> GregorianCalendar}
-         * originally set to August 31, 1999. Calling <code>set(Calendar.MONTH,
+         * originally setValue to August 31, 1999. Calling <code>set(Calendar.MONTH,
          * Calendar.SEPTEMBER)</code> sets the date to September 31,
          * 1999. This is a temporary internal representation that resolves to
          * October 1, 1999 if <b> getTime()} is then called. However, a
-         * call to <b> set(Calendar.DAY_OF_MONTH, 30)} before the call to
+         * call to <b> setValue(Calendar.DAY_OF_MONTH, 30)} before the call to
          * <b> getTime()} sets the date to September 30, 1999, since
-         * no recomputation occurs after <b> set()} itself.</p>
+         * no recomputation occurs after <b> setValue()} itself.</p>
          *
          * <p><strong><b> add(f, delta)}</strong> adds <b> delta}
-         * to field <b> f}.  This is equivalent to calling <code>set(f,
+         * to field <b> f}.  This is equivalent to calling <code>setValue(f,
          * get(f) + delta)</code> with two adjustments:</p>
          *
          * <blockquote>
@@ -216,12 +216,12 @@ namespace core {
          *   determines what fields are expected to be invariant.</p>
          * </blockquote>
          *
-         * <p>In addition, unlike <b> set()}, <b> add()} forces
+         * <p>In addition, unlike <b> setValue()}, <b> add()} forces
          * an immediate recomputation of the calendar's milliseconds and all
          * fields.</p>
          *
          * <p><em>Example</em>: Consider a <b> GregorianCalendar}
-         * originally set to August 31, 1999. Calling <code>add(Calendar.MONTH,
+         * originally setValue to August 31, 1999. Calling <code>add(Calendar.MONTH,
          * 13)</code> sets the calendar to September 30, 2000. <strong>Add rule
          * 1</strong> sets the <b> MONTH} field to September, since
          * adding 13 months to August gives September of the next year. Since
@@ -252,7 +252,7 @@ namespace core {
          * year, and an underlying <b> GregorianCalendar}. If the
          * interface reads January 31, 1999 and the user presses the m
          * increment button, what should it read? If the underlying
-         * implementation uses <b> set()}, it might read March 3, 1999. A
+         * implementation uses <b> setValue()}, it might read March 3, 1999. A
          * better result would be February 28, 1999. Furthermore, if the user
          * presses the m increment button again, it should read March 31,
          * 1999, not March 28, 1999. By saving the original date and using either

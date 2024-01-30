@@ -60,7 +60,7 @@ namespace core {
                     for (gint i = 0; i < files.len; ++i) {
                         // destroy old value
                         value[i].~File();
-                        // set copy
+                        // setValue copy
                         Unsafe::initializeInstance<File>((glong) (value + i), files.value[i]);
                     }
                     // destroy remaining values
@@ -145,19 +145,6 @@ namespace core {
             if (this == &o)
                 return true;
             if (Class<PrimitiveArray<File>>::hasInstance(o)) {
-                PrimitiveArray<File> const &aa = CORE_DYN_CAST(PrimitiveArray<File> const&, o);
-                if (len != aa.length()) {
-                    return false;
-                }
-                CORE_TRY_ONLY
-                ({
-                     for (int i = 0; i < len; ++i) {
-                         if (get(i) != aa[i])
-                             return false;
-                     }
-                     return true;
-                 })
-            } else if (Class<PrimitiveArray<File &>>::hasInstance(o)) {
                 PrimitiveArray<File> const &aa = CORE_DYN_CAST(PrimitiveArray<File> const&, o);
                 if (len != aa.length()) {
                     return false;

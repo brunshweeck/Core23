@@ -27,7 +27,7 @@ namespace core {
 
         DoubleByte::Decoder_DBCSONLY::Decoder_DBCSONLY(const Charset &cs, CharArray2D &b2c, CharArray &b2cSB,
                                                        gint b2Min, gint b2Max) :
-                Decoder(cs, 0.5F, 1.0F, b2c, b2cSB_UNMAPPABLE, b2Min, b2Max, false){
+                Decoder(cs, 0.5F, 1.0F, b2c, b2cSB_UNMAPPABLE, b2Min, b2Max, false) {
             CORE_IGNORE(b2cSB);
         }
 
@@ -58,7 +58,7 @@ namespace core {
                 : Decoder(cs, 0.5F, 1.0F, b2c, b2cSB, b2Min, b2Max, false) {}
 
         CoderResult DoubleByte::Decoder::decodeArrayLoop(ByteBuffer &src, CharBuffer &dst) {
-            ByteArray &sa = src.array();
+            ByteArray const &sa = src.array();
             gint const soff = src.arrayOffset();
             gint sp = soff + src.position();
             gint const sl = soff + src.limit();
@@ -80,11 +80,16 @@ namespace core {
                     gint const b1 = sa[sp] & 0xff;
                     gchar c = b2cSB[b1];
                     if (c == UNMAPPABLE_DECODING) {
-                        if (sl - sp < 2)
+                        if (sl - sp < 2) {
+                            src.setPosition(sp - soff);
+                            dst.setPosition(dp - doff);
                             return crMalformedOrUnderFlow(b1);
+                        }
                         gint const b2 = sa[sp + 1] & 0xff;
                         if (b2 < b2Min || b2 > b2Max ||
                             (c = b2c[b1][b2 - b2Min]) == UNMAPPABLE_DECODING) {
+                            src.setPosition(sp - soff);
+                            dst.setPosition(dp - doff);
                             return crMalformedOrUnmappable(b1, b2);
                         }
                         inSize++;
@@ -123,7 +128,7 @@ namespace core {
                     mark += inSize;
                 }
                 src.setPosition(mark);
-                return src.hasRemaining()? CoderResult::OVERFLOW : CoderResult::UNDERFLOW;
+                return src.hasRemaining() ? CoderResult::OVERFLOW : CoderResult::UNDERFLOW;
             } catch (const Throwable &th) {
                 src.setPosition(mark);
                 th.throws();
@@ -178,7 +183,7 @@ namespace core {
         gchar DoubleByte::Decoder::decodeDouble(gint b1, gint b2) {
             if (b1 < 0 || b1 > b2c.length() || b2 < b2Min || b2 > b2Max)
                 return UNMAPPABLE_DECODING;
-            return  b2c[b1][b2 - b2Min];
+            return b2c[b1][b2 - b2Min];
         }
 
         Object &DoubleByte::Decoder::clone() const {
@@ -203,7 +208,7 @@ namespace core {
         }
 
         CoderResult DoubleByte::Decoder_EBCDIC::decodeArrayLoop(ByteBuffer &src, CharBuffer &dst) {
-            ByteArray  const&sa = src.array();
+            ByteArray const &sa = src.array();
             gint sp = src.arrayOffset() + src.position();
             gint const sl = src.arrayOffset() + src.limit();
             CharArray &da = dst.array();
@@ -217,35 +222,46 @@ namespace core {
                     gint const b1 = sa[sp] & 0xff;
                     gint inSize = 1;
                     if (b1 == SO) {  // Shift out
-                        if (currentState != SBCS)
+                        if (currentState != SBCS) {
+                            src.setPosition(sp - src.arrayOffset());
+                            dst.setPosition(dp - dst.arrayOffset());
                             return CoderResult::malformedForLength(1);
-                        else
+                        } else
                             currentState = DBCS;
                     } else if (b1 == SI) {
-                        if (currentState != DBCS)
+                        if (currentState != DBCS) {
+                            src.setPosition(sp - src.arrayOffset());
+                            dst.setPosition(dp - dst.arrayOffset());
                             return CoderResult::malformedForLength(1);
-                        else
+                        } else
                             currentState = SBCS;
                     } else {
                         gchar c;
                         if (currentState == SBCS) {
                             c = b2cSB[b1];
-                            if (c == UNMAPPABLE_DECODING)
+                            if (c == UNMAPPABLE_DECODING) {
+                                src.setPosition(sp - src.arrayOffset());
+                                dst.setPosition(dp - dst.arrayOffset());
                                 return CoderResult::unmappableForLength(1);
+                            }
                         } else {
                             if (sl - sp < 2)
                                 return CoderResult::UNDERFLOW;
                             gint const b2 = sa[sp + 1] & 0xff;
-                            if (b2 < b2Min || b2 > b2Max ||
-                                (c = b2c[b1][b2 - b2Min]) == UNMAPPABLE_DECODING) {
+                            if (b2 < b2Min || b2 > b2Max || (c = b2c[b1][b2 - b2Min]) == UNMAPPABLE_DECODING) {
+                                src.setPosition(sp - src.arrayOffset());
+                                dst.setPosition(dp - dst.arrayOffset());
                                 if (!isDoubleByte(b1, b2))
                                     return CoderResult::malformedForLength(2);
                                 return CoderResult::unmappableForLength(2);
                             }
                             inSize++;
                         }
-                        if (dl - dp < 1)
+                        if (dl - dp < 1) {
+                            src.setPosition(sp - src.arrayOffset());
+                            dst.setPosition(dp - dst.arrayOffset());
                             return CoderResult::OVERFLOW;
+                        }
 
                         da[dp++] = c;
                     }
@@ -279,7 +295,7 @@ namespace core {
                     else
                         currentState = SBCS;
                 } else {
-                    gchar c =  UNMAPPABLE_DECODING;
+                    gchar c = UNMAPPABLE_DECODING;
                     if (currentState == SBCS) {
                         c = b2cSB[b1];
                         if (c == UNMAPPABLE_DECODING)
@@ -352,7 +368,7 @@ namespace core {
         }
 
         CoderResult DoubleByte::Decoder_EUC_SIM::crMalformedOrUnderFlow(gint b) const {
-            if (b == SS2 || b == SS3 )
+            if (b == SS2 || b == SS3)
                 return CoderResult::malformedForLength(1);
             return CoderResult::UNDERFLOW;
         }
@@ -363,7 +379,7 @@ namespace core {
 
         CoderResult DoubleByte::Decoder_EUC_SIM::crMalformedOrUnmappable(gint b1, gint b2) {
             CORE_IGNORE(b2);
-            if (b1 == SS2 || b1 == SS3 )
+            if (b1 == SS2 || b1 == SS3)
                 return CoderResult::malformedForLength(1);
             return CoderResult::unmappableForLength(2);
         }
@@ -401,7 +417,10 @@ namespace core {
                 CharsetEncoder(cs, 2.0F, 2.0F), isASCIICompatible(isASCIICompatible), c2bIndex(c2bIndex), c2b(c2b) {}
 
         DoubleByte::Encoder::Encoder(const Charset &cs, gfloat avg, gfloat max, const ByteArray &repl, CharArray &c2b,
-                                     CharArray &c2bIndex, gbool isASCIICompatible) : CharsetEncoder(cs, avg, max, repl), c2b(c2b), c2bIndex(c2bIndex), isASCIICompatible(isASCIICompatible) {}
+                                     CharArray &c2bIndex, gbool isASCIICompatible) : CharsetEncoder(cs, avg, max, repl),
+                                                                                     c2b(c2b), c2bIndex(c2bIndex),
+                                                                                     isASCIICompatible(
+                                                                                             isASCIICompatible) {}
 
         gbool DoubleByte::Encoder::canEncode(gchar c) {
             return encodeChar(c) != UNMAPPABLE_ENCODING;
@@ -437,12 +456,12 @@ namespace core {
                     if (bb > MAX_SINGLEBYTE) {    // DoubleByte
                         if (dl - dp < 2)
                             return CoderResult::OVERFLOW;
-                        da[dp++] = (gbyte)(bb >> 8);
-                        da[dp++] = (gbyte)bb;
+                        da[dp++] = (gbyte) (bb >> 8);
+                        da[dp++] = (gbyte) bb;
                     } else {                      // SingleByte
                         if (dl - dp < 1)
                             return CoderResult::OVERFLOW;
-                        da[dp++] = (gbyte)bb;
+                        da[dp++] = (gbyte) bb;
                     }
 
                     sp++;
@@ -474,12 +493,12 @@ namespace core {
                     if (bb > MAX_SINGLEBYTE) {  // DoubleByte
                         if (dst.remaining() < 2)
                             return CoderResult::OVERFLOW;
-                        dst.put((gbyte)(bb >> 8));
-                        dst.put((gbyte)(bb));
+                        dst.put((gbyte) (bb >> 8));
+                        dst.put((gbyte) (bb));
                     } else {
                         if (dst.remaining() < 1)
                             return CoderResult::OVERFLOW;
-                        dst.put((gbyte)bb);
+                        dst.put((gbyte) bb);
                     }
                     mark++;
                 }
@@ -523,10 +542,10 @@ namespace core {
                     continue;
                 } //else
                 if (bb > MAX_SINGLEBYTE) { // DoubleByte
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                          // SingleByte
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
             }
             return dp;
@@ -536,7 +555,7 @@ namespace core {
             gint dp = 0;
             gint const sl = sp + len;
             while (sp < sl) {
-                gchar const c = (gchar)(src[sp++] & 0xff);
+                gchar const c = (gchar) (src[sp++] & 0xff);
                 gint const bb = encodeChar(c);
                 if (bb == UNMAPPABLE_ENCODING) {
                     // no surrogate pair in latin1 string
@@ -547,10 +566,10 @@ namespace core {
                     continue;
                 } //else
                 if (bb > MAX_SINGLEBYTE) { // DoubleByte
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                   // SingleByte
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
 
             }
@@ -575,10 +594,10 @@ namespace core {
                     continue;
                 } //else
                 if (bb > MAX_SINGLEBYTE) { // DoubleByte
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                   // SingleByte
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
             }
             return dp;
@@ -610,8 +629,8 @@ namespace core {
             if (!b2cNR.isEmpty()) {
                 gint j = 0;
                 while (j < b2cNR.length()) {
-                    gchar const b  = b2cNR.charAt(j++);
-                    gchar const c  = b2cNR.charAt(j++);
+                    gchar const b = b2cNR.charAt(j++);
+                    gchar const c = b2cNR.charAt(j++);
                     if (b < 0x100 && b2cSB_ca != null) {
                         if (b2cSB_ca[b] == c)
                             b2cSB_ca[b] = UNMAPPABLE_DECODING;
@@ -631,9 +650,9 @@ namespace core {
                     if (index == 0) {
                         index = off;
                         off += 0x100;
-                        c2bIndex[c >> 8] = (gchar)index;
+                        c2bIndex[c >> 8] = (gchar) index;
                     }
-                    c2b[index + (c & 0xff)] = (gchar)b;
+                    c2b[index + (c & 0xff)] = (gchar) b;
                 }
             }
 
@@ -649,9 +668,9 @@ namespace core {
                     if (index == 0) {
                         index = off;
                         off += 0x100;
-                        c2bIndex[c >> 8] = (gchar)index;
+                        c2bIndex[c >> 8] = (gchar) index;
                     }
-                    c2b[index + (c & 0xff)] = (gchar)((b1 << 8) | b2);
+                    c2b[index + (c & 0xff)] = (gchar) ((b1 << 8) | b2);
                 }
             }
 
@@ -662,7 +681,7 @@ namespace core {
                     gchar const c = c2bNR.charAt(i + 1);
                     gint index = (c >> 8);
                     if (c2bIndex[index] == 0) {
-                        c2bIndex[index] = (gchar)off;
+                        c2bIndex[index] = (gchar) off;
                         off += 0x100;
                     }
                     index = c2bIndex[index] + (c & 0xff);
@@ -677,7 +696,7 @@ namespace core {
 
         DoubleByte::Encoder_DBCSONLY::Encoder_DBCSONLY(const Charset &cs, const ByteArray &repl, CharArray &c2b,
                                                        CharArray &c2bIndex, gbool isASCIICompatible) :
-                Encoder(cs, 2.0F, 2.0F, repl, c2b, c2bIndex, isASCIICompatible){}
+                Encoder(cs, 2.0F, 2.0F, repl, c2b, c2bIndex, isASCIICompatible) {}
 
         gint DoubleByte::Encoder_DBCSONLY::encodeChar(gchar ch) {
             gint const bb = Encoder::encodeChar(ch);
@@ -688,7 +707,7 @@ namespace core {
 
         DoubleByte::Encoder_EBCDIC::Encoder_EBCDIC(const Charset &cs, CharArray &c2b, CharArray &c2bIndex,
                                                    gbool isASCIICompatible) :
-                Encoder(cs, 4.0F, 5.0F, ByteArray::of((gbyte)0x6f), c2b, c2bIndex, isASCIICompatible) {}
+                Encoder(cs, 4.0F, 5.0F, ByteArray::of((gbyte) 0x6f), c2b, c2bIndex, isASCIICompatible) {}
 
         void DoubleByte::Encoder_EBCDIC::reset0() {
             currentState = SBCS;
@@ -733,8 +752,8 @@ namespace core {
                         }
                         if (dl - dp < 2)
                             return CoderResult::OVERFLOW;
-                        da[dp++] = (gbyte)(bb >> 8);
-                        da[dp++] = (gbyte)bb;
+                        da[dp++] = (gbyte) (bb >> 8);
+                        da[dp++] = (gbyte) bb;
                     } else {                    // SingleByte
                         if (currentState == DBCS) {
                             if (dl - dp < 1)
@@ -744,7 +763,7 @@ namespace core {
                         }
                         if (dl - dp < 1)
                             return CoderResult::OVERFLOW;
-                        da[dp++] = (gbyte)bb;
+                        da[dp++] = (gbyte) bb;
 
                     }
                     sp++;
@@ -782,8 +801,8 @@ namespace core {
                         }
                         if (dst.remaining() < 2)
                             return CoderResult::OVERFLOW;
-                        dst.put((gbyte)(bb >> 8));
-                        dst.put((gbyte)(bb));
+                        dst.put((gbyte) (bb >> 8));
+                        dst.put((gbyte) (bb));
                     } else {                  // Single-gbyte
                         if (currentState == DBCS) {
                             if (dst.remaining() < 1)
@@ -793,7 +812,7 @@ namespace core {
                         }
                         if (dst.remaining() < 1)
                             return CoderResult::OVERFLOW;
-                        dst.put((gbyte)bb);
+                        dst.put((gbyte) bb);
                     }
                     mark++;
                 }
@@ -827,14 +846,14 @@ namespace core {
                         currentState = DBCS;
                         dst[dp++] = SO;
                     }
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                             // SingleByte
                     if (currentState == DBCS) {
                         currentState = SBCS;
                         dst[dp++] = SI;
                     }
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
             }
 
@@ -849,7 +868,7 @@ namespace core {
             gint dp = 0;
             gint const sl = sp + len;
             while (sp < sl) {
-                gchar const c = (gchar)(src[sp++] & 0xff);
+                gchar const c = (gchar) (src[sp++] & 0xff);
                 gint const bb = encodeChar(c);
                 if (bb == UNMAPPABLE_ENCODING) {
                     // no surrogate pair in latin1 string
@@ -863,14 +882,14 @@ namespace core {
                         currentState = DBCS;
                         dst[dp++] = SO;
                     }
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                             // SingleByte
                     if (currentState == DBCS) {
                         currentState = SBCS;
                         dst[dp++] = SI;
                     }
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
             }
             if (currentState == DBCS) {
@@ -901,14 +920,14 @@ namespace core {
                         currentState = DBCS;
                         dst[dp++] = SO;
                     }
-                    dst[dp++] = (gbyte)(bb >> 8);
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) (bb >> 8);
+                    dst[dp++] = (gbyte) bb;
                 } else {                             // SingleByte
                     if (currentState == DBCS) {
                         currentState = SBCS;
                         dst[dp++] = SI;
                     }
-                    dst[dp++] = (gbyte)bb;
+                    dst[dp++] = (gbyte) bb;
                 }
             }
             if (currentState == DBCS) {

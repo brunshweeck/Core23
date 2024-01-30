@@ -35,7 +35,7 @@ namespace core {
              *
              * @return The comparator used to sort element of this structure.
              */
-            virtual const Comparator<T> &comparator() const = 0;
+            virtual Comparator<T> &comparator() const = 0;
         };
 
     } // util

@@ -60,11 +60,11 @@ namespace core {
                 isLatin1Decodable(isLatin1Decodable) {}
 
         CoderResult SingleByte::Decoder::decodeArrayLoop(ByteBuffer &src, CharBuffer &dst) const {
-            ByteArray sa = src.array();
+            ByteArray const &sa = src.array();
             gint sp = src.arrayOffset() + src.position();
             gint sl = src.arrayOffset() + src.limit();
 
-            CharArray da = dst.array();
+            CharArray &da = dst.array();
             gint dp = dst.arrayOffset() + dst.position();
             gint const dl = dst.arrayOffset() + dst.limit();
 

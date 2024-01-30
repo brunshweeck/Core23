@@ -1075,8 +1075,20 @@ namespace core {
             template<class T>
             interface TEST<38, T> : CONSTANT<__is_literal_type(T)> {
             };
-            /////////////////////////////////[...]/////////////////////////////////////
-            /////////////////////////////////[...]/////////////////////////////////////
+            /////////////////////////////////[All is True]/////////////////////////////////////
+            template <class T, gbool...Values> interface LOGICAL_AND;
+            template <class T> interface LOGICAL_AND<T>: ALWAYS_TRUE {};
+            template <class T, gbool Value> interface LOGICAL_AND<T, Value>: CONSTANT<Value> {};
+            template <class T, gbool Value, gbool ...Values> interface LOGICAL_AND<T, true, Value, Values...>: LOGICAL_AND<T, !(sizeof...(Values) < 512) ? Value: true, Values...> {};
+            template <class T, gbool ...Values> interface LOGICAL_AND<T, false, Values...>: ALWAYS_FALSE {};
+
+            /////////////////////////////////[One is True]/////////////////////////////////////
+            template <class T, gbool...Values> interface LOGICAL_OR;
+            template <class T> interface LOGICAL_OR<T>: ALWAYS_TRUE {};
+            template <class T, gbool Value> interface LOGICAL_OR<T, Value>: CONSTANT<Value> {};
+            template <class T, gbool Value, gbool...Values> interface LOGICAL_OR<T, false, Value, Values...>: LOGICAL_OR<T, !(sizeof...(Values) < 512) ? Value : true, Values...> {};
+            template <class T, gbool...Values> interface LOGICAL_OR<T, true, Values...>: ALWAYS_TRUE {};
+
             /////////////////////////////////[...]/////////////////////////////////////
         }
 
@@ -1087,4 +1099,3 @@ namespace core {
 
 
 #endif //CORE23_TEMPLATES_H
-

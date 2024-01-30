@@ -22,7 +22,7 @@ namespace core {
          * <b style="color:orange;"> ZoneOffsetTransitionRule</b>  is used for future transitions that are based
          * on the result of an algorithm.
          * <p>
-         * Serializing an INSTANCE of <b> ZoneRules</b>  will store the entire set of rules.
+         * Serializing an INSTANCE of <b> ZoneRules</b>  will store the entire setValue of rules.
          * It does not store the zone ID as it is not part of the state of this object.
          * <p>
          * A rule implementation may or may not store full information about historic
@@ -73,7 +73,7 @@ namespace core {
             /**
              * The map of recent transitions.
              */
-            util::HashMap<Integer, Array<ZoneOffsetTransition>> lastRulesCache;
+            util::HashMap<Integer, native::ObjectArray> lastRulesCache;
             /**
              * The number of days in a 400 year cycle.
              */
@@ -89,8 +89,8 @@ namespace core {
             /**
              * Obtains an INSTANCE of a ZoneRules.
              *
-             * @param baseStandardOffset  the standard offset to use before legal rules were set
-             * @param baseWallOffset  the wall offset to use before legal rules were set
+             * @param baseStandardOffset  the standard offset to use before legal rules were setValue
+             * @param baseWallOffset  the wall offset to use before legal rules were setValue
              * @param standardOffsetTransitionList  the list of changes to the standard offset
              * @param transitionList  the list of transitions
              * @param lastRules  the recurring last rules, size 16 or less
@@ -125,8 +125,8 @@ namespace core {
             /**
              * Creates an INSTANCE.
              *
-             * @param baseStandardOffset  the standard offset to use before legal rules were set
-             * @param baseWallOffset  the wall offset to use before legal rules were set
+             * @param baseStandardOffset  the standard offset to use before legal rules were setValue
+             * @param baseWallOffset  the wall offset to use before legal rules were setValue
              * @param standardOffsetTransitionList  the list of changes to the standard offset
              * @param transitionList  the list of transitions
              * @param lastRules  the recurring last rules, size 16 or less
@@ -196,7 +196,7 @@ namespace core {
              * <li>Gap, with zero valid offsets. This is when clocks jump forward typically
              *  due to the spring daylight savings change from "winter" to "summer".
              *  In a gap there are local date-time values with no valid offset.</li>
-             * <li>Overlap, with two valid offsets. This is when clocks are set back typically
+             * <li>Overlap, with two valid offsets. This is when clocks are setValue back typically
              *  due to the autumn daylight savings change from "summer" to "winter".
              *  In an overlap there are local date-time values with two valid offsets.</li>
              * </ul>
@@ -226,7 +226,7 @@ namespace core {
              * <li>Gap, with zero valid offsets. This is when clocks jump forward typically
              *  due to the spring daylight savings change from "winter" to "summer".
              *  In a gap there are local date-time values with no valid offset.</li>
-             * <li>Overlap, with two valid offsets. This is when clocks are set back typically
+             * <li>Overlap, with two valid offsets. This is when clocks are setValue back typically
              *  due to the autumn daylight savings change from "summer" to "winter".
              *  In an overlap there are local date-time values with two valid offsets.</li>
              * </ul>
@@ -270,7 +270,7 @@ namespace core {
              * <li>Gap, with zero valid offsets. This is when clocks jump forward typically
              *  due to the spring daylight savings change from "winter" to "summer".
              *  In a gap there are local date-time values with no valid offset.</li>
-             * <li>Overlap, with two valid offsets. This is when clocks are set back typically
+             * <li>Overlap, with two valid offsets. This is when clocks are setValue back typically
              *  due to the autumn daylight savings change from "summer" to "winter".
              *  In an overlap there are local date-time values with two valid offsets.</li>
              * </ul>
@@ -389,7 +389,7 @@ namespace core {
             /**
              * Gets the complete list of fully defined transitions.
              * <p>
-             * The complete set of transitions for this rules INSTANCE is defined by this method
+             * The complete setValue of transitions for this rules INSTANCE is defined by this method
              * and <b style="color:orange;"> transitionRules()</b> . This method returns those transitions that have
              * been fully defined. These are typically historical, but may be in the future.
              * <p>
@@ -403,7 +403,7 @@ namespace core {
             /**
              * Gets the list of transition rules for years beyond those defined in the transition list.
              * <p>
-             * The complete set of transitions for this rules INSTANCE is defined by this method
+             * The complete setValue of transitions for this rules INSTANCE is defined by this method
              * and <b style="color:orange;"> transitions()</b> . This method returns instances of <b style="color:orange;"> ZoneOffsetTransitionRule</b>
              * that define an algorithm for when transitions will occur.
              * <p>
@@ -424,7 +424,7 @@ namespace core {
             Array<ZoneOffsetTransitionRule> transitionRules() const;
 
             /**
-             * Checks if this set of rules equals another.
+             * Checks if this setValue of rules equals another.
              * <p>
              * Two rule sets are equal if they will always result in the same output
              * for any given input instant or local date-time.

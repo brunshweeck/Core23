@@ -70,8 +70,11 @@ namespace core {
              */
             CORE_EXPLICIT ConcurrentException(String message, const Throwable &cause) CORE_NOTHROW;
 
+            CORE_EXPLICIT ConcurrentException(const Throwable &cause);
+
             Object &clone() const override;
 
+        private:
             CORE_NORETURN void raise() && override;
         };
 

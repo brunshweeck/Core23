@@ -171,10 +171,10 @@ namespace core {
 
         void ByteBuffer::putBuffer(gint pos, ByteBuffer &src, gint srcPos, gint n) {
             const Object &srcBase = src.base();
-            CORE_ASSERT(src.isDirect(), "core.io.ByteBuffer");
+//            CORE_ASSERT(src.isDirect(), "core.io.ByteBuffer");
 
             Object &base = this->base();
-            CORE_ASSERT(isDirect(), "core.io.ByteBuffer");
+//            CORE_ASSERT(isDirect(), "core.io.ByteBuffer");
 
             glong const srcAddr = src.address + ((glong) srcPos << 0);
             glong const addr = address + ((glong) pos << 0);

@@ -435,11 +435,11 @@ namespace core {
          * <p>
          * The decimal <i>d</i><sub><i>m</i></sub> for a finite positive <i>m</i> is defined as follows:
          * <ul>
-         * <li>Let <i>T</i> be the set of all decimals that round to <i>m</i> according to the usual
+         * <li>Let <i>T</i> be the setValue of all decimals that round to <i>m</i> according to the usual
          * <em>round to nearest</em> rounding policy of IEEE 754 floating-point arithmetic.
          * <li>Let <i>p</i> be the minimal length over all decimals in <i>T</i>.
-         * <li>When <i>p</i> &ge; 2, let <i>T</i> be the set of all decimals in <i>T</i> with length <i>p</i>.
-         * Otherwise, let <i>T</i> be the set of all decimals in <i>T</i> with length 1 or 2.
+         * <li>When <i>p</i> &ge; 2, let <i>T</i> be the setValue of all decimals in <i>T</i> with length <i>p</i>.
+         * Otherwise, let <i>T</i> be the setValue of all decimals in <i>T</i> with length 1 or 2.
          * <li>Define <i>d</i><sub><i>m</i></sub> as the decimal in <i>T</i> that is closest to <i>m</i>.
          * Or if there are two such decimals in <i>T</i>, select the one with the even significand.
          * </ul>

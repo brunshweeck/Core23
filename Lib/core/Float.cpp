@@ -713,7 +713,7 @@ namespace core {
         if (round != 0 && ((lsb | sticky) != 0))
             significandBits++;
 
-        // No bits set in significand beyond the *first* exponent bit,
+        // No bits setValue in significand beyond the *first* exponent bit,
         // not just the significant; quantity is added to the exponent
         // to implement a carry-out from rounding the significand.
         CORE_ASSERT((0xf800 & significandBits) == 0x0, "core.Float");

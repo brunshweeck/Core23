@@ -203,6 +203,10 @@ namespace core {
 
             gbool renameFile(const File &f1, const File &f2) const override;
 
+            String ownerName(const File &f) const override;
+
+            gbool setOwnerName(const File &f, const String &newOwner) const override;
+
             /* -- Filesystem interface -- */
 
             FileArray rootList() const override;
@@ -244,7 +248,7 @@ namespace core {
         protected:
             void deleteOnExit(const File &f) override;
 
-            util::ArrayList<File> ExitHook = {};
+            static util::ArrayList<File> ExitHook;
 
         public:
             ~NTFS() override;

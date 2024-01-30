@@ -133,7 +133,7 @@ namespace core {
              * Set The row at specified position
              *
              * @param index The index of desired row
-             * @param newRow The array used to set desired row
+             * @param newRow The array used to setValue desired row
              * @throws IndexException If specified index out of bounds
              */
             void set(gint index, const BooleanArray &newRow) override;
@@ -178,12 +178,12 @@ namespace core {
              * Set The value at specified position.
              * This call is equivalent at:
              * @code
-             *   get(row).set(col, newValue)
+             *   get(row).setValue(col, newValue)
              * @endcode
              *
              * @param row The index of desired row
              * @param col The index of desired column
-             * @param newValue The array used to set desired row
+             * @param newValue The array used to setValue desired row
              * @throws IndexException If specified index out of bounds
              */
             void set(gint row, gint col, const Value &newValue) override;
@@ -347,7 +347,7 @@ namespace core {
             static BooleanArray2D of(BooleanArray v0, BooleanArray v1, BooleanArray v2, BooleanArray v3,
                                      BooleanArray v4, BooleanArray v5, BooleanArray v6, BooleanArray v7,
                                      BooleanArray v8, BooleanArray v9, BooleanArrays &&...others) {
-                CORE_STATIC_ASSERT(Class<BooleanArray2D>::allIsTrue(Class<BooleanArray>::isSimilar<BooleanArrays>()...),
+                CORE_STATIC_ASSERT(Class<BooleanArray2D>::template allIsTrue<Class<BooleanArray>::isSimilar<BooleanArrays>()...>(),
                                    "Could not create matrix with given arguments");
                 try{
                     CORE_FAST gint n = sizeof...(BooleanArrays);

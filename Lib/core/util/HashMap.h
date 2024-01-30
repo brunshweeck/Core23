@@ -26,7 +26,7 @@ namespace core {
          * disperses the elements properly among the buckets.  Iteration over
          * collection views requires time proportional to the "capacity" of the
          * <b> HashMap</b>  INSTANCE (the number of buckets) plus its size (the number
-         * of key-value mappings).  Thus, it's very important not to set the initial
+         * of key-value mappings).  Thus, it's very important not to setValue the initial
          * capacity too high (or the load factor too low) if iteration performance is
          * important.
          *
@@ -196,17 +196,6 @@ namespace core {
 
         private:
 
-            CORE_ALIAS(Unsafe, native::Unsafe);
-
-            template<class E>
-            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryActionConsumer, , function::BiConsumer<T, U>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryFunction, , function::BiFunction<T, U, V>);
-
             // Used by table form
             class Node;
 
@@ -302,7 +291,7 @@ namespace core {
                     return *v;
                 }
 
-                const V &set(const V &value) override {
+                const V &setValue(const V &value) override {
                     VALUE oldValue = v;
                     v = &Unsafe::copyInstance(value, true);
                     return *oldValue;
@@ -350,17 +339,15 @@ namespace core {
                 return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
             }
 
-            static CORE_FAST const K &keyOf(NODE entry) {
+            static CORE_FAST K &keyOf(NODE entry) {
                 // assert (entry != null)
-                return (*entry).key();
+                return (K &) (*entry).key();
             }
 
             static CORE_FAST V &valueOf(NODE entry) {
                 // assert (entry != null)
-                return (*entry).value();
+                return (V &) (*entry).value();
             }
-
-            using Map<K, V>::$;
 
             /**
              * The table, initialized on first use, and resized as
@@ -420,12 +407,12 @@ namespace core {
             CORE_EXPLICIT HashMap(gint initialCapacity, gfloat loadFactor) :
                     table(null), capacity(0), eSet(null), len(0), modNum(0), threshold(0), factor(0) {
                 if (initialCapacity < 0)
-                    IllegalArgumentException("Illegal initial capacity: " + $(initialCapacity))
+                    IllegalArgumentException("Illegal initial capacity: " + String::valueOf(initialCapacity))
                             .throws(__trace("core.util.HashMap"));
                 if (initialCapacity > MAXIMUM_CAPACITY)
                     initialCapacity = MAXIMUM_CAPACITY;
                 if (loadFactor < 0 || Float::isNaN(loadFactor))
-                    IllegalArgumentException("Illegal load factor: " + $(loadFactor)).throws(
+                    IllegalArgumentException("Illegal load factor: " + String::valueOf(loadFactor)).throws(
                             __trace("core.util.HashMap"));
                 factor = loadFactor;
                 threshold = tableSizeFor(initialCapacity);
@@ -455,7 +442,11 @@ namespace core {
              * @param   m the map whose mappings are to be placed in this map
              */
             CORE_EXPLICIT HashMap(const Map<K, V> &m) : HashMap(DEFAULT_CAPACITY, DEFAULT_FACTOR) {
-                addEntries(m, false);
+                try {
+                    addEntries(m, false);
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.HashMap"));
+                }
             }
 
             /**
@@ -467,7 +458,11 @@ namespace core {
              * @param   m the map whose mappings are to be placed in this map
              */
             HashMap(const HashMap &m) : HashMap(DEFAULT_CAPACITY, DEFAULT_FACTOR) {
-                addEntries(m, false);
+                try {
+                    addEntries(m, false);
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.HashMap"));
+                }
             }
 
             /**
@@ -478,7 +473,7 @@ namespace core {
              *
              * @param   m the map whose mappings are to be placed in this map
              */
-            HashMap(HashMap &&m) CORE_NOTHROW {
+            HashMap(HashMap &&m) CORE_NOTHROW: modNum(0), factor(0.0F), len(0), threshold(0), capacity(0), table(null) {
                 Unsafe::swapValues(table, m.table);
                 Unsafe::swapValues(capacity, m.capacity);
                 Unsafe::swapValues(len, m.len);
@@ -495,7 +490,11 @@ namespace core {
             HashMap &operator=(const HashMap &m) {
                 if (this != &m) {
                     clear();
-                    addEntries(m, false);
+                    try {
+                        addEntries(m, false);
+                    } catch (const Exception &ex) {
+                        ex.throws(__trace("core.util.HashMap"));
+                    }
                 }
                 return *this;
             }
@@ -585,7 +584,7 @@ namespace core {
             V &get(const K &key) override {
                 NODE e = entryOf(key);
                 if (e == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.HashMap"));
                 return valueOf(e);
             }
 
@@ -611,7 +610,7 @@ namespace core {
             const V &get(const K &key) const override {
                 NODE e = entryOf(key);
                 if (e == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.HashMap"));
                 return valueOf(e);
             }
 
@@ -902,7 +901,7 @@ namespace core {
             const V &remove(const K &key) override {
                 NODE e = deleteEntry(HashMap::hash(key), key, null, false, true);
                 if (e == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.HashMap"));
                 return valueOf(e);
             }
 
@@ -1001,81 +1000,110 @@ namespace core {
 
             /**
              * Returns a <b style="color:orange;"> Set</b>  view of the keys contained in this map.
-             * The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b> remove</b>  operation), the results of
-             * the iteration are undefined.  The set supports element removal,
+             * the iteration are undefined.  The setValue supports element removal,
              * which removes the corresponding mapping from the map, via the
              * <b> Iterator.remove</b> , <b> Set.remove</b> ,
              * <b> removeAll</b> , <b> retainAll</b> , and <b> clear</b> 
              * operations.  It does not support the <b> add</b>  or <b> addAll</b> 
              * operations.
              *
-             * @return a set view of the keys contained in this map
+             * @return a setValue view of the keys contained in this map
              */
             Set<K> &keySet() const override {
-                if (Map<K, V>::kSet == null) {
-                    (KEYSET &) Map<K, V>::kSet = &Unsafe::allocateInstance<KeySet>((HashMap &) *this);
+                KEYSET ks = kSet;
+                if (ks == null) {
+                    ks = &Unsafe::allocateInstance<KeySet>((HashMap &) *this);
+                    (KEYSET &) kSet = ks;
                 }
-                return *Map<K, V>::kSet;
+                return *ks;
             }
 
         private:
 
+            using Map<K, V>::kSet;
+
             class KeySet CORE_FINAL : public Set<K> {
             private:
-                CORE_ALIAS(ActionConsumer, function::Consumer<K>);
-                CORE_ALIAS(ElementFilter, function::Predicate<K>);
-
-                HashMap &root;
+                HashMap &This;
 
             public:
-                CORE_EXPLICIT KeySet(HashMap &root) : root(root) {}
+                CORE_EXPLICIT KeySet(HashMap &root) : This(root) {}
 
-                void forEach(const ActionConsumer &action) const override {
+                void forEach(const Consumer<K> &action) const override {
                     ARRAY tab;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        gint mc = root.modNum;
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
                                 action.accept(keyOf(e));
                         }
-                        if (root.modNum != mc)
+                        if (This.modNum != mc)
+                            ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
+                    }
+                }
+
+                void forEach(const Consumer<K &> &action) override {
+                    ARRAY tab;
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
+                            NODE e = tab[i];
+                            for (; e != null; e = e->next)
+                                action.accept(keyOf(e));
+                        }
+                        if (This.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
                     }
                 }
 
                 Array<K> toArray() const override {
-                    Array<K> ra{root.len};
+                    Array<K> a = Array<K>(This.size());
                     ARRAY tab = null;
                     gint idx = 0;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                ra.set(idx, *e->k);
+                                a.set(idx, keyOf(e));
                                 idx += 1;
                             }
                         }
                     }
-                    return (Array<K> &&) ra;
+                    return Unsafe::moveInstance(a);
                 }
 
-                gint size() const override { return root.size(); }
+                gint size() const override {
+                    return This.size();
+                }
 
-                gbool contains(const K &o) const override { return root.containsKey(o); }
+                gbool contains(const K &o) const override {
+                    return This.containsKey(o);
+                }
 
                 Iterator<const K> &iterator() const override {
-                    return Unsafe::allocateInstance<KeyItr>((HashMap &) root);
+                    return Unsafe::allocateInstance<KeyItr<const K>>((HashMap &) This);
+                }
+
+                Iterator<K> &iterator() override {
+                    return Unsafe::allocateInstance<KeyItr<>>((HashMap &) This);
                 }
 
                 gbool remove(const K &o) override {
-                    return root.deleteEntry(HashMap::hash(o), o, null, false, true) != null;
+                    return This.deleteEntry(HashMap::hash(o), o, null, false, true) != null;
                 }
 
-                void clear() override { root.clear(); }
+                void clear() override {
+                    This.clear();
+                }
+
+                Object &clone() const override {
+                    return This.keySet();
+                }
             };
 
         public:
@@ -1096,62 +1124,96 @@ namespace core {
              * @return a view of the values contained in this map
              */
             Collection<V> &values() const override {
-                if (Map<K, V>::vCollection == null) {
-                    (VALUES &) Map<K, V>::vCollection = &Unsafe::allocateInstance<Values>((HashMap &) *this);
+                VALUES vs = vCollection;
+                if (vs == null) {
+                    vs = &Unsafe::allocateInstance<Values>((HashMap &) *this);
+                    (VALUES &) vCollection = vs;
                 }
-                return *Map<K, V>::vCollection;
+                return *vs;
             }
 
         private:
+
+            using Map<K, V>::vCollection;
+
             class Values CORE_FINAL : public Collection<V> {
             private:
-
-                CORE_ALIAS(ActionConsumer, function::Consumer<V>);
-                CORE_ALIAS(ElementFilter, function::Predicate<V>);
-
-                HashMap &root;
+                HashMap &This;
 
             public:
-                CORE_EXPLICIT Values(HashMap &root) : root(root) {}
+                CORE_EXPLICIT Values(HashMap &root) : This(root) {}
 
-                gint size() const override { return root.size(); }
-
-                gbool contains(const V &o) const override { return root.containsValue(o); }
-
-                Iterator<const V> &iterator() const override {
-                    return Unsafe::allocateInstance<ValueItr>((HashMap &) root);
+                gint size() const override {
+                    return This.size();
                 }
 
-                void forEach(const ActionConsumer &action) const override {
+                gbool contains(const V &o) const override {
+                    return This.containsValue(o);
+                }
+
+                Iterator<const V> &iterator() const override {
+                    return Unsafe::allocateInstance<ValueItr<const V>>((HashMap &) This);
+                }
+
+                Iterator<V> &iterator() override {
+                    return Unsafe::allocateInstance<ValueItr<>>((HashMap &) This);
+                }
+
+                void forEach(const Consumer<V> &action) const override {
                     ARRAY tab;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        gint mc = root.modNum;
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
                                 action.accept(valueOf(e));
                         }
-                        if (root.modNum != mc)
+                        if (This.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
                     }
                 }
 
-                void clear() override { root.clear(); }
+                void forEach(const Consumer<V &> &action) override {
+                    ARRAY tab;
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
+                            NODE e = tab[i];
+                            for (; e != null; e = e->next)
+                                action.accept(valueOf(e));
+                        }
+                        if (This.modNum != mc)
+                            ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
+                    }
+                }
+
+                // two view are equals iff it represent same map
+                gbool equals(const Object &o) const override {
+                    return this == &o;
+                }
+
+                void clear() override {
+                    This.clear();
+                }
 
                 Array<V> toArray() const override {
-                    Array<V> ra{root.len};
+                    Array<V> a = Array<V>(This.size());
                     ARRAY tab = null;
                     gint idx = 0;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                ra.set(idx, *e->v);
+                                a.set(idx, valueOf(e));
                                 idx += 1;
                             }
                         }
                     }
-                    return (Array<V> &&) ra;
+                    return Unsafe::moveInstance(a);
+                }
+
+                Object &clone() const override {
+                    return This.values();
                 }
             };
 
@@ -1159,86 +1221,110 @@ namespace core {
 
             /**
              * Returns a <b style="color:orange;"> Set</b>  view of the mappings contained in this map.
-             * The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b> remove</b>  operation, or through the
              * <b> setValue</b>  operation on a map entry returned by the
-             * iterator) the results of the iteration are undefined.  The set
+             * iterator) the results of the iteration are undefined.  The setValue
              * supports element removal, which removes the corresponding
              * mapping from the map, via the <b> Iterator.remove</b> ,
              * <b> Set.remove</b> , <b> removeAll</b> , <b> retainAll</b>  and
              * <b> clear</b>  operations.  It does not support the
              * <b> add</b>  or <b> addAll</b>  operations.
              *
-             * @return a set view of the mappings contained in this map
+             * @return a setValue view of the mappings contained in this map
              */
             Set<MapEntry> &entrySet() const override {
-                if (eSet == null) {
-                    (ENTRIES &) eSet = &Unsafe::allocateInstance<EntrySet>((HashMap &) *this);
+                ENTRIES es = eSet;
+                if (es == null) {
+                    es = &Unsafe::allocateInstance<EntrySet>((HashMap &) *this);
+                    (ENTRIES &) eSet = es;
                 }
-                return *eSet;
+                return *es;
             }
 
         private:
             class EntrySet CORE_FINAL : public Set<MapEntry> {
             private:
-
-                CORE_ALIAS(ActionConsumer, function::Consumer<MapEntry>);
-                CORE_ALIAS(ElementFilter, function::Predicate<MapEntry>);
-
-                HashMap &root;
+                HashMap &This;
 
             public:
-                CORE_EXPLICIT EntrySet(HashMap &root) : root(root) {}
+                CORE_EXPLICIT EntrySet(HashMap &root) : This(root) {}
 
-                gint size() const override { return root.size(); }
+                gint size() const override {
+                    return This.size();
+                }
 
-                void clear() override { root.clear(); }
+                void clear() override {
+                    This.clear();
+                }
 
                 Iterator<const MapEntry> &iterator() const override {
-                    return Unsafe::allocateInstance<EntryItr>((HashMap &) root);
+                    return Unsafe::allocateInstance<EntryItr<const MapEntry>>((HashMap &) This);
+                }
+
+                Iterator<MapEntry> &iterator() override {
+                    return Unsafe::allocateInstance<EntryItr<>>((HashMap &) This);
                 }
 
                 gbool contains(const MapEntry &o) const override {
-                    NODE e = root.entryOf(o.key());
+                    NODE e = This.entryOf(o.key());
                     if (e == null)
                         return false;
                     return Object::equals(o.value(), valueOf(e));
                 }
 
                 gbool remove(const MapEntry &o) override {
-                    return root.deleteEntry(HashMap::hash(o.key()), o.key(), o.value(), true, true) != null;
+                    return This.deleteEntry(HashMap::hash(o.key()), o.key(), o.value(), true, true) != null;
                 }
 
-                void forEach(const ActionConsumer &action) const override {
+                void forEach(const Consumer<MapEntry> &action) const override {
                     ARRAY tab;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        gint mc = root.modNum;
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next)
                                 action.accept(*e);
                         }
-                        if (root.modNum != mc)
+                        if (This.modNum != mc)
                             ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
                     }
                 }
 
-                Array<typename Map<K, V>::Entry> toArray() const override {
-                    Array<MapEntry> ra{root.len};
+                void forEach(const Consumer<MapEntry &> &action) override {
+                    ARRAY tab;
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        gint mc = This.modNum;
+                        for (gint i = 0; i < This.capacity; ++i) {
+                            NODE e = tab[i];
+                            for (; e != null; e = e->next)
+                                action.accept(*e);
+                        }
+                        if (This.modNum != mc)
+                            ConcurrentException().throws(__trace("core.util.HashMap.KeyItr"));
+                    }
+                }
+
+                Array<MapEntry> toArray() const override {
+                    Array<MapEntry> a = Array<MapEntry>(This.size());
                     ARRAY tab = null;
                     gint idx = 0;
-                    if (root.len > 0 && (tab = root.table) != null) {
-                        for (gint i = 0; i < root.capacity; ++i) {
+                    if (This.len > 0 && (tab = This.table) != null) {
+                        for (gint i = 0; i < This.capacity; ++i) {
                             NODE e = tab[i];
                             for (; e != null; e = e->next) {
-                                ra.set(idx, *e);
+                                a.set(idx, *e);
                                 idx += 1;
                             }
                         }
                     }
-                    return (Array<MapEntry> &&) ra;
+                    return Unsafe::moveInstance(a);
+                }
+
+                Object &clone() const override {
+                    return This.entrySet();
                 }
             };
 
@@ -1275,18 +1361,17 @@ namespace core {
                     afterNodeAccess(e);
                     return *oldValue;
                 }
-                NoSuchKeyException($(key)).throws(__trace("core.util.HashMap"));
+                NoSuchKeyException(key).throws(__trace("core.util.HashMap"));
             }
 
-            void forEach(const BinaryActionConsumer<K, V> &action) override {
-                CORE_IGNORE(action);
+            void forEach(const BiConsumer<K, V> &action) const override {
                 ARRAY tab = null;
                 if (len > 0 && (tab = table) != null) {
                     gint mc = modNum;
                     for (gint i = 0; i < capacity; ++i) {
                         NODE e = tab[i];
                         for (; e != null; e = e->next) {
-//                            action.accept(keyOf(e), valueOf(e));
+                            action.accept(keyOf(e), valueOf(e));
                         }
                     }
                     if (modNum != mc)
@@ -1294,14 +1379,29 @@ namespace core {
                 }
             }
 
-            void replaceAll(const BinaryFunction<K, V> & /*function*/) override {
+            void forEach(const BiConsumer<K, V &> &action) override {
                 ARRAY tab = null;
                 if (len > 0 && (tab = table) != null) {
                     gint mc = modNum;
                     for (gint i = 0; i < capacity; ++i) {
                         NODE e = tab[i];
                         for (; e != null; e = e->next) {
-//                            e->set(function.apply(keyOf(e), valueOf(e)));
+                            action.accept(keyOf(e), valueOf(e));
+                        }
+                    }
+                    if (modNum != mc)
+                        ConcurrentException().throws(__trace("core.util.HashMap"));
+                }
+            }
+
+            void replaceAll(const BiFunction<K, V, V> &function) override {
+                ARRAY tab = null;
+                if (len > 0 && (tab = table) != null) {
+                    gint mc = modNum;
+                    for (gint i = 0; i < capacity; ++i) {
+                        NODE e = tab[i];
+                        for (; e != null; e = e->next) {
+                            e->v = &Unsafe::copyInstance(function.apply(keyOf(e), valueOf(e)), true);
                         }
                     }
                     if (modNum != mc)
@@ -1315,18 +1415,31 @@ namespace core {
              *
              * @return a shallow copy of this map
              */
-            Object &clone() const override { return Unsafe::allocateInstance<HashMap>(*this); }
+            Object &clone() const override {
+                HashMap &clone = Unsafe::allocateInstance<HashMap>();
+                try {
+                    clone.addEntries(*this, false);
+                } catch (const Exception &ex) {
+                    // adding value fail
+                    Unsafe::destroyInstance(clone);
+                    CloneNotSupportedException().throws(__trace("core.util.HashMap"));
+                } catch (const Throwable &th) {
+                    th.throws(__trace("core.util.HashMap"));
+                }
+                return clone;
+            }
 
         private:
             template<class T>
-            interface AbstractItr : public Iterator<const T> {
-                NODE next = null;
-                NODE current = null;
+            interface AbstractItr : public Iterator<T> {
+                NODE next;
+                NODE last;
                 gint modNum;
-                gint index = 0;
-                HashMap &root;
+                gint index;
+                HashMap &This;
 
-                CORE_EXPLICIT AbstractItr(HashMap &root) : modNum(root.modNum), root(root) {
+                CORE_EXPLICIT AbstractItr(HashMap &root) :
+                        modNum(root.modNum), This(root), index(0), next(null), last(null) {
                     ARRAY tab = root.table;
                     if (tab != null && root.len > 0) {
                         // advance to the first entry
@@ -1343,73 +1456,88 @@ namespace core {
                 NODE nextEntry() {
                     ARRAY tab = null;
                     NODE e = next;
-                    if (modNum != root.modNum)
+                    if (modNum != This.modNum)
                         ConcurrentException().throws(__trace("core.util.HashMap.AbstractItr"));
                     if (e == null)
                         NoSuchElementException().throws(__trace("core.util.HashMap.AbstractItr"));
-                    if ((next = (current = e)->next) == null && (tab = root.table) != null) {
+                    if ((next = (last = e)->next) == null && (tab = This.table) != null) {
                         do {
                             index += 1;
-                        } while (index <= root.capacity && (next = tab[index]) == null);
+                        } while (index <= This.capacity && (next = tab[index]) == null);
                     }
                     return e;
                 }
 
                 void remove() override {
-                    NODE p = current;
+                    NODE p = last;
                     if (p == null)
                         IllegalStateException().throws(__trace("core.util.HashMap.AbstractItr"));
-                    if (modNum != root.modNum)
+                    if (modNum != This.modNum)
                         ConcurrentException().throws(__trace("core.util.HashMap.AbstractItr"));
-                    current = null;
-                    root.deleteEntry(p->hash, keyOf(p), null, false, false);
-                    modNum = root.modNum;
+                    last = null;
+                    This.deleteEntry(p->hash, keyOf(p), null, false, false);
+                    modNum = This.modNum;
                 }
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
                         return true;
-                    if (!Class<AbstractItr<T>>::hasInstance(o))
+                    if (!Class<AbstractItr>::hasInstance(o))
                         return false;
-                    AbstractItr<T> &it = (AbstractItr<T> &) o;
-                    return &root == &it.root && next == it.next;
+                    AbstractItr const &it = (AbstractItr const &) o;
+                    return &This == &it.This && next == it.next;
                 }
             };
 
 
-            class KeyItr CORE_FINAL : public AbstractItr<K> {
+            template<class T = K>
+            class KeyItr CORE_FINAL : public AbstractItr<T> {
             public:
-                using AbstractItr<K>::nextEntry;
+                using AbstractItr<T>::nextEntry;
 
-                CORE_EXPLICIT KeyItr(HashMap &root) : AbstractItr<K>(root) {}
+                CORE_EXPLICIT KeyItr(HashMap &root) : AbstractItr<T>(root) {}
 
-                const K &next() override { return keyOf(nextEntry()); }
+                T &next() override {
+                    return keyOf(nextEntry());
+                }
 
-                Object &clone() const override { return Unsafe::allocateInstance<KeyItr>(*this); }
+                Object &clone() const override {
+                    return Unsafe::allocateInstance<KeyItr>(*this);
+                }
             };
 
 
-            class ValueItr CORE_FINAL : public AbstractItr<V> {
+            template<class T = V>
+            class ValueItr CORE_FINAL : public AbstractItr<T> {
             public:
-                using AbstractItr<V>::nextEntry;
+                using AbstractItr<T>::nextEntry;
 
-                CORE_EXPLICIT ValueItr(HashMap &root) : AbstractItr<V>(root) {}
+                CORE_EXPLICIT ValueItr(HashMap &root) : AbstractItr<T>(root) {}
 
-                const V &next() override { return valueOf(nextEntry()); }
+                T &next() override {
+                    return valueOf(nextEntry());
+                }
 
-                Object &clone() const override { return Unsafe::allocateInstance<ValueItr>(*this); }
+                Object &clone() const override {
+                    return Unsafe::allocateInstance<ValueItr>(*this);
+                }
             };
 
 
-            class EntryItr CORE_FINAL : public AbstractItr<MapEntry> {
+            template<class T = MapEntry>
+            class EntryItr CORE_FINAL : public AbstractItr<T> {
             public:
-                using AbstractItr<MapEntry>::nextEntry;
+                using AbstractItr<T>::nextEntry;
 
-                CORE_EXPLICIT EntryItr(HashMap &root) : AbstractItr<MapEntry>(root) {}
+                CORE_EXPLICIT EntryItr(HashMap &root) : AbstractItr<T>(root) {}
 
-                const MapEntry &next() override { return *nextEntry(); }
+                T &next() override {
+                    return *nextEntry();
+                }
 
-                Object &clone() const override { return Unsafe::allocateInstance<EntryItr>(*this); }
+                Object &clone() const override {
+                    return Unsafe::allocateInstance<EntryItr>(*this);
+                }
             };
 
 
@@ -1449,6 +1577,28 @@ namespace core {
                 return &Unsafe::allocateInstance<TreeNode>(p->hash, keyCopy, valueCopy, next);
             }
 
+            /**
+             * Reset to initial default state.  Called by clone and readObject.
+             */
+            virtual void reinitialize() {
+                len = 0;
+                table = null;
+                if (eSet != null) {
+                    Unsafe::destroyInstance(*eSet);
+                }
+                eSet = null;
+                if (HashMap::kSet != null) {
+                    Unsafe::destroyInstance(*HashMap::kSet);
+                }
+                HashMap::kSet = null;
+                if (HashMap::vCollection != null) {
+                    Unsafe::destroyInstance(*HashMap::vCollection);
+                }
+                HashMap::vCollection = null;
+                modNum = 0;
+                threshold = 0;
+            }
+
             // Callbacks to allow LinkedHashMap post-actions
             virtual void afterNodeAccess(NODE p) {}
 
@@ -1456,10 +1606,14 @@ namespace core {
 
             virtual void afterNodeRemoval(NODE p) {}
 
+            // for given access to class LinkedHashMap to use LinkedEntry
+            CORE_FRATERNITY_T2(LinkedHashMap);
+
             /**
              * HashMap.Node subclass for normal LinkedHashMap entries.
              */
-            interface LinkedEntry : public Node {
+            class LinkedEntry : public Node {
+            public:
                 LNODE after = null;
                 LNODE before = null;
 
@@ -1475,7 +1629,8 @@ namespace core {
              * extends Node) so can be used as extension of either regular or
              * linked node.
              */
-            interface TreeNode CORE_FINAL : public LinkedEntry {
+            class TreeNode CORE_FINAL : public LinkedEntry {
+            public:
                 TNODE parent = null;
                 TNODE left = null;
                 TNODE right = null;

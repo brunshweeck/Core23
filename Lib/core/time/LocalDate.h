@@ -356,7 +356,7 @@ namespace core {
              * Obtains an INSTANCE of <b> LocalDate</b> from a temporal object.
              * <p>
              * This obtains a local date based on the specified temporal.
-             * A <b> Temporal</b> represents an arbitrary set of date and time information,
+             * A <b> Temporal</b> represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> LocalDate</b>.
              * <p>
              * The conversion uses the <b style="color:orange;"> Temporal::LOCAL_DATE</b> query, which relies
@@ -646,12 +646,12 @@ namespace core {
             //-----------------------------------------------------------------------
 
             /**
-             * Returns a copy of this date with the specified field set to a new value.
+             * Returns a copy of this date with the specified field setValue to a new value.
              * <p>
              * This returns a <b> LocalDate</b>, based on this one, with the value
              * for the specified field changed.
              * This can be used to change any supported field, such as the year, m or day-of-m.
-             * If it is not possible to set the value, because the field is not supported or for
+             * If it is not possible to setValue the value, because the field is not supported or for
              * some other reason, an exception is thrown.
              * <p>
              * In some cases, changing the specified field can cause the resulting date to become invalid,
@@ -742,10 +742,10 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param field  the field to set in the result
+             * @param field  the field to setValue in the result
              * @param newValue  the new value of the field in the result
-             * @return a <b> LocalDate</b> based on <b> this</b> with the specified field set
-             * @throws DateTimeException if the field cannot be set
+             * @return a <b> LocalDate</b> based on <b> this</b> with the specified field setValue
+             * @throws DateTimeException if the field cannot be setValue
              * @throws UnsupportedTemporalTypeException if the field is not supported
              * @throws ArithmeticException if numeric overflow occurs
              */
@@ -759,7 +759,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param year  the year to set in the result, from MIN_YEAR to MAX_YEAR
+             * @param year  the year to setValue in the result, from MIN_YEAR to MAX_YEAR
              * @return a <b> LocalDate</b> based on this date with the requested year
              * @throws DateTimeException if the year value is invalid
              */
@@ -772,7 +772,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param month  the m-of-year to set in the result, from 1 (January) to 12 (December)
+             * @param month  the m-of-year to setValue in the result, from 1 (January) to 12 (December)
              * @return a <b> LocalDate</b> based on this date with the requested m
              * @throws DateTimeException if the m-of-year value is invalid
              */
@@ -785,7 +785,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param dayOfMonth  the day-of-m to set in the result, from 1 to 28-31
+             * @param dayOfMonth  the day-of-m to setValue in the result, from 1 to 28-31
              * @return a <b> LocalDate</b> based on this date with the requested day
              * @throws DateTimeException if the day-of-m value is invalid,
              *  or if the day-of-m is invalid for the m-year
@@ -799,7 +799,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param dayOfYear  the day-of-year to set in the result, from 1 to 365-366
+             * @param dayOfYear  the day-of-year to setValue in the result, from 1 to 365-366
              * @return a <b> LocalDate</b> based on this date with the requested day
              * @throws DateTimeException if the day-of-year value is invalid,
              *  or if the day-of-year is invalid for the year
@@ -1158,7 +1158,7 @@ namespace core {
              * <p>
              * This returns a <b> LocalDateTime</b> formed from this date at the
              * specified hour and minute.
-             * The seconds and nanosecond fields will be set to zero.
+             * The seconds and nanosecond fields will be setValue to zero.
              * The individual time fields must be within their valid range.
              * All possible combinations of date and time are valid.
              *
@@ -1174,7 +1174,7 @@ namespace core {
              * <p>
              * This returns a <b> LocalDateTime</b> formed from this date at the
              * specified hour, minute and second.
-             * The nanosecond field will be set to zero.
+             * The nanosecond field will be setValue to zero.
              * The individual time fields must be within their valid range.
              * All possible combinations of date and time are valid.
              *

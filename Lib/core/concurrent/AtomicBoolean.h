@@ -220,7 +220,7 @@ namespace core {
             /**
              * Possibly atomically sets the value to <b> newValue</b>  if
              * the current value <b> == expectedValue</b> ,
-             * with the semantics of set if the variable's current value,
+             * with the semantics of setValue if the variable's current value,
              * referred to as the witness value, == the expectedValue,
              * as accessed with the memory semantics of getAcquire.
              *

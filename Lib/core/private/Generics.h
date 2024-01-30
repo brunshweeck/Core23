@@ -59,6 +59,8 @@ namespace core {
      * Namespace of Internet Protocol Management
      */
     namespace net {
+        using namespace native;
+
         class URI;
 
         class URL;
@@ -88,6 +90,7 @@ namespace core {
      * Namespace of Temporal structure, Timer, and chronology
      */
     namespace time {
+        using namespace native;
         class LocalDate;
         class LocalTime;
         class LocalDateTime;
@@ -100,10 +103,15 @@ namespace core {
         class Era;
     }
 
+    namespace function {}
+
     /**
      * Namespace for utility and algorithms
      */
     namespace util {
+
+        using namespace native;
+        using namespace function;
 
         template<class>
         class Collection;
@@ -130,6 +138,9 @@ namespace core {
         class HashSet;
 
         template<class>
+        class LinkedHashSet;
+
+        template<class>
         class TreeSet;
 
         template<class>
@@ -140,6 +151,9 @@ namespace core {
 
         template<class, class>
         class HashMap;
+
+        template<class, class>
+        class LinkedHashMap;
 
         template<class, class>
         class HashTable;
@@ -193,6 +207,10 @@ namespace core {
     }
 
     namespace concurrent {
+
+        using namespace native;
+        using namespace util;
+
         class AtomicBoolean;
         class AtomicInteger;
         class AtomicLong;
@@ -208,15 +226,27 @@ namespace core {
     }
 
     namespace regex {
+
+        using namespace native;
+        using namespace util;
+
         class Pattern; // regular expression
         class Matcher;
     }
 
     namespace random {
+
+        using namespace native;
+        using namespace util;
+
         class Random;
     }
 
-    namespace gui {}
+    namespace gui {
+
+        using namespace native;
+        using namespace util;
+    }
 
     namespace native {
 
@@ -354,7 +384,7 @@ namespace core {
 
 #else
 #define CORE_FILE __FILE__
-#endif //__FILE__
+#endif //__FILE_NAME__
 
 #endif
 
@@ -422,9 +452,9 @@ namespace core {
 
 #endif //CORE_SHOW_TRACE_MODULE
 
-#define __xtrace() __trace("")
+#define __xtrace() __trace(""_S)
 
-#define __xftrace() __ftrace("")
+#define __xftrace() __ftrace(""_S)
 
 #ifdef CORE_XCOMPILER_UDL
 #define CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, params, ...) extern const class operator"" ## suffix (params __VA_ARGS__)

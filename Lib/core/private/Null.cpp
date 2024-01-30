@@ -25,9 +25,13 @@ namespace core {
     Null &null = Null::INSTANCE;
 
     gbool operator==(const Object &o1, const Object &o2) {
-        return &o1 == &o2 ? true
-                          : &o1 == &null || &o2 == &null ? false
-                                                         : o1.equals(o2);
+        if(&o1 == &o2)
+            return true;
+        if(&o1 == null)
+            return false;
+        if(&o2 == null)
+            return false;
+        return o1.equals(o2);
     }
 
     gbool operator==(const Object &o1, const String &s) {
@@ -84,8 +88,10 @@ namespace core {
         if (l == 0)
             return {};
         gint const length = (gint) l;
-        CharArray const chars = CharArray(length);
-        Unsafe::copyMemory(chars, Unsafe::ARRAY_CHAR_BASE_OFFSET, null, (glong) s, length * 2LL);
+        CharArray chars = CharArray(length);
+        for (int i = 0; i < length; i += 1) {
+            chars[i] = s[i];
+        }
         return String(chars);
     }
 

@@ -82,18 +82,6 @@ namespace core {
          */
         template<class K, class V>
         class TreeMap : public Map<K, V>, public SortedStruct<K> {
-        protected:
-            CORE_ALIAS(Unsafe, native::Unsafe);
-
-            template<class E>
-            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryActionConsumer,, function::BiConsumer<T, U>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryFunction,, function::BiFunction<T, U, V>);
-
         private:
 
             class Entry;
@@ -141,7 +129,7 @@ namespace core {
              * <b> put(Object key, Object value)</b> call will throw a
              * <b> ClassCastException</b>.
              */
-            CORE_IMPLICIT TreeMap() : cmp(&Comparator<K>::naturalOrder()) {}
+            CORE_IMPLICIT TreeMap() : cmp(null) {}
 
             /**
              * Constructs a new, empty tree map, ordered according to the given
@@ -155,7 +143,11 @@ namespace core {
              *
              * @param comparator the comparator that will be used to order this map.
              */
-            CORE_EXPLICIT TreeMap(const KeyComparator &comparator) : cmp(&Unsafe::copyInstance(comparator, true)) {}
+            CORE_EXPLICIT TreeMap(const KeyComparator &comparator) : cmp(null) {
+                if (comparator == KeyComparator::naturalOrder()) {
+                    cmp = &Unsafe::copyInstance(comparator, true);
+                }
+            }
 
             /**
              * Constructs a new tree map containing the same mappings as the given
@@ -172,12 +164,11 @@ namespace core {
              */
             CORE_EXPLICIT TreeMap(const Map<K, V> &m) {
                 if (!Class<SortedStruct<K>>::hasInstance(m)) {
-                    KeyComparator &comparator = KeyComparator::naturalOrder();
-                    cmp = &comparator;
+                    cmp = null;
                     putAll(m);
                 } else {
                     KeyComparator &comparator = CORE_DYN_CAST(SortedStruct<K> &, m).comparator();
-                    cmp = &comparator;
+                    cmp = comparator == KeyComparator::naturalOrder() ? null : &comparator;
                     buildFromSorted(m.size(), m.entrySet().iterator(), null);
                 }
             }
@@ -190,7 +181,7 @@ namespace core {
              * @param  m the sorted map whose mappings are to be placed in this map,
              *         and whose comparator is to be used to sort this map
              */
-            TreeMap(const TreeMap<K, V> &m) : cmp((COMPARATOR) m.cmp) {
+            TreeMap(const TreeMap &m) : cmp(m.cmp) {
                 buildFromSorted(m.size(), m.entrySet().iterator(), null);
             }
 
@@ -202,13 +193,13 @@ namespace core {
              * @param  m the sorted map whose mappings are to be placed in this map,
              *         and whose comparator is to be used to sort this map
              */
-            TreeMap(TreeMap<K, V> &&m) CORE_NOTHROW {
+            TreeMap(TreeMap &&m) CORE_NOTHROW {
                 Unsafe::swapValues(root, m.root);
                 Unsafe::swapValues(len, m.len);
                 Unsafe::swapValues(cmp, m.cmp);
             }
 
-            TreeMap<K, V> &operator=(const TreeMap<K, V> &m) {
+            TreeMap<K, V> &operator=(const TreeMap &m) {
                 if (this != &m) {
                     clear();
                     cmp = m.cmp;
@@ -245,7 +236,9 @@ namespace core {
              * @throws ClassCastException if the specified key cannot be compared
              *         with the keys currently in the map
              */
-            gbool containsKey(const K &key) const override { return entryOf(key) != null; }
+            gbool containsKey(const K &key) const override {
+                return entryOf(key) != null;
+            }
 
             /**
              * Returns <b> true</b> if this map maps one or more keys to the
@@ -260,9 +253,11 @@ namespace core {
              *         <b> false</b> otherwise
              */
             gbool containsValue(const V &value) const override {
-                for (ENTRY e = firstEntry(); e != null; e = successor(e))
-                    if (Object::equals(value, e->value()))
+                for (ENTRY e = firstEntry(); e != null; e = successor(e)) {
+                    if (Object::equals(value, e->value())) {
                         return true;
+                    }
+                }
                 return false;
             }
 
@@ -284,7 +279,7 @@ namespace core {
             V &get(const K &key) override {
                 ENTRY e;
                 if ((e = entryOf(key)) == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.TreeMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.TreeMap"));
                 return e->value();
             }
 
@@ -306,7 +301,7 @@ namespace core {
             const V &get(const K &key) const override {
                 ENTRY e;
                 if ((e = entryOf(key)) == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.TreeMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.TreeMap"));
                 return e->value();
             }
 
@@ -335,7 +330,12 @@ namespace core {
              *
              * @return Returns the comparator used to order the keys in this map.
              */
-            const KeyComparator &comparator() const override { return *cmp; }
+            KeyComparator &comparator() const override {
+                if (cmp == null) {
+                    return KeyComparator::naturalOrder();
+                }
+                return *cmp;
+            }
 
             /**
              * Copies all of the mappings from the specified map to this map.
@@ -372,7 +372,7 @@ namespace core {
              */
             ENTRY entryOf(const K &key) const {
                 // Offload comparator-based version for the sake of performance
-                const KeyComparator &cpr = comparator();
+                KeyComparator &cpr = comparator();
                 ENTRY p = root;
                 while (p != null) {
                     gint ret = cpr.compare(key, p->key());
@@ -428,7 +428,7 @@ namespace core {
                 }
                 ENTRY parent = null;
                 gint ret = {};
-                const KeyComparator &cpr = comparator();
+                KeyComparator &cpr = comparator();
                 do {
                     parent = t;
                     ret = cpr.compare(key, t->key());
@@ -463,7 +463,7 @@ namespace core {
             const V &remove(const K &key) override {
                 ENTRY p = entryOf(key);
                 if (p == null)
-                    NoSuchKeyException($(key)).throws(__trace("core.util.TreeMap"));
+                    NoSuchKeyException(key).throws(__trace("core.util.TreeMap"));
                 const V &oldValue = p->value();
                 deleteEntry(p);
                 return oldValue;
@@ -514,7 +514,7 @@ namespace core {
             CORE_ALIAS(KEYSET, typename Class<Set<K>>::Ptr);
 
             /**
-             * Fields initialized to contain an INSTANCE of the entry set view
+             * Fields initialized to contain an INSTANCE of the entry setValue view
              * the first time this view is requested.  Views are stateless, so
              * there's no reason to create more than one.
              */
@@ -529,13 +529,13 @@ namespace core {
             /**
              * Returns a <b style="color:orange;"> Set</b> view of the keys contained in this map.
              *
-             * <p>The set's iterator returns the keys in ascending order.
+             * <p>The setValue's iterator returns the keys in ascending order.
              *
-             * <p>The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * <p>The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b> remove</b> operation), the results of
-             * the iteration are undefined.  The set supports element removal,
+             * the iteration are undefined.  The setValue supports element removal,
              * which removes the corresponding mapping from the map, via the
              * <b> Iterator.remove</b>, <b> Set.remove</b>,
              * <b> removeAll</b>, <b> retainAll</b>, and <b> clear</b>
@@ -550,17 +550,17 @@ namespace core {
 
             /**
              * Returns a reverse order <b style="color:orange;"> Set</b> view of the keys contained in this map.
-             * The set's iterator returns the keys in descending order.
-             * The set is backed by the map, so changes to the map are reflected in
-             * the set, and vice-versa.  If the map is modified while an iteration
-             * over the set is in progress (except through the iterator's own <b>
+             * The setValue's iterator returns the keys in descending order.
+             * The setValue is backed by the map, so changes to the map are reflected in
+             * the setValue, and vice-versa.  If the map is modified while an iteration
+             * over the setValue is in progress (except through the iterator's own <b>
              * remove</b> operation), the results of the iteration are undefined.  The
-             * set supports element removal, which removes the corresponding mapping
+             * setValue supports element removal, which removes the corresponding mapping
              * from the map, via the <b> Iterator.remove</b>, <b> Set.remove</b>,
              * <b> removeAll</b>, <b> retainAll</b>, and <b> clear</b> operations.
              * It does not support the <b> add</b> or <b> addAll</b> operations.
              *
-             * @return a reverse order navigable set view of the keys in this map
+             * @return a reverse order navigable setValue view of the keys in this map
              */
             Set<K> &reversedKeySet() {
                 if (rkSet == null)
@@ -594,14 +594,14 @@ namespace core {
             /**
              * Returns a <b style="color:orange;"> Set</b> view of the mappings contained in this map.
              *
-             * <p>The set's iterator returns the entries in ascending key order.
+             * <p>The setValue's iterator returns the entries in ascending key order.
              *
-             * <p>The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * <p>The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b> remove</b> operation, or through the
              * <b> setValue</b> operation on a map entry returned by the
-             * iterator) the results of the iteration are undefined.  The set
+             * iterator) the results of the iteration are undefined.  The setValue
              * supports element removal, which removes the corresponding
              * mapping from the map, via the <b> Iterator.remove</b>,
              * <b> Set.remove</b>, <b> removeAll</b>, <b> retainAll</b> and
@@ -617,14 +617,14 @@ namespace core {
             /**
              * Returns a reverse order <b style="color:orange;"> Set</b> view of the mappings contained in this map.
              *
-             * <p>The set's iterator returns the entries in descending key order.
+             * <p>The setValue's iterator returns the entries in descending key order.
              *
-             * <p>The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * <p>The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b> remove</b> operation, or through the
              * <b> setValue</b> operation on a map entry returned by the
-             * iterator) the results of the iteration are undefined.  The set
+             * iterator) the results of the iteration are undefined.  The setValue
              * supports element removal, which removes the corresponding
              * mapping from the map, via the <b> Iterator.remove</b>,
              * <b> Set.remove</b>, <b> removeAll</b>, <b> retainAll</b> and
@@ -690,7 +690,7 @@ namespace core {
                  * @return the value associated with the key before this method was
                  *         called
                  */
-                const V &set(const V &value) override {
+                const V &setValue(const V &value) override {
                     VALUE oldValue = v;
                     if (oldValue != &value) v = &Unsafe::copyInstance(value, true);
                     return oldValue[0];
@@ -811,7 +811,7 @@ namespace core {
              *
              * Implementations of rebalancings during insertion and deletion are
              * slightly different than the CLR version.  Rather than using dummy
-             * nilnodes, we use a set of accessors that deal properly with null.  They
+             * nilnodes, we use a setValue of accessors that deal properly with null.  They
              * are used to avoid messiness surrounding nullness checks in the main
              * algorithms.
              */
@@ -1027,7 +1027,7 @@ namespace core {
              *    1) An iterator of Map.Entries.  (it != null, defaultVal == null).
              *    2) An iterator of keys.         (it != null, defaultVal != null).
              *
-             * It is assumed that the comparator of the TreeMap is already set prior
+             * It is assumed that the comparator of the TreeMap is already setValue prior
              * to calling this method.
              *
              * @param size the number of keys (or key-value pairs) to be read from
@@ -1049,7 +1049,7 @@ namespace core {
              * previous method.  Identically named parameters have
              * identical definitions.  Additional parameters are documented below.
              * It is assumed that the comparator and size fields of the TreeMap are
-             * already set prior to calling this method.  (It ignores both fields.)
+             * already setValue prior to calling this method.  (It ignores both fields.)
              *
              * @param level the current level of tree. Initial call should be 0.
              * @param lo the first element index of this subtree. Initial should be 0.
@@ -1116,7 +1116,7 @@ namespace core {
             /**
              * Finds the level down to which to assign all nodes BLACK.  This is the
              * last `full' level of the complete binary tree produced by buildTree.
-             * The remaining nodes are colored RED. (This makes a `nice' set of
+             * The remaining nodes are colored RED. (This makes a `nice' setValue of
              * color assignments wrt future insertions.) This level number is
              * computed by finding the number of splits needed to reach the zeroth
              * node.
@@ -1148,20 +1148,44 @@ namespace core {
                 ENTRY p = entryOf(key);
                 if (p != null)
                     return p->set(value);
-                NoSuchKeyException($(key)).throws(__trace("core.util.TreeMap"));
+                NoSuchKeyException(key).throws(__trace("core.util.TreeMap"));
             }
 
             /**
              *
              */
-//            void replaceAll(BiFunction<K, V &, V> /*function*/) override {
-//            }
+            void replaceAll(const BiFunction<K, V, V> &function) override {
+                int mn = modNum;
+
+                for (ENTRY e = firstEntry(); e != null; e = successor(e)) {
+                    e.v = &Unsafe::copyInstance(function.apply(e->key(), e->value()), true);
+                }
+                if (mn != modNum) {
+                    ConcurrentException().throws(__trace("core.util.TreeMap"));
+                }
+            }
 
             /**
              *
              */
-            void forEach(const BinaryActionConsumer<K, V> &action) override {
-                //
+            void forEach(const BiConsumer<K, V> &action) const override {
+                int mn = modNum;
+                for (ENTRY e = firstEntry(); e != null; e = successor(e)) {
+                    action.accept(e->key(), e->value());
+                }
+                if (mn != modNum) {
+                    ConcurrentException().throws(__trace("core.util.TreeMap"));
+                }
+            }
+
+            void forEach(const BiConsumer<K, V &> &action) override {
+                int mn = modNum;
+                for (ENTRY e = firstEntry(); e != null; e = successor(e)) {
+                    action.accept(e->key(), e->value());
+                }
+                if (mn != modNum) {
+                    ConcurrentException().throws(__trace("core.util.TreeMap"));
+                }
             }
 
         private:
@@ -1169,30 +1193,36 @@ namespace core {
             // View class support
             class Values CORE_FINAL : public Collection<V> {
             private:
-                TreeMap<K, V> &root;
+                TreeMap<K, V> &This;
 
             public:
-                CORE_FAST Values(TreeMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT Values(TreeMap &root) : This(root) {}
 
                 Iterator<const V> &iterator() const override {
-                    return Unsafe::allocateInstance<ValueItr>((TreeMap<K, V> &) root, root.firstEntry());
+                    return Unsafe::allocateInstance<ValueItr>((TreeMap &) This, This.firstEntry());
                 }
 
-                gint size() const override { return root.len; }
+                gint size() const override {
+                    return This.len;
+                }
 
-                gbool contains(const V &o) const override { return root.containsValue(o); }
+                gbool contains(const V &o) const override {
+                    return This.containsValue(o);
+                }
 
                 gbool remove(const V &o) override {
-                    for (ENTRY e = root.firstEntry(); e != null; e = root.successor(e)) {
+                    for (ENTRY e = This.firstEntry(); e != null; e = This.successor(e)) {
                         if (Object::equals(e->value(), o)) {
-                            root.deleteEntry(e);
+                            This.deleteEntry(e);
                             return true;
                         }
                     }
                     return false;
                 }
 
-                void clear() override { root.clear(); }
+                void clear() override {
+                    This.clear();
+                }
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
@@ -1200,7 +1230,7 @@ namespace core {
                     if (!Class<Values>::hasInstance(o))
                         return false;
                     const Values &values = (Values &) o;
-                    if (&values.root == &root)
+                    if (&values.This == &This)
                         return true;
                     Iterator<const V> &it1 = iterator();
                     Iterator<const V> &it2 = values.iterator();
@@ -1209,133 +1239,163 @@ namespace core {
                             return false;
                     return !it1.hasNext() && !it2.hasNext();
                 }
+
+                Object &clone() const override {
+                    return This.values();
+                }
             };
 
             class EntrySet CORE_FINAL : public Set<MapEntry>, public SortedStruct<MapEntry> {
             private:
-                TreeMap<K, V> &root;
+                TreeMap &This;
 
             public:
-                CORE_FAST EntrySet(TreeMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT EntrySet(TreeMap &root) : This(root) {}
 
                 Iterator<const MapEntry> &iterator() const override {
-                    return Unsafe::allocateInstance<EntryItr>((TreeMap<K, V> &) root, root.firstEntry());
+                    return Unsafe::allocateInstance<EntryItr>((TreeMap<K, V> &) This, This.firstEntry());
                 }
 
-                gint size() const override { return root.len; }
+                gint size() const override {
+                    return This.len;
+                }
 
                 gbool contains(const MapEntry &o) const override {
-                    ENTRY e = root.entryOf(o.key());
+                    ENTRY e = This.entryOf(o.key());
                     return (e != null) && Object::equals(e->value(), o.value());
                 }
 
                 gbool remove(const MapEntry &o) override {
-                    ENTRY e = root.entryOf(o.key());
+                    ENTRY e = This.entryOf(o.key());
                     if ((e != null) && Object::equals(e->value(), o.value())) {
-                        root.deleteEntry(e);
+                        This.deleteEntry(e);
                         return true;
                     }
                     return false;
                 }
 
-                void clear() override { root.clear(); }
+                void clear() override {
+                    This.clear();
+                }
 
-                const Comparator<MapEntry> &comparator() const override {
-                    return Unsafe::allocateInstance<EntryComparator>((KeyComparator &)root.comparator());
+                Comparator<MapEntry> &comparator() const override {
+                    return Unsafe::allocateInstance<EntryComparator>((KeyComparator &) This.comparator());
+                }
+
+                Object &clone() const override {
+                    return This.entrySet();
                 }
             };
 
             class ReverseEntrySet CORE_FINAL : public Set<MapEntry>, public SortedStruct<MapEntry> {
             private:
-                TreeMap<K, V> &root;
+                TreeMap<K, V> &This;
 
             public:
-                CORE_FAST ReverseEntrySet(TreeMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT ReverseEntrySet(TreeMap<K, V> &root) : This(root) {}
 
                 Iterator<const MapEntry> &iterator() const override {
-                    return Unsafe::allocateInstance<ReverseEntryItr>((TreeMap<K, V> &) root, root.lastEntry());
+                    return Unsafe::allocateInstance<ReverseEntryItr>((TreeMap<K, V> &) This, This.lastEntry());
                 }
 
-                gint size() const override { return root.len; }
+                gint size() const override {
+                    return This.len;
+                }
 
                 gbool contains(const MapEntry &o) const override {
-                    ENTRY e = root.entryOf(o.key());
+                    ENTRY e = This.entryOf(o.key());
                     return (e != null) && Object::equals(e->value(), o.value());
                 }
 
                 gbool remove(const MapEntry &o) override {
-                    ENTRY e = root.entryOf(o.key());
+                    ENTRY e = This.entryOf(o.key());
                     if ((e != null) && Object::equals(e->value(), o.value())) {
-                        root.deleteEntry(e);
+                        This.deleteEntry(e);
                         return true;
                     }
                     return false;
                 }
 
-                void clear() override { root.clear(); }
+                void clear() override {
+                    This.clear();
+                }
 
-                const Comparator<MapEntry> &comparator() const override {
-                    return Unsafe::allocateInstance<EntryComparator>(root.comparator().reverse());
+                Comparator<MapEntry> &comparator() const override {
+                    return Unsafe::allocateInstance<EntryComparator>(This.comparator().reverse());
+                }
+
+                Object &clone() const override {
+                    return This.reverseEntrySet();
                 }
             };
 
             class KeySet CORE_FINAL : public Set<K>, public SortedStruct<K> {
             private:
-                TreeMap<K, V> &root;
+                TreeMap<K, V> &This;
 
             public:
-                CORE_FAST KeySet(TreeMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT KeySet(TreeMap<K, V> &root) : This(root) {}
 
                 Iterator<const K> &iterator() const override {
-                    return Unsafe::allocateInstance<KeyItr>((TreeMap<K, V> &) root, root.firstEntry());
+                    return Unsafe::allocateInstance<KeyItr>((TreeMap<K, V> &) This, This.firstEntry());
                 }
 
-                gint size() const override { return root.len; }
+                gint size() const override { return This.len; }
 
-                gbool contains(const K &o) const override { return root.containsKey(o); }
+                gbool contains(const K &o) const override { return This.containsKey(o); }
 
                 gbool remove(const K &o) override {
-                    ENTRY e = root.entryOf(o);
+                    ENTRY e = This.entryOf(o);
                     if (e == null)
                         return false;
-                    root.deleteEntry(e);
+                    This.deleteEntry(e);
                     return true;
                 }
 
-                void clear() override { return root.clear(); }
+                void clear() override {
+                    return This.clear();
+                }
 
-                const Comparator<K> &comparator() const override {
-                    return root.comparator();
+                Comparator<K> &comparator() const override {
+                    return This.comparator();
+                }
+
+                Object &clone() const override {
+                    return This.keySet();
                 }
             };
 
             class ReverseKeySet CORE_FINAL : public Set<K>, public SortedStruct<K> {
             private:
-                TreeMap<K, V> &root;
+                TreeMap<K, V> &This;
 
             public:
-                CORE_FAST ReverseKeySet(TreeMap<K, V> &root) : root(root) {}
+                CORE_EXPLICIT ReverseKeySet(TreeMap<K, V> &root) : This(root) {}
 
                 Iterator<const K> &iterator() const override {
-                    return Unsafe::allocateInstance<ReverseKeyItr>((TreeMap<K, V> &) root, root.lastEntry());
+                    return Unsafe::allocateInstance<ReverseKeyItr>((TreeMap<K, V> &) This, This.lastEntry());
                 }
 
-                gint size() const override { return root.len; }
+                gint size() const override { return This.len; }
 
-                gbool contains(const K &o) const override { return root.containsKey(o); }
+                gbool contains(const K &o) const override { return This.containsKey(o); }
 
                 gbool remove(const K &o) override {
-                    ENTRY e = root.entryOf(o);
+                    ENTRY e = This.entryOf(o);
                     if (e == null)
                         return false;
-                    root.deleteEntry(e);
+                    This.deleteEntry(e);
                     return true;
                 }
 
-                void clear() override { return root.clear(); }
+                void clear() override { return This.clear(); }
 
-                const Comparator<K> &comparator() const override {
-                    return root.comparator().reverse();
+                Comparator<K> &comparator() const override {
+                    return This.comparator().reverse();
+                }
+
+                Object &clone() const override {
+                    return This.reversedKeySet();
                 }
             };
 
@@ -1348,10 +1408,11 @@ namespace core {
                  * The base of comparator
                  */
                 KeyComparator &keyComparator;
-                gbool reversed = false;
+                gbool reversed;
 
             public:
-                CORE_FAST EntryComparator(KeyComparator &keyComparator) : keyComparator(keyComparator) {}
+                CORE_EXPLICIT EntryComparator(KeyComparator &keyComparator) :
+                        keyComparator(keyComparator), reversed(false) {}
 
                 gint compare(const MapEntry &o1, const MapEntry &o2) const override {
                     return keyComparator.compare(o1.key(), o2.key());
@@ -1379,7 +1440,7 @@ namespace core {
 
             private:
                 Comparator<MapEntry> &base() const override {
-                    if(!reversed)
+                    if (!reversed)
                         UnsupportedOperationException().throws(__trace("core.util.TreeMap"));
                     EntryComparator &c = Unsafe::allocateInstance<EntryComparator>(keyComparator.reverse());
                     c.reversed = !reversed;
@@ -1515,8 +1576,6 @@ namespace core {
                     return Unsafe::allocateInstance<ReverseEntryItr>(*this);
                 }
             };
-
-            using Map<K, V>::$;
 
         public:
             virtual ~TreeMap() {

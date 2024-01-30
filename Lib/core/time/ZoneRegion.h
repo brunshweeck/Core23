@@ -13,7 +13,7 @@ namespace core {
         /**
          * A geographical region where the same time-zone rules apply.
          * <p>
-         * Time-zone information is categorized as a set of rules defining when and
+         * Time-zone information is categorized as a setValue of rules defining when and
          * how the offset from UTC/Greenwich changes. These rules are accessed using
          * identifiers based on geographical regions, such as countries or states.
          * The most common region classification is the Time ZoneID Database (TzDB),

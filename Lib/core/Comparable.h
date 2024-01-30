@@ -19,7 +19,7 @@ namespace core {
      * automatically by <b style="color: orange"> Collections.sort</b> (and
      * <b style="color: orange"> Arrays.sort</b>).  Objects that implement this
      * interface can be used as keys in a <b style="color: green"> sorted map</b> or as
-     * elements in a <b style="color: green"> sorted set</b>, without the need to
+     * elements in a <b style="color: green"> sorted setValue</b>, without the need to
      * specify a <b style="color: green"> comparator</b>.<p>
      *
      * The natural ordering for a class <b> C</b> is said to be <i>consistent
@@ -32,15 +32,15 @@ namespace core {
      * consistent with equals.  This is so because sorted sets (and sorted maps)
      * without explicit comparators behave "strangely" when they are used with
      * elements (or keys) whose natural ordering is inconsistent with equals.  In
-     * particular, such a sorted set (or sorted map) violates the general contract
-     * for set (or map), which is defined in terms of the <b> equals</b>
+     * particular, such a sorted setValue (or sorted map) violates the general contract
+     * for setValue (or map), which is defined in terms of the <b> equals</b>
      * method.<p>
      *
      * For example, if one adds two keys <b> a</b> and <b> b</b> such that
      * <b> (!a.equals(b) && a.compareTo(b) == 0)</b> to a sorted
-     * set that does not use an explicit comparator, the second <b> add</b>
-     * operation returns false (and the size of the sorted set does not increase)
-     * because <b> a</b> and <b> b</b> are equivalent from the sorted set's
+     * setValue that does not use an explicit comparator, the second <b> add</b>
+     * operation returns false (and the size of the sorted setValue does not increase)
+     * because <b> a</b> and <b> b</b> are equivalent from the sorted setValue's
      * perspective.<p>
      *
      * Virtually all core classes that implement <b> Comparable</b>
@@ -79,8 +79,8 @@ namespace core {
      * @see Comparator
      */
     template<class T>
-    interface Comparable {
-
+    class Comparable {
+    public:
         /**
          * Compares this object with the specified object for order.  Returns a
          * negative integer, zero, or a positive integer as this object is less

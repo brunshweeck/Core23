@@ -215,7 +215,7 @@ namespace core {
             if (this == &o) {
                 return true;
             }
-            if (!Class<PrimitiveArray<LongArray>>::hasInstance(o)) {
+            if (Class<PrimitiveArray<LongArray>>::hasInstance(o)) {
                 PrimitiveArray<LongArray> const &matrix = (PrimitiveArray<LongArray> const &) o;
                 gint const n = length();
                 if (n != matrix.length())
@@ -232,6 +232,7 @@ namespace core {
                 }
                 return true;
             }
+            return false;
         }
 
         Object &LongArray2D::clone() const {

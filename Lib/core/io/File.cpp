@@ -253,7 +253,7 @@ namespace core {
 
         void File::deleteOnExit() const {
             if (!isInvalid()) {
-                fs.deleteOnExit(*this);
+                fs.deleteOnExit(absoluteFile());
             }
         }
 
@@ -615,6 +615,23 @@ namespace core {
 
         File File::temp() {
             return File(fs.tempPath());
+        }
+
+        String File::owner() const {
+            if (isInvalid()) {
+                return ""_S;
+            }
+            return fs.ownerName(*this);
+        }
+
+        gbool File::setOwner(const String &newOwner) const {
+            if (isInvalid()) {
+                return false;
+            }
+            if (newOwner.isEmpty()) {
+                return false;
+            }
+            return fs.setOwnerName(*this, newOwner);
         }
 
     }

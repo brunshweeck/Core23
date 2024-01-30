@@ -53,13 +53,13 @@ namespace core {
             /**
              * The number of seconds in the duration.
              */
-            glong secs;
+            glong Seconds;
 
             /**
              * The number of nanoseconds in the duration, expressed as a fraction of the
              * number of seconds. This is always positive, and never exceeds 999,999,999.
              */
-            gint ns;
+            gint Nanos;
 
         public:
 
@@ -73,7 +73,7 @@ namespace core {
              * <p>
              * The seconds are calculated based on the standard definition of a day,
              * where each day is 86400 seconds which implies a 24 hour day.
-             * The nanosecond in second field is set to zero.
+             * The nanosecond in second field is setValue to zero.
              *
              * @param days  the number of days, positive or negative
              * @return a <b> Duration</b>
@@ -86,7 +86,7 @@ namespace core {
              * <p>
              * The seconds are calculated based on the standard definition of an hour,
              * where each hour is 3600 seconds.
-             * The nanosecond in second field is set to zero.
+             * The nanosecond in second field is setValue to zero.
              *
              * @param hours  the number of hours, positive or negative
              * @return a <b> Duration</b>
@@ -99,7 +99,7 @@ namespace core {
              * <p>
              * The seconds are calculated based on the standard definition of a minute,
              * where each minute is 60 seconds.
-             * The nanosecond in second field is set to zero.
+             * The nanosecond in second field is setValue to zero.
              *
              * @param minutes  the number of minutes, positive or negative
              * @return a <b> Duration</b>
@@ -110,7 +110,7 @@ namespace core {
             /**
              * Obtains a <b> Duration</b> representing a number of seconds.
              * <p>
-             * The nanosecond in second field is set to zero.
+             * The nanosecond in second field is setValue to zero.
              *
              * @param seconds  the number of seconds, positive or negative
              * @return a <b> Duration</b>
@@ -766,7 +766,7 @@ namespace core {
              * Returns a copy of this <b> Duration</b> truncated to the specified unit.
              * <p>
              * Truncating the duration returns a copy of the original with conceptual fields
-             * smaller than the specified unit set to zero.
+             * smaller than the specified unit setValue to zero.
              * For example, truncating with the <b style="color: orange;"> ChronoUnit::MINUTES</b> unit will
              * round down towards zero to the nearest minute, setting the seconds and
              * nanoseconds to zero.

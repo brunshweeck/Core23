@@ -125,7 +125,7 @@ namespace core {
          *   extension keys and values to lower case. Note that extensions
          *   cannot have empty values.</dd>
          *
-         *   <dd>Well-formed keys are single characters from the set
+         *   <dd>Well-formed keys are single characters from the setValue
          *   <b> [0-9a-zA-Z]</b> .  Well-formed values have the form
          *   <b> SUBTAG ('-' SUBTAG)*</b>  where for the key 'x'
          *   <code>SUBTAG = [0-9a-zA-Z]{1,8}</code> and for other keys
@@ -207,7 +207,7 @@ namespace core {
          * that a term "language tag" is used interchangeably with "locale" in this
          * locale matching documentation.
          *
-         * <p>In order to do matching a user's preferred locales to a set of language
+         * <p>In order to do matching a user's preferred locales to a setValue of language
          * tags, <a href="https://tools.ietf.org/html/rfc4647">RFC 4647 Matching of
          * Language Tags</a> defines two mechanisms: filtering and lookup.
          * <em>Filtering</em> is used to get all matching locales, whereas
@@ -226,7 +226,7 @@ namespace core {
          * in RFC 4647 as follows:
          * "In filtering, each language range represents the least specific language
          * tag (that is, the language tag with fewest number of subtags) that is an
-         * acceptable match. All of the language tags in the matching set of tags will
+         * acceptable match. All of the language tags in the matching setValue of tags will
          * have an equal or greater number of subtags than the language range. Every
          * non-wildcard subtag in the language range will appear in every one of the
          * matching language tags."
@@ -677,7 +677,7 @@ namespace core {
             static Locale defaultLocale();
 
             /**
-             * Enum for locale categories.  These locale categories are used to get/set
+             * Enum for locale categories.  These locale categories are used to get/setValue
              * the default locale for the specific functionality represented by the
              * category.
              */
@@ -726,7 +726,7 @@ namespace core {
              * within the same process.
              * <p>
              * By setting the default locale with this method, all of the default
-             * locales for each Category are also set to the specified default locale.
+             * locales for each Category are also setValue to the specified default locale.
              *
              * @throws SecurityException if a security manager exists and its
              *        <b> checkPermission</b>  method doesn't allow the operation.
@@ -751,7 +751,7 @@ namespace core {
              * prepared to reinitialize locale-sensitive code running within the
              * same Machine.
              *
-             * @param category the specified category to set the default locale
+             * @param category the specified category to setValue the default locale
              * @param newLocale the new default locale
              * @throws SecurityException if a security manager exists and its
              *     checkPermission method doesn't allow the operation.

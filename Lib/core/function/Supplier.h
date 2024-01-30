@@ -25,165 +25,151 @@ namespace core {
         template<class R>
         class Supplier : Functional {
         private:
-            CORE_STATIC_ASSERT(Class<Object>::isSuper<R>(), "Illegal template type");
-            CORE_STATIC_ASSERT(!Class<Void>::isSimilar<R>(), "Illegal Return type");
+            CORE_STATIC_ASSERT(!(Class<R>::isVolatile()), "Return type mustn't have <volatile> as qualifier");
 
-            CORE_ALIAS(Ret, Return < R >);
-
-            CORE_ALIAS(U, native::Unsafe);
-
-            interface Result : public Object {
-                virtual Ret show() const = 0;
-
-                template<class Fn, Class<gbool>::Iff<Class<Fn>::isFunction() && !Class<Fn>::isClass()> = 1>
-                static Result &of(Fn &&fn) {
-
-                    class _$ : public Result {
-                    private:
-                        Fn fn;
-
-                    public:
-                        CORE_EXPLICIT _$(Fn &&fn) : fn(fn) {}
-
-                        gbool equals(const Object &o) const {
-                            return !Class<_$>::hasInstance(o) ? false : CORE_CAST(_$ &, o).fn == fn;
-                        }
-
-                        Object &clone() const { return Unsafe::allocateInstance<_$>(*this); }
-
-                        Ret show() const { return fn(); }
-                    };
-
-                    return Unsafe::allocateInstance<_$>(Unsafe::forwardInstance<Fn>(fn));
-                }
-
-                template<class Callable, Class<gbool>::Iff<
-                        !Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
-                static Result &of(Callable &&c) {
-
-                    CORE_ALIAS(_R, typename Class<Callable>::template Return<>);
-                    CORE_ALIAS(_Fn, Sign<Callable,, _R >);
-                    CORE_ALIAS(Fn, Sign<_Fn,, _R >);
-
-                    if (!Class<Fn>::template isSimilar<Callable>()) {
-                        // simple lambda functions
-                        return of(CORE_CAST(Fn, Unsafe::forwardInstance<Callable>(c)));
-                    }
-
-                    class _$ : public Result {
-                    private:
-                        Callable c;
-
-                    public:
-                        CORE_EXPLICIT _$(Callable &&c) : c(Unsafe::forwardInstance<Callable>(c)) {}
-
-                        gbool equals(const Object &o) const {
-                            return !Class<_$>::hasInstance(o) ? false : &CORE_CAST(_$ &, o).c == &c;
-                        }
-
-                        Object &clone() const { return Unsafe::allocateInstance<_$>(*this); }
-
-                        Ret show() const { return c(); }
-                    };
-
-                    return Unsafe::allocateInstance<_$>(Unsafe::forwardInstance<Callable>(c));
-                }
-            };
-
-
-            CORE_ALIAS(Eval, typename Class<Result>::Ptr);
-
-            /**
-             * The Supplier result
-             */
-            Eval eval;
+            CORE_ALIAS(Z, Functional::Return< R >);
 
         public:
-            /**
-             * Construct new supplier with callable object (class instances or lambda functions)
-             *
-             * @param c The callable object
-             */
-            template<class Callable, Class<gbool>::Iff<Class<Callable>::isFunction() || Class<Callable>::isClass()> = 1>
-            CORE_IMPLICIT Supplier(Callable &&c) CORE_NOTHROW : eval(0) {
-                CORE_STATIC_ASSERT(Class<Callable>::isCallable(), "Invalid callable object");
-                CORE_ALIAS(_Ret, typename Class<Callable>::template Return<>);
-                CORE_STATIC_ASSERT(Class<_Ret>::template isConvertible<Ret>(), "Incompatible return types");
-                eval = &Result::of(Unsafe::forwardInstance<Callable>(c));
-            }
-
-            /**
-             * Construct new supplier with another
-             *
-             * @param c The other supplier
-             */
-            Supplier(const Supplier<R> &c) : eval(0) { eval = &Unsafe::copyInstance(*c.eval); }
-
-            /**
-             * Construct new supplier with another
-             *
-             * @param c The other supplier
-             */
-            Supplier(Supplier<R> &&c) CORE_NOTHROW: eval(0) {
-                eval = c.eval;
-                c.eval = null;
-            }
-
-            /**
-             * Set supplier eval  with another supplier eval
-             *
-             * @param c The supplier that it eval will be copied to set this supplier eval
-             */
-            Supplier<R> &operator=(const Supplier<R> &c) {
-                if (this != &c) {
-                    Eval eval0 = &Unsafe::copyInstance(*c.eval);
-                    Unsafe::destroyInstance(*eval);
-                    eval = eval0;
-                }
-                return *this;
-            }
-
-            /**
-             * Swap supplier eval  with another supplier eval
-             *
-             * @param c The supplier that it eval will be swapped to set this supplier eval
-             */
-            Supplier<R> &operator=(Supplier<R> &&c) CORE_NOTHROW {
-                Eval eval0 = eval;
-                eval = c.eval;
-                c.eval = eval0;
-                return *this;
-            }
 
             /**
              * Gets a result.
              *
              * @return a result
              */
-            inline Ret get() const { (*eval).show(); }
+            virtual Z get() const = 0;
 
             /**
-             * Test if this supplier has same eval with the specified
-             * supplier.
+             * Obtain new supplier from given class function member and specified compatible class instance
              *
-             * @param o The other supplier
+             * @param instance The object used to invoke specified function member
+             * @param method The internal function member used by returned supplier
+             *
+             * @tparam I The type of object callable with given method
+             * @tparam M The type of method handle
              */
-            gbool equals(const Object &o) const override {
-                if (!Class<Supplier>::hasInstance(o))
-                    return false;
-                return (*eval).equals(*CORE_CAST(const Supplier<R> &, o).eval);
+            template<class I, class M>
+            static Supplier &from(I &&instance, M &&method) {
+                // check if given method is valid
+                try {
+                    Functional::CheckFunction<M, I>();
+                    Functional::FunctionUtils<M>::validate(method);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.Supplier"_S));
+                }
+
+                // The return type of given method after calling with given instance and supplier argument
+                // R = Class(instance.method(t, u));
+                CORE_ALIAS(R2, , typename Class<M>::template Return<I>);
+
+                // The return type must be convertible to boolean value
+                Functional::CheckReturn<Z, R2>();
+
+                class MethodSupplier : public Supplier {
+                private:
+                    I &&inst;
+                    M &&meth;
+
+                public:
+                    CORE_EXPLICIT MethodSupplier(I &&instance, M &&method) :
+                            inst((I &&) instance), meth(Unsafe::forwardInstance<M>(method)) {}
+
+                    /**
+                     * Invoke the method of this supplier
+                     */
+                    R2 invoke() const {
+                        return (inst.*meth)();
+                    }
+
+                    Z get() const override {
+                        return (Z) invoke();
+                    }
+
+                    /**
+                     * two instances are equals iff have same methods
+                     * and same instances.
+                     */
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<MethodSupplier>::hasInstance(o)) {
+                            return false;
+                        }
+                        MethodSupplier const &p = (MethodSupplier const &) o;
+                        return Functional::FunctionUtils<I>::isEquals(inst, p.inst) &&
+                               Functional::FunctionUtils<M>::isEquals(meth, p.meth);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<MethodSupplier>(Unsafe::forwardInstance<I>(inst),
+                                                                        Unsafe::forwardInstance<M>(meth));
+                    }
+                };
+
+                return Unsafe::allocateInstance<MethodSupplier>(Unsafe::forwardInstance<I>(instance),
+                                                                Unsafe::forwardInstance<M>(method));
             }
 
             /**
-             * Return shadow copy of this supplier
+             * Obtain new supplier from given function (classic function/ lambda function)
+             *
+             * @param function the internal function used by returned supplier
+             *
+             * @tparam F The type of function supporting supplier arguments.
              */
-            Object &clone() const override { return Unsafe::allocateInstance<Supplier<R>>(*this); }
+            template<class F>
+            static Supplier &from(F &&function) {
+                // check if given function is valid
+                try {
+                    Functional::CheckFunction<F>();
+                    Functional::FunctionUtils<F>::validate(function);
+                } catch (IllegalArgumentException const &ex) {
+                    ex.throws(__trace(u"core.function.Supplier"_S));
+                }
+
+                // The return type of given method after calling with given instance and supplier argument
+                // R = Class(instance.method(t, u));
+                CORE_ALIAS(R2, , typename Class<F>::template Return<>);
+
+                // The return type must be convertible to boolean value
+                Functional::CheckReturn<Z, R2>();
+
+                class FunctionSupplier CORE_FINAL : public Supplier {
+                private:
+                    F &&func;
+
+                public:
+                    CORE_EXPLICIT FunctionSupplier(F &&func) : func(Unsafe::forwardInstance<F>(func)) {}
+
+                    R2 invoke() const {
+                        return func();
+                    }
+
+                    Z get() const override {
+                        return (Z) invoke();
+                    }
+
+                    gbool equals(const Object &o) const override {
+                        if (this == &o) {
+                            return true;
+                        }
+                        if (!Class<FunctionSupplier>::hasInstance(o)) {
+                            return false;
+                        }
+                        FunctionSupplier const &p = (FunctionSupplier const &) o;
+                        return Functional::FunctionUtils<F>::isEquals(func, p.func);
+                    }
+
+                    Object &clone() const override {
+                        return Unsafe::allocateInstance<FunctionSupplier>(Unsafe::forwardInstance<F>(func));
+                    }
+                };
+
+                return Unsafe::allocateInstance<FunctionSupplier>(Unsafe::forwardInstance<F>(function));
+
+            }
         };
 
-#if CORE_TEMPLATE_TYPE_DEDUCTION
-        Supplier() -> Supplier<Object>;
-        template<class R, class ...Params> Supplier(R(Params...)) -> Supplier<typename Class<R>::Object>;
-#endif
     }
 } // core
 

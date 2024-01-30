@@ -108,6 +108,10 @@ namespace core {
              */
             static CORE_FAST glong MILLIS_PER_DAY = MILLIS_PER_SECOND * SECONDS_PER_DAY;
             /**
+             * Microseconds per millisecond.
+             */
+            static CORE_FAST glong MICROS_PER_MILLI = 1000L;
+            /**
              * Microseconds per second.
              */
             static CORE_FAST glong MICROS_PER_SECOND = 1000000L;
@@ -115,6 +119,10 @@ namespace core {
              * Microseconds per day.
              */
             static CORE_FAST glong MICROS_PER_DAY = MICROS_PER_SECOND * SECONDS_PER_DAY;
+            /**
+             * Nanos per microsecond.
+             */
+            static CORE_FAST glong NANOS_PER_MICRO = 1000L;
             /**
              * Nanos per millisecond.
              */
@@ -169,7 +177,7 @@ namespace core {
              * Obtains an INSTANCE of <b> LocalTime</b>  from an hour and minute.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified hour and minute.
-             * The second and nanosecond fields will be set to zero.
+             * The second and nanosecond fields will be setValue to zero.
              *
              * @param hour  the hour-of-day to represent, from 0 to 23
              * @param minute  the minute-of-hour to represent, from 0 to 59
@@ -182,7 +190,7 @@ namespace core {
              * Obtains an INSTANCE of <b> LocalTime</b>  from an hour, minute and second.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified hour, minute and second.
-             * The nanosecond field will be set to zero.
+             * The nanosecond field will be setValue to zero.
              *
              * @param hour  the hour-of-day to represent, from 0 to 23
              * @param minute  the minute-of-hour to represent, from 0 to 59
@@ -211,7 +219,7 @@ namespace core {
              * Obtains an INSTANCE of <b> LocalTime</b>  from a second-of-day value.
              * <p>
              * This returns a <b> LocalTime</b>  with the specified second-of-day.
-             * The nanosecond field will be set to zero.
+             * The nanosecond field will be setValue to zero.
              *
              * @param secondOfDay  the second-of-day, from <b> 0</b>  to <b> 24 * 60 * 60 - 1</b> 
              * @return the local time
@@ -236,7 +244,7 @@ namespace core {
              * Obtains an INSTANCE of <b> LocalTime</b> from a temporal object.
              * <p>
              * This obtains a local time based on the specified temporal.
-             * A <b> Temporal</b> represents an arbitrary set of date and time information,
+             * A <b> Temporal</b> represents an arbitrary setValue of date and time information,
              * which this factory converts to an INSTANCE of <b> LocalTime</b>.
              * <p>
              * The conversion uses the <b style="color:orange;"> Temporal::LOCAL_TIME</b> query, which relies
@@ -420,12 +428,12 @@ namespace core {
             gint nano() const;
 
             /**
-             * Returns a copy of this time with the specified field set to a new value.
+             * Returns a copy of this time with the specified field setValue to a new value.
              * <p>
              * This returns a <b> LocalTime</b> , based on this one, with the value
              * for the specified field changed.
              * This can be used to change any supported field, such as the hour, minute or second.
-             * If it is not possible to set the value, because the field is not supported or for
+             * If it is not possible to setValue the value, because the field is not supported or for
              * some other reason, an exception is thrown.
              * <p>
              * If the field is a <b style="color:orange;"> Field</b>  then the adjustment is implemented here.
@@ -489,10 +497,10 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param field  the field to set in the result
+             * @param field  the field to setValue in the result
              * @param newValue  the new value of the field in the result
-             * @return a <b> LocalTime</b>  based on <b> this</b>  with the specified field set
-             * @throws DateTimeException if the field cannot be set
+             * @return a <b> LocalTime</b>  based on <b> this</b>  with the specified field setValue
+             * @throws DateTimeException if the field cannot be setValue
              * @throws UnsupportedTemporalException if the field is not supported
              * @throws ArithmeticException if numeric overflow occurs
              */
@@ -505,7 +513,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param hour  the hour-of-day to set in the result, from 0 to 23
+             * @param hour  the hour-of-day to setValue in the result, from 0 to 23
              * @return a <b> LocalTime</b>  based on this time with the requested hour
              * @throws DateTimeException if the hour value is invalid
              */
@@ -516,7 +524,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param minute  the minute-of-hour to set in the result, from 0 to 59
+             * @param minute  the minute-of-hour to setValue in the result, from 0 to 59
              * @return a <b> LocalTime</b>  based on this time with the requested minute
              * @throws DateTimeException if the minute value is invalid
              */
@@ -527,7 +535,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param second  the second-of-minute to set in the result, from 0 to 59
+             * @param second  the second-of-minute to setValue in the result, from 0 to 59
              * @return a <b> LocalTime</b>  based on this time with the requested second
              * @throws DateTimeException if the second value is invalid
              */
@@ -538,7 +546,7 @@ namespace core {
              * <p>
              * This INSTANCE is immutable and unaffected by this method call.
              *
-             * @param nanoOfSecond  the nano-of-second to set in the result, from 0 to 999,999,999
+             * @param nanoOfSecond  the nano-of-second to setValue in the result, from 0 to 999,999,999
              * @return a <b> LocalTime</b>  based on this time with the requested nanosecond
              * @throws DateTimeException if the nanos value is invalid
              */
@@ -549,9 +557,9 @@ namespace core {
              * Returns a copy of this <b> LocalTime</b>  with the time truncated.
              * <p>
              * Truncation returns a copy of the original time with fields
-             * smaller than the specified unit set to zero.
+             * smaller than the specified unit setValue to zero.
              * For example, truncating with the <b style="color:orange;"> minutes</b>  unit
-             * will set the second-of-minute and nano-of-second field to zero.
+             * will setValue the second-of-minute and nano-of-second field to zero.
              * <p>
              * The unit must have a <b style="color:green;"> duration</b>
              * that divides into the length of a standard day without remainder.

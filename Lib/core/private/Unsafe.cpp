@@ -4,10 +4,8 @@
 
 #include "Unsafe.h"
 #include <core/IllegalArgumentException.h>
-#include <core/native/ReferenceArray.h>
 #include <core/private/Null.h>
 #include <typeinfo>
-
 
 #if defined(__GNUC__)
 #define USE_INTERLOCKED_FUNCTION 0
@@ -579,7 +577,10 @@ namespace core {
         void Unsafe::freeMemory(glong address) {
             if (!checkPointer(null, address))
                 IllegalArgumentException("Invalid input").throws(__trace("core.private.Unsafe"));
-            if (address != 0) freeMemoryImpl(address);
+            if (address != 0) {
+                freeMemoryImpl(address);
+            }
+
         }
 
         namespace {
@@ -597,7 +598,7 @@ namespace core {
                 Heap *head = {};
                 Heap *tail = {};
                 gint count = 0;
-                enum CacheState: gbool {
+                enum CacheState : gbool {
                     UNLOCKED,
                     LOCKED,
                 } state = UNLOCKED;
@@ -661,13 +662,13 @@ namespace core {
                         if (first->address == address) {
                             Heap *p = first->prev;
                             Heap *n = first->next;
-                            if(first == head)
+                            if (first == head)
                                 head = n;
-                            if(first == tail)
+                            if (first == tail)
                                 tail = p;
-                            if(p != null)
+                            if (p != null)
                                 p->next = n;
-                            if(n != null)
+                            if (n != null)
                                 n->prev = p;
                             first->prev = first->next = null;
                             delete first;
@@ -677,13 +678,13 @@ namespace core {
                         if (last->address == address) {
                             Heap *p = last->prev;
                             Heap *n = last->next;
-                            if(last == head)
+                            if (last == head)
                                 head = n;
-                            if(last == tail)
+                            if (last == tail)
                                 tail = p;
-                            if(p != null)
+                            if (p != null)
                                 p->next = n;
-                            if(n != null)
+                            if (n != null)
                                 n->prev = p;
                             last->prev = last->next = null;
                             delete last;
@@ -698,7 +699,7 @@ namespace core {
                 }
 
                 ~Cache() override {
-                    if(state == LOCKED){
+                    if (state == LOCKED) {
                         // wait
                     }
                     state = LOCKED;
@@ -706,7 +707,7 @@ namespace core {
                     while (head != null) {
                         Heap *heap = head;
                         head = heap->next;
-                        if(head != null)
+                        if (head != null)
                             head->prev = null;
                         Unsafe::freeMemory(heap->address);
                         heap->next = heap->prev = null;
@@ -4258,7 +4259,7 @@ namespace core {
             return true;
         }
 
-        gbool Unsafe::checkOffset(const Object & obj, glong offset) {
+        gbool Unsafe::checkOffset(const Object &obj, glong offset) {
             CORE_IGNORE(obj);
             if (ADDRESS_SIZE == 4) {
                 // Note: this will also check for negative offsets
@@ -4278,91 +4279,50 @@ namespace core {
         glong Unsafe::getNativeAddress(const Object &o, glong offset) {
             if (&o == &null) {
                 return offset;
-            } else if(offset == 0){
+            } else if (offset == 0) {
                 return (glong) &o;
-            } else if ((typeid(o) == typeid(BooleanArray))) {
-                glong vOffset = offset - ARRAY_BOOLEAN_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_BOOLEAN_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(ByteArray))) {
-                glong vOffset = offset - ARRAY_BYTE_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_BYTE_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(ShortArray))) {
-                glong vOffset = offset - ARRAY_SHORT_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_SHORT_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(CharArray))) {
-                glong vOffset = offset - ARRAY_CHAR_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_CHAR_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(IntArray))) {
-                glong vOffset = offset - ARRAY_INT_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_INT_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(FloatArray))) {
-                glong vOffset = offset - ARRAY_FLOAT_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_FLOAT_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(LongArray))) {
-                glong vOffset = offset - ARRAY_LONG_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_LONG_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
-            } else if ((typeid(o) == typeid(DoubleArray))) {
-                glong vOffset = offset - ARRAY_DOUBLE_BASE_OFFSET;
-                offset -= vOffset;
-                if (offset < 0 || offset % ARRAY_DOUBLE_INDEX_SCALE != 0) {
-                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
-                }
-                glong const objAddress = (glong) &o;
-                vOffset += objAddress; // address of value field
-                glong const address = getAddress(vOffset);
-                return address + offset;
             } else {
-                glong const objAddress = (glong) &o;
-                return objAddress + offset;
+                glong baseOffset = 0;
+                glong scaleOffset = 0;
+                glong scale = 0;
+                if (Class<BooleanArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_BOOLEAN_BASE_OFFSET;
+                    scale = ARRAY_BOOLEAN_INDEX_SCALE;
+                } else if (Class<ByteArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_BYTE_BASE_OFFSET;
+                    scale = ARRAY_BYTE_INDEX_SCALE;
+                } else if (Class<ShortArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_SHORT_BASE_OFFSET;
+                    scale = ARRAY_SHORT_INDEX_SCALE;
+                } else if (Class<CharArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_CHAR_BASE_OFFSET;
+                    scale = ARRAY_CHAR_INDEX_SCALE;
+                } else if (Class<IntArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_INT_BASE_OFFSET;
+                    scale = ARRAY_INT_INDEX_SCALE;
+                } else if (Class<FloatArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_FLOAT_BASE_OFFSET;
+                    scale = ARRAY_FLOAT_INDEX_SCALE;
+                } else if (Class<LongArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_LONG_BASE_OFFSET;
+                    scale = ARRAY_LONG_INDEX_SCALE;
+                } else if (Class<DoubleArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_DOUBLE_BASE_OFFSET;
+                    scale = ARRAY_DOUBLE_INDEX_SCALE;
+                } else if (Class<ObjectArray>::hasInstance(o)) {
+                    baseOffset = ARRAY_REFERENCE_BASE_OFFSET;
+                    scale = ARRAY_REFERENCE_INDEX_SCALE;
+                } else {
+                    baseOffset = 0;
+                    scale = 1;
+                }
+                scaleOffset = offset - baseOffset;
+                if (scaleOffset % scale != 0) {
+                    IllegalArgumentException("Illegal offset").throws(__trace("core.private.Unsafe"));
+                }
+                glong const baseAddress = baseOffset == 0 ? (glong) &o
+                                                    : getAddress(null, (glong) &o + baseOffset);
+                return baseAddress + scaleOffset;
             }
         }
 

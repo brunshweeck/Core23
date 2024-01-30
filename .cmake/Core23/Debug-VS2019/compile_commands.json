@@ -1,0 +1,1394 @@
+[
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\ArithmeticException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\ArithmeticException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\ArithmeticException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\ArithmeticException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\AssertionError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\AssertionError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\AssertionError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\AssertionError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Boolean.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Boolean.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Boolean.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Boolean.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Byte.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Byte.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Byte.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Byte.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\CharSequence.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\CharSequence.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\CharSequence.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\CharSequence.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Character.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Character.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Character.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Character.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\ClassCastException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\ClassCastException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\ClassCastException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\ClassCastException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\CloneNotSupportedException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\CloneNotSupportedException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\CloneNotSupportedException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\CloneNotSupportedException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Complex.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Complex.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Complex.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Complex.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Double.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Double.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Double.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Double.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Enum.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Enum.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Enum.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Enum.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Error.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Error.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Error.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Error.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Exception.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Exception.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Exception.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Exception.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Float.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Float.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Float.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Float.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\IllegalArgumentException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IllegalArgumentException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IllegalArgumentException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\IllegalArgumentException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\IllegalStateException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IllegalStateException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IllegalStateException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\IllegalStateException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\IndexException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IndexException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\IndexException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\IndexException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Integer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Integer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Integer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Integer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\InternalError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\InternalError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\InternalError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\InternalError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Long.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Long.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Long.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Long.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Math.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Math.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Math.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Math.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\MemoryError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\MemoryError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\MemoryError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\MemoryError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\NoSuchElementException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NoSuchElementException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NoSuchElementException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\NoSuchElementException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\NoSuchKeyException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NoSuchKeyException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NoSuchKeyException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\NoSuchKeyException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\NumberFormatException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NumberFormatException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\NumberFormatException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\NumberFormatException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Object.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Object.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Object.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Object.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\RuntimeException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\RuntimeException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\RuntimeException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\RuntimeException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\SecurityException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\SecurityException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\SecurityException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\SecurityException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Short.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Short.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Short.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Short.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\String.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\String.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\String.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\String.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\StringBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\StringBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\StringBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\StringBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\SystemError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\SystemError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\SystemError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\SystemError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Throwable.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Throwable.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Throwable.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Throwable.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Trace.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Trace.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Trace.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Trace.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\UnsupportedOperationException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\UnsupportedOperationException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\UnsupportedOperationException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\UnsupportedOperationException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\Void.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Void.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\Void.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\Void.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharacterCodingException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharacterCodingException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharacterCodingException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharacterCodingException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\Charset.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\Charset.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\Charset.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\Charset.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharsetDecoder.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharsetDecoder.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharsetDecoder.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharsetDecoder.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharsetEncoder.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharsetEncoder.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CharsetEncoder.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CharsetEncoder.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CoderMalfunctionError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CoderMalfunctionError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CoderMalfunctionError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CoderMalfunctionError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CoderResult.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CoderResult.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CoderResult.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CoderResult.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\CodingException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CodingException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\CodingException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\CodingException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\IllegalCharsetNameException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\IllegalCharsetNameException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\IllegalCharsetNameException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\IllegalCharsetNameException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\MalformedInputException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\MalformedInputException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\MalformedInputException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\MalformedInputException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\UnmappableCharacterException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\UnmappableCharacterException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\UnmappableCharacterException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\UnmappableCharacterException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\UnsupportedCharsetException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\UnsupportedCharsetException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\UnsupportedCharsetException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\UnsupportedCharsetException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\CESU8.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\CESU8.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\CESU8.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\CESU8.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\DoubleByte.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\DoubleByte.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\DoubleByte.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\DoubleByte.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\GB18030.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\GB18030.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\GB18030.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\GB18030.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\GBK.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\GBK.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\GBK.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\GBK.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM437.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM437.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM437.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM437.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM737.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM737.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM737.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM737.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM775.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM775.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM775.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM775.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM850.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM850.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM850.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM850.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM852.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM852.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM852.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM852.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM855.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM855.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM855.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM855.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM857.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM857.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM857.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM857.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM858.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM858.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM858.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM858.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM862.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM862.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM862.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM862.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM866.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM866.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM866.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM866.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM874.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM874.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\IBM874.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\IBM874.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_1.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_1.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_1.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_1.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_13.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_13.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_13.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_13.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_15.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_15.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_15.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_15.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_16.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_16.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_16.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_16.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_2.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_2.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_2.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_2.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_4.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_4.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_4.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_4.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_5.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_5.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_5.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_5.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_7.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_7.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_7.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_7.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_9.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_9.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\ISO8859_9.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\ISO8859_9.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\JIS_X0201.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\JIS_X0201.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\JIS_X0201.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\JIS_X0201.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Johab.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Johab.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Johab.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Johab.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\KOI8_R.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\KOI8_R.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\KOI8_R.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\KOI8_R.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\KOI8_U.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\KOI8_U.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\KOI8_U.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\KOI8_U.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\SJIS.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\SJIS.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\SJIS.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\SJIS.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\SingleByte.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\SingleByte.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\SingleByte.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\SingleByte.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Surrogate.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Surrogate.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Surrogate.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Surrogate.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\US_ASCII.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\US_ASCII.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\US_ASCII.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\US_ASCII.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16BE.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16BE.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16BE.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16BE.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16LE.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16LE.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16LE.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16LE.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16LE_BOM.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16LE_BOM.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF16LE_BOM.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF16LE_BOM.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32BE.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32BE.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32BE.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32BE.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32BE_BOM.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32BE_BOM.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32BE_BOM.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32BE_BOM.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32Coder.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32Coder.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32Coder.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32Coder.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32LE.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32LE.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32LE.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32LE.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32LE_BOM.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32LE_BOM.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF32LE_BOM.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF32LE_BOM.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF8.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF8.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\UTF8.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\UTF8.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Unicode.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Unicode.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Unicode.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Unicode.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1250.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1250.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1250.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1250.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1251.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1251.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1251.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1251.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1252.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1252.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1252.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1252.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1253.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1253.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1253.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1253.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1254.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1254.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1254.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1254.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1255.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1255.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1255.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1255.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1256.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1256.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1256.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1256.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1257.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1257.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1257.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1257.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1258.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1258.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows1258.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows1258.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows874.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows874.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows874.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows874.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows932.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows932.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows932.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows932.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows936.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows936.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows936.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows936.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows949.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows949.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows949.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows949.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows950.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows950.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\charset\\private\\Windows950.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\charset\\private\\Windows950.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicBoolean.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicBoolean.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicBoolean.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicBoolean.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicInteger.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicInteger.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicInteger.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicInteger.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicIntegerArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicIntegerArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicIntegerArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicIntegerArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicLong.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicLong.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicLong.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicLong.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicLongArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicLongArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\AtomicLongArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\AtomicLongArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\Condition.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\Condition.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\Condition.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\Condition.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\ReadWriteLocker.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\ReadWriteLocker.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\ReadWriteLocker.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\ReadWriteLocker.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\ReentrantLock.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\ReentrantLock.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\ReentrantLock.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\ReentrantLock.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\Semaphore.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\Semaphore.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\Semaphore.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\Semaphore.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\SimpleLock.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\SimpleLock.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\concurrent\\SimpleLock.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\concurrent\\SimpleLock.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\foreign\\TzInfos.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\TzInfos.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\TzInfos.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\foreign\\TzInfos.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTable.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTable.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTable.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTable.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableD.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableD.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableD.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableD.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableN.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableN.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableN.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableN.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableP.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableP.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\foreign\\UnicodeTableP.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\foreign\\UnicodeTableP.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\Buffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Buffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Buffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\Buffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferOverflowException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferOverflowException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferOverflowException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferOverflowException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferUnderflowException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferUnderflowException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferUnderflowException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferUnderflowException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferedReader.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferedReader.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferedReader.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferedReader.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferedWriter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferedWriter.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\BufferedWriter.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\BufferedWriter.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\ByteBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\ByteBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\ByteBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\ByteBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\CharBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\CharBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\CharBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\CharBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\Closeable.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Closeable.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Closeable.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\Closeable.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\DoubleBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\DoubleBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\DoubleBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\DoubleBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\File.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\File.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\File.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\File.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\FileArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\FileArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\FileDescriptor.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileDescriptor.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileDescriptor.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\FileDescriptor.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\FileSystem.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileSystem.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FileSystem.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\FileSystem.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\FloatBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FloatBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\FloatBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\FloatBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\IOError.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IOError.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IOError.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\IOError.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\IOException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IOException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IOException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\IOException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\InputStream.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InputStream.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InputStream.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\InputStream.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\InputStreamReader.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InputStreamReader.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InputStreamReader.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\InputStreamReader.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\IntBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IntBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\IntBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\IntBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\InvalidMarkException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InvalidMarkException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\InvalidMarkException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\InvalidMarkException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\LongBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\LongBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\LongBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\LongBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\PipedReader.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PipedReader.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PipedReader.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\PipedReader.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\PipedWriter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PipedWriter.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PipedWriter.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\PipedWriter.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\PrintStream.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PrintStream.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PrintStream.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\PrintStream.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\PrintStreamWriter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PrintStreamWriter.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\PrintStreamWriter.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\PrintStreamWriter.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\Reader.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Reader.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Reader.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\Reader.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\ShortBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\ShortBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\ShortBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\ShortBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\Writer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Writer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\Writer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\Writer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapByteBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapByteBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapByteBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapByteBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapCharBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapCharBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapCharBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapCharBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapDoubleBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapDoubleBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapDoubleBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapDoubleBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapFloatBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapFloatBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapFloatBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapFloatBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapIntBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapIntBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapIntBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapIntBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapLongBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapLongBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapLongBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapLongBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapShortBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapShortBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\HeapShortBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\HeapShortBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\NativeBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\NativeBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\NativeBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\NativeBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyBufferException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyBufferException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyBufferException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyBufferException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapByteBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapByteBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapByteBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapByteBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapCharBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapCharBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapCharBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapCharBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapDoubleBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapDoubleBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapDoubleBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapDoubleBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapFloatBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapFloatBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapFloatBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapFloatBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapIntBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapIntBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapIntBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapIntBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapLongBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapLongBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapLongBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapLongBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapShortBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapShortBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\ReadOnlyHeapShortBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\ReadOnlyHeapShortBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\StringCharBuffer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\StringCharBuffer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\io\\private\\StringCharBuffer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\io\\private\\StringCharBuffer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\BooleanArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\BooleanArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\BooleanArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\BooleanArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\BooleanArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\BooleanArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\BooleanArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\BooleanArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\ByteArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ByteArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ByteArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\ByteArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\ByteArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ByteArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ByteArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\ByteArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\CharArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\CharArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\CharArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\CharArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\CharArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\CharArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\CharArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\CharArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\DoubleArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\DoubleArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\DoubleArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\DoubleArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\DoubleArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\DoubleArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\DoubleArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\DoubleArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\FloatArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\FloatArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\FloatArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\FloatArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\FloatArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\FloatArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\FloatArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\FloatArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\IntArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\IntArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\IntArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\IntArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\IntArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\IntArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\IntArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\IntArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\LongArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\LongArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\LongArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\LongArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\LongArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\LongArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\LongArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\LongArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\ObjectArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ObjectArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ObjectArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\ObjectArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\ShortArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ShortArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ShortArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\ShortArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\ShortArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ShortArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\ShortArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\ShortArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\StringArray.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\StringArray.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\StringArray.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\StringArray.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\native\\StringArray2D.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\StringArray2D.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\native\\StringArray2D.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\native\\StringArray2D.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\net\\URI.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URI.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URI.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\net\\URI.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\net\\URISyntaxException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URISyntaxException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URISyntaxException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\net\\URISyntaxException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\net\\URL.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URL.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\net\\URL.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\net\\URL.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\private\\ArraysSupport.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\ArraysSupport.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\ArraysSupport.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\private\\ArraysSupport.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\private\\Null.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\Null.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\Null.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\private\\Null.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\private\\Unsafe.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\Unsafe.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\private\\Unsafe.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\private\\Unsafe.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\random\\Random.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\random\\Random.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\random\\Random.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\random\\Random.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\random\\RandomGenerator.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\random\\RandomGenerator.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\random\\RandomGenerator.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\random\\RandomGenerator.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\regex\\Pattern.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\regex\\Pattern.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\regex\\Pattern.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\regex\\Pattern.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\text\\Normalizer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\text\\Normalizer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\text\\Normalizer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\text\\Normalizer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Calendar.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Calendar.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Calendar.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Calendar.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Chrono.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Chrono.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Chrono.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Chrono.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Chronology.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Chronology.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Chronology.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Chronology.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\DateTimeException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\DateTimeException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\DateTimeException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\DateTimeException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\DateTimeFormatter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\DateTimeFormatter.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\DateTimeFormatter.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\DateTimeFormatter.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Duration.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Duration.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Duration.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Duration.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Era.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Era.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Era.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Era.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalDate.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalDate.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalDate.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalDate.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalDateTime.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalDateTime.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalDateTime.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalDateTime.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalTime.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalTime.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\LocalTime.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\LocalTime.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\Temporal.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Temporal.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\Temporal.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\Temporal.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\UnsupportedTemporalException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\UnsupportedTemporalException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\UnsupportedTemporalException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\UnsupportedTemporalException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneID.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneID.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneID.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneID.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffset.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffset.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffset.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffset.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffsetTransition.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffsetTransition.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffsetTransition.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffsetTransition.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffsetTransitionRule.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffsetTransitionRule.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneOffsetTransitionRule.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneOffsetTransitionRule.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneRegion.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneRegion.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneRegion.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneRegion.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneRules.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneRules.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\time\\ZoneRules.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\time\\ZoneRules.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\ConcurrentException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\ConcurrentException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\ConcurrentException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\ConcurrentException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\Locale.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\Locale.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\Locale.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\Locale.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\MissingResourceException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\MissingResourceException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\MissingResourceException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\MissingResourceException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\Preconditions.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\Preconditions.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\Preconditions.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\Preconditions.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\StringTokenizer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\StringTokenizer.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\StringTokenizer.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\StringTokenizer.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LanguageTag.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LanguageTag.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LanguageTag.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LanguageTag.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleBuilder.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleBuilder.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleBuilder.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleBuilder.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleISOData.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleISOData.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleISOData.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleISOData.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleSyntaxException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleSyntaxException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleSyntaxException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleSyntaxException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleUtils.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleUtils.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\LocaleUtils.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\LocaleUtils.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\ParseStatus.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\ParseStatus.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib\\core\\util\\private\\ParseStatus.cpp",
+  "output": "CMakeFiles\\Core23.dir\\Lib\\core\\util\\private\\ParseStatus.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\concurrent\\SimpleLock.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\concurrent\\SimpleLock.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\concurrent\\SimpleLock.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\concurrent\\SimpleLock.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\io\\NTFS.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\io\\NTFS.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\io\\NTFS.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\io\\NTFS.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\native\\WindowsException.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\native\\WindowsException.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\native\\WindowsException.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\native\\WindowsException.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\private\\Unsafe.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\private\\Unsafe.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\private\\Unsafe.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\private\\Unsafe.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\time\\Chrono.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\Chrono.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\Chrono.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\time\\Chrono.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\time\\LocalDateTime.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\LocalDateTime.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\LocalDateTime.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\time\\LocalDateTime.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\time\\ZoneID.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\ZoneID.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\time\\ZoneID.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\time\\ZoneID.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Core23.dir\\WinLib\\core\\util\\Locale.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\util\\Locale.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib\\core\\util\\Locale.cpp",
+  "output": "CMakeFiles\\Core23.dir\\WinLib\\core\\util\\Locale.cpp.obj"
+},
+{
+  "directory": "C:/Users/T.N.Brunshweeck/CLionProjects/Core23/.cmake/Core23/Debug-VS2019",
+  "command": "C:\\PROGRA~2\\MICROS~3\\2019\\BUILDT~1\\VC\\Tools\\MSVC\\1429~1.301\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Lib -IC:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\WinLib /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd /constexpr:depth64 /FoCMakeFiles\\Main23.dir\\Main.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Main.cpp",
+  "file": "C:\\Users\\T.N.Brunshweeck\\CLionProjects\\Core23\\Main.cpp",
+  "output": "CMakeFiles\\Main23.dir\\Main.cpp.obj"
+}
+]

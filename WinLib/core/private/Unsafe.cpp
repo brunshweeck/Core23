@@ -51,7 +51,7 @@ namespace core {
     namespace native {
 
         namespace {
-            HANDLE privateHeap[1024] = {};
+            HANDLE privateHeap[64] = {};
         }
 
         glong Unsafe::allocateMemoryImpl(glong sizeInBytes) {
@@ -147,9 +147,12 @@ namespace core {
         }
 
         void Unsafe::freeMemoryImpl(glong address) {
+            if (address == 0) {
+                return;
+            }
             for(HANDLE &heap: privateHeap) {
                 if (heap == NULL) {
-                    if(heap == privateHeap[0])
+                    if(&heap == &privateHeap[0])
                         continue;
                     break;
                 }
@@ -158,6 +161,10 @@ namespace core {
                 if(HeapValidate(heap, 0, (LPVOID) address) == 0) {
                     HeapUnlock(heap);
                     continue;
+                }
+                SIZE_T const Size = HeapSize(heap, 0, (LPCVOID) address);
+                if(Size < Integer::MAX_VALUE) {
+                    ZeroMemory((LPVOID) address, Size);
                 }
                 if(HeapFree(heap, 0, (LPVOID) address) != 0){
                     HeapUnlock(heap);

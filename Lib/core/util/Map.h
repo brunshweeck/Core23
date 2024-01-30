@@ -22,8 +22,8 @@ namespace core {
          * was a totally abstract class rather than an interface.
          *
          * <p>The <b> Map</b> interface provides three <i>collection views</i>, which
-         * allow a map's contents to be viewed as a set of keys, collection of values,
-         * or set of key-value mappings.  The <i>order</i> of a map is defined as
+         * allow a map's contents to be viewed as a setValue of keys, collection of values,
+         * or setValue of key-value mappings.  The <i>order</i> of a map is defined as
          * the order in which the iterators on the map's collection views return their
          * elements.  Some map implementations, like the <b> TreeMap</b> class, make
          * specific guarantees as to their order; others, like the <b> HashMap</b>
@@ -130,18 +130,6 @@ namespace core {
          */
         template<class K, class V>
         class Map : public Object {
-        protected:
-            CORE_ALIAS(Unsafe, native::Unsafe);
-
-            template<class E>
-            CORE_ALIAS(ActionConsumer, function::Consumer<E>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryActionConsumer, , function::BiConsumer<T, U>);
-
-            template<class T, class U>
-            CORE_ALIAS(BinaryFunction, , function::BiFunction<T, U, V>);
-
         public:
 
             class Entry;
@@ -156,7 +144,7 @@ namespace core {
             /**
              * Returns <b>true</b> if this map contains no key-value mappings.
              */
-            inline gbool isEmpty() const { return size() == 0; }
+            virtual gbool isEmpty() const { return size() == 0; }
 
             /**
              * Returns <b>true</b> if this map contains a mapping for the specified
@@ -172,7 +160,7 @@ namespace core {
              *         this map (<a href="">optional</a>)
              */
             virtual gbool containsKey(const K &key) const {
-                Iterator<const Entry> &it = entrySet().iterator();
+                Iterator<Entry> &it = entrySet().iterator();
                 while (it.hasNext()) {
                     const Entry &e = it.next();
                     if (Object::equals(key, e.key()))
@@ -196,7 +184,7 @@ namespace core {
              *         this map (<a href="">optional</a>)
              */
             virtual gbool containsValue(const V &value) const {
-                Iterator<const Entry> &it = entrySet().iterator();
+                Iterator<Entry> &it = entrySet().iterator();
                 while (it.hasNext()) {
                     const Entry &e = it.next();
                     if (Object::equals(value, e.value()))
@@ -228,7 +216,7 @@ namespace core {
              *         this map (<a href="">optional</a>)
              */
             virtual V &get(const K &key) {
-                Iterator<const Entry> &it = entrySet().iterator();
+                Iterator<Entry> &it = entrySet().iterator();
                 while (it.hasNext()) {
                     const Entry &e = it.next();
                     if (Object::equals(key, e.key()))
@@ -260,7 +248,7 @@ namespace core {
              *         this map (<a href="">optional</a>)
              */
             virtual const V &get(const K &key) const {
-                Iterator<const Entry> &it = entrySet().iterator();
+                Iterator<Entry> &it = entrySet().iterator();
                 while (it.hasNext()) {
                     const Entry &e = it.next();
                     if (Object::equals(key, e.key()))
@@ -365,7 +353,7 @@ namespace core {
              *         this map (<a href="">optional</a>)
              */
             virtual const V &remove(const K &key) {
-                Iterator<const Entry> &it = entrySet().iterator();
+                Iterator<Entry> &it = entrySet().iterator();
                 while (it.hasNext()) {
                     const Entry &e = it.next();
                     if (Object::equals(key, e.key())) {
@@ -455,54 +443,98 @@ namespace core {
 
             /**
              * Returns a <b style="color:orange;">Set</b> view of the keys contained in this map.
-             * The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b>remove</b> operation), the results of
-             * the iteration are undefined.  The set supports element removal,
+             * the iteration are undefined.  The setValue supports element removal,
              * which removes the corresponding mapping from the map, via the
              * <b>Iterator.remove</b>, <b>Set.remove</b>,
              * <b>removeAll</b>, <b>retainAll</b>, and <b>clear</b>
              * operations.  It does not support the <b>add</b> or <b>addAll</b>
              * operations.
              *
-             * @return a set view of the keys contained in this map
+             * @return a setValue view of the keys contained in this map
              */
             virtual Set<K> &keySet() const {
-                class KeySet CORE_FINAL : public Set<K> {
-                    Map<K, V> &root;
-
-                public:
-                    CORE_EXPLICIT KeySet(Map<K, V> &root) : root(root) {}
-
-                    Iterator<const K> &iterator() const override {
-                        class KeyItr CORE_FINAL : public Iterator<const K> {
-                            Iterator<const Entry> &itr;
-
-                        public:
-                            CORE_EXPLICIT KeyItr(Iterator<const Entry> &itr) : itr(itr) {}
-
-                            gbool hasNext() const override { return itr.hasNext(); }
-
-                            const K &next() override { return itr.next().key(); }
-
-                            void remove() override { itr.remove(); }
-                        };
-
-                        return Unsafe::allocateInstance<KeyItr>(root.entrySet().iterator());
-                    }
-
-                    gint size() const override { return root.size(); }
-
-                    gbool contains(const K &o) const override { return root.containsKey(o); }
-
-                    void clear() override { root.clear(); }
-                };
-
-                if (kSet == null)
-                    (KEYSET &) kSet = &Unsafe::allocateInstance<KeySet>((Map<K, V> &) *this);
-                return kSet[0];
+                KEYSET ks = kSet;
+                if (ks == null) {
+                    ks = &Unsafe::allocateInstance<KeySet>((Map &) *this);
+                    (KEYSET &) kSet = ks;
+                }
+                return *ks;
             }
+
+        private:
+            class KeySet CORE_FINAL : public Set<K> {
+            private:
+                Map &This;
+
+            public:
+                CORE_EXPLICIT KeySet(Map &root) : This(root) {}
+
+                Iterator<const K> &iterator() const override {
+                    return Unsafe::allocateInstance<KeyItr<const K>>(This.entrySet().iterator());
+                }
+
+                Iterator<K> &iterator() override {
+                    return Unsafe::allocateInstance<KeyItr<>>(This.entrySet().iterator());
+                }
+
+                gint size() const override {
+                    return This.size();
+                }
+
+                gbool contains(const K &o) const override {
+                    return This.containsKey(o);
+                }
+
+                void clear() override {
+                    This.clear();
+                }
+
+                Object &clone() const override {
+                    return This.keySet();
+                }
+            };
+
+            template<class T = K>
+            class KeyItr CORE_FINAL : public Iterator<T> {
+            private:
+                Iterator<Entry> &itE;
+
+            public:
+                CORE_EXPLICIT KeyItr(Iterator<Entry> &itr) : itE(itr) {}
+
+                gbool hasNext() const override {
+                    return itE.hasNext();
+                }
+
+                T &next() override {
+                    return (T &) itE.next().key();
+                }
+
+                void remove() override {
+                    itE.remove();
+                }
+
+                gbool equals(const Object &o) const override {
+                    if (this == &o) {
+                        return true;
+                    }
+                    if (!Class<KeyItr>::hasInstance(o)) {
+                        return false;
+                    }
+                    KeyItr const &it = (const KeyItr &) o;
+                    return itE == it.itE;
+                }
+
+                Object &clone() const override {
+                    return Unsafe::allocateInstance<KeyItr>(*this);
+                }
+            };
+
+        public:
 
             /**
              * Returns a <b style="color:orange;">Collection</b> view of the values contained in this map.
@@ -520,49 +552,97 @@ namespace core {
              * @return a collection view of the values contained in this map
              */
             virtual Collection<V> &values() const {
-                class Values CORE_FINAL : public Collection<V> {
-                    Map<K, V> &root;
-
-                public:
-                    CORE_EXPLICIT Values(Map<K, V> &root) : root(root) {}
-
-                    Iterator<const V> &iterator() const override {
-                        class ValueItr CORE_FINAL : public Iterator<const V> {
-                            Iterator<const Entry> &itr;
-
-                        public:
-                            CORE_EXPLICIT ValueItr(Iterator<const Entry> &itr) : itr(itr) {}
-
-                            gbool hasNext() const override { return itr.hasNext(); }
-
-                            const V &next() override { return itr.next().value(); }
-
-                            void remove() override { itr.remove(); }
-                        };
-
-                        return Unsafe::allocateInstance<ValueItr>(root.entrySet().iterator());
-                    }
-
-                    gint size() const override { return root.size(); }
-
-                    gbool contains(const V &o) const override { return root.containsValue(o); }
-
-                    void clear() override { root.clear(); }
-                };
-
-                if (vCollection == null)
-                    (VALUES &) vCollection = &Unsafe::allocateInstance<Values>((Map<K, V> &) *this);
-                return vCollection[0];
+                VALUES vs = vCollection;
+                if (vs == null) {
+                    vs = &Unsafe::allocateInstance<Values>((Map &) *this);
+                    (VALUES &) vCollection = vs;
+                }
+                return *vs;
             }
+
+        private:
+            class Values CORE_FINAL : public Collection<V> {
+            private:
+                Map &This;
+
+            public:
+                CORE_EXPLICIT Values(Map &root) : This(root) {}
+
+                Iterator<const V> &iterator() const override {
+                    return Unsafe::allocateInstance<ValueItr<const V>>(This.entrySet().iterator());
+                }
+
+                Iterator<V> &iterator() override {
+                    return Unsafe::allocateInstance<ValueItr<>>(This.entrySet().iterator());
+                }
+
+                gint size() const override {
+                    return This.size();
+                }
+
+                gbool contains(const V &o) const override {
+                    return This.containsValue(o);
+                }
+
+                void clear() override {
+                    This.clear();
+                }
+
+                Object &clone() const override {
+                    return This.values();
+                }
+
+                gbool equals(const Object &o) const override {
+                    return this == &o;
+                }
+            };
+
+            template<class T = V>
+            class ValueItr CORE_FINAL : public Iterator<T> {
+            private:
+                Iterator<Entry> &itE;
+
+            public:
+                CORE_EXPLICIT ValueItr(Iterator<Entry> &itr) : itE(itr) {}
+
+                gbool hasNext() const override {
+                    return itE.hasNext();
+                }
+
+                T &next() override {
+                    return itE.next().value();
+                }
+
+                void remove() override {
+                    itE.remove();
+                }
+
+                gbool equals(const Object &o) const override {
+                    if (this == &o) {
+                        return true;
+                    }
+                    if (!Class<ValueItr>::hasInstance(o)) {
+                        return false;
+                    }
+                    ValueItr const &it = (const ValueItr &) o;
+                    return it.itE == itE;
+                }
+
+                Object &clone() const override {
+                    return Unsafe::allocateInstance<ValueItr>(*this);
+                }
+            };
+
+        public:
 
             /**
              * Returns a <b style="color:orange;">Set</b> view of the mappings contained in this map.
-             * The set is backed by the map, so changes to the map are
-             * reflected in the set, and vice-versa.  If the map is modified
-             * while an iteration over the set is in progress (except through
+             * The setValue is backed by the map, so changes to the map are
+             * reflected in the setValue, and vice-versa.  If the map is modified
+             * while an iteration over the setValue is in progress (except through
              * the iterator's own <b>remove</b> operation, or through the
              * <b>setValue</b> operation on a map entry returned by the
-             * iterator) the results of the iteration are undefined.  The set
+             * iterator) the results of the iteration are undefined.  The setValue
              * supports element removal, which removes the corresponding
              * mapping from the map, via the <b>Iterator.remove</b>,
              * <b>Set.remove</b>, <b>removeAll</b>, <b>retainAll</b> and
@@ -577,23 +657,24 @@ namespace core {
              * A map entry (key-value pair). The Entry may be unmodifiable, or the
              * value may be modifiable if the optional <b>setValue</b> method is
              * implemented. The Entry may be independent of any map, or it may represent
-             * an entry of the entry-set view of a map.
+             * an entry of the entry-setValue view of a map.
              * <p>
              * Instances of the <b>Map.Entry</b> interface may be obtained by iterating
-             * the entry-set view of a map. These instances maintain a connection to the
+             * the entry-setValue view of a map. These instances maintain a connection to the
              * original, backing map. This connection to the backing map is valid
-             * <i>only</i> for the duration of iteration over the entry-set view.
-             * During iteration of the entry-set view, if supported by the backing map,
+             * <i>only</i> for the duration of iteration over the entry-setValue view.
+             * During iteration of the entry-setValue view, if supported by the backing map,
              * a change to a <b>Map.Entry</b>'s value via the
              * <b style="color:orange;">setValue</b> method will be visible in the backing map.
              * The behavior of such a <b>Map.Entry</b> INSTANCE is undefined outside of
-             * iteration of the map's entry-set view. It is also undefined if the backing
+             * iteration of the map's entry-setValue view. It is also undefined if the backing
              * map has been modified after the <b>Map.Entry</b> was returned by the
              * iterator, except through the <b>Map.Entry.setValue</b> method. In particular,
              * a change to the value of a mapping in the backing map might or might not be
-             * visible in the corresponding <b>Map.Entry</b> element of the entry-set view.
+             * visible in the corresponding <b>Map.Entry</b> element of the entry-setValue view.
              */
-            interface Entry : public Object {
+            class Entry : public Object {
+            public:
                 /**
                  * Returns the key corresponding to this entry.
                  *
@@ -646,7 +727,7 @@ namespace core {
                  *         required to, throw this exception if the entry has been
                  *         removed from the backing map.
                  */
-                virtual const V &set(const V &value) = 0;
+                virtual const V &setValue(const V &value) = 0;
 
                 gbool equals(const Object &o) const override {
                     if (this == &o)
@@ -656,6 +737,130 @@ namespace core {
                     const Entry &e = (Entry &) o;
                     return Object::equals(key(), e.key()) &&
                            Object::equals(value(), e.value());
+                }
+
+                /**
+                 * Returns a comparator that compares <b style="color: orange;"> Map.Entry</b> in natural order on key.
+                 *
+                 * @return a comparator that compares <b style="color: orange;"> Map.Entry</b> in natural order on key.
+                 * @see Comparable
+                 */
+                static Comparator<Entry> &comparingByKey() {
+                    class EntryComparator CORE_FINAL : public Comparator<Entry> {
+                    public:
+                        gint compare(const Entry &o1, const Entry &o2) const override {
+                            K const &key1 = o1.key();
+                            K const &key2 = o2.key();
+                            return Comparable<K>::naturalOrder().compare(key1, key2);
+                        }
+
+                        Object &clone() const override {
+                            return (Object &) *this;
+                        }
+                    };
+
+                    static EntryComparator BY_KEY{};
+                    return BY_KEY;
+                }
+
+                /**
+                 * Returns a cmp that compares <b style="color: orange;"> Map.Entry</b> by key using the given
+                 * <b style="color: orange;"> Comparator</b>.
+                 *
+                 * <p>The returned cmp is serializable if the specified cmp
+                 * is also serializable.
+                 *
+                 * @param  cmp the key <b style="color: orange;"> Comparator</b>
+                 * @return a cmp that compares <b style="color: orange;"> Map.Entry</b> by the key.
+                 */
+                template<class T = K, Class<gbool>::OnlyIf<Class<T>::template isSuper<K>()> = true>
+                static Comparator<Entry> &comparingByKey(const Comparator<T> &cmp) {
+                    class EntryComparator CORE_FINAL : public Comparator<Entry> {
+                    private:
+                        Comparator<T> &cmp;
+
+                    public:
+                        CORE_EXPLICIT EntryComparator(Comparator<T> &cmp) : cmp(cmp) {}
+
+                        gint compare(const Entry &o1, const Entry &o2) const override {
+                            K const &key1 = o1.key();
+                            K const &key2 = o2.key();
+                            return cmp.compare(key1, key2);
+                        }
+
+                        Comparator<Entry> &reverse() const override {
+                            return Unsafe::allocateInstance<EntryComparator>(cmp.reverse());
+                        }
+
+                        Object &clone() const override {
+                            return (Object &) *this;
+                        }
+                    };
+
+                    if (cmp == Comparator<T>::naturalOrder() || cmp == Comparator<T>::reverseOrder())
+                        return Unsafe::allocateInstance<EntryComparator>((Comparator<T> &) cmp);
+                    else
+                        return Unsafe::allocateInstance<EntryComparator>(Unsafe::copyInstance(cmp, true));
+                }
+
+                /**
+                 * Returns a comparator that compares <b style="color: orange;"> Map.Entry</b> in natural order on value.
+                 *
+                 * @return a comparator that compares <b style="color: orange;"> Map.Entry</b> in natural order on value.
+                 * @see Comparable
+                 */
+                static Comparator<Entry> &comparingByValue() {
+                    class EntryComparator CORE_FINAL : public Comparator<Entry> {
+                    public:
+                        gint compare(const Entry &o1, const Entry &o2) const override {
+                            V const &value1 = o1.value();
+                            V const &value2 = o2.value();
+                            return Comparable<V>::naturalOrder().compare(value1, value2);
+                        }
+
+                        Object &clone() const override {
+                            return (Object &) *this;
+                        }
+                    };
+
+                    static EntryComparator BY_VALUE{};
+                    return BY_VALUE;
+                }
+
+                /**
+                 * Returns a cmp that compares <b style="color: orange;"> Map.Entry</b> by value using the given
+                 * <b style="color: orange;"> Comparator</b>.
+                 *
+                 * @param  cmp the value <b style="color: orange;"> Comparator</b>
+                 * @return a cmp that compares <b style="color: orange;"> Map.Entry</b> by the value.
+                 */
+                template<class T = V, Class<gbool>::OnlyIf<Class<T>::template isSuper<V>()> = true>
+                static Comparator<Entry> &comparingByValue(const Comparator<T> &cmp) {
+                    class EntryComparator CORE_FINAL : public Comparator<Entry> {
+                    private:
+                        Comparator<T> &cmp;
+
+                    public:
+                        CORE_EXPLICIT EntryComparator(Comparator<T> &cmp) : cmp(cmp) {}
+
+                        gint compare(const Entry &o1, const Entry &o2) const override {
+                            V const &value1 = o1.value();
+                            V const &value2 = o2.value();
+                            return cmp.compare(value1, value2);
+                        }
+
+                        Comparator<Entry> &reverse() const override {
+                            return Unsafe::allocateInstance<EntryComparator>(cmp.reverse());
+                        }
+
+                        Object &clone() const override {
+                            return (Object &) *this;
+                        }
+                    };
+                    if (cmp == Comparator<T>::naturalOrder() || cmp == Comparator<T>::reverseOrder())
+                        return Unsafe::allocateInstance<EntryComparator>((Comparator<T> &) cmp);
+                    else
+                        return Unsafe::allocateInstance<EntryComparator>(Unsafe::copyInstance(cmp, true));
                 }
             };
 
@@ -705,7 +910,7 @@ namespace core {
              * @return a string representation of this map
              */
             String toString() const override {
-                Iterator<const Entry> &i = entrySet().iterator();
+                Iterator<Entry> &i = entrySet().iterator();
                 if (!i.hasNext())
                     return "{}";
 
@@ -780,7 +985,7 @@ namespace core {
              * Performs the given action for each entry in this map until all entries
              * have been processed or the action throws an exception.   Unless
              * otherwise specified by the implementing class, actions are performed in
-             * the order of entry set iteration (if an iteration order is specified.)
+             * the order of entry setValue iteration (if an iteration order is specified.)
              * Exceptions thrown by the action are relayed to the caller.
              *
              * @implSpec
@@ -799,7 +1004,58 @@ namespace core {
              * @throws ConcurrentException if an entry is found to be
              * removed during iteration
              */
-            virtual void forEach(const BinaryActionConsumer<K, V> &action) {};
+            virtual void forEach(const BiConsumer<K, V> &action) const {
+                for (Entry &entry: entrySet()) {
+                    KEY k = null;
+                    VALUE v = null;
+                    try {
+                        k = (KEY) &entry.key();
+                        v = &entry.value();
+                    } catch (IllegalStateException const &ise) {
+                        // this usually means the entry is no longer in the map.
+                        ConcurrentException(ise).throws(__trace("core.util.Map"));
+                    }
+                    action.accept(*k, *v);
+                }
+            };
+
+            /**
+             * Performs the given action for each entry in this map until all entries
+             * have been processed or the action throws an exception.   Unless
+             * otherwise specified by the implementing class, actions are performed in
+             * the order of entry setValue iteration (if an iteration order is specified.)
+             * Exceptions thrown by the action are relayed to the caller.
+             *
+             * @implSpec
+             * The implementation is equivalent to, for this <b>map</b>:
+             * <pre> <b> @code
+             * for (Map.Entry<K, V> entry : map.entries())
+             *     action.accept(entry.key(), entry.value());
+             * @endcode </b></pre>
+             *
+             * The implementation makes no guarantees about synchronization
+             * or atomicity properties of this method. Any implementation providing
+             * atomicity guarantees must override this method and document its
+             * concurrency properties.
+             *
+             * @param action The action to be performed for each entry
+             * @throws ConcurrentException if an entry is found to be
+             * removed during iteration
+             */
+            virtual void forEach(const BiConsumer<K, V &> &action) {
+                for (Entry &entry: entrySet()) {
+                    KEY k = null;
+                    VALUE v = null;
+                    try {
+                        k = (KEY) &entry.key();
+                        v = &entry.value();
+                    } catch (IllegalStateException const &ise) {
+                        // this usually means the entry is no longer in the map.
+                        ConcurrentException(ise).throws(__trace("core.util.Map"));
+                    }
+                    action.accept(*k, *v);
+                }
+            };
 
             /**
              * Replaces each entry's value with the result of invoking the given
@@ -813,8 +1069,8 @@ namespace core {
              * concurrency properties.
              *
              * @param function the function to apply to each entry
-             * @throws UnsupportedMethodException if the <b>set</b> operation
-             *         is not supported by this map's entry set iterator.
+             * @throws UnsupportedMethodException if the <b>setValue</b> operation
+             *         is not supported by this map's entry setValue iterator.
              * @throws ClassCastException if the class of a replacement value
              *         prevents it from being stored in this map
              *         (<a href="">optional</a>)
@@ -824,7 +1080,31 @@ namespace core {
              * @throws ConcurrentException if an entry is found to be
              *         removed during iteration
              */
-            virtual void replaceAll(const BinaryFunction<K, V> &function) {};
+            virtual void replaceAll(const BiFunction<K, V, V> &function) {
+                for (Entry &entry: entrySet()) {
+                    KEY k;
+                    VALUE v;
+                    try {
+                        k = (KEY) &entry.key();
+                        v = &entry.value();
+                    } catch (IllegalStateException const &ise) {
+                        // this usually means the entry is no longer in the map.
+                        ConcurrentException(ise).throws(__trace("core.util.Map"));
+                    }
+
+                    CORE_ALIAS(Z, typename Functional::template Return<V>);
+
+                    // ise thrown from function is not a cme.
+                    Z z = function.apply(*k, *v);
+
+                    try {
+                        entry.setValue(z);
+                    } catch (IllegalStateException const &ise) {
+                        // this usually means the entry is no longer in the map.
+                        ConcurrentException(ise).throws(__trace("core.util.Map"));
+                    }
+                }
+            };
 
             /**
              * Removes the entry for the specified key only if it is currently
@@ -834,7 +1114,8 @@ namespace core {
              * The implementation is equivalent to, for this <b>map</b>:
              *
              * <pre> <b> @code
-             * if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
+             * if (map.containsKey(key) &&
+             *      Objects.equals(map.get(key), value)) {
              *     map.remove(key);
              *     return true;
              * } else
@@ -973,7 +1254,7 @@ namespace core {
                     return *v;
                 }
 
-                const V &set(const V &value) override {
+                const V &setValue(const V &value) override {
                     if (Object::equals(*v, value))
                         return *v;
                     v = Unsafe::copyInstance(value, true);

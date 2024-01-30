@@ -94,7 +94,7 @@ namespace core {
          * actual file-system object, such as reading, writing, and executing.  These
          * restrictions are collectively known as <i>access permissions</i>.  The file
          * system may have multiple sets of access permissions on a single object.
-         * For example, one set may apply to the object's <i>owner</i>, and another
+         * For example, one setValue may apply to the object's <i>owner</i>, and another
          * may apply to all other users.  The access permissions on an object may
          * cause some methods in this class to fail.
          *
@@ -640,7 +640,7 @@ namespace core {
              *
              * @param target The abstract pathname of link target
              */
-            gbool createLink(const File& target) const;
+            gbool createLink(const File &target) const;
 
             /**
              * Automatically create a new hard link named by this abstract
@@ -648,7 +648,7 @@ namespace core {
              *
              * @param target The abstract pathname of link target
              */
-            gbool createHardLink(const File& target) const;
+            gbool createHardLink(const File &target) const;
 
             /**
              * Automatically create a new symbolic link named by this abstract
@@ -659,7 +659,7 @@ namespace core {
              *
              * @return true If was successfully created
              */
-            gbool createSymbolicLink(const File& target) const;
+            gbool createSymbolicLink(const File &target) const;
 
             /**
              * Deletes the file or directory denoted by this abstract pathname.  If
@@ -1037,7 +1037,7 @@ namespace core {
             gbool setWritable(gbool writable, gbool ownerOnly) const;
 
             /**
-             * A convenience method to set the owner's write permission for this abstract
+             * A convenience method to setValue the owner's write permission for this abstract
              * pathname. On some platforms it may be possible to start the Java virtual
              * machine with special privileges that allow it to modify files that
              * disallow write operations.
@@ -1090,7 +1090,7 @@ namespace core {
             gbool setReadable(gbool readable, gbool ownerOnly) const;
 
             /**
-             * A convenience method to set the owner's read permission for this abstract
+             * A convenience method to setValue the owner's read permission for this abstract
              * pathname. On some platforms it may be possible to start the Java virtual
              * machine with special privileges that allow it to read files that are
              * marked as unreadable.
@@ -1146,7 +1146,7 @@ namespace core {
             gbool setExecutable(gbool executable, gbool ownerOnly) const;
 
             /**
-             * A convenience method to set the owner's execute permission for this
+             * A convenience method to setValue the owner's execute permission for this
              * abstract pathname. On some platforms it may be possible to start the Java
              * virtual machine with special privileges that allow it to execute files
              * that are not marked executable.
@@ -1172,6 +1172,22 @@ namespace core {
             gbool setExecutable(gbool executable) const;
 
             /**
+             * Return owner of file denoted by this abstract
+             * pathname. if this pathname is invalid the value
+             * returned is empty string.
+             * Note: The value is returned in format:
+             * <p>
+             * <b>Domain name</b>\\<b>Account Name</b>
+             */
+            String owner() const;
+
+            /**
+             * Set the owner name of file denoted by this abstract pathname
+             * @param newOwner The name of new owner.
+             */
+             gbool setOwner(const String& newOwner) const;
+
+            /**
              * List the available filesystem roots.
              *
              * <p> A particular Java platform may support zero or more
@@ -1179,7 +1195,7 @@ namespace core {
              * <b> root</b> directory from which all other files in that file system
              * can be reached.  Windows platforms, for example, have a root directory
              * for each active drive; UNIX platforms have a single root directory,
-             * namely <b> "/"</b>.  The set of available filesystem roots is affected
+             * namely <b> "/"</b>.  The setValue of available filesystem roots is affected
              * by various system-level operations such as the insertion or ejection of
              * removable media and the disconnecting or unmounting of physical or
              * virtual disk drives.
@@ -1200,7 +1216,7 @@ namespace core {
              * containing UNC pathnames will not be returned by this method.
              *
              * @return  An root of <b> File</b> objects denoting the available
-             *          filesystem roots, or <b> empty root</b> if the set of roots could not
+             *          filesystem roots, or <b> empty root</b> if the setValue of roots could not
              *          be determined.  The root will be empty if there are no
              *          filesystem roots.
              */
@@ -1397,6 +1413,9 @@ namespace core {
              */
             String toString() const override;
 
+            /**
+             * Return shadow copy of this
+             */
             Object &clone() const override;
 
             /**
@@ -1408,7 +1427,7 @@ namespace core {
             /**
              * Set current directory with specified abstract pathname
              */
-            static gbool setCurrentDirectory(const File& f);
+            static gbool setCurrentDirectory(const File &f);
 
             /**
              * Return abstract pathname representing the path of

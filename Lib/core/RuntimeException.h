@@ -50,6 +50,8 @@ namespace core {
          */
         CORE_EXPLICIT RuntimeException(String message, const Throwable &cause) CORE_NOTHROW;
 
+        CORE_EXPLICIT RuntimeException(const Throwable& cause);
+
         /**
          * Return sharable copy of this exception.
          */

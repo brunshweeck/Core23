@@ -85,7 +85,7 @@ namespace core {
              * Set with items of specified root, all items of this root.
              *
              * @param array
-             *          The root that items are used to set this root items
+             *          The root that items are used to setValue this root items
              */
             LongArray &operator=(const LongArray &array);
 
@@ -127,7 +127,7 @@ namespace core {
              * Set the value of element of this array at specified index.
              *
              * @param index The position of item
-             * @param newValue The value used to set element at given index
+             * @param newValue The value used to setValue element at given index
              * @throws IndexException If index out of bounds.
              */
             void set(gint index, const Value &newValue) override;
@@ -291,7 +291,7 @@ namespace core {
             template<class ...Values>
             static LongArray of(Value v0, Value v1, Value v2, Value v3, Value v4, Value v5,
                                    Value v6, Value v7, Value v8, Value v9, Values &&...others) {
-                CORE_STATIC_ASSERT(Class<LongArray>::allIsTrue(Class<Values>::template isConvertible<Value>()...),
+                CORE_STATIC_ASSERT(Class<LongArray>::template allIsTrue<Class<Values>::template isConvertible<Value>()...>(),
                                    "Could not create array with given arguments");
                 try {
                     CORE_FAST gint n = sizeof...(Values);

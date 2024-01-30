@@ -51,7 +51,7 @@ namespace core {
             return len;
         }
 
-        const CoderResult CoderResult::UNDERFLOW{UNMAPPABLE_CODE, 0};
+        const CoderResult CoderResult::UNDERFLOW{UNDERFLOW_CODE, 0};
 
         const CoderResult CoderResult::OVERFLOW{OVERFLOW_CODE, 0};
 

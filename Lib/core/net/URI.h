@@ -259,7 +259,7 @@ namespace core {
          *           (<b> '0'</b> -<b> '9'</b> , <b> 'A'</b> -<b> 'F'</b> , and
          *           <b> 'a'</b> -<b> 'f'</b> )</td></tr>
          *   <tr><th >other</th>
-         *       <td>The Unicode characters that are not in the US-ASCII character set,
+         *       <td>The Unicode characters that are not in the US-ASCII character setValue,
          *           are not control characters (according to the <b style="color: orange;"> 
          *           Character.isISOControl</b> method), and are not space characters (according to the
          *           <b style="color: orange;"> Character.isSpaceChar</b> method)
@@ -267,7 +267,7 @@ namespace core {
          * </tbody>
          * </table>
          *
-         * <p><a id="legal-chars"></a> The set of all legal URI characters consists of
+         * <p><a id="legal-chars"></a> The setValue of all legal URI characters consists of
          * the <i>unreserved</i>, <i>reserved</i>, <i>escaped</i>, and <i>other</i>
          * characters.
          *
@@ -296,10 +296,10 @@ namespace core {
          *
          *   <li><p><a id="encode"></a> A character is <i>encoded</i> by replacing it
          *   with the sequence of escaped octets that represent that character in the
-         *   UTF-8 character set.  The Euro currency symbol (<b> '\\u20AC'</b> ),
+         *   UTF-8 character setValue.  The Euro currency symbol (<b> '\\u20AC'</b> ),
          *   for example, is encoded as <b> "%E2%82%AC"</b> .  <i>(<b>Deviation from
          *   RFC&nbsp;2396</b>, which does not specify any particular character
-         *   set.)</i> </p></li>
+         *   setValue.)</i> </p></li>
          *
          *   <li><p><a id="quote"></a> An illegal character is <i>quoted</i> simply by
          *   encoding it.  The space character, for example, is quoted by replacing it
@@ -310,7 +310,7 @@ namespace core {
          *   <li><p><a id="decode"></a>
          *   A sequence of escaped octets is <i>decoded</i> by
          *   replacing it with the sequence of characters that it represents in the
-         *   UTF-8 character set.  UTF-8 contains US-ASCII, hence decoding has the
+         *   UTF-8 character setValue.  UTF-8 contains US-ASCII, hence decoding has the
          *   effect of de-quoting any quoted US-ASCII characters as well as that of
          *   decoding any encoded non-US-ASCII characters.  If a <a
          *   href="../nio/charset/CharsetDecoder.html#ce">decoding error</a> occurs
@@ -561,7 +561,7 @@ namespace core {
              *   user-information, path, query, and fragment components, as well as in
              *   the authority component if the authority is registry-based.  This
              *   allows URIs to contain Unicode characters beyond those in the US-ASCII
-             *   character set. </p></li>
+             *   character setValue. </p></li>
              *
              * </ul>
              *
@@ -1536,7 +1536,7 @@ namespace core {
 
 
             // Join the segments in the given path according to the given segment-index
-            // array, ignoring those segments whose index entries have been set to -1,
+            // array, ignoring those segments whose index entries have been setValue to -1,
             // and inserting slashes as needed.  Return the length of the resulting
             // path.
             //
@@ -1573,9 +1573,9 @@ namespace core {
 
             // RFC2396 precisely specifies which characters in the US-ASCII charset are
             // permissible in the various components of a URI reference.  We here
-            // define a set of mask pairs to aid in enforcing these restrictions.  Each
+            // define a setValue of mask pairs to aid in enforcing these restrictions.  Each
             // mask pair consists of two longs, a low mask and a high mask.  Taken
-            // together they represent a 128-bit mask, where bit i is set iff the
+            // together they represent a 128-bit mask, where bit i is setValue iff the
             // character with value i is permitted.
             //
             // This approach is more efficient than sequentially searching arrays of

@@ -8,6 +8,7 @@
 #include <core/util/Collection.h>
 #include <core/util/Preconditions.h>
 #include <core/util/ListIterator.h>
+#include <core/function/Function.h>
 #include <core/IndexException.h>
 
 namespace core {
@@ -107,14 +108,6 @@ namespace core {
          */
         template<class E>
         class List : public Collection<E> {
-        protected:
-
-            CORE_ALIAS(Unsafe, native::Unsafe);
-            CORE_ALIAS(ActionConsumer, , function::Consumer<E>);
-            CORE_ALIAS(MutableActionConsumer, , function::Consumer<E &>);
-            CORE_ALIAS(ElementFilter, , function::Predicate<E>);
-            CORE_ALIAS(UnaryFunction, , function::Function<E, E>);
-
         public:
 
             /**
@@ -142,7 +135,9 @@ namespace core {
             /**
              * Returns an iterator over the elements in this list in proper sequence.
              */
-            ListIterator<const E> &iterator() const override { return iterator(0); }
+            ListIterator<const E> &iterator() const override {
+                return iterator(0);
+            }
 
             /**
              * Returns an root containing all of the elements in this list in proper
@@ -203,9 +198,11 @@ namespace core {
              */
             gbool remove(const E &o) override {
                 gint i = indexOf(o);
-                if (i < 0) return false;
-                removeAt(i);
-                return true;
+                if (i >= 0) {
+                    removeAt(i);
+                    return true;
+                }
+                return false;
             }
 
             /**
@@ -236,7 +233,9 @@ namespace core {
              *         specified collection prevents it from being added to this list
              * @see List.add(Object)
              */
-            gbool addAll(const Collection<E> &c) override { return addAll(size(), c); }
+            gbool addAll(const Collection<E> &c) override {
+                return addAll(size(), c);
+            }
 
             /**
              * Inserts all of the elements in the specified collection into this
@@ -270,7 +269,9 @@ namespace core {
                         modified = true;
                     }
                     return modified;
-                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                } catch (const Exception &ex) {
+                    ex.throws(__trace("core.util.List"));
+                }
             }
 
             /**
@@ -315,11 +316,11 @@ namespace core {
              * <pre><b>
              *     Iterator<E> li = list.iterator();
              *     while (li.hasNext()) {
-             *         li.set(operator.apply(li.next()));
+             *         li.setValue(operator.apply(li.next()));
              *     </b>
              * </b></pre>
              *
-             * If the list's list-iterator does not support the <b> set</b> operation
+             * If the list's list-iterator does not support the <b> setValue</b> operation
              * then an <b> UnsupportedOperationException</b> will be thrown when
              * replacing the first element.
              *
@@ -329,11 +330,10 @@ namespace core {
              *         cannot be replaced or if, in general, modification is not
              *         supported (<a href="">optional</a>)
              */
-            virtual void replaceAll(const UnaryFunction &op) {
+            virtual void replaceAll(const Function<E, E> &op) {
                 ListIterator<E> &it = iterator();
-                CORE_IGNORE(op);
                 while (it.hasNext()) {
-                    it.set(/*op.apply*/(it.next()));
+                    it.set(op.apply(it.next()));
                 }
             }
 
@@ -371,9 +371,9 @@ namespace core {
                 ListIterator<const E> &e1 = iterator();
                 ListIterator<const E> &e2 = ((const List &) o).iterator();
                 while (e1.hasNext() && e2.hasNext()) {
-                    const E &o1 = e1.next();
-                    const E &o2 = e2.next();
-                    if (!(o1 == null ? o2 == null : o1.equals(o2))) return false;
+                    if (!Object::equals(e1.next(), e2.next())) {
+                        return false;
+                    }
                 }
                 return !(e1.hasNext() || e2.hasNext());
             }
@@ -405,7 +405,7 @@ namespace core {
              * @param index index of the element to replace
              * @param element element to be stored at the specified position
              * @return the element previously at the specified position
-             * @throws UnsupportedMethodException if the <b> set</b> operation
+             * @throws UnsupportedMethodException if the <b> setValue</b> operation
              *         is not supported by this list
              * @throws ClassCastException if the class of the specified element
              *         prevents it from being added to this list
@@ -414,7 +414,9 @@ namespace core {
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index >= size()</b>)
              */
-            virtual const E &set(gint  /*index*/, const E & /*element*/) {
+            virtual const E &set(gint index, const E &element) {
+                CORE_IGNORE(index);
+                CORE_IGNORE(element);
                 UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
@@ -435,7 +437,9 @@ namespace core {
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index > size()</b>)
              */
-            virtual void add(gint  /*index*/, const E & /*element*/) {
+            virtual void add(gint index, const E &element) {
+                CORE_IGNORE(index);
+                CORE_IGNORE(element);
                 UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
@@ -452,7 +456,8 @@ namespace core {
              * @throws IndexException if the index is out of range
              *         (<b> index < 0 || index >= size()</b>)
              */
-            virtual const E &removeAt(gint  /*index*/) {
+            virtual const E &removeAt(gint index) {
+                CORE_IGNORE(index);
                 UnsupportedOperationException().throws(__trace("core.util.List"));
             }
 
@@ -474,8 +479,9 @@ namespace core {
                 ListIterator<const E> &itr = iterator();
                 gint i = 0;
                 while (itr.hasNext()) {
-                    if (Object::equals(o, itr.next()))
+                    if (Object::equals(o, itr.next())) {
                         return i;
+                    }
                     i += 1;
                 }
                 return -1;
@@ -499,7 +505,9 @@ namespace core {
                 ListIterator<const E> &itr = iterator(size());
                 gint i = 0;
                 while (itr.hasPrevious()) {
-                    if (Object::equals(o, itr.previous())) return i;
+                    if (Object::equals(o, itr.previous())) {
+                        return i;
+                    }
                     i += 1;
                 }
                 return -1;
@@ -508,7 +516,9 @@ namespace core {
             /**
              * Returns a list iterator over the elements in this list (in proper sequence).
              */
-            virtual ListIterator<E> &iterator() { return iterator(0); }
+            ListIterator<E> &iterator() override {
+                return iterator(0);
+            }
 
             /**
              * Performs the given action for each element of the <b>Iterable</b>
@@ -523,36 +533,14 @@ namespace core {
              *
              * @implSpec
              * <p>The default implementation behaves as if:
-             * <pre><b>
+             * <pre><b> @code
              *     for (T t : this)
              *         action.accept(t);
-             * </b></pre>
+             * @endcode </b></pre>
              *
              * @param action The action to be performed for each element
              */
             using Collection<E>::forEach;
-
-            /**
-             * Performs the given action for each element of the <b>Iterable</b>
-             * until all elements have been processed or the action throws an
-             * exception.  Actions are performed in the order of iteration, if that
-             * order is specified.  Exceptions thrown by the action are relayed to the
-             * caller.
-             * <p>
-             * The behavior of this method is unspecified if the action performs
-             * side-effects that modify the underlying source of elements, unless an
-             * overriding class has specified a concurrent modification policy.
-             *
-             * @implSpec
-             * <p>The default implementation behaves as if:
-             * <pre><b>
-             *     for (T t : this)
-             *         action.accept(t);
-             * </b></pre>
-             *
-             * @param action The action to be performed for each element
-             */
-            virtual void forEach(const MutableActionConsumer &action) { iterator().forEach(action); }
 
             /**
              * Returns a list iterator over the elements in this list (in proper
@@ -569,10 +557,12 @@ namespace core {
              */
             virtual ListIterator<E> &iterator(gint index) {
                 try {
-                    CORE_ALIAS(U, native::Unsafe);
                     Preconditions::checkIndexForAdding(index, size());
-                    return Unsafe::allocateInstance < ListItr < E >> ((List &) *this, index);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                } catch (const IndexException &ie) {
+                    ie.throws(__trace("core.util.List"));
+                }
+                CORE_ALIAS(Itr, ListItr < E >);
+                return Unsafe::allocateInstance<Itr>((List &) *this, index);
             }
 
             /**
@@ -591,8 +581,11 @@ namespace core {
             virtual ListIterator<const E> &iterator(gint index) const {
                 try {
                     Preconditions::checkIndexForAdding(index, size());
-                    return Unsafe::allocateInstance<ListItr<const E >>((List &) *this, index);
-                } catch (const IndexException &ie) { ie.throws(__trace("core.util.List")); }
+                } catch (const IndexException &ie) {
+                    ie.throws(__trace("core.util.List"));
+                }
+                CORE_ALIAS(Itr, ListItr<const E>);
+                return Unsafe::allocateInstance<Itr>((List &) *this, index);
             }
 
             /**
@@ -658,7 +651,7 @@ namespace core {
              * If the value of this field changes unexpectedly, the iterator (or list
              * iterator) will throw a <b>ConcurrentException</b> in
              * response to the <b>next</b>, <b>remove</b>, <b>previous</b>,
-             * <b>set</b> or <b>add</b> operations.  This provides
+             * <b>setValue</b> or <b>add</b> operations.  This provides
              * <i>fail-fast</i> behavior, rather than non-deterministic behavior in
              * the face of concurrent modification during iteration.
              *
@@ -675,38 +668,6 @@ namespace core {
              */
             gint modNum = {};
 
-            CORE_ALIAS(LinearIterator, typename Collection<E>::template LinearIterator<E>);
-
-        public:
-
-            /**
-             * Return The native list iterator (The C iterator) used
-             * to mark the beginning of foreach statement.
-             * Unlike collection, all List sub-class support modification during each.
-             */
-            using Collection<E>::begin;
-
-            /**
-             * Return The native list iterator (The C iterator) used
-             * to mark the beginning of foreach statement.
-             * Unlike collection, all List sub-class support modification during each.
-             */
-            inline LinearIterator begin() { return LinearIterator(*this, toArray()); }
-
-            /**
-             * Return The native list iterator (The C iterator) used
-             * to mark the ending of foreach statement.
-             * Unlike collection, all List sub-class support modification during each.
-             */
-            using Collection<E>::end;
-
-            /**
-             * Return The native list iterator (The C iterator) used
-             * to mark the ending of foreach statement.
-             * Unlike collection, all List sub-class support modification during each.
-             */
-            inline LinearIterator end() { return LinearIterator(*this); }
-
         private:
             template<class T>
             class ListItr : public ListIterator<T> {
@@ -714,19 +675,19 @@ namespace core {
                 /**
                  * The target of iteration
                  */
-                List<E> &root;
+                List &root;
 
                 /**
                  * Index of element to be returned by subsequent call to next.
                  */
-                gint cursor = 0;
+                gint cursor;
 
                 /**
                  * Index of element returned by most recent call to next or
                  * previous.  Reset to -1 if this element is deleted by a call
                  * to remove.
                  */
-                gint last = -1;
+                gint last;
 
                 /**
                  * The modCount value that the iterator believes that the backing
@@ -736,13 +697,17 @@ namespace core {
                 gint modNum;
 
             public:
-                ListItr(List<E> &root, gint cursor) : root(root), cursor(cursor), modNum(root.modNum) {}
+                ListItr(List &root, gint cursor) :
+                        root(root), cursor(cursor), last(-1), modNum(root.modNum) {}
 
-                gbool hasNext() const override { return cursor != root.size(); }
+                gbool hasNext() const override {
+                    return cursor != root.size();
+                }
 
                 T &next() override {
-                    if (modNum != root.modNum)
+                    if (modNum != root.modNum) {
                         ConcurrentException().throws(__trace("core.util.List.ListItr"));
+                    }
                     try {
                         gint i = cursor;
                         T &retVal = root.get(i);
@@ -774,8 +739,9 @@ namespace core {
                 }
 
                 void remove() override {
-                    if (last < 0)
+                    if (last < 0) {
                         IllegalStateException().throws(__trace("core.util.List.ListItr"));
+                    }
                     if (modNum != root.modNum)
                         ConcurrentException().throws(__trace("core.util.List.ListItr"));
                     try {

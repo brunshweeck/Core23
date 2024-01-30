@@ -402,13 +402,13 @@ namespace core {
 
         Array<ZoneOffsetTransition> ZoneRules::transitionArray(gint year) const {
             Integer const yearObj = year;  // should use Year class, but this saves a class load
-            Array<ZoneOffsetTransition> transArray = lastRulesCache.get(yearObj);
+            Array<ZoneOffsetTransition> transArray = (Array<ZoneOffsetTransition> const&) lastRulesCache.get(yearObj);
             if (!transArray.isEmpty()) {
                 return transArray;
             }
             Array<ZoneOffsetTransitionRule> ruleArray = (Array<ZoneOffsetTransitionRule> const &) lastRules;
             gint const length = ruleArray.length();
-            CORE_IGNORE_DEPRECATIONS(transArray = Array<ZoneOffsetTransition>(length);)
+            transArray = Array<ZoneOffsetTransition>(length);
             for (gint i = 0; i < length; i++) {
                 transArray.set(i, ruleArray[i].createTransition(year));
             }

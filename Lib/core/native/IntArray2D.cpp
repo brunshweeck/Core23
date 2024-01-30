@@ -215,7 +215,7 @@ namespace core {
             if (this == &o) {
                 return true;
             }
-            if (!Class<PrimitiveArray<IntArray>>::hasInstance(o)) {
+            if (Class<PrimitiveArray<IntArray>>::hasInstance(o)) {
                 PrimitiveArray<IntArray> const &matrix = (PrimitiveArray<IntArray> const &) o;
                 gint const n = length();
                 if (n != matrix.length())
@@ -232,6 +232,7 @@ namespace core {
                 }
                 return true;
             }
+            return false;
         }
 
         Object &IntArray2D::clone() const {

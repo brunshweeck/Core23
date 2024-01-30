@@ -142,7 +142,7 @@ namespace core {
         String StringTokenizer::nextToken(const String &delim) {
             delimiters = delim;
 
-            /* delimiter string specified, so set the appropriate flag. */
+            /* delimiter string specified, so setValue the appropriate flag. */
             delimsModified = true;
 
             setMaxDelimiter();

@@ -23,4 +23,6 @@ namespace core {
         throw RuntimeException(*this);
     }
 
+    RuntimeException::RuntimeException(const Throwable &cause): Exception(cause.toString(), cause) {}
+
 } // core

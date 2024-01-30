@@ -183,7 +183,7 @@ namespace core {
 
         Locale
         Locale::createLocale(const Locale::BaseLocale &baseLocale, const Map<Character, String> &localeExtensions) {
-            //
+            return Locale(baseLocale, localeExtensions);
         }
 
         String Locale::extension(gchar key) const {
@@ -401,7 +401,7 @@ namespace core {
         }
 
         String Locale::displayName(const Locale &inLocale) const {
-            //
+            return {};
         }
 
         Object &Locale::clone() const {

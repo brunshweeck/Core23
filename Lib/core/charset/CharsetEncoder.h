@@ -68,7 +68,7 @@ namespace core {
          * the returned <b style="color:orange;"> CoderResult</b> object, or <b style="color: green;"> replace</b> the erroneous input with the current value of the
          * replacement byte array.  The replacement
          *
-         * is initially set to the encoder's default replacement, which often
+         * is initially setValue to the encoder's default replacement, which often
          * (but not always) has the initial value&nbsp;<code>{</code>&nbsp;<code>(gbyte)'?'</code>&nbsp;<code>}</code>;
          *
          * its value may be changed via the <b style="color:orange;"> replaceWith</b> method.

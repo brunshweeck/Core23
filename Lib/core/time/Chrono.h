@@ -70,7 +70,7 @@ namespace core {
          * of how much time has actually elapsed.
          *
          * <p style="color: red;">
-         * Note: It not recommended to use this class as key map in the Map or element in the set.
+         * Note: It not recommended to use this class as key map in the Map or element in the setValue.
          *
          * @author Brunshweeck Tazeussong
          *
@@ -131,22 +131,6 @@ namespace core {
             glong elapsedTime(ChronoUnit unit) const;
 
             /**
-             * Return the current elapsed time or
-             * -1 if this chrono has not started.
-             * This calling is equivalent to <b> return this.elapsed(Time::MILLI_SECONDS); </b>
-             */
-            Duration duration() const;
-
-            /**
-             * Return the current elapsed time in specified unit or
-             * -1 if this chrono has not started.
-             *
-             * @param unit The output unit
-             * @throws ArithmeticException if value representation exceed 63 bits
-             */
-            Duration duration(ChronoUnit unit) const;
-
-            /**
              * Check if specified timeout has expired. In other words,
              * return true if the current elapsed time great or equals to specified timeout.
              *
@@ -200,20 +184,6 @@ namespace core {
             glong until(const Temporal &endExclusive, ChronoUnit unit) const override;
 
             /**
-             * Get field value into elapsed time.
-             * this override method is not supported
-             * @throws UnsupportedOperationException always throws
-             */
-            gint get(ChronoField field) const override;
-
-            /**
-             * Get field value into elapsed time as long.
-             * this override method is not supported
-             * @throws UnsupportedOperationException always throws
-             */
-            glong getLong(ChronoField field) const override;
-
-            /**
              * Compare specified Chrono with this timeline numerically
              *
              * @param other The object to be compared
@@ -244,6 +214,17 @@ namespace core {
              * Return shadow copy of this object
              */
             Object &clone() const override;
+
+            /**
+             * Stop and destroy this Chrono
+             */
+            ~Chrono() override;
+
+        private:
+            /**
+             * Start this chrono timer with supported System clock
+             */
+            void start0();
         };
 
     } // core

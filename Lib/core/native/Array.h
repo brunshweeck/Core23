@@ -18,8 +18,9 @@ namespace core {
          */
         template<class E>
         class Array CORE_FINAL : public ObjectArray {
-            // E must be extends Object
+            // E must extends Object
         private:
+            CORE_STATIC_ASSERT(Class<Object>::isSuper<E>(), "Element type must have core.Object as base class");
             // gint len;
             // VALUE value;
         public:
@@ -88,7 +89,7 @@ namespace core {
 
             void set(gint index, Object &obj) override {
                 try {
-                    ObjectArray::set(index, CORE_DYN_CAST(E &, obj));
+                    ObjectArray::set(index, obj);
                 } catch (const Exception &ex) {
                     ex.throws(__trace("core.native.Array"));
                 }
@@ -96,7 +97,7 @@ namespace core {
 
             void set(gint index, const Object &obj) override {
                 try {
-                    ObjectArray::set(index, CORE_DYN_CAST(E const&, obj));
+                    ObjectArray::set(index, obj);
                 } catch (const Exception &ex) {
                     ex.throws(__trace("core.native.Array"));
                 }
