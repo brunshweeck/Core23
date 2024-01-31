@@ -202,8 +202,31 @@ namespace core {
              * value
              * @param defaultValue The value used by second argument of this function
              */
-            virtual Function<T, R> &toUnary(Y defaultValue) const {
+            Function<T, R> &toUnary(Y defaultValue) const {
                 return Function<T, R>::from([&](X t) -> Z { return apply(t, defaultValue); });
+            }
+
+            /**
+             * Obtain new Function of given signature with
+             * This function.
+             * @implNote This operation is possible only if
+             * this function accept argument supported by the new
+             * function
+             */
+            template<class $1, class $2, class $3>
+            CORE_IMPLICIT operator BiFunction<$1, $2, $3> &() const {
+                // search the arguments types of desired function
+                CORE_ALIAS($X, Functional::Params<$1>);
+                CORE_ALIAS($Y, Functional::Params<$2>);
+                CORE_ALIAS($R, Functional::Return<$3>);
+                // The default signature accepted by this function
+                CORE_ALIAS(Holder, Z(*)(X, Y));
+                // check If this function accept argument of desired function
+                Functional::CheckFunction<Holder, $X, $Y>();
+                // check if the return type of this function is convertible to
+                // return type of desired function.
+                Functional::CheckReturn<$R, Z>();
+                return BiFunction<$1, $2, $3>::from([&]($X t, $Y u) -> $R { apply(t, u); });
             }
         };
 

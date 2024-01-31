@@ -38,7 +38,7 @@ namespace core {
              *
              * @param p the input argument
              */
-            virtual void accept(X p) const = 0;
+            virtual void accept(X t) const = 0;
 
             /**
              * Returns a composed <b>Consumer</b> that performs, in sequence, this
@@ -170,6 +170,24 @@ namespace core {
 
                 return Unsafe::allocateInstance<FunctionConsumer>(Unsafe::forwardInstance<F>(function));
 
+            }
+
+            /**
+             * Obtain new Consumer of given signature with
+             * This consumer.
+             * @implNote This operation is possible only if
+             * this consumer accept argument supported by the new
+             * consumer
+             */
+            template<class $1>
+            CORE_IMPLICIT operator Consumer<$1> &() const {
+                // search the arguments types of desired consumer
+                CORE_ALIAS($X, Functional::Params<$1>);
+                // The default signature accepted by this consumer
+                CORE_ALIAS(Holder, void(*)(X));
+                // check If this consumer accept argument of desired consumer
+                Functional::CheckFunction<Holder, $X>();
+                return Consumer<$1>::from([&]($X t) -> void { accept(t); });
             }
 
         };

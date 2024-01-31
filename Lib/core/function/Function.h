@@ -212,6 +212,28 @@ namespace core {
                 return Unsafe::allocateInstance<FunctionFunction>(Unsafe::forwardInstance<F>(function));
 
             }
+
+            /**
+             * Obtain new Function of given signature with
+             * This function.
+             * @implNote This operation is possible only if
+             * this function accept argument supported by the new
+             * function
+             */
+            template<class $1, class $2>
+            CORE_IMPLICIT operator Function<$1, $2> &() const {
+                // search the arguments types of desired function
+                CORE_ALIAS($X, Functional::Params<$1>);
+                CORE_ALIAS($R, Functional::Return<$2>);
+                // The default signature accepted by this function
+                CORE_ALIAS(Holder, Z(*)(X));
+                // check If this function accept argument of desired function
+                Functional::CheckFunction<Holder, $X>();
+                // check if the return type of this function is convertible to
+                // return type of desired function.
+                Functional::CheckReturn<$R, Z>();
+                return Function<$1, $2>::from([&]($X t) -> $R { ($R) apply(t); });
+            }
         };
 
     } // core

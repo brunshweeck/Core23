@@ -163,7 +163,8 @@ FILE(GLOB Core23
         ${SYSTEM_LIBDIR}/core/regex/private/*.c??
 )
 
-ADD_LIBRARY(Core23 STATIC ${Core23})
+ADD_LIBRARY(Core23 STATIC ${Core23}
+        Lib/core/stream/BaseStream.h)
 
 INCLUDE_DIRECTORIES("${PROJECT_LIBDIR}")
 INCLUDE_DIRECTORIES("${SYSTEM_LIBDIR}")

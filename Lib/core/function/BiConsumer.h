@@ -5,8 +5,7 @@
 #ifndef CORE23_BICONSUMER_H
 #define CORE23_BICONSUMER_H
 
-#include <core/private/Unsafe.h>
-#include <core/function/Functional.h>
+#include <core/function/Consumer.h>
 
 namespace core {
     namespace function {
@@ -35,8 +34,8 @@ namespace core {
             CORE_STATIC_ASSERT(!(Class<T>::isVolatile() || Class<U>::isVolatile()),
                                "First and second argument type mustn't have <volatile> as qualifier");
 
-            CORE_ALIAS(X, Functional::Params< T >);
-            CORE_ALIAS(Y, Functional::Params< U >);
+            CORE_ALIAS(X, Functional::Params<T>);
+            CORE_ALIAS(Y, Functional::Params<U>);
 
         public:
 
@@ -183,6 +182,33 @@ namespace core {
 
             }
 
+            /**
+             * Transform this binary consumer to unary predicate with seconds argument set by given
+             * value
+             * @param defaultValue The value used by second argument of this consumer
+             */
+            Consumer<T> &toUnary(Y defaultValue) const {
+                return Consumer<T>::from([&](X t) -> gbool { return test(t, defaultValue); });
+            }
+
+            /**
+             * Obtain new Consumer of given signature with
+             * This consumer.
+             * @implNote This operation is possible only if
+             * this consumer accept argument supported by the new
+             * consumer
+             */
+            template<class $1, class $2>
+            CORE_IMPLICIT operator BiConsumer<$1, $2> &() const {
+                // search the arguments types of desired consumer
+                CORE_ALIAS($X, Functional::Params<$1>);
+                CORE_ALIAS($Y, Functional::Params<$2>);
+                // The default signature accepted by this consumer
+                CORE_ALIAS(Holder, void(*)(X, Y));
+                // check If this consumer accept argument of desired consumer
+                Functional::CheckFunction<Holder, $X, $Y>();
+                return BiConsumer<$1, $2>::from([&]($X t, $Y u) -> void { accept(t, u); });
+            }
         };
 
     } // core

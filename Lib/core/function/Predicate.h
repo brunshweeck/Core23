@@ -58,7 +58,7 @@ namespace core {
              * AND of this predicate and the <b>other</b> predicate
              */
             template<class $1>
-            Predicate &logicalAnd(const Predicate<$1> &other) {
+            Predicate &logicalAnd(const Predicate<$1> &other) const {
                 CORE_STATIC_ASSERT(Class<T>::template isSuper<$1>(), "Could not resolve given predicate");
                 return from([&](X t) -> gbool { return test(t) && other.test(t); });
             }
@@ -92,7 +92,7 @@ namespace core {
              * @return a predicate that represents the logical negation of this
              * predicate
              */
-            virtual Predicate &negate() {
+            virtual Predicate &negate() const {
                 return from([&](X t) -> gbool { return !test(t); });
             }
 
@@ -239,6 +239,24 @@ namespace core {
 
                 return Unsafe::allocateInstance<FunctionPredicate>(Unsafe::forwardInstance<F>(function));
 
+            }
+
+            /**
+             * Obtain new Consumer of given signature with
+             * This consumer.
+             * @implNote This operation is possible only if
+             * this consumer accept argument supported by the new
+             * consumer
+             */
+            template<class $1>
+            CORE_IMPLICIT operator Predicate<$1> &() const {
+                // search the arguments types of desired consumer
+                CORE_ALIAS($X, Functional::Params<$1>);
+                // The default signature accepted by this consumer
+                CORE_ALIAS(Holder, void(*)(X));
+                // check If this consumer accept argument of desired consumer
+                Functional::CheckFunction<Holder, $X>();
+                return Predicate<$1>::from([&]($X t) -> void { test(t); });
             }
         };
     }

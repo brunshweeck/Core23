@@ -187,6 +187,15 @@ namespace core {
                 return Unsafe::allocateInstance<FunctionFunction>(Unsafe::forwardInstance<F>(function));
 
             }
+
+            /**
+             * Returns a unary operator that always returns its input argument.
+             *
+             * @return a unary operator that always returns its input argument
+             */
+            static DoubleUnaryOperator &identity() {
+                return DoubleUnaryOperator::from([&](gdouble t) -> gdouble { return t; });
+            }
         };
 
     } // function
