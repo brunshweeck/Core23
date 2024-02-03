@@ -106,18 +106,17 @@ namespace core {
         /**
          * Return the classname of given object.
          */
-        static String classname0(const Object& obj);
+        static String classname0(const Object &obj);
 
         /**
          * Return The identity hash code of given object
          */
-         static gint identityHash0(const Object& obj);
+        static gint identityHash0(const Object &obj);
 
     public:
 
         /**
-         * Return hash code of this class or 0 if this class is not
-         * hashable
+         * Return hash code of this class or 0 if this instance is null
          */
         virtual gint hash() const;
 
@@ -149,7 +148,36 @@ namespace core {
          * @param x object for which the hash Code is to be calculated
          * @return  the hash Code
          */
-        static gint identityHash(const Object& x) CORE_NOTHROW;
+        static gint identityHash(const Object &x) CORE_NOTHROW;
+
+        /**
+         * Returns {@code true} if the arguments are deeply equal to each other
+         * and {@code false} otherwise.
+         *
+         * Two {@code null} values are deeply equal.  If both arguments are
+         * arrays, the algorithm in {@link Arrays.deepEquals} is used to determine equality.
+         * Otherwise, equality is determined by using the {@link
+         * equals} method of the first argument.
+         *
+         * @param a an object
+         * @param b an object to be compared with {@code a} for deep equality
+         * @return {@code true} if the arguments are deeply equal to each other
+         * and {@code false} otherwise
+         * @see Arrays#deepEquals(ObjectArray, ObjectArray)
+         * @see Objects#equals(Object, Object)
+         */
+        static gint deepEquals(const Object &a, const Object& b);
+
+        /**
+         * Returns the hash code of a non-{@code null} argument and 0 for
+         * a {@code null} argument.
+         *
+         * @param o an object
+         * @return the hash code of a non-{@code null} argument and 0 for
+         * a {@code null} argument
+         * @see Object#hashCode
+         */
+        static gint hash(const Object &o);
 
         /**
          * Destroy this object

@@ -54,7 +54,7 @@ namespace core {
             CharBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                            gbool bigEndian) : CharBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.CharBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -72,7 +72,7 @@ namespace core {
                     glong const addr = byteOffset(pos);
                     return Unsafe::allocateInstance<CharBufferView>(bb, -1, 0, rem, rem, addr, bigEndian);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -82,7 +82,7 @@ namespace core {
                     return Unsafe::allocateInstance<CharBufferView>(bb, -1, 0, length, length, byteOffset(index),
                                                                     bigEndian);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -91,7 +91,7 @@ namespace core {
                     return Unsafe::allocateInstance<CharBufferView>(bb, markValue(), position(), limit(), capacity(),
                                                                     address, bigEndian);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -105,7 +105,7 @@ namespace core {
                                 position(), limit(), capacity(),
                                 address, bigEndian);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -113,7 +113,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.CharBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -126,7 +126,7 @@ namespace core {
                     discardMark();
                     return *this;
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -152,7 +152,7 @@ namespace core {
                     Unsafe::destroyInstance(db);
                     return String(ca);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -161,14 +161,14 @@ namespace core {
                 try {
                     gint pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.CharBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     pos = (pos <= lim ? pos : lim);
                     gint const len = lim - pos;
                     Preconditions::checkIndexFromRange(start, end, len);
                     return Unsafe::allocateInstance<CharBufferView>((HeapByteBuffer &) bb, -1, pos + start, pos + end,
                                                                     capacity(), address, bigEndian);
                 } catch (const Exception &ex) {
-                    ex.throws(__trace("core.io.HeapByteBuffer.CharBufferView"));
+                    ex.throws(__ctrace());
                 }
             }
 
@@ -178,7 +178,7 @@ namespace core {
 
         protected:
             OptionalByteOrder charRegionOrder() const override {
-                return OptionalByteOrder::of(order());
+                return Enum<ByteOrder>(order());
             }
 
             gint ix(gint i) const {
@@ -231,7 +231,7 @@ namespace core {
             DoubleBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                              gbool bigEndian) : DoubleBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.DoubleBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -290,7 +290,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.DoubleBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -363,7 +363,7 @@ namespace core {
             FloatBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                             gbool bigEndian) : FloatBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.FloatBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -422,7 +422,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.FloatBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -495,7 +495,7 @@ namespace core {
             IntBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                           gbool bigEndian) : IntBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.IntBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -554,7 +554,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.IntBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -630,7 +630,7 @@ namespace core {
             LongBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                            gbool bigEndian) : LongBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.LongBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -689,7 +689,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.LongBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -765,7 +765,7 @@ namespace core {
             ShortBufferView(HeapByteBuffer &bb, gint mark, gint pos, gint lim, gint cap, glong addr,
                             gbool bigEndian) : ShortBuffer(mark, pos, lim, cap), bb(bb), bigEndian(bigEndian) {
                 address = addr;
-                CORE_ASSERT(address >= bb.address, "core.io.HeapByteBuffer.ShortBufferView");
+                CORE_ASSERT(address >= bb.address, __ctrace())
             }
 
 
@@ -824,7 +824,7 @@ namespace core {
                 try {
                     gint const pos = position();
                     gint const lim = limit();
-                    CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer.ShortBufferView");
+                    CORE_ASSERT(pos <= lim, __ctrace())
                     gint const rem = (pos <= lim ? lim - pos : 0);
                     ByteBuffer &db = bb.duplicate();
                     db.setLimit(ix(lim));
@@ -1059,14 +1059,14 @@ namespace core {
             try {
                 gint const pos = position();
                 gint const lim = limit();
-                CORE_ASSERT(pos <= lim, "core.io.HeapByteBuffer");
+                CORE_ASSERT(pos <= lim, __ctrace())
                 gint const rem = (pos <= lim ? lim - pos : 0);
                 System::arraycopy(*hb, ix(pos), *hb, ix(0), rem);
                 setPosition(rem);
                 setLimit(capacity());
                 discardMark();
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.HeapByteBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }

@@ -23,4 +23,6 @@ namespace core {
         return Unsafe::allocateInstance<Exception>(*this);
     }
 
+    Exception::Exception(const Throwable &cause) : Throwable(cause.toString(), cause) {}
+
 } // core

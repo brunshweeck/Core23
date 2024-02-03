@@ -87,7 +87,7 @@ namespace core {
                      * Invoke the method of this consumer
                      */
                     void invoke(X t) const {
-                        return CORE_IGNORE((inst.*meth)(t));
+                        CORE_IGNORE((inst.*meth)(t));
                     }
 
                     void accept(X t) const override {
@@ -145,7 +145,7 @@ namespace core {
                     CORE_EXPLICIT FunctionConsumer(F &&func) : func(Unsafe::forwardInstance<F>(func)) {}
 
                     void invoke(X t) const {
-                        return CORE_IGNORE(func(t));
+                        CORE_IGNORE(func(t));
                     }
 
                     void accept(X t) const override {

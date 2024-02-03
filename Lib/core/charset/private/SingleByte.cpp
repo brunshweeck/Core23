@@ -305,8 +305,7 @@ namespace core {
         }
 
         gchar SingleByte::Encoder::getChar(const ByteArray &val, int index) {
-            CORE_ASSERT_IF(index >= 0 && index < length(val), "Trusted caller missed bounds check",
-                           "core.charset.SingleByte.Encoder");
+            CORE_RAISE(index >= 0 && index < length(val), "Trusted caller missed bounds check", __trace(u"core.charset.SingleByte.Encoder"_S));
             index <<= 1;
             return (gchar) (((val[index] & 0xff) << HI_BYTE_SHIFT) |
                             ((val[index + 1] & 0xff) << LO_BYTE_SHIFT));

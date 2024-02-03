@@ -23,23 +23,41 @@ namespace core {
         using namespace native;
 
         class FileSystem;
+
         class File;
+
         class FileArray;
+
         class FileDescriptor;
+
         class IOException;
+
         class IOError;
+
         class FileReader;
+
         class FileWriter;
+
         class Reader;
+
         class Writer;
+
         class BufferedReader;
+
         class BufferedWriter;
+
         class ByteBuffer;
+
         class ShortBuffer;
+
         class CharBuffer;
+
         class IntBuffer;
+
         class LongBuffer;
+
         class FloatBuffer;
+
         class DoubleBuffer;
     }
 
@@ -50,8 +68,11 @@ namespace core {
         using namespace native;
 
         class Charset;
+
         class CharsetEncoder;
+
         class CharsetDecoder;
+
         class CoderResult;
     }
 
@@ -91,19 +112,44 @@ namespace core {
      */
     namespace time {
         using namespace native;
+
         class LocalDate;
+
         class LocalTime;
+
         class LocalDateTime;
+
         class ZoneRegion;
+
         class ZoneOffset;
+
         class ZoneRules;
+
         class ZoneOffsetTransition;
+
         class ZoneOffsetTransitionRule;
+
         class Calendar;
+
         class Era;
     }
 
-    namespace function {}
+    namespace function {
+
+    }
+
+    namespace stream {
+        using namespace function;
+
+        template<class>
+        class Stream;
+
+        class DoubleStream;
+
+        class IntStream;
+
+        class LongStream;
+    }
 
     /**
      * Namespace for utility and algorithms
@@ -112,6 +158,7 @@ namespace core {
 
         using namespace native;
         using namespace function;
+        using namespace stream;
 
         template<class>
         class Collection;
@@ -178,6 +225,9 @@ namespace core {
 
         template<class>
         class Optional;
+        class OptionalInt;
+        class OptionalLong;
+        class OptionalDouble;
 
         using namespace native;
     }
@@ -204,6 +254,76 @@ namespace core {
 
         template<class, class, class>
         class BiFunction;
+
+        template<class>
+        class UnaryOperator;
+
+        template<class>
+        class BinaryOperator;
+
+        class DoubleConsumer;
+
+        class DoublePredicate;
+
+        class DoubleSupplier;
+
+        class DoubleUnaryOperator;
+
+        class DoubleBinaryOperator;
+
+        template<class>
+        class DoubleFunction;
+
+        template<class>
+        class ToDoubleFunction;
+
+        class DoubleToIntFunction;
+
+        class DoubleToLongFunction;
+
+        class LongConsumer;
+
+        class LongPredicate;
+
+        class LongSupplier;
+
+        class LongUnaryOperator;
+
+        class LongBinaryOperator;
+
+        template<class>
+        class LongFunction;
+
+        template<class>
+        class ToLongFunction;
+
+        class LongToIntFunction;
+
+        class LongToDoubleFunction;
+
+        class IntConsumer;
+
+        class IntPredicate;
+
+        class IntSupplier;
+
+        class IntUnaryOperator;
+
+        class IntBinaryOperator;
+
+        template<class>
+        class IntFunction;
+
+        template<class>
+        class ToIntFunction;
+
+        class IntToLongFunction;
+
+        class IntToDoubleFunction;
+    }
+
+    namespace stream {
+        using namespace util;
     }
 
     namespace concurrent {
@@ -212,14 +332,21 @@ namespace core {
         using namespace util;
 
         class AtomicBoolean;
+
         class AtomicInteger;
+
         class AtomicLong;
+
         class AtomicIntegerArray;
+
         class AtomicLongArray;
+
         template<class>
         class AtomicReference;
+
         template<class>
         class AtomicReferenceArray;
+
         class Lock;
 
         class Condition;
@@ -238,6 +365,7 @@ namespace core {
 
         using namespace native;
         using namespace util;
+        using namespace stream;
 
         class Random;
     }
@@ -270,7 +398,8 @@ namespace core {
         /**
          * The reference array
          */
-        template<class> class Array; // T[x]
+        template<class>
+        class Array; // T[x]
 
         class BooleanArray; // gbool[x]
         class ByteArray; // gbyte[x]
@@ -298,6 +427,7 @@ namespace core {
     }
 
     class Object;
+
     class Boolean; // gbool
     class Byte; // gbyte
     class Short; // gshort
@@ -308,11 +438,14 @@ namespace core {
     class Double; // gdouble
     class Void; // void
     class Complex; // __Complex, __C_Complex
-    template<class> class Enum; // enum T, enum class T
+    template<class>
+    class Enum; // enum T, enum class T
     class String; // CharT[n], CharT*
     class Throwable; // std::exception
     class Exception; // std::exception
     class Error; // std::exception
+
+    class Runnable;
 
 
     using native::BooleanArray;
@@ -436,25 +569,27 @@ namespace core {
 #ifndef CORE_TRACE_MODULE
 #define CORE_TRACE_MODULE ""_S, ""_S, // on format: [module-name], [module-version],
 #endif
-#define __trace(classname) \
-    Trace(CORE_TRACE_MODULE classname, CORE_FUNCTION, CORE_FILE, CORE_LINE)
-#define __ftrace(classname) \
-    Trace(CORE_TRACE_MODULE classname, CORE_FUNCTION_SIGNATURE, CORE_FILE, CORE_LINE)
+#define __trace(className) Trace(CORE_TRACE_MODULE className, CORE_FUNCTION, CORE_FILE, CORE_LINE)
+#define __ftrace(className) Trace(CORE_TRACE_MODULE className, CORE_FUNCTION_SIGNATURE, CORE_FILE, CORE_LINE)
 
 #else
-// trace represents a simple function/method trace (trace with function name).
-#define __trace(Classname_or_Object, ...) \
-    Trace(Classname_or_Object __VA_ARGS__, CORE_FUNCTION, CORE_FILE, CORE_LINE)
+// The Current Execution point (with slimmed function signature)
+#define __trace(className, ...) Trace(className __VA_ARGS__, CORE_FUNCTION, CORE_FILE, CORE_LINE)
 
-// ftrace represents a full function/method trace (trace with function signature).
-#define __ftrace(Classname_or_Object, ...) \
-    Trace(Classname_or_Object __VA_ARGS__, CORE_FUNCTION_SIGNATURE, CORE_FILE, CORE_LINE)
+// The Current Execution point (will full function signature)
+#define __ftrace(className, ...) Trace(className __VA_ARGS__, CORE_FUNCTION_SIGNATURE, CORE_FILE, CORE_LINE)
 
 #endif //CORE_SHOW_TRACE_MODULE
 
+// Execution point used into global function
 #define __xtrace() __trace(""_S)
-
+// Execution point used into global function
 #define __xftrace() __ftrace(""_S)
+
+// Execution point used into the class method
+#define __ctrace() __trace((*this).classname())
+// Execution point used into the class method
+#define __cftrace() __ftrace((*this).classname())
 
 #ifdef CORE_XCOMPILER_UDL
 #define CORE_ENABLE_LITERAL_CONSTRUCTOR(class, suffix, params, ...) extern const class operator"" ## suffix (params __VA_ARGS__)
@@ -470,21 +605,11 @@ namespace core {
  * @param expression The boolean value evaluated during assertion
  * @param class The name or INSTANCE of class containing assertion
  */
-#define CORE_ASSERT(expression, class)                           \
-    if((expression) == false) {                                  \
-        AssertionError(#expression).throws(__trace(class));      \
-    } else { /* continue */ }                                    \
+#define CORE_ASSERT(expression, ...) CORE_RAISE(expression, u ## #expression ## _S, __VA_ARGS__)
 
-#define CORE_ASSERT_IF(expression, message, class)                           \
-    if((expression) == false) {                                  \
-        AssertionError(message).throws(__trace(class));      \
-    } else { /* continue */ }                                    \
+#define CORE_RAISE(expression, message, ...) {if(!(expression)) AssertionError(message).throws(__VA_ARGS__);}
 
 #endif //CORE_ASSERT
-
-#ifndef CORE_FEATURE
-#define CORE_FEATURE(feature) (CORE_ENABLE_ ## feature + 0 == 1)
-#endif //CORE_FEATURE
 
     }
 
@@ -521,62 +646,40 @@ struct _C_double_complex;
 
 #ifndef CORE_TRY_ONLY
 
-#define CORE_TRY_ONLY(expression, ...) {                             \
-        try {                                                   \
-            expression                                          \
-        } catch(const Throwable& th) { __VA_ARGS__ }                            \
-    }
+#define CORE_TRY_ONLY(action, ...) try { action; } catch(const Throwable& th) { __VA_ARGS__; }
 
-#define CORE_TRY_ONLY_EX(expression, ...) {                             \
-        try {                                                      \
-            expression                                             \
-        } catch(...) { __VA_ARGS__ }                                            \
-    }
+#define CORE_TRY_ONLY_EXCEPTION(action, ...) try { action; } catch(const Exception& ex) { __VA_ARGS__; }
 
-#define CORE_TRY_RETHROW(statement, beforeRethrowing, newTrace) {  \
-        try {                                                      \
-            statement                                              \
-        } catch(const Throwable& thr) {                            \
-            { beforeRethrowing }                                   \
-            thr.throws(newTrace);                                  \
-        }                                                          \
-    }
+#define CORE_TRY_ONLY_ERROR(action, ...) try { action; } catch(const Error& err) { __VA_ARGS__; }
 
-#define CORE_TRY_RETHROW_EX(statement, beforeRethrowing, newTrace) {  \
-        try {                                                         \
-            statement                                                 \
-        } catch(...) {                                                \
-            { beforeRethrowing }                                      \
-            throw;                                                    \
-        }                                                             \
-    }
+#define CORE_TRY_ONLY_ANY(action, ...) try { action; } catch(...) { __VA_ARGS__; }
 
+#define CORE_TRY_RETHROW(action, fallbackAction, newTrace) CORE_TRY_ONLY(action, fallbackAction; th.throws(newTrace))
 
-#define CORE_TRY_RETHROW_EXCEPTION(statement, beforeRethrowing, newTrace) {  \
-        try {                                                                \
-            statement                                                        \
-        } catch(const Exception& ex) {                                       \
-            { beforeRethrowing }                                             \
-            ex.throws(newTrace);                                             \
-        }                                                                    \
-    }
+#define CORE_TRY_RETHROW_ANY(action, fallbackAction) CORE_TRY_ONLY_ANY(action, fallbackAction; throw)
 
-#define CORE_TRY_RETHROW_Error(statement, beforeRethrowing, newTrace) {  \
-        try {                                                            \
-            statement                                                    \
-        } catch(const Error& err) {                                      \
-            { beforeRethrowing }                                         \
-            err.throws(newTrace);                                        \
-        }                                                                \
-    }
+#define CORE_TRY_RETHROW_EXCEPTION(action, fallbackAction, newTrace) CORE_TRY_ONLY_EXCEPTION(action, fallbackAction; ex.throws(newTrace))
+
+#define CORE_TRY_RETHROW_ERROR(action, fallbackAction, newTrace) CORE_TRY_ONLY_ERROR(action, fallbackAction; err.throws(newTrace))
 
 #endif
 
 #pragma push_macro("__trace")
+#pragma push_macro("__ctrace")
 #pragma push_macro("__xtrace")
 #pragma push_macro("__ftrace")
 #pragma push_macro("__xftrace")
+#pragma push_macro("__cftrace")
 #pragma push_macro("interface")
+
+#pragma push_macro("CORE_TRY_ONLY")
+#pragma push_macro("CORE_TRY_ONLY_EXCEPTION")
+#pragma push_macro("CORE_TRY_ONLY_ERROR")
+#pragma push_macro("CORE_TRY_ONLY_ANY")
+#pragma push_macro("CORE_TRY_RETHROW")
+#pragma push_macro("CORE_TRY_RETHROW_EXCEPTION")
+#pragma push_macro("CORE_TRY_RETHROW_ERROR")
+#pragma push_macro("CORE_TRY_RETHROW_ANY")
 
 
 #endif //CORE23_GENERICS_H

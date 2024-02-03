@@ -164,7 +164,32 @@ FILE(GLOB Core23
 )
 
 ADD_LIBRARY(Core23 STATIC ${Core23}
-        Lib/core/stream/BaseStream.h)
+        Lib/core/stream/BaseStream.h
+        Lib/core/Runnable.h
+        Lib/core/stream/DoubleStream.h
+        Lib/core/stream/Stream.h
+        Lib/core/stream/LongStream.h
+        Lib/core/stream/IntStream.h
+        Lib/core/util/OptionalDouble.cpp
+        Lib/core/util/OptionalDouble.h
+        Lib/core/util/OptionalInt.cpp
+        Lib/core/util/OptionalInt.h
+        Lib/core/util/OptionalLong.cpp
+        Lib/core/util/OptionalLong.h
+        Lib/core/util/Arrays.cpp
+        Lib/core/util/Arrays.h
+        Lib/core/util/SplitIterator.h
+        Lib/core/native/ArrayStoreException.cpp
+        Lib/core/native/ArrayStoreException.h
+        Lib/core/util/private/DualPivotQuicksort.cpp
+        Lib/core/util/private/DualPivotQuicksort.h
+        Lib/core/concurrent/Future.h
+        Lib/core/concurrent/ExecutionException.cpp
+        Lib/core/concurrent/ExecutionException.h
+        Lib/core/InterruptedException.cpp
+        Lib/core/InterruptedException.h
+        Lib/core/concurrent/CancellationException.cpp
+        Lib/core/concurrent/CancellationException.h)
 
 INCLUDE_DIRECTORIES("${PROJECT_LIBDIR}")
 INCLUDE_DIRECTORIES("${SYSTEM_LIBDIR}")

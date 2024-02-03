@@ -30,16 +30,14 @@ namespace core {
             // called by begin() method
             CORE_EXPLICIT CIterator(Object &obj, Object &hasMore, Object &nextValue, LongArray fields) :
                     This(obj), hasMore(hasMore), nextValue(nextValue), fields(Unsafe::moveInstance(fields)) {
-                CORE_ASSERT_IF(obj != null, "CIterator require non null object", "core.foreign.CIterator");
-                CORE_ASSERT_IF((Class<BiPredicate<Object &, Object>>::hasInstance(hasMore)), "Illegal predicate",
-                               "core.foreign.CIterator");
-                CORE_ASSERT_IF((Class<BiFunction<Object &, Object &, E &>>::hasInstance(nextValue)),
-                               "Illegal function", "core.foreign.CIterator");
+                CORE_RAISE(obj != null, "CIterator require non null object", __ctrace());
+                CORE_RAISE((Class<BiPredicate<Object &, Object>>::hasInstance(hasMore)), "Illegal predicate", __ctrace());
+                CORE_RAISE((Class<BiFunction<Object &, Object &, E &>>::hasInstance(nextValue)), "Illegal function", __ctrace());
             }
 
             // called by end() method
             CORE_EXPLICIT CIterator(Object &obj) : This(obj), hasMore(null), nextValue(null), fields() {
-                CORE_ASSERT_IF(obj != null, "CIterator require non null object", "core.foreign.CIterator");
+                CORE_RAISE(obj != null, "CIterator require non null object", __ctrace());
             }
 
             //
@@ -62,8 +60,7 @@ namespace core {
             }
 
             E &operator*() {
-                CORE_ASSERT((Class<BiFunction<Object &, Object &, E &>>::hasInstance(nextValue)),
-                            "core.foreign.CIterator");
+                CORE_ASSERT((Class<BiFunction<Object &, Object &, E &>>::hasInstance(nextValue)), __ctrace())
                 BiFunction<Object &, Object &, E &> const &getValue = (const BiFunction<Object &, Object &, E &> &) nextValue;
                 return getValue.apply(This, fields);
             }

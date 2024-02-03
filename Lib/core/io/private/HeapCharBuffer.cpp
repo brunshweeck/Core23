@@ -232,7 +232,7 @@ namespace core {
             try {
                 gint const pos = position();
                 gint const lim = limit();
-                CORE_ASSERT(pos <= lim, "core.io.HeapCharBuffer");
+                CORE_ASSERT(pos <= lim, __trace("core.io.HeapCharBuffer"));
                 gint const rem = (pos <= lim ? lim - pos : 0);
                 System::arraycopy((*hb), ix(pos), (*hb), ix(0), rem);
                 setPosition(rem);

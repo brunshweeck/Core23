@@ -168,5 +168,20 @@ namespace core {
 #endif
     }
 
+    gint Object::deepEquals(const Object &a, const Object &b) {
+        if (&a == &b)
+            return true;
+        else if (null == a || null == b)
+            return false;
+        else {
+            // Arrays::equals(a, b)
+            return a.equals(b);
+        }
+    }
+
+    gint Object::hash(const Object &o) {
+        return null == o ? 0 : o.hash();
+    }
+
 
 } // core

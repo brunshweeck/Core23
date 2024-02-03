@@ -382,8 +382,7 @@ namespace core {
                             static CORE_FAST gbool (*isLessThan)(const T &, const T &) = LTSupport<T, supportLT>::isLT;
                             return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
                         } else {
-                            CORE_ASSERT_IF(false, "Natural ordering is not supported",
-                                           "core.util.Comparator.$ReverseOrder"_S);
+                            CORE_RAISE(false, "Natural ordering is not supported", __ctrace());
                         }
                     }
 
@@ -447,8 +446,7 @@ namespace core {
                             Signature isLessThan = LTSupport<T, supportLT>::isLT;
                             return isLessThan(o1, o2) ? -1 : isLessThan(o2, o1) ? 1 : 0;
                         }
-                        CORE_ASSERT_IF(isComparable || supportLT,
-                                       "Natural ordering is not supported"_S, "core.util.Comparator.$NaturalOrder")
+                        CORE_RAISE(isComparable || supportLT, "Natural ordering is not supported"_S, __ctrace())
                     }
 
                     Object &clone() const override { return naturalOrder(); }

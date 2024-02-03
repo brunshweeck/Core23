@@ -5,12 +5,11 @@
 #ifndef CORE23_OPTIONAL_H
 #define CORE23_OPTIONAL_H
 
-#include <core/String.h>
+#include <core/Runnable.h>
 #include <core/NoSuchElementException.h>
 #include <core/function/Consumer.h>
 #include <core/function/Predicate.h>
 #include <core/function/Supplier.h>
-#include <core/private/Unsafe.h>
 
 namespace core {
     namespace util {
@@ -42,50 +41,80 @@ namespace core {
         template<class T>
         class Optional CORE_FINAL : public Object {
         private:
+            CORE_STATIC_ASSERT(Class<Object>::isSuper<T>(),
+                               "The Optional value type must have core.Object as base class.");
+            CORE_STATIC_ASSERT(
+                    !Class<Object>::isReference() && !Class<Object>::isConstant() && !Class<Object>::isVolatile(),
+                    "The Optional value type shouldn't have qualifiers 'const', 'volatile', '&' and '&&'");
 
-            CORE_ALIAS(Unsafe, native::Unsafe);
-            CORE_ALIAS(ActionConsumer, function::Consumer<T>);
-            CORE_ALIAS(MutableActionConsumer, function::Consumer<T &>);
-            CORE_ALIAS(Filter, function::Predicate<T>);
-            CORE_ALIAS(Generator, function::Supplier<T>);
-
-            CORE_ALIAS(VRef, typename Class<T>::Ptr);
+            CORE_ALIAS(VALUE, typename Class<T>::Ptr);
 
             /**
              * If non-null, the value; if null, indicates no value is present
              */
-            VRef value;
+            VALUE value;
 
         public:
 
             /**
-             * Returns an empty <b> Optional</b>  instance.  No value is present for this
-             * <b> Optional</b> .
-             *
-             * @apiNote
-             * Though it may be tempting to do so, avoid testing if an object is empty
-             * by comparing with <b> ==</b>  or <b> !=</b>  against instances returned by
-             * <b> Optional.empty()</b> .  There is no guarantee that it is a singleton.
-             * Instead, use <b style="color:orange;"> isEmpty()</b>  or <b style="color:orange;"> isPresent()</b> .
-             *
-             * @param <T> The type of the non-existent value
-             * @return an empty <b> Optional</b> 
-             */
-            static Optional<T> empty() {
-                return {};
-            }
-
-        private:
-            /**
              * Constructs an instance with the described value.
+             * The value will be copied if is necessary.
              *
              * @param value the value to describe; it's the caller's responsibility to
              *        ensure the value is non-<b> null</b>  unless creating the singleton
              *        instance returned by <b> empty()</b> .
+             *
+             * @see Unsafe::copyInstance
              */
-            CORE_EXPLICIT Optional(T &value) : value(&value) {}
+            Optional(T &&value) : value(null) {
+                if (null != value) {
+                    CORE_TRY_ONLY(
+                    // copy of value if is not pre-allocated
+                            Optional::value = (VALUE) &Unsafe::copyInstance(value, true);,
+                    // if copy fail (value is not copyable
+                            Optional::value = (VALUE) &value;
+                    )
+                }
+            }
 
-        public:
+            /**
+             * Constructs an instance with the described value.
+             * The value will be copied if is necessary.
+             *
+             * @param value the value to describe; it's the caller's responsibility to
+             *        ensure the value is non-<b> null</b>  unless creating the singleton
+             *        instance returned by <b> empty()</b> .
+             *
+             * @see Unsafe::copyInstance
+             */
+            Optional(const T &value) : value(null) {
+                if (null != value) {
+                    CORE_TRY_ONLY(
+                    // copy of value if is not pre-allocated
+                            Optional::value = (VALUE) &Unsafe::copyInstance(value, true);,
+                    // if copy fail (value is not copyable
+                            Optional::value = (VALUE) &value;
+                    )
+                }
+            }
+
+            /**
+             * Constructs an instance with the described value.
+             * The value will be copied if is necessary.
+             *
+             * @param value the value to describe; it's the caller's responsibility to
+             *        ensure the value is non-<b> null</b>  unless creating the singleton
+             *        instance returned by <b> empty()</b> .
+             *
+             * @see Unsafe::copyInstance
+             */
+            Optional(T &value) : value(null) {
+                if (null != value) {
+                    // mutable reference is never copied
+                    Optional::value = (VALUE) &value;
+                }
+            }
+
             /**
              * Construct empty optional
              */
@@ -103,10 +132,10 @@ namespace core {
              * @throws NoSuchElementException if no value is present
              */
             T &get() {
-                if (!isPresent())
-                    NoSuchElementException().throws(__trace("core.util.Optional"));
-                else
-                    return value[0];
+                if (!isPresent()) {
+                    NoSuchElementException().throws(__ctrace());
+                }
+                return *value;
             }
 
             /**
@@ -121,9 +150,9 @@ namespace core {
              */
             T const &get() const {
                 if (!isPresent())
-                    NoSuchElementException().throws(__trace("core.util.Optional"));
+                    NoSuchElementException().throws(__ctrace());
                 else
-                    return value[0];
+                    return *value;
             }
 
             /**
@@ -151,9 +180,9 @@ namespace core {
              *
              * @param action the action to be performed, if a value is present
              */
-            void ifPresent(const MutableActionConsumer &action) {
+            void ifPresent(const Consumer<T> &action) const {
                 if (isPresent()) {
-                    action.accept(get());
+                    CORE_TRY_RETHROW(action.accept(*value), , __ctrace())
                 }
             }
 
@@ -162,12 +191,42 @@ namespace core {
              * otherwise does nothing.
              *
              * @param action the action to be performed, if a value is present
-             * @throws NullPointerException if value is present and the given action is
-             *         <b> null</b> 
              */
-            void ifPresent(const ActionConsumer &action) const {
+            void ifPresent(const Consumer<T &> &action) {
                 if (isPresent()) {
-                    action.accept(get());
+                    CORE_TRY_RETHROW(action.accept(*value), , __ctrace())
+                }
+            }
+
+            /**
+             * If a value is present, performs the given action with the value,
+             * otherwise performs the given empty-based action.
+             *
+             * @param action the action to be performed, if a value is present
+             * @param emptyAction the empty-based action to be performed, if no value is
+             *        present
+             */
+            void ifPresentOrElse(const Consumer<T> &action, const Runnable &emptyAction) const {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(action.accept(*value), , __ctrace())
+                } else {
+                    CORE_TRY_RETHROW(emptyAction.run(), , __ctrace())
+                }
+            }
+
+            /**
+             * If a value is present, performs the given action with the value,
+             * otherwise performs the given empty-based action.
+             *
+             * @param action the action to be performed, if a value is present
+             * @param emptyAction the empty-based action to be performed, if no value is
+             *        present
+             */
+            void ifPresentOrElse(const Consumer<T &> &action, const Runnable &emptyAction) {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(action.accept(*value), , __ctrace())
+                } else {
+                    CORE_TRY_RETHROW(emptyAction.run();, , __ctrace())
                 }
             }
 
@@ -179,17 +238,178 @@ namespace core {
              * @param predicate the predicate to apply to a value, if present
              * @return an <b> Optional</b>  describing the value of this
              *         <b> Optional</b> , if a value is present and the value matches the
-             *         given predicate, otherwise an empty <b> Optional</b> 
-             * @throws NullPointerException if the predicate is <b> null</b> 
+             *         given predicate, otherwise an empty <b> Optional</b>
              */
-            Optional<T> filter(const Filter &predicate) const {
+            Optional<T> filter(const Predicate<T> &predicate) const {
                 if (!isPresent()) {
                     return *this;
                 }
-                if (predicate.test(get())) {
-                    return *this;
-                } else
-                    return empty();
+                CORE_TRY_RETHROW(
+                        if (predicate.test(*value)) {
+                            return *this;
+                        }, , __ctrace()
+                )
+                return {};
+            }
+
+            /**
+             * If a value is present, returns an <b> Optional</b> describing (as if by
+             * <b style="color: orange;"> #ofNullable</b>) the result of applying the given mapping function to
+             * the value, otherwise returns an empty <b> Optional</b>.
+             *
+             * <p>If the mapping function returns a <b> null</b> result then this method
+             * returns an empty <b> Optional</b>.
+             *
+             * @apiNote
+             * This method supports post-processing on <b> Optional</b> values, without
+             * the need to explicitly check for a return status.  For example, the
+             * following code traverses a stream of URIs, selects one that has not
+             * yet been processed, and creates a path from that URI, returning
+             * an <b> Optional<Path></b>:
+             *
+             * <pre><b> 
+             *     Optional<Path> p =
+             *         uris.stream().filter(uri -> !isProcessedYet(uri))
+             *                       .findFirst()
+             *                       .map(Paths::get);
+             * </b></pre>
+             *
+             * Here, <b> findFirst</b> returns an <b> Optional<URI></b>, and then
+             * <b> map</b> returns an <b> Optional<Path></b> for the desired
+             * URI if one exists.
+             *
+             * @param mapper the mapping function to apply to a value, if present
+             * @tparam U The type of the value returned from the mapping function
+             * @return an <b> Optional</b> describing the result of applying a mapping
+             *         function to the value of this <b> Optional</b>, if a value is
+             *         present, otherwise an empty <b> Optional</b>
+             */
+            template<class U>
+            Optional<U> map(const Function<T, U> &mapper) const {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(return Optional<U>(mapper.apply(*value)), , __ctrace())
+                }
+                return {};
+            }
+
+            /**
+             * If a value is present, returns an <b> Optional</b> describing (as if by
+             * <b style="color: orange;"> #ofNullable</b>) the result of applying the given mapping function to
+             * the value, otherwise returns an empty <b> Optional</b>.
+             *
+             * <p>If the mapping function returns a <b> null</b> result then this method
+             * returns an empty <b> Optional</b>.
+             *
+             * @apiNote
+             * This method supports post-processing on <b> Optional</b> values, without
+             * the need to explicitly check for a return status.  For example, the
+             * following code traverses a stream of URIs, selects one that has not
+             * yet been processed, and creates a path from that URI, returning
+             * an <b> Optional<Path></b>:
+             *
+             * <pre><b> 
+             *     Optional<Path> p =
+             *         uris.stream().filter(uri -> !isProcessedYet(uri))
+             *                       .findFirst()
+             *                       .map(Paths::get);
+             * </b></pre>
+             *
+             * Here, <b> findFirst</b> returns an <b> Optional<URI></b>, and then
+             * <b> map</b> returns an <b> Optional<Path></b> for the desired
+             * URI if one exists.
+             *
+             * @param mapper the mapping function to apply to a value, if present
+             * @tparam U The type of the value returned from the mapping function
+             * @return an <b> Optional</b> describing the result of applying a mapping
+             *         function to the value of this <b> Optional</b>, if a value is
+             *         present, otherwise an empty <b> Optional</b>
+             */
+            template<class U>
+            Optional<U> map(const Function<T &, U> &mapper) {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(return Optional<U>(mapper.apply(*value));, , __ctrace())
+                }
+                return {};
+            }
+
+            /**
+             * If a value is present, returns an <b> Optional</b> describing (as if by
+             * <b style="color: orange;"> #ofNullable</b>) the result of applying the given mapping function to
+             * the value, otherwise returns an empty <b> Optional</b>.
+             *
+             * <p>If the mapping function returns a <b> null</b> result then this method
+             * returns an empty <b> Optional</b>.
+             *
+             * @apiNote
+             * This method supports post-processing on <b> Optional</b> values, without
+             * the need to explicitly check for a return status.  For example, the
+             * following code traverses a stream of URIs, selects one that has not
+             * yet been processed, and creates a path from that URI, returning
+             * an <b> Optional<Path></b>:
+             *
+             * <pre><b> 
+             *     Optional<Path> p =
+             *         uris.stream().filter(uri -> !isProcessedYet(uri))
+             *                       .findFirst()
+             *                       .map(Paths::get);
+             * </b></pre>
+             *
+             * Here, <b> findFirst</b> returns an <b> Optional<URI></b>, and then
+             * <b> map</b> returns an <b> Optional<Path></b> for the desired
+             * URI if one exists.
+             *
+             * @param mapper the mapping function to apply to a value, if present
+             * @tparam U The type of the value returned from the mapping function
+             * @return an <b> Optional</b> describing the result of applying a mapping
+             *         function to the value of this <b> Optional</b>, if a value is
+             *         present, otherwise an empty <b> Optional</b>
+             */
+            template<class U>
+            Optional<U> flatMap(const Function<T, Optional<U>> &mapper) const {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(return mapper.apply(*value);, , __ctrace())
+                }
+                return {};
+            }
+
+            /**
+             * If a value is present, returns an <b> Optional</b> describing (as if by
+             * <b style="color: orange;"> #ofNullable</b>) the result of applying the given mapping function to
+             * the value, otherwise returns an empty <b> Optional</b>.
+             *
+             * <p>If the mapping function returns a <b> null</b> result then this method
+             * returns an empty <b> Optional</b>.
+             *
+             * @apiNote
+             * This method supports post-processing on <b> Optional</b> values, without
+             * the need to explicitly check for a return status.  For example, the
+             * following code traverses a stream of URIs, selects one that has not
+             * yet been processed, and creates a path from that URI, returning
+             * an <b> Optional<Path></b>:
+             *
+             * <pre><b> 
+             *     Optional<Path> p =
+             *         uris.stream().filter(uri -> !isProcessedYet(uri))
+             *                       .findFirst()
+             *                       .map(Paths::get);
+             * </b></pre>
+             *
+             * Here, <b> findFirst</b> returns an <b> Optional<URI></b>, and then
+             * <b> map</b> returns an <b> Optional<Path></b> for the desired
+             * URI if one exists.
+             *
+             * @param mapper the mapping function to apply to a value, if present
+             * @tparam U The type of the value returned from the mapping function
+             * @return an <b> Optional</b> describing the result of applying a mapping
+             *         function to the value of this <b> Optional</b>, if a value is
+             *         present, otherwise an empty <b> Optional</b>
+             */
+            template<class U>
+            Optional<U> flatMap(const Function<T &, Optional<U>> &mapper) {
+                if (isPresent()) {
+                    CORE_TRY_RETHROW(return mapper.apply(*value);, , __ctrace())
+                }
+                return {};
             }
 
             /**
@@ -201,15 +421,29 @@ namespace core {
              * @return returns an <b> Optional</b>  describing the value of this
              *         <b> Optional</b> , if a value is present, otherwise an
              *         <b> Optional</b>  produced by the supplying function.
-             * @throws NullPointerException if the supplying function is <b> null</b>  or
-             *         produces a <b> null</b>  result
              */
-            Optional<T> orGet(const Generator &supplier) const {
+            Optional<T> orElseGet(const Supplier<Optional<T>> &supplier) const {
                 if (!isPresent()) {
                     return *this;
                 }
-                return Optional(supplier.get());
+                return supplier.get();
             }
+
+            /**
+             * If a value is present, returns a sequential <b style="color: orange;"> Stream</b> containing
+             * only that value, otherwise returns an empty <b> Stream</b>.
+             *
+             * @apiNote
+             * This method can be used to transform a <b> Stream</b> of optional
+             * elements to a <b> Stream</b> of present value elements:
+             * <pre><b> 
+             *     Stream<Optional<T>> os = ..
+             *     Stream<T> s = os.flatMap(Optional::stream)
+             * </b></pre>
+             *
+             * @return the optional value as a <b> Stream</b>
+             */
+            // Stream<T> &stream() const {</b>
 
             /**
              * If a value is present, returns the value, otherwise returns
@@ -232,6 +466,22 @@ namespace core {
              * <b> other</b> .
              *
              * @param other the value to be returned, if no value is present.
+             *
+             * @return the value, if present, otherwise <b> other</b>
+             */
+            T &orElse(const T &other) {
+                if (isPresent()) {
+                    return get();
+                } else {
+                    return Optional<T>(other).get();
+                }
+            }
+
+            /**
+             * If a value is present, returns the value, otherwise returns
+             * <b> other</b> .
+             *
+             * @param other the value to be returned, if no value is present.
              *        May be <b> null</b> .
              * @return the value, if present, otherwise <b> other</b> 
              */
@@ -244,6 +494,20 @@ namespace core {
             }
 
             /**
+             * If a value is present, returns the value, otherwise returns the result
+             * produced by the supplying function.
+             *
+             * @param supplier the supplying function that produces a value to be returned
+             * @return the value, if present, otherwise the result produced by the
+             *         supplying function
+             */
+            T const &orElseGet(const Supplier<T> &supplier) const {
+                if (!isPresent()) {
+                    CORE_TRY_RETHROW(return supplier.get();, , __ctrace())
+                }
+            }
+
+            /**
              * If a value is present, returns the value, otherwise throws
              * <b> NoSuchElementException</b> .
              *
@@ -252,9 +516,9 @@ namespace core {
              */
             T &orElseThrow() {
                 if (!isPresent()) {
-                    NoSuchElementException().throws(__trace("core.util.Optional"));
+                    NoSuchElementException().throws(__ctrace());
                 } else {
-                    return get();
+                    return *value;
                 }
             }
 
@@ -267,9 +531,9 @@ namespace core {
              */
             const T &orElseThrow() const {
                 if (!isPresent()) {
-                    NoSuchElementException().throws(__trace("core.util.Optional"));
+                    NoSuchElementException().throws(__ctrace());
                 } else {
-                    return get();
+                    return *value;
                 }
             }
 
@@ -287,14 +551,15 @@ namespace core {
              *        exception to be thrown
              * @return the value, if present
              * @throws Throwable if no value is present
-             * @throws NullPointerException if no value is present and the exception
-             *          supplying function is <b> null</b> 
              */
-            T &orElseThrow(const Throwable &throwable) {
+            T &orElseThrow(const Supplier<Throwable> &exceptionSupplier) {
                 if (!isPresent()) {
-                    throwable.throws(__trace("core.util.Optional"));
+                    Optional<Throwable> th;
+                    CORE_TRY_RETHROW(th = exceptionSupplier.get(), , __ctrace())
+                    // assert th.isPresent()
+                    th.get().throws(__ctrace());
                 } else {
-                    return get();
+                    return *value;
                 }
             }
 
@@ -311,14 +576,15 @@ namespace core {
              *        exception to be thrown
              * @return the value, if present
              * @throws Throwable if no value is present
-             * @throws NullPointerException if no value is present and the exception
-             *          supplying function is <b> null</b> 
              */
-            const T &orElseThrow(const Throwable &throwable) const {
+            const T &orElseThrow(const Supplier<Throwable> &exceptionSupplier) const {
                 if (!isPresent()) {
-                    throwable.throws(__trace("core.util.Optional"));
+                    Optional<Throwable> th;
+                    CORE_TRY_RETHROW(th = exceptionSupplier.get(), , __ctrace())
+                    // assert th.isPresent()
+                    th.get().throws(__ctrace());
                 } else {
-                    return get();
+                    return *value;
                 }
             }
 
@@ -339,13 +605,13 @@ namespace core {
                 if (this == &obj) {
                     return true;
                 }
-                if (!Class<Optional<T>>::hasInstance(obj)) {
+                if (!Class<Optional>::hasInstance(obj)) {
                     return false;
                 }
-                Optional<T> const &opt = (const Optional<T> &) obj;
-                if (value == opt.value)
+                Optional<T> const &other = (const Optional &) obj;
+                if (value == other.value)
                     return true;
-                return Object::equals(get(), opt.get());
+                return Object::equals(*value, *other.value);
             }
 
             /**
@@ -358,7 +624,7 @@ namespace core {
             gint hash() const override {
                 if (isEmpty())
                     return 0;
-                return ((const Object &) get()).hash();
+                return Object::hash(*value);
             }
 
             /**
@@ -374,64 +640,78 @@ namespace core {
              * @return the string representation of this instance
              */
             String toString() const override {
-                return value != null ? ("Optional[" + String::valueOf(get()) + "]") : "Optional.empty";
+                return value != null ? String::valueOf(*value) : u"Optional[]"_S;
             }
 
             /**
              * Return shadow copy of this object
              */
             Object &clone() const override {
-                return native::Unsafe::allocateInstance<Optional<T>>(*this);
+                Optional &clone = native::Unsafe::allocateInstance<Optional>();
+                clone.value = value;
+                return clone;
             }
 
             ~Optional() override {
                 value = null;
-            };
-
-            /**
-             * Construct new Optional with specified value
-             *
-             * @param value The value used to initialize this optional.
-             *              Note: if value has been pre-allocated with
-             *              Unsafe.allocateInstance method, the contains
-             *              of optional result is same value reference.
-             * @throws MemoryError
-             */
-            static Optional of(const T &value) {
-                try {
-                    return Optional<T>(native::Unsafe::copyInstance(value, true));
-                } catch (const Exception &ex) {
-                    ex.throws(__trace("core.util.Optional"));
-                }
             }
 
-            /**
-             * Construct new Optional with specified value
-             *
-             * @param value The value used to initialize this optional.
-             */
-            static Optional of(T &value) CORE_NOTHROW {
-                return Optional<T>(value);
+            CORE_FRATERNITY_T1(Optional);
+
+            template<class U, Class<gbool>::OnlyIf<Class<U>::template isSuper<T>()> = true>
+            operator Optional<U> const() const {
+                if(isEmpty()) {
+                    return {};
+                }
+                Optional<U> option;
+                if (!Class<U>::hasInstance(*value)) {
+                    ClassCastException("Could not cast type " + classname() + " to " + option.classname())
+                            .throws(__ctrace());
+                }
+                option.value = (typename Optional<U>::VALUE) value;
+                return option;
             }
 
-            /**
-             * Construct new Optional with specified value
-             *
-             * @param value The value used to initialize this optional.
-             * @param copy True if value will be copied and false if
-             *              specified reference is used directly
-             * @throws MemoryError
-             */
-            static Optional of(T &value, gbool copy) {
-                if (copy) {
-                    try {
-                        return Optional<T>(native::Unsafe::copyInstance(value));
-                    } catch (const Exception &ex) {
-                        ex.throws(__trace("core.util.Optional"));
-                    }
-                } else {
-                    return Optional<T>(value);
+            template<class U, Class<gbool>::OnlyIf<Class<U>::template isSuper<T>()> = true>
+            operator Optional<U>() {
+                if(isEmpty()) {
+                    return {};
                 }
+                Optional<U> option;
+                if (!Class<U>::hasInstance(*value)) {
+                    ClassCastException("Could not cast type " + classname() + " to " + option.classname())
+                            .throws(__ctrace());
+                }
+                option.value = (typename Optional<U>::VALUE) value;
+                return option;
+            }
+
+            template<class U, Class<gbool>::OnlyIf<Class<T>::template isSuper<U>()> = true>
+            CORE_EXPLICIT operator Optional<U> const() const {
+                if(isEmpty()) {
+                    return {};
+                }
+                Optional<U> option;
+                if (!Class<U>::hasInstance(*value)) {
+                    ClassCastException("Could not cast type " + classname() + " to " + option.classname())
+                            .throws(__ctrace());
+                }
+                option.value = (typename Optional<U>::VALUE) value;
+                return option;
+            }
+
+            template<class U, Class<gbool>::OnlyIf<Class<T>::template isSuper<U>()> = true>
+            CORE_EXPLICIT operator Optional<U>() {
+                if(isEmpty()) {
+                    return {};
+                }
+                Optional<U> option;
+                if (!Class<U>::hasInstance(*value)) {
+                    ClassCastException("Could not cast type " + classname() + " to " + option.classname())
+                            .throws(__ctrace());
+                }
+                option.value = (typename Optional<U>::VALUE) value;
+                return option;
             }
 
             CORE_ENABLE_IMPLICIT_CAST(T &, get(),);

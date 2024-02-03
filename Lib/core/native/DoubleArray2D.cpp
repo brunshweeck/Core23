@@ -5,6 +5,7 @@
 #include "DoubleArray2D.h"
 #include <core/private/Unsafe.h>
 #include <core/util/Preconditions.h>
+#include <core/AssertionError.h>
 
 namespace core {
     namespace native {
@@ -89,7 +90,7 @@ namespace core {
         }
 
         DoubleArray2D::DoubleArray2D(const DoubleArray2D &matrix) : DoubleArray2D(matrix.len) {
-            // CORE_ASSERT(len == matrix.len, "core.native.DoubleArray2D")
+             CORE_ASSERT(len == matrix.len, __ctrace())
             gint const nRow = matrix.len;
             int i;
             try {

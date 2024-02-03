@@ -5,6 +5,7 @@
 #include "ByteArray2D.h"
 #include <core/private/Unsafe.h>
 #include <core/util/Preconditions.h>
+#include <core/AssertionError.h>
 
 namespace core {
     namespace native {
@@ -89,7 +90,7 @@ namespace core {
         }
 
         ByteArray2D::ByteArray2D(const ByteArray2D &matrix) : ByteArray2D(matrix.len) {
-            // CORE_ASSERT(len == matrix.len, "core.native.ByteArray2D")
+             CORE_ASSERT(len == matrix.len, __ctrace())
             gint const nRow = matrix.len;
             int i;
             try {

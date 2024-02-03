@@ -676,7 +676,7 @@ namespace core {
         // Dealing with finite values in exponent range of binary16
         // (when rounding is done, could still round up)
         gint exp = ((toIntBits(f) & EXPONENT_BIT_MASK) >> (SIGNIFICAND_WIDTH - 1)) - EXPONENT_BIAS;
-//        CORE_ASSERT(-25 <= exp && exp <= 15, "core.Float");
+        CORE_ASSERT(-25 <= exp && exp <= 15, __trace("core.Float"_S))
         // For binary16 subNormals, beside forcing exp to -15, retain
         // the difference exponentDiff = E_min - exp.  This is the excess
         // shift value, in addition to 13, to be used in the
@@ -716,7 +716,7 @@ namespace core {
         // No bits setValue in significand beyond the *first* exponent bit,
         // not just the significant; quantity is added to the exponent
         // to implement a carry-out from rounding the significand.
-        CORE_ASSERT((0xf800 & significandBits) == 0x0, "core.Float");
+        CORE_ASSERT((0xf800 & significandBits) == 0x0, __trace("core.Float"))
         return (gshort) (sign | (((exp + 15) << 10) + significandBits));
     }
 
@@ -752,7 +752,7 @@ namespace core {
                                // Preserve NaN significand bits
                                (bin16SignificandBits << SIGNIFICAND_SHIFT));
         }
-//        CORE_ASSERT(-15 < bin16Exp && bin16Exp < 16, "Core::Float");
+        CORE_ASSERT(-15 < bin16Exp && bin16Exp < 16, __trace("core::Float"))
         gint const floatExpBits = (bin16Exp + EXPONENT_BIAS) << (SIGNIFICAND_WIDTH - 1);
 
         // Compute and combine result sign, exponent, and significand bits.

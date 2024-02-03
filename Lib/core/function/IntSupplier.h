@@ -21,7 +21,7 @@ namespace core {
          * time the supplier is invoked.
          *
          * <p>This is a <a href="package-summary.html">functional interface</a>
-         * whose functional method is <b style="color: orange;"> IntSupplier.getAsInt()</b> .
+         * whose functional method is <b style="color: orange;"> IntSupplier.get()</b> .
          *
          * @see Supplier
          */
@@ -33,7 +33,7 @@ namespace core {
              *
              * @return a result
              */
-            virtual gint getAsInt() const = 0;
+            virtual gint get() const = 0;
 
             /**
              * Obtain new supplier from given class function member and specified compatible class instance
@@ -77,7 +77,7 @@ namespace core {
                         return (inst.*meth)();
                     }
 
-                    gint getAsInt() const override {
+                    gint get() const override {
                         return (gint) invoke();
                     }
 
@@ -142,7 +142,7 @@ namespace core {
                         return func();
                     }
 
-                    gint getAsInt() const override {
+                    gint get() const override {
                         return (gint) invoke();
                     }
 

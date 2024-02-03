@@ -70,7 +70,7 @@ namespace core {
                         return CoderResult::malformedForLength(2);
                     return CoderResult::malformedForLength(3);
                 default:
-                    CORE_ASSERT(false, "");
+                    CORE_ASSERT(false, __trace("core.charset.CESU8.Decoder"))
             }
         }
 
@@ -234,7 +234,7 @@ namespace core {
         ByteBuffer &CESU8::Decoder::getByteBuffer(Optional<ByteBuffer>  &bb, ByteArray &ba, gint sp) {
             if (bb.isEmpty()) {
                 Unsafe::destroyInstance(bb.get());
-                bb = Optional<ByteBuffer>::of(ByteBuffer::wrap(ba));
+                bb = ByteBuffer::wrap(ba);
             }
             bb.get().setPosition(sp);
             return bb.get();
@@ -244,7 +244,7 @@ namespace core {
             const gint sl = sp + len;
             gint dp = 0;
             gint const dlASCII = Math::min(len, da.length());
-            Optional<ByteBuffer> bb = Optional<ByteBuffer>::empty(); // only if malformed
+            Optional<ByteBuffer> bb; // only if malformed
 
             // ASCII only optimized loop
             while (dp < dlASCII && sa[sp] >= 0)
@@ -285,7 +285,7 @@ namespace core {
                                 return -1;
                             da[dp++] = replacement().charAt(0);
                             sp -=3;
-                            bb = Optional<ByteBuffer>::of(getByteBuffer(bb, (ByteArray &)sa, sp));
+                            bb = getByteBuffer(bb, (ByteArray &)sa, sp);
                             sp += malformedN(bb, 3).length();
                         } else {
                             da[dp++] = (char)((b1 << 12) ^

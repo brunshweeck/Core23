@@ -125,7 +125,7 @@ namespace core {
                 else if (cr.isUnmappable())
                     action = unmappableAction;
                 else {
-                    CORE_ASSERT_IF(false, cr.toString(), "core.charset.CharsetDecoder")
+                    CORE_RAISE(false, cr.toString(), __ctrace())
                 };
 
                 if (action == Charset::REPORT)
@@ -143,7 +143,7 @@ namespace core {
                     continue;
                 }
 
-                CORE_ASSERT(false, "core.charset.CharsetDecoder");
+                CORE_ASSERT(false, __ctrace())
             }
         }
 

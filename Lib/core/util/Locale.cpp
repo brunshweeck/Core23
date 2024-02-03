@@ -115,7 +115,7 @@ namespace core {
                     break;
                 }
                 default:
-                    CORE_ASSERT_IF(false, "Unknown category"_S, "core.util.Locale"_S);
+                    CORE_RAISE(false, "Unknown category"_S, __trace(u"core.util.Locale"_S));
             }
         }
 

@@ -21,7 +21,7 @@ namespace core {
          * time the supplier is invoked.
          *
          * <p>This is a <a href="package-summary.html">functional interface</a>
-         * whose functional method is <b style="color: orange;"> BooleanSupplier.getAsBoolean()</b> .
+         * whose functional method is <b style="color: orange;"> BooleanSupplier.get()</b> .
          *
          * @see Supplier
          */
@@ -33,7 +33,7 @@ namespace core {
              *
              * @return a result
              */
-            virtual gbool getAsBoolean() const = 0;
+            virtual gbool get() const = 0;
 
             /**
              * Obtain new supplier from given class function member and specified compatible class instance
@@ -77,7 +77,7 @@ namespace core {
                         return (inst.*meth)();
                     }
 
-                    gbool getAsBoolean() const override {
+                    gbool get() const override {
                         return (gbool) invoke();
                     }
 
@@ -142,7 +142,7 @@ namespace core {
                         return func();
                     }
 
-                    gbool getAsBoolean() const override {
+                    gbool get() const override {
                         return (gbool) invoke();
                     }
 

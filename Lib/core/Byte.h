@@ -306,7 +306,17 @@ namespace core {
          */
         Object &clone() const override;
 
+        /**
+         * The number of bytes used to represent a <b> byte</b> value in two's
+         * complement binary form.
+         */
         CORE_FAST static gint BYTES = 1;
+
+        /**
+         * The number of bits used to represent a <b> byte</b> value in two's
+         * complement binary form.
+         */
+        CORE_FAST static gint SIZE = 8;
 
         CORE_FAST CORE_ENABLE_IMPLICIT_CAST(gbyte, value, const)
 

@@ -1671,7 +1671,7 @@ namespace core {
                             root->next = first;
                             root->prev = null;
                         }
-                        CORE_ASSERT(checkInvariants(root), "core.util.HashMap.TreeNode");
+                        CORE_ASSERT(checkInvariants(root), __trace(u"core.util.HashMap.TreeNode"_S))
                     }
                 }
 

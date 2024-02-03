@@ -21,7 +21,7 @@ namespace core {
          * time the supplier is invoked.
          *
          * <p>This is a <a href="package-summary.html">functional interface</a>
-         * whose functional method is <b style="color: orange;"> LongSupplier.getAsLong()</b> .
+         * whose functional method is <b style="color: orange;"> LongSupplier.get()</b> .
          *
          * @see Supplier
          */
@@ -33,7 +33,7 @@ namespace core {
              *
              * @return a result
              */
-            virtual glong getAsLong() const = 0;
+            virtual glong get() const = 0;
 
             /**
              * Obtain new supplier from given class function member and specified compatible class instance
@@ -77,7 +77,7 @@ namespace core {
                         return (inst.*meth)();
                     }
 
-                    glong getAsLong() const override {
+                    glong get() const override {
                         return (glong) invoke();
                     }
 
@@ -142,7 +142,7 @@ namespace core {
                         return func();
                     }
 
-                    glong getAsLong() const override {
+                    glong get() const override {
                         return (glong) invoke();
                     }
 

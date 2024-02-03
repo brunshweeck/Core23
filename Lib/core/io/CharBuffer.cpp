@@ -76,12 +76,12 @@ namespace core {
             gint const limit = this->limit();
             gint const pos = this->position();
             gint const remaining = limit - pos;
-            CORE_ASSERT(remaining >= 0, "core.io.CharBuffer");
+            CORE_ASSERT(remaining >= 0, __ctrace())
             if (remaining <= 0) // include equality condition when remaining == 0
                 return -1;
 
             gint const targetRemaining = target.remaining();
-            CORE_ASSERT(targetRemaining >= 0, "core.io.CharBuffer");
+            CORE_ASSERT(targetRemaining >= 0, __ctrace())
             if (targetRemaining <= 0) // include condition targetRemaining == 0
                 return 0;
 
@@ -242,7 +242,7 @@ namespace core {
 
             if (src.isAddressable()) {
                 Object &base = this->base();
-                CORE_ASSERT(isDirect(), "core.io.CharBuffer");
+                CORE_ASSERT(isDirect(), __ctrace())
 
                 glong const srcAddr = src.address + ((glong) srcPos << 1);
                 glong const addr = address + ((glong) pos << 1);

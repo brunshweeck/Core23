@@ -21,7 +21,7 @@ namespace core {
          * time the supplier is invoked.
          *
          * <p>This is a <a href="package-summary.html">functional interface</a>
-         * whose functional method is <b style="color: orange;"> DoubleSupplier.getAsDouble()</b> .
+         * whose functional method is <b style="color: orange;"> DoubleSupplier.get()</b> .
          *
          * @see Supplier
          */
@@ -33,7 +33,7 @@ namespace core {
              *
              * @return a result
              */
-            virtual gdouble getAsDouble() const = 0;
+            virtual gdouble get() const = 0;
 
             /**
              * Obtain new supplier from given class function member and specified compatible class instance
@@ -77,7 +77,7 @@ namespace core {
                         return (inst.*meth)();
                     }
 
-                    gdouble getAsDouble() const override {
+                    gdouble get() const override {
                         return (gdouble) invoke();
                     }
 
@@ -142,7 +142,7 @@ namespace core {
                         return func();
                     }
 
-                    gdouble getAsDouble() const override {
+                    gdouble get() const override {
                         return (gdouble) invoke();
                     }
 

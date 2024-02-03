@@ -500,11 +500,11 @@ namespace core {
                 }
 
                 void forEach(const Consumer<E> &action) const override {
-                    This.forEach(action);
+                    ((Set &) This).forEach(action);
                 }
 
                 void forEach(const Consumer<E &> &action) override {
-                    This.forEach(action);
+                    ((Set const &) This).forEach(action);
                 }
 
                 Array<E> toArray() const override {

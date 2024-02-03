@@ -5,6 +5,7 @@
 #include "CharArray2D.h"
 #include <core/private/Unsafe.h>
 #include <core/util/Preconditions.h>
+#include <core/AssertionError.h>
 
 namespace core {
     namespace native {
@@ -89,7 +90,7 @@ namespace core {
         }
 
         CharArray2D::CharArray2D(const CharArray2D &matrix) : CharArray2D(matrix.len) {
-            // CORE_ASSERT(len == matrix.len, "core.native.CharArray2D")
+            CORE_ASSERT(len == matrix.len, __ctrace())
             gint const nRow = matrix.len;
             int i;
             try {
@@ -311,7 +312,7 @@ namespace core {
 
         CharArray2D
         CharArray2D::of(CharArray v0, CharArray v1, CharArray v2, CharArray v3, CharArray v4,
-                           CharArray v5) {
+                        CharArray v5) {
             try {
                 CharArray2D matrix{1};
                 matrix.value[0] = Unsafe::moveInstance(v0);
@@ -329,7 +330,7 @@ namespace core {
 
         CharArray2D
         CharArray2D::of(CharArray v0, CharArray v1, CharArray v2, CharArray v3, CharArray v4,
-                           CharArray v5, CharArray v6) {
+                        CharArray v5, CharArray v6) {
             try {
                 CharArray2D matrix{1};
                 matrix.value[0] = Unsafe::moveInstance(v0);
@@ -348,7 +349,7 @@ namespace core {
 
         CharArray2D
         CharArray2D::of(CharArray v0, CharArray v1, CharArray v2, CharArray v3, CharArray v4,
-                           CharArray v5, CharArray v6, CharArray v7) {
+                        CharArray v5, CharArray v6, CharArray v7) {
             try {
                 CharArray2D matrix{1};
                 matrix.value[0] = Unsafe::moveInstance(v0);
@@ -368,7 +369,7 @@ namespace core {
 
         CharArray2D
         CharArray2D::of(CharArray v0, CharArray v1, CharArray v2, CharArray v3, CharArray v4,
-                           CharArray v5, CharArray v6, CharArray v7, CharArray v8) {
+                        CharArray v5, CharArray v6, CharArray v7, CharArray v8) {
             try {
                 CharArray2D matrix{1};
                 matrix.value[0] = Unsafe::moveInstance(v0);
@@ -389,7 +390,7 @@ namespace core {
 
         CharArray2D
         CharArray2D::of(CharArray v0, CharArray v1, CharArray v2, CharArray v3, CharArray v4,
-                           CharArray v5, CharArray v6, CharArray v7, CharArray v8, CharArray v9) {
+                        CharArray v5, CharArray v6, CharArray v7, CharArray v8, CharArray v9) {
             try {
                 CharArray2D matrix{1};
                 matrix.value[0] = Unsafe::moveInstance(v0);

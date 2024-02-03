@@ -147,7 +147,7 @@ namespace core {
                 case UNMAPPABLE_CODE:
                     UnmappableCharacterException(len).throws(__trace("core.charset.CoderResult"));
                 default:
-                    CORE_ASSERT(false, "core.charset.CoderResult");
+                    CORE_ASSERT(false, __ctrace())
             }
         }
     } // charset

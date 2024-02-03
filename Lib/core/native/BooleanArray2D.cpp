@@ -5,6 +5,7 @@
 #include "BooleanArray2D.h"
 #include <core/private/Unsafe.h>
 #include <core/util/Preconditions.h>
+#include <core/AssertionError.h>
 
 namespace core {
     namespace native {
@@ -89,7 +90,7 @@ namespace core {
         }
 
         BooleanArray2D::BooleanArray2D(const BooleanArray2D &matrix) : BooleanArray2D(matrix.len) {
-            // CORE_ASSERT(len == matrix.len, "core.native.BooleanArray2D")
+             CORE_ASSERT(len == matrix.len, __ctrace());
             gint const nRow = matrix.len;
             int i;
             try {

@@ -2,16 +2,16 @@
 // Created by T.N.Brunshweeck on 30/01/2024.
 //
 
-#ifndef CORE23_DOUBLECONSUMER_H
-#define CORE23_DOUBLECONSUMER_H
+#ifndef CORE23_LONGCONSUMER_H
+#define CORE23_LONGCONSUMER_H
 
-#include <core/Double.h>
+#include <core/Long.h>
 #include <core/function/Functional.h>
 
 namespace core {
     namespace function {
 
-        class DoubleConsumer : public Functional {
+        class LongConsumer : public Functional {
         public:
 
             /**
@@ -19,10 +19,10 @@ namespace core {
              *
              * @param p the input argument
              */
-            virtual void accept(gdouble p) const = 0;
+            virtual void accept(glong p) const = 0;
 
             /**
-             * Returns a composed <b>DoubleConsumer</b> that performs, in sequence, this
+             * Returns a composed <b>LongConsumer</b> that performs, in sequence, this
              * operation followed by the <b>after</b> operation. If performing either
              * operation throws an exception, it is relayed to the caller of the
              * composed operation.  If performing this operation throws an exception,
@@ -30,8 +30,8 @@ namespace core {
              *
              * @param after the operation to perform after this operation
              */
-            DoubleConsumer &andThen(const DoubleConsumer &after) const {
-                return from([&](gdouble t) -> void { accept(t), after.accept(t); });
+            LongConsumer &andThen(const LongConsumer &after) const {
+                return from([&](glong t) -> void { accept(t), after.accept(t); });
             }
 
             /**
@@ -44,16 +44,16 @@ namespace core {
              * @tparam M The type of method handle
              */
             template<class I, class M>
-            static DoubleConsumer &from(I &&instance, M &&method) {
+            static LongConsumer &from(I &&instance, M &&method) {
                 // check if given method is valid
                 try {
-                    Functional::CheckFunction<M, I, gdouble>();
+                    Functional::CheckFunction<M, I, glong>();
                     Functional::FunctionUtils<M>::validate(method);
                 } catch (IllegalArgumentException const &ex) {
-                    ex.throws(__trace(u"core.function.DoubleConsumer"_S));
+                    ex.throws(__trace(u"core.function.LongConsumer"_S));
                 }
 
-                class MethodConsumer : public DoubleConsumer {
+                class MethodConsumer : public LongConsumer {
                 private:
                     I &&inst;
                     M &&meth;
@@ -65,11 +65,11 @@ namespace core {
                     /**
                      * Invoke the method of this consumer
                      */
-                    void invoke(gdouble t) const {
+                    void invoke(glong t) const {
                         return CORE_IGNORE((inst.*meth)(t));
                     }
 
-                    void accept(gdouble t) const override {
+                    void accept(glong t) const override {
                         invoke(t);
                     }
 
@@ -107,27 +107,27 @@ namespace core {
              * @tparam F The type of function supporting consumer arguments.
              */
             template<class F>
-            static DoubleConsumer &from(F &&function) {
+            static LongConsumer &from(F &&function) {
                 // check if given function is valid
                 try {
-                    Functional::CheckFunction<F, gdouble>();
+                    Functional::CheckFunction<F, glong>();
                     Functional::FunctionUtils<F>::validate(function);
                 } catch (IllegalArgumentException const &ex) {
-                    ex.throws(__trace(u"core.function.DoubleConsumer"_S));
+                    ex.throws(__trace(u"core.function.LongConsumer"_S));
                 }
 
-                class FunctionConsumer CORE_FINAL : public DoubleConsumer {
+                class FunctionConsumer CORE_FINAL : public LongConsumer {
                 private:
                     F &&func;
 
                 public:
                     CORE_EXPLICIT FunctionConsumer(F &&func) : func(Unsafe::forwardInstance<F>(func)) {}
 
-                    void invoke(gdouble t) const {
+                    void invoke(glong t) const {
                         return CORE_IGNORE(func(t));
                     }
 
-                    void accept(gdouble t) const override {
+                    void accept(glong t) const override {
                         invoke(t);
                     }
 
@@ -156,4 +156,4 @@ namespace core {
     } // function
 } // core
 
-#endif //CORE23_DOUBLECONSUMER_H
+#endif //CORE23_LONGCONSUMER_H

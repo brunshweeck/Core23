@@ -69,17 +69,17 @@ namespace core {
             try {
                 Preconditions::checkIndexFromSize(off, length, dst.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             gint const pos = position();
             if (length > limit() - pos)
-                BufferUnderflowException().throws(__trace("core.io.DoubleBuffer"));
+                BufferUnderflowException().throws(__ctrace());
 
             try {
                 getArray(pos, dst, off, length);
                 setPosition(pos + off);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }
@@ -88,7 +88,7 @@ namespace core {
             try {
                 return get(dst, 0, dst.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -98,7 +98,7 @@ namespace core {
                 Preconditions::checkIndexFromSize(off, length, dst.length());
                 getArray(index, dst, off, length);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return (DoubleBuffer &) *this;
         }
@@ -107,7 +107,7 @@ namespace core {
             try {
                 return get(index, dst, 0, dst.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -129,16 +129,16 @@ namespace core {
                     }
                 }
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return (DoubleBuffer &) *this;
         }
 
         DoubleBuffer &DoubleBuffer::put(DoubleBuffer &src) {
             if (this == &src)
-                IllegalArgumentException("The source buffer is this buffer").throws(__trace("core.io.DoubleBuffer"));
+                IllegalArgumentException("The source buffer is this buffer").throws(__ctrace());
             if (((Buffer &) *this).isReadOnly())
-                ReadOnlyBufferException().throws(__trace("core.io.DoubleBuffer"));
+                ReadOnlyBufferException().throws(__ctrace());
 
             gint const srcPos = src.position();
             gint const srcLim = src.limit();
@@ -148,7 +148,7 @@ namespace core {
             gint const rem = (pos <= lim ? lim - pos : 0);
 
             if (srcRem > rem)
-                BufferOverflowException().throws(__trace("core.io.DoubleBuffer"));
+                BufferOverflowException().throws(__ctrace());
 
             try {
                 putBuffer(pos, src, srcPos, srcRem);
@@ -156,7 +156,7 @@ namespace core {
                 setPosition(pos + srcRem);
                 src.setPosition(srcPos + srcRem);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }
@@ -166,24 +166,24 @@ namespace core {
                 Preconditions::checkIndexFromSize(index, length, limit());
                 Preconditions::checkIndexFromSize(off, length, src.limit());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             if (((Buffer &) *this).isReadOnly())
-                ReadOnlyBufferException().throws(__trace("core.io.DoubleBuffer"));
+                ReadOnlyBufferException().throws(__ctrace());
 
             try {
                 putBuffer(index, src, off, length);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }
 
         void DoubleBuffer::putBuffer(gint pos, DoubleBuffer &src, gint srcPos, gint n) {
             Object srcBase = src.base();
-            CORE_ASSERT(src.isDirect(), "core.io.DoubleBuffer");
+            CORE_ASSERT(null != srcBase || src.isDirect(), __ctrace())
             Object &base = this->base();
-            CORE_ASSERT(isDirect(), "core.io.DoubleBuffer");
+            CORE_ASSERT(null != base || isDirect(), __ctrace())
 
             glong const srcAddr = src.address + ((glong) srcPos << 3);
             glong const addr = address + ((glong) pos << 3);
@@ -197,22 +197,22 @@ namespace core {
 
         DoubleBuffer &DoubleBuffer::put(const DoubleArray &src, gint off, gint length) {
             if (((Buffer &) *this).isReadOnly())
-                ReadOnlyBufferException().throws(__trace("core.io.DoubleBuffer"));
+                ReadOnlyBufferException().throws(__ctrace());
             try {
                 Preconditions::checkIndexFromSize(off, length, src.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             gint const pos = position();
             if (length > limit() - pos)
-                BufferOverflowException().throws(__trace("core.io.DoubleBuffer"));
+                BufferOverflowException().throws(__ctrace());
 
             try {
                 putArray(pos, src, off, length);
 
                 setPosition(pos + length);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }
@@ -221,7 +221,7 @@ namespace core {
             try {
                 return put(src, 0, src.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -230,14 +230,14 @@ namespace core {
                 Preconditions::checkIndexFromSize(index, length, limit());
                 Preconditions::checkIndexFromSize(off, length, src.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             if (((Buffer &) *this).isReadOnly())
-                ReadOnlyBufferException().throws(__trace("core.io.DoubleBuffer"));
+                ReadOnlyBufferException().throws(__ctrace());
             try {
                 putArray(index, src, off, length);
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
             return *this;
         }
@@ -246,7 +246,7 @@ namespace core {
             try {
                 return put(index, src, 0, src.length());
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -273,9 +273,9 @@ namespace core {
 
         DoubleArray &DoubleBuffer::array() const {
             if (hb == null)
-                UnsupportedOperationException().throws(__trace("core.io.DoubleBuffer"));
+                UnsupportedOperationException().throws(__ctrace());
             if (isReadOnly)
-                ReadOnlyBufferException().throws(__trace("core.io.DoubleBuffer"));
+                ReadOnlyBufferException().throws(__ctrace());
             return *hb;
         }
 
@@ -288,7 +288,7 @@ namespace core {
                 Buffer::setPosition(newPosition);
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -297,7 +297,7 @@ namespace core {
                 Buffer::setLimit(newLimit);
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -306,7 +306,7 @@ namespace core {
                 Buffer::mark();
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -315,7 +315,7 @@ namespace core {
                 Buffer::reset();
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -324,7 +324,7 @@ namespace core {
                 Buffer::clear();
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -333,7 +333,7 @@ namespace core {
                 Buffer::flip();
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 
@@ -342,7 +342,7 @@ namespace core {
                 Buffer::rewind();
                 return *this;
             } catch (const Exception &ex) {
-                ex.throws(__trace("core.io.DoubleBuffer"));
+                ex.throws(__ctrace());
             }
         }
 

@@ -477,7 +477,7 @@ namespace core {
                             da[dp++] = b4;
                             break;
                         default:
-                            CORE_ASSERT(false, "");
+                            CORE_ASSERT(false, __trace(u"core.charset.GB18030.Encoder"_S));
                     }
                     sp += inputSize;
                 }
